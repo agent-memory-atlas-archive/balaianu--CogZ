@@ -2,7 +2,7 @@
 id: a7c8e9f0-1234-5678-9abc-def012345678
 title: bge-small-en-v1.5 as default embedding model
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-31T19:45:00Z"
 updated_at: "2026-09-06T10:32:00.028233412+00:00"
 references: []

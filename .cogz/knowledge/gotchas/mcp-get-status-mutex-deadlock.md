@@ -2,7 +2,7 @@
 id: 6fd6f5fe-d983-4c9c-be26-405606749540
 title: get_status Mutex Deadlock
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T02:35:00Z"
 updated_at: "2026-09-06T10:31:59.659446237+00:00"
 references: []

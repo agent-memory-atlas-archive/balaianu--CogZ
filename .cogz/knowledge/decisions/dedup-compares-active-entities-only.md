@@ -2,7 +2,7 @@
 id: b4c8d9ea-09cc-414e-831c-8f5710374d4a
 title: Dedup compares active entities only
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-03T12:02:00Z"
 updated_at: "2026-09-05T11:09:28.258087041+00:00"
 updated_at: "2026-09-05T11:09:28.258087041+00:00"

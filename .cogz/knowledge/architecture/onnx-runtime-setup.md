@@ -1,11 +1,13 @@
 ---
 id: b8d9f0a1-2345-6789-abcd-ef1234567890
-type: knowledge
-category: architecture
 title: ONNX Runtime discovery and auto-download
-tags: [onnx, runtime, embedding, infrastructure]
-created_at: 2026-08-31T19:50:00Z
-updated_at: 2026-08-31T19:50:00Z
+type: knowledge
+status: stale
+created_at: "2026-08-31T19:50:00Z"
+updated_at: "2026-09-13T09:19:53.996566358+00:00"
+references: []
+category: architecture
+tags: ["onnx", "runtime", "embedding", "infrastructure"]
 ---
 
 # ONNX Runtime discovery and auto-download

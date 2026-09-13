@@ -2,7 +2,7 @@
 id: b8c2d3e4-09cc-414e-831c-8f5710374d4a
 title: Single-file sync must include reference edge synchronization
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-03T11:56:00Z"
 updated_at: "2026-09-04T09:15:30.882526854+00:00"
 references: []

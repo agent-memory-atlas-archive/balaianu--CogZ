@@ -2,7 +2,7 @@
 id: f7a1b2c3-09cc-414e-831c-8f5710374d4a
 title: "Transaction leak on early return with ? operator"
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-03T11:55:00Z"
 updated_at: "2026-09-04T09:12:03.861728462+00:00"
 references: []

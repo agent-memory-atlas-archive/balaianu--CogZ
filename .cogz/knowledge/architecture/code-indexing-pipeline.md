@@ -2,7 +2,7 @@
 id: b3c4d5e6-f789-4abc-def0-123456789001
 title: "Code indexing pipeline — scan, parse, sync, edges"
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T23:20:00Z"
 updated_at: "2026-09-03T15:31:31.313491001+00:00"
 references: []

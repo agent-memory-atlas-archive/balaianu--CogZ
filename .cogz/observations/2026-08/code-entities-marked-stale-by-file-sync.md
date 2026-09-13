@@ -2,7 +2,7 @@
 id: 7e3a2f1b-8c4d-4e5b-9a2f-1d6c3b5a7e8f
 title: Code entities incorrectly marked stale by file sync phase
 type: observation
-status: stale
+status: active
 created_at: "2026-08-30T13:45:00Z"
 updated_at: "2026-09-04T09:15:30.421727866+00:00"
 references: []

@@ -4,7 +4,7 @@ title: main.rs exceeded 400-line limit — extracted commands.rs
 type: observation
 status: stale
 created_at: "2026-08-29T23:25:00Z"
-updated_at: "2026-09-04T12:59:23.347428584+00:00"
+updated_at: "2026-09-13T12:32:56.396204931+00:00"
 references: []
 source: agent
 confidence: 0.9

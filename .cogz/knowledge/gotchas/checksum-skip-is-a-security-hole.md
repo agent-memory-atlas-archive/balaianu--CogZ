@@ -2,7 +2,7 @@
 id: e1f5a6b7-09cc-414e-831c-8f5710374d4a
 title: Checksum skip on missing entry is a security hole
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-03T11:59:00Z"
 updated_at: "2026-09-06T06:35:34.327688543+00:00"
 references: []

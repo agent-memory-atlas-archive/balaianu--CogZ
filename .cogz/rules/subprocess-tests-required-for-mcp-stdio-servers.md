@@ -4,7 +4,7 @@ title: Subprocess tests required for MCP stdio servers
 type: rule
 status: stale
 created_at: "2026-09-05T07:08:25.935098836+00:00"
-updated_at: "2026-09-06T20:13:03.710553099+00:00"
+updated_at: "2026-09-13T12:32:56.646199200+00:00"
 references: []
 confidence: 0.85
 ---

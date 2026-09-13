@@ -2,7 +2,7 @@
 id: e7fb0c1d-09cc-414e-831c-8f5710374d4a
 title: File-save hook triggers reindex and stale flagging automatically
 type: observation
-status: stale
+status: active
 created_at: "2026-09-03T12:07:00Z"
 updated_at: "2026-09-05T09:13:27.679308538+00:00"
 references: []

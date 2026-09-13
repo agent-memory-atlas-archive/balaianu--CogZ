@@ -2,7 +2,7 @@
 id: ed848e1e-0825-4d17-8c14-fb0f8df06073
 title: rmcp tool_router vis=pub requirement
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T02:40:00Z"
 updated_at: "2026-09-04T12:56:48.728025330+00:00"
 references: []

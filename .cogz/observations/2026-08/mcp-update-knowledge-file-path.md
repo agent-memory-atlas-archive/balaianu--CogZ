@@ -2,7 +2,7 @@
 id: 35cfc0d9-a3e6-4210-9e67-89ee82ae85aa
 title: update_knowledge file path resolution
 type: observation
-status: stale
+status: active
 created_at: "2026-08-29T02:45:00Z"
 updated_at: "2026-09-06T07:32:43.323531547+00:00"
 references: []

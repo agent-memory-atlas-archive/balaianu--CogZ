@@ -4,7 +4,7 @@ title: Module layering and data ownership boundaries
 type: knowledge
 status: stale
 created_at: "2026-08-28T19:20:00Z"
-updated_at: "2026-09-04T12:59:11.886747559+00:00"
+updated_at: "2026-09-13T12:32:55.400499823+00:00"
 references: []
 category: architecture
 tags: ["layering", "architecture", "ownership", "invariants"]

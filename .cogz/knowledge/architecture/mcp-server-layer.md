@@ -2,7 +2,7 @@
 id: 4cc109e1-09cc-414e-831c-8f5710374d4a
 title: MCP Server Layer
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T02:30:00Z"
 updated_at: "2026-09-04T09:15:29.782315692+00:00"
 references: []

@@ -4,7 +4,7 @@ title: "Model path bug — OnnxEmbeddingModel::new vs with_model_id"
 type: observation
 status: stale
 created_at: "2026-08-29T23:25:00Z"
-updated_at: "2026-09-04T12:56:48.653515229+00:00"
+updated_at: "2026-09-13T12:32:56.129325681+00:00"
 references: []
 source: agent
 confidence: 0.9

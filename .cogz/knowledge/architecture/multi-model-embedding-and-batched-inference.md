@@ -4,7 +4,7 @@ title: Multi-model embedding and batched ONNX inference
 type: knowledge
 status: stale
 created_at: "2026-08-29T23:20:00Z"
-updated_at: "2026-09-04T12:59:11.945283461+00:00"
+updated_at: "2026-09-13T12:32:55.920758312+00:00"
 references: []
 category: architecture
 tags: ["embedding", "onnx", "batched-inference", "multi-model", "phase-8"]

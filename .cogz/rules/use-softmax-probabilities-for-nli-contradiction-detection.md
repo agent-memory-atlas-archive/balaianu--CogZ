@@ -2,7 +2,7 @@
 id: 077cf823-5cc5-4251-b6b0-dd14ea8f6c05
 title: Use softmax probabilities for NLI contradiction detection
 type: rule
-status: stale
+status: active
 created_at: "2026-09-01T12:27:21.108864327+00:00"
 updated_at: "2026-09-06T20:50:05.730370350+00:00"
 references: []

@@ -2,7 +2,7 @@
 id: a9c1d2e3-09cc-414e-831c-8f5710374d4a
 title: Single-file operations must use sync_single_file not sync_incremental
 type: rule
-status: stale
+status: active
 created_at: "2026-09-03T12:11:00Z"
 updated_at: "2026-09-04T09:15:30.815722776+00:00"
 references: []

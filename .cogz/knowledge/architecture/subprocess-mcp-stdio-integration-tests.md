@@ -4,7 +4,7 @@ title: Subprocess MCP stdio integration tests
 type: knowledge
 status: stale
 created_at: "2026-09-05T07:07:18.941342516+00:00"
-updated_at: "2026-09-05T13:02:42.939057278+00:00"
+updated_at: "2026-09-13T12:32:56.846678395+00:00"
 references: []
 category: architecture
 tags: ["testing", "mcp", "subprocess", "integration"]
