@@ -159,16 +159,29 @@ pub fn sync_single_file(
         }
     };
 
-    // Phase 2: DB operations (lock held).
+    // Phase 2: DB operations (lock held, single transaction).
+    // Wrapping entity + reference sync in one transaction avoids
+    // partially synchronized state if a later write fails, and
+    // matches the sync_inner pattern.
     {
         let conn = storage.conn();
-        match sync_parsed_file(&conn, &entity_file, &hash, &relative_path, true) {
+        let tx = match conn.unchecked_transaction() {
+            Ok(tx) => tx,
+            Err(e) => {
+                result.errors.push(SyncFailure {
+                    file_path: abs_path.clone(),
+                    error: SyncError::Storage(e.into()),
+                });
+                return result;
+            }
+        };
+        match sync_parsed_file(&tx, &entity_file, &hash, &relative_path, true) {
             Ok(action) => {
                 let was_skipped = action == SyncAction::Skipped;
                 record_action(&mut result, action, &entity_file.id);
                 // Sync reference edges for changed files. Skipped files
                 // haven't changed, so their references are already correct.
-                if !was_skipped && let Err(e) = super::refs::sync_references(&conn, &entity_file) {
+                if !was_skipped && let Err(e) = super::refs::sync_references(&tx, &entity_file) {
                     result.errors.push(SyncFailure {
                         file_path: abs_path.clone(),
                         error: SyncError::Storage(e),
@@ -177,10 +190,17 @@ pub fn sync_single_file(
             }
             Err(error) => {
                 result.errors.push(SyncFailure {
-                    file_path: abs_path,
+                    file_path: abs_path.clone(),
                     error,
                 });
             }
+        }
+        if let Err(e) = tx.commit() {
+            tracing::warn!("failed to commit single-file sync transaction: {e}");
+            result.errors.push(SyncFailure {
+                file_path: abs_path,
+                error: SyncError::Storage(e.into()),
+            });
         }
     }
 
