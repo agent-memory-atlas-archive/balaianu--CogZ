@@ -107,6 +107,11 @@ impl Storage {
         // WAL mode for crash recovery and checkpoint behavior.
         conn.pragma_update(None, "journal_mode", "WAL")?;
         conn.pragma_update(None, "foreign_keys", "ON")?;
+        // Wait up to 5 seconds when the database is locked by another
+        // process before returning SQLITE_BUSY. Without this, concurrent
+        // background processes (reindex-bg, embed-bg) get immediate
+        // "database is locked" errors instead of retrying.
+        conn.pragma_update(None, "busy_timeout", "5000")?;
 
         schema::run_migrations(&conn, embedding_dim)?;
         schema::check_version(&conn)?;
