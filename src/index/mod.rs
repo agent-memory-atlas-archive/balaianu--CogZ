@@ -5,9 +5,13 @@
 //! source code into the entity graph with structural edges.
 
 pub mod auto_link;
+pub mod baseline;
 pub mod code_graph;
+pub mod detection;
 pub mod git_diff;
 pub mod gitignore;
+pub mod parse;
+pub mod reindex;
 pub mod stale_flagging;
 pub mod sync;
 pub mod tree_sitter;
@@ -34,6 +38,7 @@ pub fn path_to_string(path: &Path) -> String {
 }
 
 pub use gitignore::is_test_file;
+pub use reindex::ReindexResult;
 pub use sync::{CodeSyncResult, mark_stale_for_deleted_files};
 
 /// Index code entities from the repository.
@@ -54,48 +59,14 @@ pub fn index_code(storage: &storage::Storage, repo_root: &Path, config: &Config)
     // Phase 2: read and parse all source files in a single pass.
     // extract_all produces both entities and raw edges from one AST
     // walk, eliminating the need for a second parse during edge sync.
-    let mut entities_by_file: Vec<(String, Vec<self::tree_sitter::CodeEntity>)> = Vec::new();
-    let mut raw_edges_by_file: Vec<(String, Vec<self::tree_sitter::RawEdge>)> = Vec::new();
-    // Track files that failed to read or parse. These must be excluded
-    // from stale marking — a read failure does not mean the file was
-    // deleted, and marking its entities stale would lose valid edges.
-    let mut failed_paths: std::collections::HashSet<String> = std::collections::HashSet::new();
-
-    for rel_path in &source_paths {
-        let abs_path = repo_root.join(rel_path);
-        let source = match std::fs::read_to_string(&abs_path) {
-            Ok(s) => s,
-            Err(e) => {
-                tracing::warn!("failed to read {}: {}", abs_path.display(), e);
-                failed_paths.insert(path_to_string(rel_path));
-                continue;
-            }
-        };
-        let language = match gitignore::language_for_path(rel_path) {
-            Some(lang) => match self::tree_sitter::Language::parse_str(lang) {
-                Some(l) => l,
-                None => {
-                    failed_paths.insert(path_to_string(rel_path));
-                    continue;
-                }
-            },
-            None => {
-                failed_paths.insert(path_to_string(rel_path));
-                continue;
-            }
-        };
-
-        let (entities, raw_edges) = self::tree_sitter::extract_all(rel_path, &source, language);
-        let path_str = path_to_string(rel_path);
-        entities_by_file.push((path_str.clone(), entities));
-        raw_edges_by_file.push((path_str, raw_edges));
-    }
+    let parsed = parse::parse_source_files(repo_root, &source_paths);
 
     // Phase 3: sync code entities to DB (lock held). Pass failed_paths
     // so that stale marking excludes files that failed to read — their
     // entities should not be marked stale just because of an I/O error.
-    let mut result = sync::sync_code_entities(storage, &entities_by_file, &failed_paths);
-    result.failed_files = failed_paths.len();
+    let mut result =
+        sync::sync_code_entities(storage, &parsed.entities_by_file, &parsed.failed_paths);
+    result.failed_files = parsed.failed_paths.len();
 
     // Phase 4: sync structural edges (lock held).
     // Skip the edge rebuild when any source file failed to read —
@@ -103,12 +74,12 @@ pub fn index_code(storage: &storage::Storage, repo_root: &Path, config: &Config)
     // which would remove outgoing edges from preserved entities.
     // Aborting the full rebuild keeps the previous edge set intact
     // until the next successful full index.
-    if failed_paths.is_empty() {
-        code_graph::sync_code_edges(storage, &entities_by_file, &raw_edges_by_file);
+    if parsed.failed_paths.is_empty() {
+        code_graph::sync_code_edges(storage, &parsed.entities_by_file, &parsed.raw_edges_by_file);
     } else {
         tracing::warn!(
             "skipping structural edge rebuild due to {} failed source read(s)",
-            failed_paths.len()
+            parsed.failed_paths.len()
         );
     }
 
@@ -140,23 +111,6 @@ pub fn count_code_entities(conn: &rusqlite::Connection) -> (usize, usize, usize,
     )
 }
 
-/// Result of an incremental code reindex.
-#[derive(Debug, Default)]
-pub struct ReindexResult {
-    /// Whether the reindex was incremental (git diff) or fell back to full.
-    pub incremental: bool,
-    pub created: usize,
-    pub updated: usize,
-    pub marked_stale: usize,
-    pub skipped: usize,
-    /// IDs of code entities that were created or updated — used by
-    /// the stale-knowledge flagging step to find affected observations/rules.
-    pub changed_code_ids: Vec<String>,
-    /// IDs of code entities that were marked stale (deleted files).
-    pub deleted_code_ids: Vec<String>,
-    pub synced_entity_ids: Vec<String>,
-}
-
 /// Incremental code reindex — only re-parses files that changed since
 /// the last index (detected via git diff). Falls back to a full
 /// `index_code` if git is unavailable or no baseline commit is stored.
@@ -168,22 +122,24 @@ pub fn reindex_code(
     repo_root: &Path,
     config: &Config,
 ) -> ReindexResult {
-    let conn = storage.conn();
-    let baseline = storage::get_meta(&conn, "last_indexed_commit");
-    drop(conn);
+    let baseline = baseline::read_baseline(storage);
 
-    let changed = git_diff::changed_source_files(repo_root, baseline.as_deref());
+    let changed = detection::detect_changed_files(repo_root, baseline.as_deref());
 
     match changed {
-        Some(files) if !files.is_empty() => reindex_incremental(storage, repo_root, config, &files),
+        Some(files) if !files.is_empty() => {
+            let result = reindex::reindex_files(storage, repo_root, &files);
+            // Advance the baseline only if all changed files were
+            // successfully read. On partial failure, preserve the
+            // previous baseline so the next reindex retries them.
+            if baseline::should_update_baseline(result.had_read_failures) {
+                baseline::update_baseline(storage, repo_root);
+            }
+            result
+        }
         Some(_files) => {
             // No changes — just update the baseline commit.
-            if let Some(sha) = git_diff::head_sha(repo_root) {
-                let conn = storage.conn();
-                if let Err(e) = storage::set_meta(&conn, "last_indexed_commit", &sha) {
-                    tracing::warn!("failed to record last_indexed_commit: {}", e);
-                }
-            }
+            baseline::update_baseline(storage, repo_root);
             ReindexResult {
                 incremental: true,
                 ..Default::default()
@@ -211,130 +167,28 @@ pub fn reindex_code(
                 synced_entity_ids: result.synced_entity_ids.clone(),
                 changed_code_ids: result.synced_entity_ids,
                 deleted_code_ids,
+                had_read_failures: result.failed_files > 0,
             }
         }
     }
 }
 
-fn reindex_incremental(
+/// Reindex a single source file. Used by hooks when a file_save event
+/// provides the exact file path — skips git diff and baseline update.
+///
+/// Does NOT update the baseline commit. The next `cogz reindex` will
+/// catch this file again via git diff, which is cheap and safe.
+pub fn reindex_single_file(
     storage: &storage::Storage,
     repo_root: &Path,
-    _config: &Config,
-    changed: &[git_diff::ChangedFile],
+    file_path: &str,
 ) -> ReindexResult {
-    let mut result = ReindexResult {
-        incremental: true,
-        ..Default::default()
-    };
-
-    // Separate changed files into added/modified (need parsing) and deleted.
-    let (to_parse, deleted): (Vec<_>, Vec<_>) = changed
-        .iter()
-        .partition(|f| f.change != git_diff::ChangeType::Deleted);
-
-    // Read and parse only changed files in a single pass (no lock held).
-    let mut entities_by_file: Vec<(String, Vec<self::tree_sitter::CodeEntity>)> = Vec::new();
-    let mut source_files_for_edges: Vec<(std::path::PathBuf, String, self::tree_sitter::Language)> =
-        Vec::new();
-    let mut had_failures = false;
-    for cf in &to_parse {
-        let abs_path = repo_root.join(&cf.path);
-        let source = match std::fs::read_to_string(&abs_path) {
-            Ok(s) => s,
-            Err(e) => {
-                tracing::warn!("failed to read {}: {}", abs_path.display(), e);
-                had_failures = true;
-                continue;
-            }
-        };
-        let language = match gitignore::language_for_path(&cf.path) {
-            Some(lang) => match self::tree_sitter::Language::parse_str(lang) {
-                Some(l) => l,
-                None => continue,
-            },
-            None => continue,
-        };
-        let path_str = path_to_string(&cf.path);
-        let (entities, _) = self::tree_sitter::extract_all(&cf.path, &source, language);
-        entities_by_file.push((path_str, entities));
-        source_files_for_edges.push((cf.path.clone(), source, language));
-    }
-
-    // Sync changed entities to DB (no full stale sweep).
-    let sync_result = sync::sync_code_entities_incremental(storage, &entities_by_file);
-    result.created = sync_result.created;
-    result.updated = sync_result.updated;
-    result.skipped = sync_result.skipped;
-    result.synced_entity_ids = sync_result.synced_entity_ids.clone();
-    result.changed_code_ids = sync_result.synced_entity_ids.clone();
-    // Entities removed from changed files (renamed or deleted within
-    // a file that still exists) are marked stale by the sync function.
-    result.marked_stale = sync_result.marked_stale;
-    result.deleted_code_ids = sync_result.removed_entity_ids;
-
-    // Re-extract structural edges for changed files only (incremental).
-    if !source_files_for_edges.is_empty() {
-        code_graph::sync_code_edges_incremental(storage, &source_files_for_edges);
-    }
-
-    // Rebuild auto-links. Code entity names/paths may have changed,
-    // so knowledge→code auto-references need to be resynced. This
-    // is a full rebuild (clears and recreates all auto-link edges)
-    // to ensure no stale links remain after incremental changes.
-    auto_link::sync_auto_links(storage);
-
-    // Mark deleted files' code entities as stale.
-    let deleted_paths: Vec<std::path::PathBuf> = deleted.iter().map(|f| f.path.clone()).collect();
-    if !deleted_paths.is_empty() {
-        result.marked_stale += sync::mark_stale_for_deleted_files(storage, &deleted_paths);
-        // Collect the IDs of stale-marked entities for knowledge flagging.
-        // Chunk the query to stay below SQLite's 999-variable limit:
-        // 4 type params + N path params per chunk, max 990 paths.
-        let conn = storage.conn();
-        let code_types = ["function", "class", "file", "module"];
-        let type_placeholders = (0..code_types.len())
-            .map(|_| "?")
-            .collect::<Vec<_>>()
-            .join(",");
-        let deleted_path_strs: Vec<String> =
-            deleted_paths.iter().map(|p| path_to_string(p)).collect();
-        const PATH_CHUNK: usize = 990;
-        for chunk in deleted_path_strs.chunks(PATH_CHUNK) {
-            let path_placeholders = (0..chunk.len()).map(|_| "?").collect::<Vec<_>>().join(",");
-            let sql = format!(
-                "SELECT id FROM entities \
-                 WHERE type IN ({type_placeholders}) AND status = 'stale' \
-                 AND file_path IN ({path_placeholders})"
-            );
-            let mut params: Vec<&dyn rusqlite::ToSql> =
-                Vec::with_capacity(code_types.len() + chunk.len());
-            for t in &code_types {
-                params.push(t);
-            }
-            for p in chunk {
-                params.push(p);
-            }
-            if let Ok(mut stmt) = conn.prepare(&sql)
-                && let Ok(rows) = stmt.query_map(params.as_slice(), |r| r.get::<_, String>(0))
-            {
-                for row in rows.flatten() {
-                    result.deleted_code_ids.push(row);
-                }
-            }
-        }
-    }
-
-    // Record the new baseline commit only if all changed files were
-    // successfully processed. On partial failure, preserve the previous
-    // baseline so the next incremental reindex retries the failed files.
-    if !had_failures && let Some(sha) = git_diff::head_sha(repo_root) {
-        let conn = storage.conn();
-        if let Err(e) = storage::set_meta(&conn, "last_indexed_commit", &sha) {
-            tracing::warn!("failed to record last_indexed_commit: {}", e);
-        }
-    }
-
-    result
+    let path = std::path::PathBuf::from(file_path);
+    let changed = vec![detection::ChangedFile {
+        path,
+        change: detection::ChangeType::Modified,
+    }];
+    reindex::reindex_files(storage, repo_root, &changed)
 }
 
 /// Query all stale code entity IDs (function, class, file, module).

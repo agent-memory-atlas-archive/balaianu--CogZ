@@ -177,11 +177,8 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
     // Only advance the baseline if all source files were successfully
     // read and parsed. On partial failure, preserve the previous
     // baseline so the next reindex retries the failed files.
-    if code_result.failed_files == 0
-        && let Some(sha) = cogz::index::git_diff::head_sha(repo)
-        && let Err(e) = cogz::storage::set_meta(&conn, "last_indexed_commit", &sha)
-    {
-        tracing::warn!("failed to record last_indexed_commit: {}", e);
+    if cogz::index::baseline::should_update_baseline(code_result.failed_files != 0) {
+        cogz::index::baseline::update_baseline(&storage, repo);
     }
 
     Ok(())

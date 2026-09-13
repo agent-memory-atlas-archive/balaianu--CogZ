@@ -134,9 +134,9 @@ fn embed_synced_entities(
     store_embeddings(&mut conn, &embeddings)
 }
 
-/// Reindex source code after a source file is saved. Runs
-/// `reindex_code` (incremental, git-diff based) then flags stale
-/// knowledge for any changed or deleted code entities.
+/// Reindex a source file after it is saved. Calls
+/// `reindex_single_file` then `flag_stale_knowledge` for any changed
+/// or deleted code entities.
 fn handle_source_file_save(
     storage: &Arc<Storage>,
     config: &Config,
@@ -147,7 +147,8 @@ fn handle_source_file_save(
 
     tracing::debug!("file_save hook: triggering reindex for {}", path);
 
-    let result = crate::index::reindex_code(storage, repo_root, config);
+    let _ = config; // Config not needed for single-file reindex.
+    let result = crate::index::reindex_single_file(storage, repo_root, path);
 
     let mut all_changed = result.changed_code_ids.clone();
     all_changed.extend(result.deleted_code_ids.iter().cloned());
