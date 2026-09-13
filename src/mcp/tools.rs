@@ -153,7 +153,7 @@ impl CogzServer {
 
     #[tool(
         name = "capture_event",
-        description = "Capture a lifecycle event. Called by hook scripts (session_start, prompt_submit, pre_tool_use, post_tool_use, file_save, session_end). For session_start and prompt_submit, returns a context pack for injection. For file_save, triggers an incremental code reindex and stale-knowledge flagging. For session_end, runs consolidation (promotion + merge) and reports counts."
+        description = "Capture a lifecycle event. Called by hook scripts (session_start, prompt_submit, pre_tool_use, post_tool_use, file_save, session_end). For session_start and prompt_submit, returns a context pack for injection and spawns a background reindex. For file_save, triggers a single-file code reindex and stale-knowledge flagging. For session_end, runs consolidation (promotion + merge) and reports counts."
     )]
     async fn capture_event(
         &self,

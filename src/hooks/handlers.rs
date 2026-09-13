@@ -1,7 +1,7 @@
 //! Lifecycle event handlers for file_save and session_end.
 //!
 //! `handle_file_save` handles two paths:
-//! - Source files (not under `.cogz/`): incremental code reindex +
+//! - Source files (not under `.cogz/`): single-file code reindex +
 //!   stale-knowledge flagging.
 //! - `.cogz/` entity files: incremental file sync + embedding, so
 //!   human-edited knowledge/rules/observations reach the DB without

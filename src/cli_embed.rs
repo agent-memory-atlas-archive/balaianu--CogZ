@@ -75,7 +75,8 @@ pub fn embed_synced(storage: &Storage, config: &Config, entity_ids: &[String]) -
     }
 
     // Defer code embedding to a background process.
-    spawn_code_embed_background(storage, config, &code_entities);
+    let code_ids: Vec<String> = code_entities.iter().map(|e| e.id.clone()).collect();
+    spawn_code_embed_background(storage, config, &code_ids);
     all_embeddings.len()
 }
 
@@ -117,10 +118,10 @@ fn embed_code_inline(
 /// The background process is a `cogz embed-bg` invocation that
 /// re-opens the DB, embeds the entities, and stores vectors. This
 /// avoids holding the DB lock in the foreground process.
-fn spawn_code_embed_background(
+pub(crate) fn spawn_code_embed_background(
     storage: &Storage,
     config: &Config,
-    code_entities: &[cogz::storage::crud::Entity],
+    entity_ids: &[String],
 ) {
     // Write the entity IDs to a temp file for the background process to read.
     let id_file = std::env::temp_dir().join(format!(
@@ -129,8 +130,7 @@ fn spawn_code_embed_background(
         chrono::Utc::now().timestamp()
     ));
 
-    let ids: Vec<String> = code_entities.iter().map(|e| e.id.clone()).collect();
-    if std::fs::write(&id_file, ids.join("\n")).is_err() {
+    if std::fs::write(&id_file, entity_ids.join("\n")).is_err() {
         tracing::warn!("failed to write background embed ID file");
         return;
     }
@@ -179,7 +179,7 @@ fn spawn_code_embed_background(
         Ok(child) => {
             println!(
                 "  Code embedding deferred to background ({} entities, pid={})",
-                code_entities.len(),
+                entity_ids.len(),
                 child.id()
             );
             // Detach the child so it survives the parent's exit.
@@ -189,7 +189,7 @@ fn spawn_code_embed_background(
             tracing::warn!("failed to spawn background embedding: {}", e);
             println!(
                 "  Code embedding skipped ({} entities — run `cogz embed-bg` manually)",
-                code_entities.len()
+                entity_ids.len()
             );
         }
     }
