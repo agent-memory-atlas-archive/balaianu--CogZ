@@ -143,9 +143,10 @@ enum Commands {
 
     /// Capture a lifecycle event. Called by agent hook systems or
     /// manually. For session_start and prompt_submit, prints a context
-    /// pack to stdout for agent injection. For file_save, triggers an
-    /// incremental code reindex. For session_end, runs consolidation.
-    /// For stop, records the event (no side effects).
+    /// pack to stdout for agent injection and spawns a background
+    /// reindex. For file_save, triggers a single-file code reindex.
+    /// For session_end, runs consolidation. For stop, records the
+    /// event (no side effects).
     CaptureEvent {
         /// Event type: session_start, prompt_submit, pre_tool_use,
         /// post_tool_use, file_save, session_end, stop.

@@ -5,7 +5,7 @@
 //! designed so a no-git fallback (mtime manifest) can be added later
 //! without changing callers.
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 pub use crate::index::git_diff::{ChangeType, ChangedFile};
 
@@ -25,9 +25,4 @@ pub fn detect_changed_files(
 /// no commits exist.
 pub fn head_sha(repo_root: &Path) -> Option<String> {
     crate::index::git_diff::head_sha(repo_root)
-}
-
-/// Extract the paths from a list of changed files.
-pub fn changed_paths(changed: &[ChangedFile]) -> Vec<PathBuf> {
-    changed.iter().map(|f| f.path.clone()).collect()
 }

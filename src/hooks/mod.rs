@@ -2,10 +2,11 @@
 //!
 //! Called by `cogz capture-event` (CLI) and `capture_event` (MCP tool).
 //! For `session_start` and `prompt_submit`, generates a context pack
-//! for injection into the agent's context window. For `pre_tool_use`
+//! for injection into the agent's context window and spawns a
+//! background reindex to catch non-hook changes. For `pre_tool_use`
 //! and `post_tool_use`, records the event and optionally an observation.
-//! For `file_save`, triggers an incremental code reindex. For
-//! `session_end`, runs a consolidation dry-run.
+//! For `file_save`, triggers a single-file code reindex. For
+//! `session_end`, runs consolidation.
 
 pub mod capture;
 pub mod handlers;

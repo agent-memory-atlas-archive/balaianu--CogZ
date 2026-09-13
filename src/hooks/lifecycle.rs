@@ -2,13 +2,14 @@
 //! pre_tool_use, post_tool_use, file_save, session_end, stop.
 //!
 //! Each handler records a domain event. `session_start` and
-//! `prompt_submit` also assemble a context pack for injection.
-//! `post_tool_use` records the event only (audit trail) — the agent
-//! decides what's salient via the `record_observation` MCP tool.
-//! `file_save` triggers an incremental code reindex and stale-knowledge
-//! flagging when the saved file is a source file (not under `.cogz/`).
-//! `stop` is a lightweight event that records the stop and returns —
-//! no context pack, no side effects. `session_end` runs consolidation.
+//! `prompt_submit` also assemble a context pack for injection and
+//! spawn a background reindex to catch non-hook changes. `post_tool_use`
+//! records the event only (audit trail) — the agent decides what's
+//! salient via the `record_observation` MCP tool. `file_save` triggers
+//! a single-file code reindex and stale-knowledge flagging when the
+//! saved file is a source file (not under `.cogz/`). `stop` is a
+//! lightweight event that records the stop and returns — no context
+//! pack, no side effects. `session_end` runs consolidation.
 
 use std::path::Path;
 use std::sync::Arc;

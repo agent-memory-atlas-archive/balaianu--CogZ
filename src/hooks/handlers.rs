@@ -22,9 +22,9 @@ use crate::storage::crud::get_entities_batch;
 
 /// Handle a file_save event. The path determines which pipeline runs:
 ///
-/// - **Source file** (not under `.cogz/`): incremental code reindex
-///   via `reindex_code`, then `flag_stale_knowledge` for any changed
-///   or deleted code entities.
+/// - **Source file** (not under `.cogz/`): single-file code reindex
+///   via `reindex_single_file`, then `flag_stale_knowledge` for any
+///   changed or deleted code entities.
 ///
 /// - **`.cogz/` entity file**: incremental file sync via
 ///   `sync_incremental` (file → DB), then embed synced entities using
