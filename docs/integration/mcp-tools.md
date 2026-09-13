@@ -202,7 +202,7 @@ Trigger background consolidation: promote supported observations to rules, merge
 
 ### `capture_event`
 
-Capture a lifecycle event. Called by hook scripts. For `session_start` and `prompt_submit`, returns a context pack for injection. For `file_save`, triggers an incremental code reindex and stale-knowledge flagging. For `session_end`, runs consolidation.
+Capture a lifecycle event. Called by hook scripts. For `session_start` and `prompt_submit`, returns a context pack for injection and spawns a background reindex. For `file_save`, triggers a single-file code reindex and stale-knowledge flagging. For `session_end`, runs consolidation.
 
 **Parameters:**
 | Name | Type | Required | Description |

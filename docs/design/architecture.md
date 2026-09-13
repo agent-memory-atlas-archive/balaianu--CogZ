@@ -36,6 +36,11 @@ src/
   cli.rs               CLI command dispatch
   cli_embed.rs         CLI embedding helpers
   commands/            CLI command implementations
+    mod.rs             index, reindex, status, reset, consolidate
+    doctor.rs          doctor health check
+    embed_bg.rs        background embedding process
+    models.rs          models download/list/clean
+    reindex_bg.rs      background reindex process
   config/              Typed config (TOML), validation
   storage/             SQLite layer
     schema.rs          Migrations, schema version
@@ -43,7 +48,7 @@ src/
     edges.rs           Edge CRUD (graph relationships)
     embeddings.rs      vec0 embedding storage and KNN search
     events.rs          Domain event recording
-    graph.rs           Graph traversal (BFS expansion)
+    graph.rs            Graph traversal (BFS expansion)
     query.rs           Entity queries (by type, by reference)
     status.rs          Status state machine
     access.rs          Entity access tracking
@@ -81,6 +86,11 @@ src/
     promote.rs         Observation → rule promotion
     merge.rs           Duplicate merge with edge redirection
   index/               Code indexing
+    mod.rs             Orchestration: index_code, reindex_code, reindex_single_file
+    parse.rs           Source file parsing (shared by full scan and incremental)
+    detection.rs       Unified change detection (wraps git_diff)
+    baseline.rs        Baseline commit read/write/should-update
+    reindex.rs         Processing layer (takes changed files, processes them)
     tree_sitter.rs     AST extraction (7 languages)
     gitignore.rs       Gitignore-aware source file scanner
     git_diff.rs        Git diff-based change detection
@@ -95,9 +105,10 @@ src/
     helpers.rs         Shared helpers (file writes, response builders)
     entity_helpers.rs  Entity creation with dedup/contradiction
   hooks/               Lifecycle event handlers
-    lifecycle.rs       Event dispatch, context pack assembly
+    lifecycle.rs       Event dispatch, context pack assembly, background reindex spawn
     capture.rs         CLI capture-event handler
     handlers.rs        Event-specific handlers (file_save, session_end)
+    reindex.rs         Background reindex spawn + debounce
   doctor/              Health checks
     checks.rs          Doctor report, all check implementations
     checks_analysis.rs Extracted analysis helpers
@@ -149,13 +160,42 @@ cogz index
     → for each file: read, parse frontmatter, compute hash, sync to DB
     → mark stale: DB entities whose file was deleted
   → index::index_code() — index source code
-    → scan_source_files() — walk repo, respect .gitignore + allow/deny
-    → for each file: parse with tree-sitter, extract entities + edges
+    → parse::parse_source_files() — read + tree-sitter extract (shared with reindex)
     → sync_code_entities() — insert/update/stale-mark in DB
     → sync_code_edges() — structural edges (calls, imports, extends, contains)
     → sync_auto_links() — knowledge → code auto-references
   → embed_synced() — embed all new/updated entities
-  → record last_indexed_commit for incremental reindex
+  → baseline::update_baseline() — record last_indexed_commit for incremental reindex
+```
+
+### Reindex path (cogz reindex)
+
+```
+cogz reindex
+  → files::sync_incremental() — sync changed .cogz/ files to DB
+  → index::reindex_code()
+    → baseline::read_baseline() — get last_indexed_commit
+    → detection::detect_changed_files() — git diff since baseline
+    → reindex::reindex_files() — process changed files
+      → parse::parse_source_files() — read + tree-sitter extract
+      → sync_code_entities_incremental() — insert/update/stale-mark
+      → sync_code_edges_incremental() — structural edges for changed files
+      → sync_auto_links() — full rebuild of auto-link edges
+      → mark_stale_for_deleted_files() — stale-mark removed files
+    → baseline::update_baseline() — advance if no read failures
+  → flag_stale_knowledge() — mark knowledge referencing changed code
+  → embed_synced() — embed all new/updated entities
+```
+
+### Background reindex path (cogz reindex-bg)
+
+```
+cogz reindex-bg --repo <repo> --db <db>
+  → files::sync_incremental() — sync changed .cogz/ files
+  → index::reindex_code() — git-diff code reindex (same as cogz reindex)
+  → flag_stale_knowledge() — mark stale knowledge for changed code
+  → spawn_code_embed_background() — defer embedding to embed-bg
+  → exit (detached process, no output to parent)
 ```
 
 ### Hook path (lifecycle event)
@@ -166,6 +206,7 @@ Agent fires session_start hook
     → parse event type
     → handle_lifecycle_event()
       → record_event() — audit trail
+      → spawn_reindex_bg() — detached background process (sync .cogz/ files, git-diff code reindex, stale flagging, embed-bg)
       → assemble_pack() — cold_start context pack
         → embed query (skipped with --fts-only)
         → assemble_context() — FTS-only retrieval
@@ -173,9 +214,13 @@ Agent fires session_start hook
     → print JSON to stdout: {"hookSpecificOutput": {...}}
 ```
 
+`prompt_submit` follows the same path but with `ContextMode::Task` and a debounced background reindex (60s window). `file_save` skips the context pack and background reindex — it calls `reindex_single_file` (fast, no git diff) + `flag_stale_knowledge` for source files, or `sync_single_file` + embed for `.cogz/` files.
+
 ## Concurrency model
 
 - **Single SQLite `Connection` behind `std::sync::Mutex`.** No connection pool, no `r2d2`, no `tokio-rusqlite`.
+- **`PRAGMA busy_timeout = 5000`.** Background processes (reindex-bg, embed-bg) open their own connections. WAL mode allows concurrent readers but serializes writers — `busy_timeout` makes writer contention retry for 5 seconds instead of failing immediately.
+- **`file_lock()` for multi-step canonical writes.** Merge, prune, and update_knowledge acquire an OS-backed exclusive lock on `.cogz/.lock` to serialize cross-process write sequences. Single-step writes (reindex, sync) rely on `busy_timeout` for contention.
 - **DB calls from async MCP handlers go through `tokio::task::spawn_blocking`.** Never call rusqlite directly from an async context.
 - **Don't hold the mutex during filesystem or network I/O.** Acquire the lock, get the data, drop the lock, then do the I/O.
 - **Models are lazy-loaded and shared.** The MCP server caches model instances across repos. Models auto-unload after `model_idle_ttl` seconds of inactivity.

@@ -7,8 +7,8 @@ Hooks capture lifecycle events from an AI coding agent and inject context packs 
 When an agent fires a lifecycle event (session start, prompt submit, tool use, file save, etc.), it calls `cogz capture-event` with the event type and optional context. CogZ:
 
 1. Records the event in the database (audit trail).
-2. For `session_start` and `prompt_submit`: assembles a context pack and prints it to stdout for the agent to consume as injected context.
-3. For `file_save`: triggers an incremental code reindex and flags stale knowledge if the saved file is a source file.
+2. For `session_start` and `prompt_submit`: assembles a context pack and prints it to stdout for the agent to consume as injected context. Also spawns a background reindex process to catch changes from non-hook events (branch switches, pulls, merges, human edits in another terminal).
+3. For `file_save`: triggers a single-file code reindex (fast — no git diff) and flags stale knowledge if the saved file is a source file. Syncs `.cogz/` entity files if the saved file is under `.cogz/`.
 4. For `session_end`: runs consolidation (promotion + merge).
 
 ## The `--hook-json` flag
@@ -39,11 +39,11 @@ For hooks, speed matters more than ranking quality. The MCP server (persistent p
 
 | Event | When | What CogZ does | Output |
 |---|---|---|---|
-| `session_start` | Agent session begins | Records event, assembles cold_start context pack | Context pack (recent rules + observations) |
-| `prompt_submit` | User submits a prompt | Records event, assembles task context pack using the prompt | Context pack (query-scoped retrieval) |
+| `session_start` | Agent session begins | Records event, assembles cold_start context pack, spawns background reindex | Context pack (recent rules + observations) |
+| `prompt_submit` | User submits a prompt | Records event, assembles task context pack using the prompt, spawns background reindex (debounced 60s) | Context pack (query-scoped retrieval) |
 | `pre_tool_use` | Before a tool call | Records event only | None (audit trail) |
 | `post_tool_use` | After a tool call | Records event only | None (audit trail) |
-| `file_save` | A file is saved | Records event, triggers incremental code reindex if source file, flags stale knowledge | Reindex summary |
+| `file_save` | A file is saved | Records event, triggers single-file code reindex if source file, flags stale knowledge, syncs `.cogz/` file if under `.cogz/` | Reindex summary |
 | `session_end` | Agent session ends | Records event, runs consolidation (promotion + merge) | Consolidation summary |
 | `stop` | Agent stops | Records event only | None |
 
@@ -127,7 +127,16 @@ This is the canonical hook config. Copy it into your agent's hook configuration 
 }
 ```
 
-**Timeouts:** `session_start` and `prompt_submit` need 10s (FTS-only context assembly). `file_save` needs 20s (incremental reindex). `session_end` needs 30s (consolidation). `stop` needs 5s (event recording only).
+**Timeouts:** `session_start` and `prompt_submit` need 10s (FTS-only context assembly; background reindex is detached and doesn't block). `file_save` needs 20s (single-file reindex). `session_end` needs 30s (consolidation). `stop` needs 5s (event recording only).
+
+## Background reindex
+
+`session_start` and `prompt_submit` spawn a detached `cogz reindex-bg` process that catches changes from non-hook events — branch switches, pulls, merges, human edits in another terminal. This is the recovery path that `file_save`'s single-file reindex doesn't cover.
+
+- **`session_start`** always spawns (primary recovery, fires once per session).
+- **`prompt_submit`** is debounced (60s window) to avoid redundant spawns when the user sends many messages in quick succession.
+- The background process syncs `.cogz/` entity files, runs git-diff-based code reindex, flags stale knowledge, and defers embedding to `embed-bg`. It runs detached — the hook returns immediately without waiting for it.
+- The debounce marker is a temp file keyed by the canonical repo path, so `.`, absolute paths, and symlinks to the same repo share one marker.
 
 **PostCompaction:** After context compaction, the agent loses its injected context. Re-inject by treating it as a session start:
 

@@ -47,6 +47,38 @@ cogz reindex [--repo <path>]
 
 Falls back to a full index if git is unavailable or no baseline commit is stored. After syncing changed code entities, flags observations and rules referencing changed code as stale.
 
+## `cogz reindex-bg`
+
+Background reindex — spawned by hooks (`session_start`, `prompt_submit`) to catch changes from non-hook events. Runs detached; the parent hook returns immediately.
+
+```
+cogz reindex-bg --repo <path> --db <path>
+```
+
+**Flags:**
+- `--repo <path>` — repository root
+- `--db <path>` — database file path
+
+Syncs `.cogz/` entity files, runs git-diff code reindex, flags stale knowledge, and defers embedding to `embed-bg`. Not intended for manual use — spawned automatically by hooks.
+
+## `cogz embed-bg`
+
+Background embedding — spawned by `cogz index` or `reindex-bg` to embed code entities after indexing completes.
+
+```
+cogz embed-bg --db <path> --ids-file <path> --code-model <name> --dimension <n> --idle-ttl <s> --min-free-mb <n>
+```
+
+**Flags:**
+- `--db <path>` — database file path
+- `--ids-file <path>` — temp file containing entity IDs (one per line)
+- `--code-model <name>` — code embedding model name
+- `--dimension <n>` — embedding dimension (must match the vec0 table)
+- `--idle-ttl <s>` — model idle TTL in seconds
+- `--min-free-mb <n>` — minimum free disk MB for model loading
+
+Reads entity IDs, loads the code model, embeds in batches of 32, stores vectors, and cleans up the ID file. Not intended for manual use — spawned automatically.
+
 ## `cogz search`
 
 Hybrid FTS5 + vector search with graph expansion.
@@ -132,11 +164,11 @@ cogz capture-event <event_type> [--repo <path>] [--prompt <text>] [--prompt-file
 - `--fts-only` — skip model loading. Use FTS-only search for context assembly. Much faster (~2s vs ~40s) but lower quality ranking. Recommended for hook calls.
 
 **Behavior by event type:**
-- `session_start` — records event, assembles cold_start context pack, prints to stdout
-- `prompt_submit` — records event, assembles task context pack using the prompt, prints to stdout
+- `session_start` — records event, assembles cold_start context pack, prints to stdout, spawns background reindex
+- `prompt_submit` — records event, assembles task context pack using the prompt, prints to stdout, spawns background reindex (debounced 60s)
 - `pre_tool_use` — records event only (audit trail)
 - `post_tool_use` — records event only (audit trail)
-- `file_save` — records event, triggers incremental code reindex and stale-knowledge flagging if the file is a source file
+- `file_save` — records event, triggers single-file code reindex and stale-knowledge flagging if the file is a source file; syncs `.cogz/` file if under `.cogz/`
 - `session_end` — records event, runs consolidation (promotion + merge)
 - `stop` — records event, no side effects
 
