@@ -7,6 +7,7 @@
 pub mod doctor;
 pub mod embed_bg;
 pub mod models;
+pub mod reindex_bg;
 
 use std::path::Path;
 
@@ -368,3 +369,4 @@ pub fn run_consolidate(repo: &Path, dry_run: bool) -> anyhow::Result<()> {
 }
 
 pub use embed_bg::run_embed_bg;
+pub use reindex_bg::run_reindex_bg;

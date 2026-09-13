@@ -10,6 +10,7 @@
 pub mod capture;
 pub mod handlers;
 pub mod lifecycle;
+pub mod reindex;
 
 pub use capture::{CaptureError, CaptureInput, CaptureResult, run_capture_event};
 pub use lifecycle::{LifecycleEvent, handle_lifecycle_event};

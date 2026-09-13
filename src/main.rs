@@ -217,6 +217,19 @@ enum Commands {
         check: bool,
     },
 
+    /// Background code reindex — spawned by hooks to catch changes
+    /// from non-hook events (branch switches, pulls, merges, human
+    /// edits). Not intended for direct use.
+    ReindexBg {
+        /// Repository root directory.
+        #[arg(long)]
+        repo: PathBuf,
+
+        /// Database path.
+        #[arg(long)]
+        db: PathBuf,
+    },
+
     /// Background code embedding — spawned by `cogz index` for large
     /// codebases. Not intended for direct use.
     EmbedBg {
@@ -394,5 +407,12 @@ fn main() -> anyhow::Result<()> {
             idle_ttl,
             min_free_mb,
         ),
+        Commands::ReindexBg { repo, db } => {
+            if let Err(e) = commands::run_reindex_bg(&repo, &db) {
+                eprintln!("reindex-bg: error: {}", e);
+                std::process::exit(1);
+            }
+            Ok(())
+        }
     }
 }

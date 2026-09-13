@@ -210,6 +210,22 @@ pub fn handle_lifecycle_event(
         None
     };
 
+    // For session_start and prompt_submit, spawn a background reindex
+    // to catch changes from non-hook events (branch switches, pulls,
+    // merges, human edits). session_start always spawns (primary
+    // recovery path, fires once per session). prompt_submit is
+    // debounced to avoid redundant spawns.
+    let repo_root = cogz_dir.parent().unwrap_or_else(|| Path::new("."));
+    match input.event {
+        LifecycleEvent::SessionStart => {
+            crate::hooks::reindex::spawn_reindex_bg(repo_root, true);
+        }
+        LifecycleEvent::PromptSubmit => {
+            crate::hooks::reindex::spawn_reindex_bg(repo_root, false);
+        }
+        _ => {}
+    }
+
     // For session_end, run consolidation (promotion + merge) for real.
     // The configured thresholds are the safety mechanism — if they're
     // met, the system acts. This aligns with the first principle that
