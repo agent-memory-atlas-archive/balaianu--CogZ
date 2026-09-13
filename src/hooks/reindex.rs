@@ -30,6 +30,16 @@ pub fn spawn_reindex_bg(repo: &Path, force: bool) {
         }
     };
 
+    // Touch the debounce file BEFORE spawning. This closes the race
+    // window where two hooks both check is_debounced (false), both
+    // spawn, then both touch. If spawn fails, the debounce window
+    // expires in 60s and the next call retries — acceptable since
+    // spawn failures are usually systemic (binary missing, out of
+    // memory) and won't resolve in seconds.
+    if !force {
+        let _ = touch_debounce_file(repo);
+    }
+
     let exe = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("cogz"));
 
     let result = std::process::Command::new(&exe)
@@ -51,8 +61,6 @@ pub fn spawn_reindex_bg(repo: &Path, force: bool) {
             );
             // Detach the child so it survives the parent's exit.
             drop(child);
-            // Record the debounce timestamp.
-            let _ = touch_debounce_file(repo);
         }
         Err(e) => {
             tracing::warn!("reindex-bg: failed to spawn: {}", e);
@@ -84,12 +92,15 @@ fn touch_debounce_file(repo: &Path) -> std::io::Result<()> {
     std::fs::write(&path, b"")
 }
 
-/// Path for the debounce marker file. Uses a hash of the repo path
-/// to avoid collisions when multiple repos are open simultaneously.
+/// Path for the debounce marker file. Uses a hash of the canonical
+/// repo path to avoid collisions when multiple repos are open
+/// simultaneously. Canonicalizes first so that `.`, absolute paths,
+/// and symlinks to the same repo produce the same marker.
 fn debounce_file(repo: &Path) -> PathBuf {
     use std::hash::{Hash, Hasher};
+    let canonical = std::fs::canonicalize(repo).unwrap_or_else(|_| repo.to_path_buf());
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
-    repo.hash(&mut hasher);
+    canonical.hash(&mut hasher);
     let hash = hasher.finish();
     std::env::temp_dir().join(format!("cogz-reindex-debounce-{}.txt", hash))
 }
