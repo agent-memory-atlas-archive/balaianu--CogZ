@@ -17,7 +17,10 @@ mod tests;
 
 mod db_sync;
 
-pub(crate) use db_sync::{mark_stale_code_entities, sync_entities_to_db};
+pub use db_sync::mark_stale_for_deleted_files;
+pub(crate) use db_sync::{
+    mark_stale_code_entities, mark_stale_for_removed_entities, sync_entities_to_db,
+};
 
 use std::collections::HashMap;
 
@@ -309,90 +312,4 @@ fn convert_entities(
     }
 
     (all_entities, file_to_entity_ids)
-}
-
-/// Mark code entities as stale for a set of deleted file paths.
-/// Returns the count of entities marked stale. Uses a single batched
-/// UPDATE query instead of fetching all entities and updating in a loop.
-pub fn mark_stale_for_deleted_files(
-    storage: &storage::Storage,
-    deleted_paths: &[std::path::PathBuf],
-) -> usize {
-    let conn = storage.conn();
-    let deleted: Vec<String> = deleted_paths
-        .iter()
-        .map(|p| crate::index::path_to_string(p))
-        .collect();
-
-    storage::crud::mark_code_entities_stale_by_file_paths(&conn, &deleted).unwrap_or(0)
-}
-
-/// Mark code entities as stale when they exist in the DB for a changed
-/// file but are no longer present in the new parse. This catches
-/// renamed or removed entities within files that still exist on disk
-/// (deleted files are handled by `mark_stale_for_deleted_files`).
-///
-/// Returns `(count, stale_entity_ids)` so callers can pass the IDs to
-/// `flag_stale_knowledge` for downstream knowledge flagging.
-fn mark_stale_for_removed_entities(
-    conn: &rusqlite::Connection,
-    file_to_entity_ids: &HashMap<String, Vec<String>>,
-) -> (usize, Vec<String>) {
-    if file_to_entity_ids.is_empty() {
-        return (0, Vec::new());
-    }
-
-    let new_ids: std::collections::HashSet<String> = file_to_entity_ids
-        .values()
-        .flat_map(|ids| ids.iter().cloned())
-        .collect();
-
-    let code_types = ["function", "class", "file", "module"];
-    let type_placeholders = (0..code_types.len())
-        .map(|_| "?")
-        .collect::<Vec<_>>()
-        .join(",");
-
-    let file_paths: Vec<String> = file_to_entity_ids.keys().cloned().collect();
-    let mut stale_ids: Vec<String> = Vec::new();
-
-    // 4 type params + up to 995 file paths = 999 (SQLite variable limit).
-    const CHUNK_SIZE: usize = 995;
-    for chunk in file_paths.chunks(CHUNK_SIZE) {
-        let path_placeholders = (0..chunk.len()).map(|_| "?").collect::<Vec<_>>().join(",");
-        let sql = format!(
-            "SELECT id FROM entities \
-             WHERE status = 'active' AND type IN ({type_placeholders}) \
-             AND file_path IN ({path_placeholders})"
-        );
-        let mut params: Vec<&dyn rusqlite::ToSql> =
-            Vec::with_capacity(code_types.len() + chunk.len());
-        for t in &code_types {
-            params.push(t);
-        }
-        for p in chunk {
-            params.push(p);
-        }
-        if let Ok(mut stmt) = conn.prepare(&sql)
-            && let Ok(rows) = stmt.query_map(params.as_slice(), |r| r.get::<_, String>(0))
-        {
-            for row in rows.flatten() {
-                if !new_ids.contains(&row) {
-                    stale_ids.push(row);
-                }
-            }
-        }
-    }
-
-    if stale_ids.is_empty() {
-        return (0, Vec::new());
-    }
-
-    // Batch-mark stale via the storage layer (no direct SQL outside storage/).
-    let count = storage::crud::mark_entities_stale_by_ids(conn, &stale_ids).unwrap_or_else(|e| {
-        tracing::warn!("failed to mark removed entities stale: {}", e);
-        0
-    });
-
-    (count, stale_ids)
 }

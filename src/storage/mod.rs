@@ -123,12 +123,20 @@ impl Storage {
             None
         } else {
             let lock_path = path.parent().unwrap_or(Path::new(".")).join(".lock");
-            std::fs::OpenOptions::new()
+            match std::fs::OpenOptions::new()
                 .create(true)
-                .write(true)
-                .truncate(true)
+                .append(true)
                 .open(&lock_path)
-                .ok()
+            {
+                Ok(f) => Some(f),
+                Err(e) => {
+                    tracing::warn!(
+                        "cannot open {} — cross-process write safety is off: {e}",
+                        lock_path.display()
+                    );
+                    None
+                }
+            }
         };
 
         Ok(Self {

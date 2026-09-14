@@ -117,10 +117,13 @@ pub fn expand_with_paths(
             };
 
             if visited.insert(neighbor.clone()) {
-                let (parent_path, parent_edges, seed_id) = paths
-                    .get(parent)
-                    .cloned()
-                    .ok_or(StorageError::EntityNotFound(parent.clone()))?;
+                // Every visited node has a paths entry before entering
+                // the frontier, so a missing parent means corrupted
+                // traversal state — skip the neighbor rather than
+                // reporting a data error to the caller.
+                let Some((parent_path, parent_edges, seed_id)) = paths.get(parent).cloned() else {
+                    continue;
+                };
                 let mut path = parent_path;
                 path.push(neighbor.clone());
                 let mut epath = parent_edges;

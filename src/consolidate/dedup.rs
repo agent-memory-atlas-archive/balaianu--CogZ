@@ -74,8 +74,16 @@ pub fn check_duplicate(
     // observation that matches a rejected one is not a duplicate.
     let existing = match get_entities_by_type(conn, entity_type, Some("active"), 100) {
         Ok(e) => e,
-        Err(_) => return DedupResult::empty(),
+        Err(err) => {
+            tracing::warn!("dedup candidate fetch failed — duplicate check skipped: {err}");
+            return DedupResult::empty();
+        }
     };
+    if existing.len() >= 100 {
+        tracing::warn!(
+            "dedup candidate set at cap (100) — duplicates of older {entity_type} entities may be missed"
+        );
+    }
 
     // 1. Title match check
     if let Some(warning) =

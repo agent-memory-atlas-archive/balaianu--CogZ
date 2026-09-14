@@ -117,12 +117,16 @@ pub fn sync_single_file(
     cogz_dir: &Path,
     file_path: &str,
 ) -> SyncResult {
-    let abs_path = if file_path.starts_with(".cogz/") || file_path.starts_with("./.cogz/") {
+    // Normalize separators: hooks on Windows pass `.cogz\...` paths,
+    // which must match the same prefix check instead of falling
+    // through to a bogus `.cogz\.cogz\...` join.
+    let normalized = file_path.replace('\\', "/");
+    let abs_path = if normalized.starts_with(".cogz/") || normalized.starts_with("./.cogz/") {
         // Relative to repo root — resolve via cogz_dir's parent.
         let repo_root = cogz_dir.parent().unwrap_or(cogz_dir);
-        repo_root.join(file_path)
+        repo_root.join(&normalized)
     } else {
-        cogz_dir.join(file_path)
+        cogz_dir.join(&normalized)
     };
 
     if !abs_path.exists() {

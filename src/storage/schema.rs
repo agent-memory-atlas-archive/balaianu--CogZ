@@ -233,7 +233,23 @@ fn migrate_v3(conn: &Connection, embedding_dim: usize) -> Result<(), StorageErro
                     r.get::<_, String>(2)?,
                 ))
             })?;
-            row_iter.filter_map(|r| r.ok()).collect()
+            let mut rows = Vec::new();
+            let mut dropped = 0usize;
+            for row in row_iter {
+                match row {
+                    Ok(r) => rows.push(r),
+                    Err(e) => {
+                        dropped += 1;
+                        tracing::warn!("v3 migration skipping unreadable embedding row: {e}");
+                    }
+                }
+            }
+            if dropped > 0 {
+                tracing::warn!(
+                    "v3 migration dropped {dropped} embedding rows — affected entities will be missing from vector search until re-embedded"
+                );
+            }
+            rows
         };
 
         for (entity_id, blob, entity_type) in rows {

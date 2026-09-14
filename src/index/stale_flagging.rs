@@ -63,10 +63,13 @@ fn find_referencing_entities(
 /// DB paths for file-backed entities are stored relative to `.cogz`
 /// (e.g. `observations/2026-08/uuid.md`).
 fn resolve_file_path(file_path: &str, cogz_dir: &Path) -> PathBuf {
-    if file_path.starts_with(".cogz") {
-        cogz_dir.parent().unwrap_or(cogz_dir).join(file_path)
+    // Separator-boundary prefix: `.cogz` alone would also match a
+    // hypothetical `.cogz-evil/...` path.
+    let normalized = file_path.replace('\\', "/");
+    if normalized.starts_with(".cogz/") {
+        cogz_dir.parent().unwrap_or(cogz_dir).join(normalized)
     } else {
-        cogz_dir.join(file_path)
+        cogz_dir.join(normalized)
     }
 }
 
