@@ -199,7 +199,8 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
     let archive_path = temp_dir.join(&archive_name);
 
     // Download the archive using ureq (already a dependency).
-    let response = ureq::get(&url)
+    let response = crate::net::download_agent()
+        .get(&url)
         .call()
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::NetworkUnreachable, e.to_string()))?;
     let mut body = response.into_body().into_reader();
@@ -215,7 +216,7 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
         "https://github.com/microsoft/onnxruntime/releases/download/v{}/SHA256SUMS",
         ORT_VERSION
     );
-    match ureq::get(&checksum_url).call() {
+    match crate::net::api_agent().get(&checksum_url).call() {
         Ok(checksum_resp) => {
             let sums_content = checksum_resp
                 .into_body()

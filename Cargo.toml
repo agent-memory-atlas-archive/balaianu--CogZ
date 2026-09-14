@@ -19,6 +19,7 @@ toml = "0.8"
 ort = { version = "=2.0.0-rc.13", default-features = false, features = ["load-dynamic", "ndarray"] }
 tokenizers = "0.21"
 hf-hub = { version = "1.0", features = ["blocking"] }
+reqwest = "0.13"
 
 # MCP server
 rmcp = { version = "=3.1.4", features = ["transport-io"] }

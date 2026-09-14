@@ -33,6 +33,7 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 | `ort` | `=2.0.0-rc.13` | ONNX Runtime bindings (exact pin — pre-release) |
 | `tokenizers` | `0.21` | HuggingFace tokenizers for model input |
 | `hf-hub` | `1.0` (blocking) | Model download from HuggingFace |
+| `reqwest` | `0.13` | HTTP client config passed to hf-hub (timeouts) |
 
 ### MCP server
 

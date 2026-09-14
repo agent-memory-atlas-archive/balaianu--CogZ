@@ -8,6 +8,8 @@ use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
 
+use crate::net::{api_agent, download_agent};
+
 const GITHUB_API: &str = "https://api.github.com/repos/balaianu/CogZ/releases/latest";
 const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -52,7 +54,8 @@ pub enum VersionStatus {
 
 /// Check the latest release version from GitHub.
 pub fn check_latest_version() -> Result<VersionStatus, UpdateError> {
-    let resp = ureq::get(GITHUB_API)
+    let resp = api_agent()
+        .get(GITHUB_API)
         .header("User-Agent", "cogz-self-update")
         .call()
         .map_err(|e| UpdateError::Network(e.to_string()))?;
@@ -111,7 +114,8 @@ fn find_checksum_url(release: &Release) -> Option<&str> {
 
 /// Download a file to a temporary path.
 fn download_file(url: &str, dest: &Path) -> Result<(), UpdateError> {
-    let resp = ureq::get(url)
+    let resp = download_agent()
+        .get(url)
         .header("User-Agent", "cogz-self-update")
         .call()
         .map_err(|e| UpdateError::Network(e.to_string()))?;
@@ -165,7 +169,8 @@ pub fn run_update() -> Result<String, UpdateError> {
         VersionStatus::UpToDate(v) => Ok(format!("CogZ is up to date (v{})", v)),
         VersionStatus::UpdateAvailable { current, latest } => {
             // Fetch release info again to get asset URLs.
-            let resp = ureq::get(GITHUB_API)
+            let resp = api_agent()
+                .get(GITHUB_API)
                 .header("User-Agent", "cogz-self-update")
                 .call()
                 .map_err(|e| UpdateError::Network(e.to_string()))?;

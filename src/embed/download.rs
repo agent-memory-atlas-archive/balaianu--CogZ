@@ -57,8 +57,18 @@ pub fn download_model(model_id: &str, cache_dir: &Path) -> Result<DownloadedMode
         onnx_file
     );
 
+    // connect_timeout bounds unreachable hosts; read_timeout bounds
+    // mid-transfer stalls. Neither caps total transfer time, so large
+    // model downloads on slow connections still finish.
+    let http = reqwest::Client::builder()
+        .connect_timeout(std::time::Duration::from_secs(30))
+        .read_timeout(std::time::Duration::from_secs(120))
+        .build()
+        .map_err(|e| std::io::Error::other(format!("http client init: {e}")))?;
+
     let client = HFClientBuilder::new()
         .cache_dir(cache_dir.to_path_buf())
+        .client(http)
         .build_sync()?;
 
     let (owner, name) = split_id(hf_source);
