@@ -159,7 +159,14 @@ pub fn write_and_sync(
             crate::files::FileEntityType::Knowledge => events::EventType::KnowledgeCreated,
         };
         let payload = json!({"dedup_flagged": true});
-        let _ = events::record_event(&conn, event_type, Some(&entity.id), &payload);
+        if let Err(e) = events::record_event(&conn, event_type, Some(&entity.id), &payload) {
+            tracing::warn!(
+                "failed to record {} event for {}: {}",
+                event_type,
+                entity.id,
+                e
+            );
+        }
     }
 
     Ok(json!({

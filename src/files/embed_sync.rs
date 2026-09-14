@@ -64,7 +64,9 @@ pub fn store_embeddings(conn: &mut Connection, embeddings: &[(String, String, Ve
         }
     };
     for (entity_id, entity_type, embedding) in embeddings {
-        let _ = storage::embeddings::delete_embedding(&tx, entity_id);
+        if let Err(e) = storage::embeddings::delete_embedding(&tx, entity_id) {
+            tracing::warn!("failed to replace embedding for {}: {}", entity_id, e);
+        }
         if let Err(e) =
             storage::embeddings::insert_embedding(&tx, entity_id, entity_type, embedding)
         {

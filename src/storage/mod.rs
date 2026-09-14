@@ -159,7 +159,11 @@ impl Storage {
             use fs2::FileExt;
             // Block until we get an exclusive lock. This serializes
             // canonical writes across processes.
-            let _ = lock_file.lock_exclusive();
+            if let Err(e) = lock_file.lock_exclusive() {
+                tracing::warn!(
+                    "file lock failed — writes are not serialized across processes: {e}"
+                );
+            }
         }
         FileLockGuard {
             _mutex: mutex_guard,

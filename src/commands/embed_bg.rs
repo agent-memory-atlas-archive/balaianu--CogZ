@@ -50,7 +50,7 @@ pub fn run_embed_bg(
     // Fetch entity data under the lock, then drop it.
     let entities: Vec<_> = {
         let conn = storage.conn();
-        get_entities_batch(&conn, &entity_ids).unwrap_or_default()
+        get_entities_batch(&conn, &entity_ids)?
     };
 
     if entities.is_empty() {

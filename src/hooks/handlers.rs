@@ -115,7 +115,13 @@ fn embed_synced_entities(
     // Phase 1: fetch entity data under the lock, then drop it.
     let entities: Vec<_> = {
         let conn = storage.conn();
-        get_entities_batch(&conn, entity_ids).unwrap_or_default()
+        match get_entities_batch(&conn, entity_ids) {
+            Ok(entities) => entities,
+            Err(e) => {
+                tracing::warn!("failed to fetch entities for embedding: {e}");
+                return 0;
+            }
+        }
     };
 
     if entities.is_empty() {

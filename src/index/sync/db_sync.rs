@@ -10,11 +10,15 @@ pub(crate) fn sync_entities_to_db(
 ) {
     let ids: Vec<String> = all_entities.iter().map(|(id, _)| id.clone()).collect();
     let existing_map: HashMap<String, storage::crud::Entity> =
-        storage::crud::get_entities_batch(conn, &ids)
-            .unwrap_or_default()
-            .into_iter()
-            .map(|e| (e.id.clone(), e))
-            .collect();
+        match storage::crud::get_entities_batch(conn, &ids) {
+            Ok(entities) => entities.into_iter().map(|e| (e.id.clone(), e)).collect(),
+            Err(e) => {
+                // Without the existing-entity map every entity would
+                // be misclassified as new; abort rather than sync wrong.
+                tracing::warn!("failed to fetch existing entities — skipping code sync: {e}");
+                return;
+            }
+        };
 
     let mut created = 0usize;
     let mut updated = 0usize;

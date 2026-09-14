@@ -172,8 +172,7 @@ fn cold_start_sections(
     // 3. Scored rules — selected by composite score, not just recency.
     let rules = get_entities_by_type(conn, "rule", status, 1000)?;
     let rule_ids: Vec<String> = rules.iter().map(|e| e.id.clone()).collect();
-    let access_counts =
-        crate::storage::access::get_access_counts_batch(conn, &rule_ids).unwrap_or_default();
+    let access_counts = crate::storage::access::get_access_counts_batch(conn, &rule_ids)?;
 
     let mut scored_rules: Vec<(f64, &Entity)> = rules
         .iter()
@@ -202,8 +201,7 @@ fn cold_start_sections(
     // for the top scored entry.
     let knowledge = get_entities_by_type(conn, "knowledge", status, 1000)?;
     let knowledge_ids: Vec<String> = knowledge.iter().map(|e| e.id.clone()).collect();
-    let knowledge_access =
-        crate::storage::access::get_access_counts_batch(conn, &knowledge_ids).unwrap_or_default();
+    let knowledge_access = crate::storage::access::get_access_counts_batch(conn, &knowledge_ids)?;
 
     let mut scored_knowledge: Vec<(f64, &Entity)> = knowledge
         .iter()
@@ -255,8 +253,10 @@ fn cold_start_sections(
         .filter(|s| s.source == "rule" || s.source == "knowledge")
         .map(|s| s.entity_id.clone())
         .collect();
-    if !accessed.is_empty() {
-        let _ = crate::storage::access::increment_access_batch(conn, &accessed);
+    if !accessed.is_empty()
+        && let Err(e) = crate::storage::access::increment_access_batch(conn, &accessed)
+    {
+        tracing::warn!("failed to increment access counts: {e}");
     }
 
     Ok(sections)

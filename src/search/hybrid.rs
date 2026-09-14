@@ -262,8 +262,10 @@ pub fn search(
     // Track access counts for direct results only (derived state for
     // composite scoring). Graph expansions are context, not retrieval.
     let accessed_ids: Vec<String> = results.iter().map(|r| r.entity.id.clone()).collect();
-    if !accessed_ids.is_empty() {
-        let _ = crate::storage::access::increment_access_batch(conn, &accessed_ids);
+    if !accessed_ids.is_empty()
+        && let Err(e) = crate::storage::access::increment_access_batch(conn, &accessed_ids)
+    {
+        tracing::warn!("failed to increment access counts: {e}");
     }
 
     // Extend with expanded results after access tracking.

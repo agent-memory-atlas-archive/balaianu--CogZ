@@ -27,7 +27,13 @@ pub fn embed_synced(storage: &Storage, config: &Config, entity_ids: &[String]) -
     // Phase 1: fetch entity data under the lock, then drop it
     let entities: Vec<_> = {
         let conn = storage.conn();
-        cogz::storage::crud::get_entities_batch(&conn, entity_ids).unwrap_or_default()
+        match cogz::storage::crud::get_entities_batch(&conn, entity_ids) {
+            Ok(entities) => entities,
+            Err(e) => {
+                eprintln!("warning: failed to fetch entities for embedding: {e}");
+                return 0;
+            }
+        }
     };
 
     let (code_entities, knowledge_entities): (Vec<_>, Vec<_>) =

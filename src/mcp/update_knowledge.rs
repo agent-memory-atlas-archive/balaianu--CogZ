@@ -165,12 +165,14 @@ pub fn update_knowledge_file(
             );
         }
         let payload = json!({"updated_fields": updated_fields});
-        let _ = events::record_event(
+        if let Err(e) = events::record_event(
             &conn,
             events::EventType::KnowledgeUpdated,
             Some(&entity_file.id),
             &payload,
-        );
+        ) {
+            tracing::warn!("failed to record knowledge_updated event: {e}");
+        }
     }
 
     Ok(json!({

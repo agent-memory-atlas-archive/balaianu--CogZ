@@ -152,7 +152,9 @@ pub fn run_prune(
                 report.skipped += 1;
                 continue;
             }
-            let _ = delete_embedding(&conn, entity_id);
+            if let Err(e) = delete_embedding(&conn, entity_id) {
+                tracing::warn!("tombstone {} keeps stale embedding: {}", entity_id, e);
+            }
             report.pruned += 1;
         }
 
