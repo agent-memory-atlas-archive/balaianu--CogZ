@@ -93,7 +93,6 @@ pub async fn capture_event(
     let query_model = repo.query_model.clone();
     let code_model = repo.code_model.clone();
     let nli_model = repo.nli_model.clone();
-    let rerank_model = repo.rerank_model.clone();
     let prompt = params.prompt.clone();
     let tool_name = params.tool_name.clone();
     let tool_result = params.tool_result.clone();
@@ -114,7 +113,6 @@ pub async fn capture_event(
             &query_model,
             &code_model,
             Some(&*nli_model),
-            Some(&*rerank_model),
             &input,
         )
     })

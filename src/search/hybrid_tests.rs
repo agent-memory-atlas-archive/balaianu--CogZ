@@ -35,11 +35,6 @@ fn default_config() -> SearchConfig {
         provenance_boost: 0.0,
         fts_title_weight: 1.0,
         mmr_lambda: 0.0,
-        rerank_enabled: false,
-        rerank_depth: 20,
-        rerank_anchor: 3,
-        rerank_code: false,
-        reranker_model: "cross-encoder/ms-marco-TinyBERT-L-2-v2".to_string(),
     }
 }
 
@@ -104,7 +99,6 @@ fn fts_only_search() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
-        None,
     )
     .unwrap();
 
@@ -136,7 +130,6 @@ fn hybrid_search() {
         QueryEmbeddings::knowledge(&query_vec),
         &params,
         &default_config(),
-        None,
     )
     .unwrap();
 
@@ -170,7 +163,6 @@ fn search_with_type_filter() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
-        None,
     )
     .unwrap();
 
@@ -221,7 +213,6 @@ fn balanced_fusion_code_favored_when_query_closer_to_code() {
         QueryEmbeddings::both(&query_vec, &query_vec),
         &params,
         &balanced_config(),
-        None,
     )
     .unwrap();
 
@@ -274,7 +265,6 @@ fn balanced_fusion_knowledge_favored_when_query_closer_to_knowledge() {
         QueryEmbeddings::both(&query_vec, &query_vec),
         &params,
         &balanced_config(),
-        None,
     )
     .unwrap();
 
@@ -335,7 +325,6 @@ fn strength_merge_suppresses_far_channel() {
         QueryEmbeddings::both(&query_vec, &query_vec),
         &params,
         &default_config(),
-        None,
     )
     .unwrap();
 
@@ -379,7 +368,6 @@ fn fixed_strategy_keeps_quota_behavior() {
         QueryEmbeddings::both(&query_vec, &query_vec),
         &params,
         &fixed_config(),
-        None,
     )
     .unwrap();
 

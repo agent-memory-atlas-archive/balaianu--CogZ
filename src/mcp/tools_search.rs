@@ -27,7 +27,6 @@ pub async fn search(
     let task_max_hops = repo.config.context.task_max_hops;
     let query_model = repo.query_model.clone();
     let code_model = repo.code_model.clone();
-    let rerank_model = repo.rerank_model.clone();
     let use_code = params.code_search.unwrap_or(false);
     let limit = validate_query_limit(params.limit.unwrap_or(default_limit).into())? as u32;
 
@@ -58,7 +57,6 @@ pub async fn search(
             embeddings,
             &search_params,
             &search_config,
-            Some(rerank_model.as_ref()),
         )
     })
     .await
@@ -80,7 +78,6 @@ pub async fn get_context(
     let config = repo.config.clone();
     let query_model = repo.query_model.clone();
     let code_model = repo.code_model.clone();
-    let rerank_model = repo.rerank_model.clone();
 
     let pack = tokio::task::spawn_blocking(move || {
         let knowledge_embedding = params
@@ -101,7 +98,6 @@ pub async fn get_context(
                 code_embedding: code_embedding.as_deref(),
                 max_tokens: params.max_tokens,
                 include_stale: params.include_stale.unwrap_or(false),
-                reranker: Some(rerank_model.as_ref()),
             },
             &config,
         )

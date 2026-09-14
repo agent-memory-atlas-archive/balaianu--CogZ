@@ -40,9 +40,6 @@ pub struct AssembleParams<'a> {
     pub max_tokens: Option<usize>,
     /// Include stale entities in results.
     pub include_stale: bool,
-    /// Optional cross-encoder for the post-merge rerank stage.
-    /// None or absent model files → rerank skipped.
-    pub reranker: Option<&'a dyn crate::embed::RerankModel>,
 }
 
 impl Default for AssembleParams<'_> {
@@ -54,7 +51,6 @@ impl Default for AssembleParams<'_> {
             code_embedding: None,
             max_tokens: None,
             include_stale: false,
-            reranker: None,
         }
     }
 }
@@ -112,7 +108,6 @@ pub fn assemble_context(
                 max_hops,
                 search_status,
                 &config.search,
-                params.reranker,
             )?
         }
     };
@@ -287,7 +282,6 @@ fn query_sections(
     max_hops: usize,
     status: Option<&str>,
     search_config: &SearchConfig,
-    reranker: Option<&dyn crate::embed::RerankModel>,
 ) -> Result<SectionBundle, AssembleError> {
     let params = SearchParams {
         entity_type: None,
@@ -302,7 +296,7 @@ fn query_sections(
         knowledge: knowledge_embedding,
         code: code_embedding,
     };
-    let results = search::search(conn, query, embeddings, &params, search_config, reranker)?;
+    let results = search::search(conn, query, embeddings, &params, search_config)?;
     let search_mode = results.search_mode;
 
     let mut full_content = HashMap::new();

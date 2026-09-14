@@ -18,9 +18,6 @@ pub fn run_models_list(repo: &Path) -> anyhow::Result<()> {
     if !config.embedding.nli_model.is_empty() {
         print_model_status("nli", &config.embedding.nli_model, &models_dir);
     }
-    if config.search.rerank_enabled {
-        print_model_status("reranker", &config.search.reranker_model, &models_dir);
-    }
 
     println!("\n  Models directory: {}", models_dir.display());
     Ok(())
@@ -46,12 +43,11 @@ pub fn run_models_download(
     code: bool,
     knowledge: bool,
     nli: bool,
-    reranker: bool,
 ) -> anyhow::Result<()> {
     let (config, _) = load_config(repo)?;
     let models_dir = crate::cli::models_dir();
 
-    let download_any = code || knowledge || nli || reranker;
+    let download_any = code || knowledge || nli;
     let download_all = !download_any;
 
     if code || download_all {
@@ -62,11 +58,6 @@ pub fn run_models_download(
     }
     if (nli || download_all) && !config.embedding.nli_model.is_empty() {
         download_one("nli", &config.embedding.nli_model, &models_dir)?;
-    }
-    // An explicit --reranker forces the download even when the stage
-    // is disabled; a bare `models download` respects the config.
-    if reranker || (download_all && config.search.rerank_enabled) {
-        download_one("reranker", &config.search.reranker_model, &models_dir)?;
     }
 
     Ok(())
@@ -113,9 +104,6 @@ pub(crate) fn auto_download_models(config: &Config) {
     ];
     if !config.embedding.nli_model.is_empty() {
         model_ids.push(config.embedding.nli_model.as_str());
-    }
-    if config.search.rerank_enabled {
-        model_ids.push(config.search.reranker_model.as_str());
     }
 
     for model_id in &model_ids {

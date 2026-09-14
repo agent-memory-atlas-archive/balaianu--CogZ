@@ -376,11 +376,6 @@ fn build_sql_query(table: &str) -> String {
         provenance_boost: 0.0,
         fts_title_weight: 1.0,
         mmr_lambda: 0.0,
-        rerank_enabled: false,
-        rerank_depth: 20,
-        rerank_anchor: 3,
-        rerank_code: false,
-        reranker_model: "cross-encoder/ms-marco-TinyBERT-L-2-v2".to_string(),
     };
     let results = search(
         &conn,
@@ -388,7 +383,6 @@ fn build_sql_query(table: &str) -> String {
         QueryEmbeddings::none(),
         &params,
         &config,
-        None,
     )
     .unwrap();
 

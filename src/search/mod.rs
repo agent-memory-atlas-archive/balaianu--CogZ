@@ -11,7 +11,6 @@ pub mod describe;
 pub mod expand;
 pub mod hybrid;
 pub mod rank;
-pub mod rerank;
 pub mod rrf;
 pub mod scoring;
 

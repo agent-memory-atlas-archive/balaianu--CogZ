@@ -279,10 +279,6 @@ enum ModelsSub {
         /// Download only the NLI model.
         #[arg(long)]
         nli: bool,
-
-        /// Download only the cross-encoder reranker model.
-        #[arg(long)]
-        reranker: bool,
     },
 
     /// Show configured models and download status.
@@ -369,8 +365,7 @@ fn main() -> anyhow::Result<()> {
                 code,
                 knowledge,
                 nli,
-                reranker,
-            } => commands::run_models_download(&repo, code, knowledge, nli, reranker),
+            } => commands::run_models_download(&repo, code, knowledge, nli),
             ModelsSub::List { repo } => commands::run_models_list(&repo),
             ModelsSub::Clean {} => commands::run_models_clean(),
         },

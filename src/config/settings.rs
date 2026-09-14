@@ -170,39 +170,6 @@ pub struct SearchConfig {
     /// measured on the CogZ self-corpus (0.5 ≈ 0.7, marginally worse).
     #[serde(default = "default_mmr_lambda")]
     pub mmr_lambda: f64,
-    /// Cross-encoder rerank: rescore the top `rerank_depth` direct
-    /// results with a joint (query, candidate) model after merge,
-    /// before graph expansion. Unlike per-channel cosine scores,
-    /// cross-encoder scores are comparable across channels — the
-    /// rerank dissolves merge-proportion mismatches inside the
-    /// reranked window. Requires the model on disk; absent model →
-    /// stage skipped (never required). Default false: measured
-    /// neutral on the v2 self-corpus (+0.003 MRR, +9% latency) —
-    /// opt-in until a reranker earns the cost.
-    #[serde(default)]
-    pub rerank_enabled: bool,
-    /// How many top direct results the cross-encoder rescores.
-    /// Deeper reranking costs one batched inference per query
-    /// (~30-60ms at depth 20 for TinyBERT on CPU).
-    #[serde(default = "default_rerank_depth")]
-    pub rerank_depth: usize,
-    /// How many top fused positions stay pinned during rerank.
-    /// Passage-domain cross-encoders systematically prefer prose
-    /// over code entities; the anchor bounds worst-case damage to
-    /// the contested tail while preserving deep-rank lifts.
-    #[serde(default = "default_rerank_anchor")]
-    pub rerank_anchor: usize,
-    /// Whether the cross-encoder may reorder code entities
-    /// (function/class/file/module). Default false: code entities
-    /// hold their fused slots because passage-domain rerankers have
-    /// no meaningful signal for source code. Set true only with a
-    /// reranker trained on code retrieval.
-    #[serde(default)]
-    pub rerank_code: bool,
-    /// HuggingFace model ID for the cross-encoder reranker. Must be
-    /// an ONNX-exported cross-encoder under the models dir.
-    #[serde(default = "default_reranker_model")]
-    pub reranker_model: String,
 }
 
 fn default_code_vec_weight() -> f64 {
@@ -247,18 +214,6 @@ fn default_fts_title_weight() -> f64 {
 
 fn default_mmr_lambda() -> f64 {
     0.7
-}
-
-fn default_rerank_depth() -> usize {
-    20
-}
-
-fn default_rerank_anchor() -> usize {
-    3
-}
-
-fn default_reranker_model() -> String {
-    crate::embed::registry::DEFAULT_RERANKER_MODEL.to_string()
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -409,11 +364,6 @@ impl Config {
                 provenance_boost: default_provenance_boost(),
                 fts_title_weight: default_fts_title_weight(),
                 mmr_lambda: default_mmr_lambda(),
-                rerank_enabled: false,
-                rerank_depth: default_rerank_depth(),
-                rerank_anchor: default_rerank_anchor(),
-                rerank_code: false,
-                reranker_model: default_reranker_model(),
             },
             consolidation: ConsolidationConfig {
                 dedup_threshold: 0.85,

@@ -24,7 +24,6 @@ pub struct RepoState {
     pub query_model: Arc<crate::embed::OnnxEmbeddingModel>,
     pub code_model: Arc<crate::embed::OnnxEmbeddingModel>,
     pub nli_model: Arc<crate::embed::OnnxNliModel>,
-    pub rerank_model: Arc<crate::embed::OnnxRerankModel>,
     /// mtime of config.toml when this entry was created. Used to
     /// detect config changes and trigger a cache reload.
     config_mtime: SystemTime,
@@ -197,7 +196,6 @@ pub fn open_repo(
         u64,
     ) -> Result<Arc<crate::embed::OnnxEmbeddingModel>, McpError>,
     get_nli_model: impl Fn(&str, u64, u64) -> Result<Arc<crate::embed::OnnxNliModel>, McpError>,
-    get_rerank_model: impl Fn(&str, u64, u64) -> Result<Arc<crate::embed::OnnxRerankModel>, McpError>,
 ) -> Result<Arc<RepoState>, McpError> {
     let cogz_dir = canonical.join(".cogz");
     let config_path = cogz_dir.join("config.toml");
@@ -244,11 +242,6 @@ pub fn open_repo(
         config.embedding.model_idle_ttl,
         config.embedding.model_min_free_mb,
     )?;
-    let rerank_model = get_rerank_model(
-        &config.search.reranker_model,
-        config.embedding.model_idle_ttl,
-        config.embedding.model_min_free_mb,
-    )?;
 
     let config_mtime = std::fs::metadata(&config_path)
         .and_then(|m| m.modified())
@@ -261,7 +254,6 @@ pub fn open_repo(
         query_model,
         code_model,
         nli_model,
-        rerank_model,
         config_mtime,
     }))
 }
@@ -274,7 +266,6 @@ pub fn make_repo_state(
     query_model: Arc<crate::embed::OnnxEmbeddingModel>,
     code_model: Arc<crate::embed::OnnxEmbeddingModel>,
     nli_model: Arc<crate::embed::OnnxNliModel>,
-    rerank_model: Arc<crate::embed::OnnxRerankModel>,
 ) -> Arc<RepoState> {
     let config_mtime = std::fs::metadata(cogz_dir.join("config.toml"))
         .and_then(|m| m.modified())
@@ -287,7 +278,6 @@ pub fn make_repo_state(
         query_model,
         code_model,
         nli_model,
-        rerank_model,
         config_mtime,
     })
 }

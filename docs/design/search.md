@@ -10,7 +10,6 @@ Query
   → FTS5 search (always available)
   → KNN vector search (knowledge_embeddings + code_embeddings, if available)
   → RRF fusion (combine FTS + vector results)
-  → Cross-encoder rerank (top `rerank_depth` directs, if model available)
   → Graph expansion (BFS from matched entities)
   → Return ranked results with graph provenance
 ```
@@ -76,16 +75,6 @@ Two optional stages run between channel merge and the final top-N cut, in this o
 2. **MMR diversification** (`mmr_lambda`, default 0.7): greedy rerank by `λ·relevance − (1−λ)·max cosine to already-selected` items. Similarity is computed only between same-channel candidates — code and knowledge embeddings live in different spaces, and a cross-channel pair is never a duplicate. Embeddings are fetched in two batched queries (`get_code_embeddings_batch`, `get_knowledge_embeddings_batch`); entities without embeddings get penalty 0. Skipped in FTS-only mode.
 
 The diversity-slot guarantee (`top_diversity_share`, described above) runs last, on the post-MMR ordering.
-
-## Cross-encoder rerank
-
-After the top-N list is materialized and before graph expansion, an optional cross-encoder rescores the top `rerank_depth` (default 20) direct results (`rerank_enabled`, default false — measured neutral on the self-corpus, so opt-in; `reranker_model`, default `cross-encoder/ms-marco-TinyBERT-L-2-v2`).
-
-Unlike the bi-encoder stages, the cross-encoder reads each `(query, "title\ncontent")` pair jointly in a single batched inference — its sigmoid-calibrated probabilities are comparable across channels regardless of which embedding space retrieved the candidate. Inside the reranked window the merge-proportion mismatch dissolves, which is what lifts near-miss retrieval (expected entity in the candidate pool but outranked by semantically-adjacent ones) into the top-5. Entries beyond `rerank_depth` keep their fused order.
-
-Two guards bound the failure mode of passage-domain cross-encoders, which systematically prefer prose over source code. `rerank_anchor` (default 3) pins the top fused positions outright. And unless `rerank_code` is enabled, code entities (function/class/file/module) hold their fused slots — they are excluded from scoring, so prose can never displace them. The remaining candidates reorder freely by cross-encoder score.
-
-The stage runs before expansion so the reranked order propagates into expansion seeding. Expansion keeps the pre-rerank fused score as seed relevance — CE probabilities are near-binary, so seeding with them decays most expansions below the `min_relevance` floor. The displayed `relevance` of a reranked result is the CE probability. Missing model files or inference failure skip the stage — the fused list is still a valid answer. `rerank_enabled = false` disables it entirely.
 
 ## Relevance floor and silence gate
 
