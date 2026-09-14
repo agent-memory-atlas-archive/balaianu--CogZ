@@ -168,23 +168,22 @@ pub fn sync_auto_links(storage: &storage::Storage) -> usize {
     let tx = match conn.unchecked_transaction() {
         Ok(tx) => tx,
         Err(e) => {
-            tracing::warn!(
-                "failed to begin auto-link transaction — falling back to autocommit: {e}"
-            );
-            if let Err(e) = storage::edges::delete_edges_by_type(&conn, &["auto_references"]) {
-                tracing::warn!("failed to clear auto-link edges: {}", e);
-            }
-            for edge in &edges {
-                if let Err(e) = storage::edges::insert_edge_skip_fk_violation(&conn, edge) {
-                    tracing::debug!("skipped auto-link edge: {}", e);
-                }
-            }
-            return count;
+            // No autocommit fallback: a non-transactional DELETE+INSERT
+            // sequence can destroy the graph on partial failure. Keep
+            // the previous edges instead.
+            tracing::warn!("failed to begin auto-link transaction — keeping previous edges: {e}");
+            return 0;
         }
     };
 
     if let Err(e) = storage::edges::delete_edges_by_type(&tx, &["auto_references"]) {
-        tracing::warn!("failed to clear auto-link edges: {}", e);
+        // Abort inside the transaction — drop rolls back, preserving
+        // the previous edges rather than mixing old and new.
+        tracing::warn!(
+            "failed to clear auto-link edges — keeping previous edges: {}",
+            e
+        );
+        return 0;
     }
 
     for edge in &edges {
