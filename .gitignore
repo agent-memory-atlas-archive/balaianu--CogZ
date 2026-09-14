@@ -1,1 +1,3 @@
 target/
+benchmark/__pycache__/
+benchmark/results/raw_*.json

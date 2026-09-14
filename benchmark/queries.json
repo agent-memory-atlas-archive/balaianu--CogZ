@@ -1,0 +1,162 @@
+{
+  "version": 1,
+  "corpus": "CogZ repo @ HEAD — entity UUIDs from committed .cogz frontmatter + deterministic UUIDv5 code entities",
+  "notes": "intents: knowledge|code|mixed|graph|hardneg|negative. negative queries expect empty answer sets (success = nothing above relevance floor).",
+  "queries": [
+    {"id": "k01", "intent": "knowledge", "query": "what is the rule about silent degradation",
+     "expected_entity_ids": ["aa6fefb2-87ad-4fc6-a531-44e204535419"],
+     "expected_titles": ["Degradation must be loud, never silent"],
+     "notes": "rule added 2026-09-14; references open/migrate_v3/mark_stale"},
+
+    {"id": "k02", "intent": "knowledge", "query": "why does storage use a single sqlite connection behind a mutex",
+     "expected_entity_ids": ["d0a7fa58-953f-4704-aa38-248ca39f1be6"],
+     "expected_titles": ["Storage concurrency model — conn mutex, file lock, busy_timeout"],
+     "notes": "architecture knowledge added 2026-09-14"},
+
+    {"id": "k03", "intent": "knowledge", "query": "how does stale knowledge flagging work when code changes",
+     "expected_entity_ids": ["1d847b1e-6fd4-491d-86eb-bdbcdb7be8c7"],
+     "expected_titles": ["Stale-knowledge flagging pipeline — code change to frontmatter status"],
+     "notes": "architecture knowledge added 2026-09-14"},
+
+    {"id": "k04", "intent": "knowledge", "query": "how is the ONNX runtime discovered downloaded and checksum verified",
+     "expected_entity_ids": ["3d5567f4-0294-4f88-923c-d449a1e14b67"],
+     "expected_titles": ["ONNX Runtime bootstrap — discovery, checksum policy, platform matrix"],
+     "notes": "architecture knowledge added 2026-09-14"},
+
+    {"id": "k05", "intent": "knowledge", "query": "why does secret scanning reject files instead of redacting them",
+     "expected_entity_ids": ["632d3c6b-af68-43e2-ae5b-95be8fab4f52"],
+     "expected_titles": ["Secret scanning — reject, don't redact; high-confidence patterns only"],
+     "notes": "decision knowledge added 2026-09-14"},
+
+    {"id": "k06", "intent": "knowledge", "query": "how are embeddings split between knowledge and code models",
+     "expected_entity_ids": ["255d325d-2e9d-45d9-a66d-557bb689b5c6"],
+     "expected_titles": ["Embedding pipeline — inline knowledge, threshold-split code, embed-bg subprocess"],
+     "notes": "architecture knowledge added 2026-09-14"},
+
+    {"id": "k07", "intent": "knowledge", "query": "what decides the code versus knowledge weighting in search",
+     "expected_entity_ids": ["b64c3858-c1ca-43c6-82f3-7ffb63404264"],
+     "expected_titles": ["Source-type balancing in hybrid search — proportions, normalization, quota semantics"],
+     "notes": "architecture knowledge added 2026-09-14"},
+
+    {"id": "k08", "intent": "knowledge", "query": "how do lifecycle hooks capture events",
+     "expected_entity_ids": ["fafa51e8-83a0-41cf-896d-78ac2f4ad720"],
+     "expected_titles": ["Hook and event lifecycle — capture-event as single entry point"],
+     "notes": "architecture knowledge added 2026-09-14"},
+
+    {"id": "c01", "intent": "code", "query": "which function fuses ranked lists using reciprocal rank fusion",
+     "expected_entity_ids": ["793f6448-0e2e-5da3-83d2-e7a560d240fd"],
+     "expected_titles": ["fuse"],
+     "notes": "src/search/rrf.rs — the RRF function"},
+
+    {"id": "c02", "intent": "code", "query": "where is the sqlite storage opened and the file lock acquired",
+     "expected_entity_ids": ["047656c5-e449-58d7-b951-3b948a609cd9"],
+     "expected_titles": ["open"],
+     "notes": "Storage::open in src/storage/mod.rs — verified signature in content"},
+
+    {"id": "c03", "intent": "code", "query": "which function marks entities stale when source files are removed",
+     "expected_entity_ids": ["e251d8d5-24b1-5758-b4d6-f598690f2721"],
+     "expected_titles": ["mark_stale_for_removed_entities"],
+     "notes": "src/index/sync/mod.rs — the item-22 site"},
+
+    {"id": "c04", "intent": "code", "query": "where is the onnx runtime library downloaded",
+     "expected_entity_ids": ["50362381-7da8-564d-acc8-fc88130ab3ba"],
+     "expected_titles": ["download_ort"],
+     "notes": "src/embed/runtime.rs"},
+
+    {"id": "c05", "intent": "code", "query": "which function normalizes file content before hashing",
+     "expected_entity_ids": ["bdc736fc-f148-534e-ae50-a6d5a158eace"],
+     "expected_titles": ["normalize_content"],
+     "notes": "src/index/sync/mod.rs — the item-23 site"},
+
+    {"id": "c06", "intent": "code", "query": "where does filtered vector knn search over embeddings happen",
+     "expected_entity_ids": ["deacb375-17a1-50cc-9ac9-2f9c0f96035f"],
+     "expected_titles": ["knn_search_with_filters"],
+     "notes": "src/storage/embeddings.rs — filter pushdown into SQL"},
+
+    {"id": "c07", "intent": "code", "query": "which function detects the code versus knowledge source proportion",
+     "expected_entity_ids": ["f13ff191-bfac-5eaa-bee1-bde497d80fe1"],
+     "expected_titles": ["detect_proportions"],
+     "notes": "src/search/balance.rs"},
+
+    {"id": "c08", "intent": "code", "query": "which function scans file content for secrets",
+     "expected_entity_ids": ["8016da99-e96b-5fe1-a4c0-be2236709b7e"],
+     "expected_titles": ["scan_content"],
+     "notes": "src/security/scan.rs — the actual scanner"},
+
+    {"id": "m01", "intent": "mixed", "query": "silent degradation and swallowed errors",
+     "expected_entity_ids": ["aa6fefb2-87ad-4fc6-a531-44e204535419", "047656c5-e449-58d7-b951-3b948a609cd9", "e251d8d5-24b1-5758-b4d6-f598690f2721", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227"],
+     "expected_titles": ["Degradation must be loud, never silent", "open", "mark_stale_for_removed_entities", "migrate_v3"],
+     "notes": "VERIFIED 2026-09-14 in live search — rule hits, graph expansion surfaces the three functions via references edges"},
+
+    {"id": "m02", "intent": "mixed", "query": "stale marking sql errors silently skipped",
+     "expected_entity_ids": ["a56e3a7c-2874-4d8d-8e9c-15dfefcf55cf", "e251d8d5-24b1-5758-b4d6-f598690f2721"],
+     "expected_titles": ["Stale-marking swallows SQL errors — invalidation silently skipped", "mark_stale_for_removed_entities"],
+     "notes": "observation + its references target"},
+
+    {"id": "m03", "intent": "mixed", "query": "dedup only compares against a capped set of entities",
+     "expected_entity_ids": ["04d0de32-c27f-4ab8-aa75-a2a47cfc3775", "824cd680-d240-5c71-a14d-7884d349ed37", "ab4475a8-b379-5519-94e8-9bdfb679cf40"],
+     "expected_titles": ["Dedup comparison set silently capped at 100 entities", "check_duplicate", "get_entities_by_type"],
+     "notes": "observation + both functions named in it (references edge confirmed)"},
+
+    {"id": "m04", "intent": "mixed", "query": "cross process file lock can be silently disabled",
+     "expected_entity_ids": ["f75c6fe1-c77c-4862-b935-2a6c914f1739", "047656c5-e449-58d7-b951-3b948a609cd9"],
+     "expected_titles": ["Cross-process file lock fails silently via .ok()", "open"],
+     "notes": "observation + Storage::open (references edge confirmed)"},
+
+    {"id": "m05", "intent": "mixed", "query": "network downloads can hang forever without a timeout",
+     "expected_entity_ids": ["5cf23118-6ec4-42e8-9958-1afdafbe2a87", "50362381-7da8-564d-acc8-fc88130ab3ba"],
+     "expected_titles": ["No network timeouts on any ureq call", "download_ort"],
+     "notes": "observation + download_ort (references edge confirmed)"},
+
+    {"id": "m06", "intent": "mixed", "query": "content normalization misparses rust lifetime annotations",
+     "expected_entity_ids": ["e28cdfb9-c3b8-45be-bebc-96cc0c702842", "bdc736fc-f148-534e-ae50-a6d5a158eace"],
+     "expected_titles": ["normalize_content lexer mis-parses Rust lifetimes, Go backticks, raw strings", "normalize_content"],
+     "notes": "observation + its references target"},
+
+    {"id": "g01", "intent": "graph", "query": "which code entities does the loud degradation rule connect to",
+     "expected_entity_ids": ["047656c5-e449-58d7-b951-3b948a609cd9", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227", "e251d8d5-24b1-5758-b4d6-f598690f2721"],
+     "expected_titles": ["open", "migrate_v3", "mark_stale_for_removed_entities"],
+     "notes": "verified references edges from aa6fefb2 rule"},
+
+    {"id": "g02", "intent": "graph", "query": "which knowledge entities reference the storage open function",
+     "expected_entity_ids": ["aa6fefb2-87ad-4fc6-a531-44e204535419", "f75c6fe1-c77c-4862-b935-2a6c914f1739"],
+     "expected_titles": ["Degradation must be loud, never silent", "Cross-process file lock fails silently via .ok()"],
+     "notes": "verified inbound references edges to 047656c5"},
+
+    {"id": "g03", "intent": "graph", "query": "what code does the stale marking observation reference",
+     "expected_entity_ids": ["e251d8d5-24b1-5758-b4d6-f598690f2721", "eeeb377b-1fab-5129-b252-f88d01e403c7"],
+     "expected_titles": ["mark_stale_for_removed_entities", "flag_stale_knowledge"],
+     "notes": "verified references edges from a56e3a7c observation"},
+
+    {"id": "hn01", "intent": "hardneg", "query": "how does the repo cache prevent opening the same repository twice",
+     "expected_entity_ids": ["37ca64fa-1aa5-51e7-b818-a4f817cdad21"],
+     "expected_titles": ["get"],
+     "notes": "RepoCache::get (verified content) — discriminates against Storage::open which is the WRONG answer here"},
+
+    {"id": "hn02", "intent": "hardneg", "query": "convert l2 distance to cosine similarity for normalized embeddings",
+     "expected_entity_ids": ["b0180488-c22e-5150-b644-9b18cd87a99a"],
+     "expected_titles": ["l2_to_cosine"],
+     "notes": "src/embed/similarity.rs — discriminates against mean_top_k_similarity (batch-relative, wrong answer)"},
+
+    {"id": "hn03", "intent": "hardneg", "query": "increment access counters for search results in batch",
+     "expected_entity_ids": ["6cbebd59-f708-55d3-b4c7-2e2864f62a87"],
+     "expected_titles": ["increment_access_batch"],
+     "notes": "src/storage/access.rs — adjacent vocabulary to query helpers"},
+
+    {"id": "n01", "intent": "negative", "query": "kubernetes pod scheduling backoff policy",
+     "expected_entity_ids": [], "expected_titles": [],
+     "notes": "no such domain in corpus — expect nothing above floor"},
+
+    {"id": "n02", "intent": "negative", "query": "oauth2 token refresh flow",
+     "expected_entity_ids": [], "expected_titles": [],
+     "notes": "no auth code in corpus"},
+
+    {"id": "n03", "intent": "negative", "query": "graphql schema validation rules",
+     "expected_entity_ids": [], "expected_titles": [],
+     "notes": "no graphql anywhere in the project"},
+
+    {"id": "n04", "intent": "negative", "query": "websocket connection retry policy",
+     "expected_entity_ids": [], "expected_titles": [],
+     "notes": "no websocket code in corpus"}
+  ]
+}
