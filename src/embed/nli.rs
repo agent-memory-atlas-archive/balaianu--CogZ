@@ -253,9 +253,28 @@ impl NliModel for OnnxNliModel {
         self.try_load()?;
 
         let mut session_guard = self.session.lock().unwrap_or_else(|e| e.into_inner());
-        let tokenizer_guard = self.tokenizer.lock().unwrap_or_else(|e| e.into_inner());
-        let session: &mut Session = session_guard.as_mut().unwrap();
-        let tokenizer = tokenizer_guard.as_ref().unwrap();
+        let mut tokenizer_guard = self.tokenizer.lock().unwrap_or_else(|e| e.into_inner());
+        if session_guard.is_none() || tokenizer_guard.is_none() {
+            // A concurrent try_load can unload the model (idle TTL)
+            // between our try_load and this lock. Reload once; fail
+            // loudly if it is still gone.
+            drop(tokenizer_guard);
+            drop(session_guard);
+            self.try_load()?;
+            session_guard = self.session.lock().unwrap_or_else(|e| e.into_inner());
+            tokenizer_guard = self.tokenizer.lock().unwrap_or_else(|e| e.into_inner());
+        }
+        let Some(session) = session_guard.as_mut() else {
+            return Err(EmbeddingError::ModelUnavailable(
+                "model unloaded during classify".to_string(),
+            ));
+        };
+        let session: &mut Session = session;
+        let Some(tokenizer) = tokenizer_guard.as_ref() else {
+            return Err(EmbeddingError::ModelUnavailable(
+                "tokenizer unloaded during classify".to_string(),
+            ));
+        };
 
         let encoded = tokenizer
             .encode((premise, hypothesis), true)

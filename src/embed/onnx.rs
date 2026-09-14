@@ -354,9 +354,28 @@ impl OnnxEmbeddingModel {
     /// and tokenizer locks for the duration of inference.
     fn embed_chunk(&self, texts: &[&str]) -> EmbeddingResult<Vec<Vec<f32>>> {
         let mut session_guard = self.session.lock().unwrap_or_else(|e| e.into_inner());
-        let tokenizer_guard = self.tokenizer.lock().unwrap_or_else(|e| e.into_inner());
-        let session = session_guard.as_mut().unwrap();
-        let tokenizer = tokenizer_guard.as_ref().unwrap();
+        let mut tokenizer_guard = self.tokenizer.lock().unwrap_or_else(|e| e.into_inner());
+        if session_guard.is_none() || tokenizer_guard.is_none() {
+            // A concurrent try_load can unload the model (idle TTL)
+            // between our try_load and this lock — a long-running
+            // embed loop keeps its tracker stale while another thread
+            // reaps. Reload once; fail loudly if it is still gone.
+            drop(tokenizer_guard);
+            drop(session_guard);
+            self.try_load()?;
+            session_guard = self.session.lock().unwrap_or_else(|e| e.into_inner());
+            tokenizer_guard = self.tokenizer.lock().unwrap_or_else(|e| e.into_inner());
+        }
+        let Some(session) = session_guard.as_mut() else {
+            return Err(EmbeddingError::ModelUnavailable(
+                "model unloaded during embed".to_string(),
+            ));
+        };
+        let Some(tokenizer) = tokenizer_guard.as_ref() else {
+            return Err(EmbeddingError::ModelUnavailable(
+                "tokenizer unloaded during embed".to_string(),
+            ));
+        };
         let has_tti = *self
             .has_token_type_ids
             .lock()
