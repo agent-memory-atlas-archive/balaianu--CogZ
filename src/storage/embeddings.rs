@@ -123,6 +123,23 @@ pub fn get_knowledge_embeddings_batch(
     conn: &Connection,
     entity_ids: &[String],
 ) -> Result<std::collections::HashMap<String, Vec<f32>>, StorageError> {
+    get_embeddings_batch_from(conn, "knowledge_embeddings", entity_ids)
+}
+
+/// Batch-fetch embeddings for multiple entity IDs from the code
+/// embeddings table. Same contract as `get_knowledge_embeddings_batch`.
+pub fn get_code_embeddings_batch(
+    conn: &Connection,
+    entity_ids: &[String],
+) -> Result<std::collections::HashMap<String, Vec<f32>>, StorageError> {
+    get_embeddings_batch_from(conn, "code_embeddings", entity_ids)
+}
+
+fn get_embeddings_batch_from(
+    conn: &Connection,
+    table: &str,
+    entity_ids: &[String],
+) -> Result<std::collections::HashMap<String, Vec<f32>>, StorageError> {
     if entity_ids.is_empty() {
         return Ok(std::collections::HashMap::new());
     }
@@ -137,9 +154,8 @@ pub fn get_knowledge_embeddings_batch(
         let placeholders = (0..chunk.len()).map(|_| "?").collect::<Vec<_>>().join(",");
         let params: Vec<&dyn rusqlite::ToSql> =
             chunk.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
-        let sql = format!(
-            "SELECT entity_id, embedding FROM knowledge_embeddings WHERE entity_id IN ({placeholders})"
-        );
+        let sql =
+            format!("SELECT entity_id, embedding FROM {table} WHERE entity_id IN ({placeholders})");
         let mut stmt = conn.prepare(&sql)?;
         let rows = stmt.query_map(params.as_slice(), |r| {
             let id: String = r.get(0)?;

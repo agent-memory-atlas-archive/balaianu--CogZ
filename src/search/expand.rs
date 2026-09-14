@@ -12,12 +12,29 @@ use rusqlite::Connection;
 use crate::storage::StorageError;
 use crate::storage::graph::get_edges_involving_batch;
 
+/// Edge-type quality weight, shared by claim ordering and scoring.
+/// Curated semantic edges — a human wrote `references:` in frontmatter —
+/// outrank mass structural fan-out, so explicit links both claim
+/// contested nodes during BFS and survive the expansion result cap.
+pub(crate) fn edge_weight(edge_type: &str) -> f32 {
+    match edge_type {
+        "references" | "supports" | "contradicts" | "superseded_by" | "derived_from"
+        | "promoted_from" => 1.0,
+        "auto_references" => 0.7,
+        _ => 0.5,
+    }
+}
+
 /// A graph-expanded entity with its provenance path.
 #[derive(Debug, Clone)]
 pub struct ExpansionResult {
     pub entity_id: String,
     /// Path from the seed to this entity: [seed_id, hop1, hop2, ..., this_id]
     pub graph_path: Vec<String>,
+    /// Edge types along `graph_path`: edge_path[i] connects
+    /// graph_path[i] → graph_path[i+1]. Parallel to graph_path minus
+    /// the seed element.
+    pub edge_path: Vec<String>,
     /// Which seed entity this was expanded from.
     pub seed_id: String,
 }
@@ -51,10 +68,13 @@ pub fn expand_with_paths(
         visited.insert(seed_id.clone());
     }
 
-    // Map entity_id → (path from seed, seed_id)
-    let mut paths: HashMap<String, (Vec<String>, String)> = HashMap::new();
+    // Map entity_id → (node path from seed, edge-type path, seed_id)
+    let mut paths: HashMap<String, (Vec<String>, Vec<String>, String)> = HashMap::new();
     for seed_id in seed_ids {
-        paths.insert(seed_id.clone(), (vec![seed_id.clone()], seed_id.clone()));
+        paths.insert(
+            seed_id.clone(),
+            (vec![seed_id.clone()], Vec::new(), seed_id.clone()),
+        );
     }
 
     // Initial frontier: all seeds
@@ -67,16 +87,27 @@ pub fn expand_with_paths(
         }
 
         // Single query: all edges where either endpoint is in the frontier
-        let edges = get_edges_involving_batch(conn, &frontier)?;
+        let mut edges = get_edges_involving_batch(conn, &frontier)?;
         if edges.is_empty() {
             break;
         }
 
+        // First discovery claims a node. Sort so higher-quality edges
+        // claim contested nodes: without this, a curated `references`
+        // edge loses the claim race to whatever `auto_references` edge
+        // happens to come first in table order, and the result is scored
+        // from the weaker seed + weaker edge type.
+        edges.sort_by(|a, b| {
+            edge_weight(&b.2)
+                .partial_cmp(&edge_weight(&a.2))
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+
         let frontier_set: HashSet<&String> = frontier.iter().collect();
         let mut next_neighbors: Vec<String> = Vec::new();
-        let mut candidates: Vec<(String, Vec<String>, String)> = Vec::new();
+        let mut candidates: Vec<(String, Vec<String>, Vec<String>, String)> = Vec::new();
 
-        for (source, target, _) in &edges {
+        for (source, target, edge_type) in &edges {
             let (parent, neighbor) = if frontier_set.contains(source) {
                 (source, target)
             } else if frontier_set.contains(target) {
@@ -86,16 +117,21 @@ pub fn expand_with_paths(
             };
 
             if visited.insert(neighbor.clone()) {
-                let (parent_path, seed_id) = paths
+                let (parent_path, parent_edges, seed_id) = paths
                     .get(parent)
                     .cloned()
                     .ok_or(StorageError::EntityNotFound(parent.clone()))?;
                 let mut path = parent_path;
                 path.push(neighbor.clone());
-                paths.insert(neighbor.clone(), (path.clone(), seed_id.clone()));
+                let mut epath = parent_edges;
+                epath.push(edge_type.clone());
+                paths.insert(
+                    neighbor.clone(),
+                    (path.clone(), epath.clone(), seed_id.clone()),
+                );
 
                 if !exclude_ids.contains(neighbor) {
-                    candidates.push((neighbor.clone(), path, seed_id));
+                    candidates.push((neighbor.clone(), path, epath, seed_id));
                 }
 
                 next_neighbors.push(neighbor.clone());
@@ -105,18 +141,20 @@ pub fn expand_with_paths(
         // Batch status check: one query for all candidates in this hop
         if !candidates.is_empty() {
             // Filter by status first
-            let status_filtered: Vec<(String, Vec<String>, String)> = match status_filter {
-                None | Some("all") => candidates,
-                Some(status) => {
-                    let ids: Vec<String> = candidates.iter().map(|(id, _, _)| id.clone()).collect();
-                    let matching = batch_check_status(conn, &ids, status)?;
-                    let include_set: HashSet<&String> = matching.iter().collect();
-                    candidates
-                        .into_iter()
-                        .filter(|(id, _, _)| include_set.contains(id))
-                        .collect()
-                }
-            };
+            let status_filtered: Vec<(String, Vec<String>, Vec<String>, String)> =
+                match status_filter {
+                    None | Some("all") => candidates,
+                    Some(status) => {
+                        let ids: Vec<String> =
+                            candidates.iter().map(|(id, _, _, _)| id.clone()).collect();
+                        let matching = batch_check_status(conn, &ids, status)?;
+                        let include_set: HashSet<&String> = matching.iter().collect();
+                        candidates
+                            .into_iter()
+                            .filter(|(id, _, _, _)| include_set.contains(id))
+                            .collect()
+                    }
+                };
 
             // Filter out test code entities when include_tests is false.
             // Uses the shared language-aware is_test_file function for
@@ -126,20 +164,21 @@ pub fn expand_with_paths(
             } else {
                 let ids: Vec<String> = status_filtered
                     .iter()
-                    .map(|(id, _, _)| id.clone())
+                    .map(|(id, _, _, _)| id.clone())
                     .collect();
                 let test_ids = batch_check_test_paths_rust(conn, &ids)?;
                 let test_set: HashSet<&String> = test_ids.iter().collect();
                 status_filtered
                     .into_iter()
-                    .filter(|(id, _, _)| !test_set.contains(id))
+                    .filter(|(id, _, _, _)| !test_set.contains(id))
                     .collect()
             };
 
-            for (id, path, seed_id) in final_candidates {
+            for (id, path, epath, seed_id) in final_candidates {
                 discovered.push(ExpansionResult {
                     entity_id: id,
                     graph_path: path,
+                    edge_path: epath,
                     seed_id,
                 });
             }
@@ -232,142 +271,5 @@ fn batch_check_test_paths_rust(
 }
 
 #[cfg(test)]
-mod tests {
-    use super::super::super::storage::crud::Entity;
-    use super::super::super::storage::crud::insert_entity;
-    use super::super::super::storage::edges::Edge;
-    use super::super::super::storage::edges::insert_edge;
-    use super::super::super::storage::ensure_vec_extension;
-    use super::super::super::storage::schema::run_migrations;
-    use super::*;
-
-    fn setup() -> Connection {
-        ensure_vec_extension();
-        let conn = Connection::open_in_memory().unwrap();
-        run_migrations(&conn, 768).unwrap();
-        conn
-    }
-
-    fn edge(source: &str, target: &str, edge_type: &str) -> Edge {
-        Edge {
-            source_id: source.to_string(),
-            target_id: target.to_string(),
-            edge_type: edge_type.to_string(),
-            weight: 1.0,
-            created_at: chrono::Utc::now().to_rfc3339(),
-        }
-    }
-
-    #[test]
-    fn expand_1_hop() {
-        let conn = setup();
-        insert_entity(
-            &conn,
-            &Entity::new("obs1", "observation", "Bug Report", "c"),
-        )
-        .unwrap();
-        insert_entity(&conn, &Entity::new("func1", "function", "build_sql", "c")).unwrap();
-
-        insert_edge(&conn, &edge("obs1", "func1", "references")).unwrap();
-
-        let exclude = HashSet::new();
-        let results =
-            expand_with_paths(&conn, &["obs1".to_string()], 1, &exclude, None, true).unwrap();
-
-        assert_eq!(results.len(), 1);
-        assert_eq!(results[0].entity_id, "func1");
-        assert_eq!(results[0].graph_path, vec!["obs1", "func1"]);
-        assert_eq!(results[0].seed_id, "obs1");
-    }
-
-    #[test]
-    fn expand_2_hops() {
-        let conn = setup();
-        insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
-        insert_entity(&conn, &Entity::new("func1", "function", "build_sql", "c")).unwrap();
-        insert_entity(&conn, &Entity::new("func2", "function", "search_all", "c")).unwrap();
-
-        insert_edge(&conn, &edge("obs1", "func1", "references")).unwrap();
-        insert_edge(&conn, &edge("func1", "func2", "calls")).unwrap();
-
-        let exclude = HashSet::new();
-        let results =
-            expand_with_paths(&conn, &["obs1".to_string()], 2, &exclude, None, true).unwrap();
-
-        assert_eq!(results.len(), 2);
-        let func2 = results.iter().find(|r| r.entity_id == "func2").unwrap();
-        assert_eq!(func2.graph_path, vec!["obs1", "func1", "func2"]);
-    }
-
-    #[test]
-    fn expand_excludes_specified_ids() {
-        let conn = setup();
-        insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
-        insert_entity(&conn, &Entity::new("func1", "function", "build_sql", "c")).unwrap();
-
-        insert_edge(&conn, &edge("obs1", "func1", "references")).unwrap();
-
-        let mut exclude = HashSet::new();
-        exclude.insert("func1".to_string());
-
-        let results =
-            expand_with_paths(&conn, &["obs1".to_string()], 1, &exclude, None, true).unwrap();
-        assert!(results.is_empty());
-    }
-
-    #[test]
-    fn expand_no_edges() {
-        let conn = setup();
-        insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
-
-        let exclude = HashSet::new();
-        let results =
-            expand_with_paths(&conn, &["obs1".to_string()], 2, &exclude, None, true).unwrap();
-        assert!(results.is_empty());
-    }
-
-    #[test]
-    fn expand_zero_hops() {
-        let conn = setup();
-        insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
-
-        let exclude = HashSet::new();
-        let results =
-            expand_with_paths(&conn, &["obs1".to_string()], 0, &exclude, None, true).unwrap();
-        assert!(results.is_empty());
-    }
-
-    #[test]
-    fn expand_filters_by_status() {
-        let conn = setup();
-        insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
-        let mut stale = Entity::new("func1", "function", "build_sql", "c");
-        stale.status = "stale".to_string();
-        insert_entity(&conn, &stale).unwrap();
-
-        insert_edge(&conn, &edge("obs1", "func1", "references")).unwrap();
-
-        let exclude = HashSet::new();
-        let results = expand_with_paths(
-            &conn,
-            &["obs1".to_string()],
-            1,
-            &exclude,
-            Some("active"),
-            true,
-        )
-        .unwrap();
-        assert!(results.is_empty());
-
-        let results = expand_with_paths(
-            &conn,
-            &["obs1".to_string()],
-            1,
-            &exclude,
-            Some("stale"),
-            true,
-        )
-        .unwrap();
-        assert_eq!(results.len(), 1);
-    }
-}
+#[path = "expand_tests.rs"]
+mod tests;

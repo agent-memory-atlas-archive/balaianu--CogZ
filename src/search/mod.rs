@@ -10,6 +10,7 @@ pub mod balance;
 pub mod describe;
 pub mod expand;
 pub mod hybrid;
+pub mod rank;
 pub mod rrf;
 pub mod scoring;
 
@@ -24,8 +25,9 @@ use crate::storage::crud::Entity;
 #[derive(Debug, Clone)]
 pub struct SearchResult {
     pub entity: Entity,
-    /// Fused relevance score from RRF. Graph-expanded results get a
-    /// decayed score: `seed_relevance * 0.5^hops`.
+    /// Fused relevance score from RRF scaled by channel weight.
+    /// Graph-expanded results get a decayed score:
+    /// `seed_relevance * 0.3^hops * edge_weight`.
     pub relevance: f32,
     /// Entity IDs tracing from the matched entity to this result.
     /// For direct matches: `[entity_id]`. For expanded results: the
@@ -124,11 +126,28 @@ impl Default for SearchParams {
     }
 }
 
+/// Per-channel retrieval signals, exposed so callers can see *why*
+/// results were weighted, filtered, or silenced. `strength` is the
+/// absolute top-3 cosine (model-scale dependent); `gradient` is the
+/// within-batch distance spread (model-agnostic).
+#[derive(Debug, Clone, Default)]
+pub struct ChannelSignals {
+    pub code_strength: f64,
+    pub knowledge_strength: f64,
+    pub code_gradient: f64,
+    pub knowledge_gradient: f64,
+}
+
 /// Complete search results.
 #[derive(Debug, Clone, Default)]
 pub struct SearchResults {
     pub results: Vec<SearchResult>,
     pub search_mode: SearchMode,
+    /// Candidates dropped by `search.min_relevance`, counting direct
+    /// and expanded results. Zero when the floor is disabled.
+    pub filtered_count: usize,
+    /// Retrieval signals per channel. `None` in FTS-only mode.
+    pub signals: Option<ChannelSignals>,
 }
 
 /// Search-specific errors.

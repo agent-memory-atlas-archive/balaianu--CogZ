@@ -1,7 +1,10 @@
 //! Config loading, validation, and default generation.
 
+mod calibration;
 mod settings;
+mod validate;
 
+pub use calibration::{CalibrationConfig, ChannelCalibration};
 pub use settings::{
     Config, ConsolidationConfig, ContextConfig, EmbeddingConfig, IndexConfig, ProjectConfig,
     RetentionConfig, SearchConfig, StorageConfig,

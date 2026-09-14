@@ -112,7 +112,7 @@ pub fn detect_proportions(
 /// 20 code matches vs 5 knowledge matches: raw ratio = 0.80, sqrt
 /// ratio = sqrt(20)/(sqrt(20)+sqrt(5)) = 4.47/6.71 = 0.67. The code
 /// advantage is preserved but softened.
-fn fts_pool_signal(
+pub(crate) fn fts_pool_signal(
     code_count: usize,
     knowledge_count: usize,
     _code_collection_size: usize,
@@ -133,6 +133,26 @@ fn fts_pool_signal(
     }
 }
 
+/// Absolute match strength of a KNN channel: mean cosine similarity
+/// of the top-3 nearest neighbors via `l2_to_cosine`. Unlike
+/// `mean_top_k_similarity` — which normalizes within the batch and
+/// measures *gradient* — this measures absolute closeness, so a
+/// channel whose nearest neighbors are genuinely far scores low even
+/// when it wins the relative comparison. Top-k mean rather than the
+/// single nearest neighbor so one lucky near-duplicate cannot mark a
+/// weak channel strong. Empty input → 0.0.
+pub fn channel_strength(distances: &[f32]) -> f64 {
+    if distances.is_empty() {
+        return 0.0;
+    }
+    let k = 3.min(distances.len());
+    let sum: f64 = distances[..k]
+        .iter()
+        .map(|&d| crate::embed::similarity::l2_to_cosine(d as f64).clamp(0.0, 1.0))
+        .sum();
+    sum / k as f64
+}
+
 /// Convert vec0 L2 distances to relative similarities and average the
 /// top-k. Embeddings are L2-normalized at inference time, so distances
 /// range [0, 2] (0 = identical, 2 = opposite). We normalize each batch
@@ -142,7 +162,7 @@ fn fts_pool_signal(
 /// close the query is to the nearest entities in this space compared
 /// to the farthest in the same batch — it detects distance *gradient*
 /// (strong vs weak match), not absolute similarity.
-fn mean_top_k_similarity(distances: &[f32], k: usize) -> f64 {
+pub(crate) fn mean_top_k_similarity(distances: &[f32], k: usize) -> f64 {
     if distances.is_empty() {
         return 0.0;
     }

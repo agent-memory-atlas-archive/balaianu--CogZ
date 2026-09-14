@@ -4,6 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use super::calibration::CalibrationConfig;
+
 /// Top-level config. Loaded from `.cogz/config.toml`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Config {
@@ -96,6 +98,78 @@ pub struct SearchConfig {
     /// intent detection).
     #[serde(default = "default_source_balance_enabled")]
     pub source_balance_enabled: bool,
+    /// How code and knowledge channel scores are merged.
+    /// "strength": scale each channel's normalized list by absolute
+    /// KNN cosine strength — NOTE: absolute cosines are not comparable
+    /// across different embedding models (bge runs ~0.7, CodeRankEmbed
+    /// ~0.45 for real matches), so this systematically under-weights
+    /// the code channel. "gradient": within-batch distinctiveness
+    /// (model-agnostic) as an unbounded weight. "fixed": legacy
+    /// 0.5/0.5 split. "detect": proportion detection normalized to
+    /// shares (equivalent to `source_balance_enabled = true`).
+    /// "calibrated": detect shares × per-channel logistic-calibrated
+    /// strength — proportion decides the split, calibrated presence
+    /// decides whether a channel surfaces at all.
+    #[serde(default = "default_merge_strategy")]
+    pub merge_strategy: String,
+    /// Minimum relevance for a result to be returned; 0.0 disables.
+    /// Filters tail noise and weak graph expansions. Defaults to 0.05 —
+    /// any value ≥ 0.09 makes all two-hop expansions unreachable
+    /// (max expanded score is seed × 0.3² = 0.09).
+    #[serde(default = "default_min_relevance")]
+    pub min_relevance: f64,
+    /// Weight graph-expansion scores by edge type: curated semantic
+    /// edges (references, supports, contradicts, ...) outrank mass
+    /// structural fan-out (imports, contains) in the expansion cap.
+    /// Defaults to true; set false for the legacy flat-decay behavior.
+    #[serde(default = "default_true")]
+    pub edge_weighted_expansion: bool,
+    /// Silence gate: when neither channel's KNN batch shows a
+    /// distinctive match (within-batch gradient below this on both),
+    /// search returns empty rather than a confident-looking list of
+    /// irrelevant entities. Model-agnostic (relative spread, not
+    /// absolute cosine). 0.0 disables. Skipped in FTS-only mode —
+    /// with no embeddings there is no signal to judge by.
+    /// Calibrated on the CogZ self-corpus: negative queries measured
+    /// ≤0.015 max gradient, real queries ≥0.024 → 0.02 sits in the
+    /// gap. Thin margin; recalibrate via `signals` in the response
+    /// when changing embedding models.
+    #[serde(default = "default_silence_threshold")]
+    pub silence_threshold: f64,
+    /// Minority-channel slot guarantee: when a channel's share of the
+    /// merge weight is at least this value, its best result is
+    /// promoted into the top-5 window if ranking pushed it out.
+    /// Recovers mixed-intent coverage that channel concentration
+    /// loses. 0.0 disables.
+    #[serde(default = "default_top_diversity_share")]
+    pub top_diversity_share: f64,
+    /// Per-channel logistic calibration for `merge_strategy =
+    /// "calibrated"`: maps each channel's absolute top-3 cosine onto
+    /// a shared [0,1] "probability a distinctive match exists" scale.
+    /// Constants are model-pair-specific — measured on the CogZ
+    /// self-corpus for CodeRankEmbed-int8 + bge-base-en-v1.5.
+    #[serde(default)]
+    pub calibration: CalibrationConfig,
+    /// Provenance prior: multiply each direct result's score by
+    /// `1 + boost × ln(1 + curated_in_degree)` — entities that
+    /// knowledge/rules deliberately linked earn a bump over unlinked
+    /// neighbors. 0.0 disables. Default 0.3 — the measured optimum
+    /// on the CogZ self-corpus (0.15 under-boosts, 0.5 over-boosts).
+    #[serde(default = "default_provenance_boost")]
+    pub provenance_boost: f64,
+    /// FTS5 column weight for `title` vs `content` in BM25. 1.0 is
+    /// the library default (uniform); values > 1.0 make exact-name
+    /// and title hits rank above body-term matches. Default 5.0 —
+    /// measured optimum (3.0 showed no measurable effect).
+    #[serde(default = "default_fts_title_weight")]
+    pub fts_title_weight: f64,
+    /// MMR diversity: rerank the merged direct list by
+    /// `λ·relevance − (1−λ)·max_cosine_to_selected` within each
+    /// channel. Deduplicates near-identical entities out of the top
+    /// slots. 0.0 disables (pure relevance order). Default 0.7 —
+    /// measured on the CogZ self-corpus (0.5 ≈ 0.7, marginally worse).
+    #[serde(default = "default_mmr_lambda")]
+    pub mmr_lambda: f64,
 }
 
 fn default_code_vec_weight() -> f64 {
@@ -108,6 +182,38 @@ fn default_min_source_proportion() -> f64 {
 
 fn default_source_balance_enabled() -> bool {
     false
+}
+
+fn default_merge_strategy() -> String {
+    // Benchmark-validated (32 judged queries, self-corpus): detect
+    // ordering beat fixed on MRR (+27%) and graph recall, and beat
+    // strength everywhere — absolute cosines are not comparable
+    // across the two embedding models.
+    "detect".to_string()
+}
+
+fn default_min_relevance() -> f64 {
+    0.05
+}
+
+fn default_silence_threshold() -> f64 {
+    0.02
+}
+
+fn default_top_diversity_share() -> f64 {
+    0.3
+}
+
+fn default_provenance_boost() -> f64 {
+    0.3
+}
+
+fn default_fts_title_weight() -> f64 {
+    5.0
+}
+
+fn default_mmr_lambda() -> f64 {
+    0.7
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -249,6 +355,15 @@ impl Config {
                 max_results: 20,
                 min_source_proportion: 0.2,
                 source_balance_enabled: false,
+                merge_strategy: default_merge_strategy(),
+                min_relevance: default_min_relevance(),
+                edge_weighted_expansion: true,
+                silence_threshold: 0.02,
+                top_diversity_share: 0.3,
+                calibration: CalibrationConfig::default(),
+                provenance_boost: default_provenance_boost(),
+                fts_title_weight: default_fts_title_weight(),
+                mmr_lambda: default_mmr_lambda(),
             },
             consolidation: ConsolidationConfig {
                 dedup_threshold: 0.85,
@@ -270,105 +385,6 @@ impl Config {
             },
             context: ContextConfig::default(),
         }
-    }
-
-    /// Validate config values. Called after loading and after
-    /// generating defaults.
-    pub fn validate(&self) -> Result<(), super::ConfigError> {
-        if self.project.name.trim().is_empty() {
-            return Err(super::ConfigError::Validation(
-                "project name must not be empty".to_string(),
-            ));
-        }
-        // db_path must be relative, contained beneath .cogz/, and
-        // have no parent-component traversal. This prevents the
-        // configured path from opening or creating a database outside
-        // the repository. Defense-in-depth canonicalization at open
-        // time further guards against symlinks.
-        let db_path = std::path::Path::new(&self.storage.db_path);
-        if db_path.is_absolute() {
-            return Err(super::ConfigError::Validation(
-                "storage.db_path must be a relative path beneath .cogz/".to_string(),
-            ));
-        }
-        if db_path
-            .components()
-            .any(|c| matches!(c, std::path::Component::ParentDir))
-        {
-            return Err(super::ConfigError::Validation(
-                "storage.db_path must not contain '..' parent components".to_string(),
-            ));
-        }
-        if !self.storage.db_path.starts_with(".cogz/") {
-            return Err(super::ConfigError::Validation(
-                "storage.db_path must be rooted beneath .cogz/ (e.g. '.cogz/cogz.db')".to_string(),
-            ));
-        }
-        if self.embedding.dimension == 0 {
-            return Err(super::ConfigError::Validation(
-                "embedding dimension must be greater than 0".to_string(),
-            ));
-        }
-        // Cross-reference configured dimension against the model registry.
-        // A mismatch means the vec0 table is created at one dimension while
-        // the model produces vectors at another — KNN will fail silently.
-        for (model_id, label) in [
-            (&self.embedding.code_model, "code_model"),
-            (&self.embedding.knowledge_model, "knowledge_model"),
-        ] {
-            if let Some(entry) = crate::embed::registry::lookup(model_id)
-                && entry.dim != self.embedding.dimension
-            {
-                return Err(super::ConfigError::Validation(format!(
-                    "embedding.dimension ({}) does not match {} registry dimension ({}) for model '{}'. \
-                     Set dimension to {} or change the model.",
-                    self.embedding.dimension, label, entry.dim, model_id, entry.dim
-                )));
-            }
-        }
-        if self.search.rrf_k == 0 {
-            return Err(super::ConfigError::Validation(
-                "search.rrf_k must be greater than 0".to_string(),
-            ));
-        }
-        if self.search.max_results == 0 {
-            return Err(super::ConfigError::Validation(
-                "search.max_results must be greater than 0".to_string(),
-            ));
-        }
-        if self.consolidation.dedup_threshold < 0.0 || self.consolidation.dedup_threshold > 1.0 {
-            return Err(super::ConfigError::Validation(
-                "consolidation.dedup_threshold must be between 0.0 and 1.0".to_string(),
-            ));
-        }
-        if self.consolidation.title_match_threshold < 0.0
-            || self.consolidation.title_match_threshold > 1.0
-        {
-            return Err(super::ConfigError::Validation(
-                "consolidation.title_match_threshold must be between 0.0 and 1.0".to_string(),
-            ));
-        }
-        if self.retention.observation_prune_after_days == 0 {
-            return Err(super::ConfigError::Validation(
-                "retention.observation_prune_after_days must be greater than 0".to_string(),
-            ));
-        }
-        if self.context.default_token_budget == 0 {
-            return Err(super::ConfigError::Validation(
-                "context.default_token_budget must be greater than 0".to_string(),
-            ));
-        }
-        if self.context.task_token_budget == 0 {
-            return Err(super::ConfigError::Validation(
-                "context.task_token_budget must be greater than 0".to_string(),
-            ));
-        }
-        if self.context.escalation_token_budget == 0 {
-            return Err(super::ConfigError::Validation(
-                "context.escalation_token_budget must be greater than 0".to_string(),
-            ));
-        }
-        Ok(())
     }
 }
 

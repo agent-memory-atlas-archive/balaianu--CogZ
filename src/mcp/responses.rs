@@ -70,16 +70,27 @@ pub fn search_response(results: SearchResults) -> serde_json::Value {
                 "title": r.entity.title,
                 "content": r.entity.content,
                 "relevance": r.relevance,
+                "kind": if r.graph_path.len() > 1 { "expanded" } else { "direct" },
                 "graph_path": r.graph_path,
                 "graph_path_description": r.graph_path_description,
             })
         })
         .collect();
-    json!({
+    let mut out = json!({
         "results": items,
         "count": items.len(),
+        "filtered_count": results.filtered_count,
         "search_mode": results.search_mode.as_str(),
-    })
+    });
+    if let Some(s) = &results.signals {
+        out["signals"] = json!({
+            "code_strength": s.code_strength,
+            "knowledge_strength": s.knowledge_strength,
+            "code_gradient": s.code_gradient,
+            "knowledge_gradient": s.knowledge_gradient,
+        });
+    }
+    out
 }
 
 /// Build a context pack response.

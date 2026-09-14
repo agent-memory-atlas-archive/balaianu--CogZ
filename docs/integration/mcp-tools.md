@@ -158,7 +158,11 @@ Search across all entities using hybrid FTS5 + vector search with RRF fusion. Re
 | `expand` | boolean | no | Enable graph expansion (default: `true`) |
 | `code_search` | boolean | no | Use code model for query embedding (for code-focused queries) |
 
-**Returns:** JSON with `results` array (each with `entity`, `relevance`, `graph_path`, `graph_path_description`) and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`).
+**Returns:** JSON with `results` array and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`).
+
+Each result has `entity`, `relevance`, `kind` (`direct` or `expanded`), `graph_path`, and `graph_path_description`.
+
+Top-level fields: `filtered_count` (results removed by the relevance floor) and `signals` (`code_strength`, `knowledge_strength`, `code_gradient`, `knowledge_gradient` — per-channel KNN signals used for merge weighting and the silence gate; absent in `fts_only` mode). When the silence gate fires, `results` is empty and `filtered_count` reports the suppressed candidate count.
 
 ### `get_context`
 

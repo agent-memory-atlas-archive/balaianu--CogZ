@@ -58,7 +58,7 @@ fn fts_search_finds_content() {
     )
     .unwrap();
 
-    let results = fts_search(&conn, "ranking", None, Some("active"), false, 20).unwrap();
+    let results = fts_search(&conn, "ranking", None, Some("active"), false, 20, 1.0).unwrap();
     assert_eq!(results.len(), 1);
     assert_eq!(results[0].id, "u1");
 }
@@ -84,6 +84,7 @@ fn fts_search_with_type_filter() {
         Some("active"),
         false,
         20,
+        1.0,
     )
     .unwrap();
     assert_eq!(obs.len(), 1);
@@ -105,7 +106,7 @@ fn fts_search_with_hyphenated_query() {
     .unwrap();
 
     // Hyphenated query should not crash (FTS5 treats - as NOT)
-    let results = fts_search(&conn, "tree-sitter", None, Some("active"), false, 20).unwrap();
+    let results = fts_search(&conn, "tree-sitter", None, Some("active"), false, 20, 1.0).unwrap();
     assert_eq!(results.len(), 1);
     assert_eq!(results[0].id, "u1");
 }
@@ -134,6 +135,7 @@ fn fts_search_multi_word_query() {
         Some("active"),
         false,
         20,
+        1.0,
     )
     .unwrap();
     assert_eq!(results.len(), 1);
@@ -147,6 +149,7 @@ fn fts_search_multi_word_query() {
         Some("active"),
         false,
         20,
+        1.0,
     )
     .unwrap();
     assert_eq!(results.len(), 1);
@@ -186,6 +189,7 @@ fn fts_search_or_semantics_partial_match() {
         Some("active"),
         false,
         20,
+        1.0,
     )
     .unwrap();
     assert!(

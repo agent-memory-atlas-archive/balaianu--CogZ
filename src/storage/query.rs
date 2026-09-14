@@ -171,6 +171,7 @@ pub fn get_knowledge_filtered(
 /// Returns entities matching the query, filtered by type and status.
 /// When `exclude_tests` is true, code entities whose `file_path`
 /// matches test patterns are excluded from results.
+#[allow(clippy::too_many_arguments)]
 pub fn fts_search(
     conn: &Connection,
     query: &str,
@@ -178,6 +179,7 @@ pub fn fts_search(
     status_filter: Option<&str>,
     exclude_tests: bool,
     limit: i64,
+    title_weight: f64,
 ) -> Result<Vec<Entity>, StorageError> {
     // Escape FTS5 special characters by wrapping each term in double
     // quotes. FTS5 treats -, *, :, (, ), etc. as operators. Without
@@ -248,7 +250,12 @@ pub fn fts_search(
         );
     }
 
-    sql.push_str(" ORDER BY rank LIMIT ?");
+    // `bm25(table, w_title, w_content)` — column weights make title
+    // hits rank above body-term matches. w = 1.0/1.0 is the library
+    // default `rank` ordering exactly.
+    sql.push_str(&format!(
+        " ORDER BY bm25(entities_fts, {title_weight}, 1.0) LIMIT ?"
+    ));
     param_values.push(Box::new(limit));
 
     let params_refs: Vec<&dyn rusqlite::ToSql> = param_values.iter().map(|p| p.as_ref()).collect();

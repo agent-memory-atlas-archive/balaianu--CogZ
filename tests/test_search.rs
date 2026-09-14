@@ -22,6 +22,15 @@ fn default_config() -> SearchConfig {
         max_results: 20,
         min_source_proportion: 0.2,
         source_balance_enabled: false,
+        merge_strategy: "strength".to_string(),
+        min_relevance: 0.05,
+        edge_weighted_expansion: true,
+        silence_threshold: 0.0,
+        top_diversity_share: 0.0,
+        calibration: cogz::config::CalibrationConfig::default(),
+        provenance_boost: 0.0,
+        fts_title_weight: 1.0,
+        mmr_lambda: 0.0,
     }
 }
 
@@ -189,12 +198,17 @@ fn graph_expansion_follows_edges() {
         max_hops: 2,
         ..Default::default()
     };
+    // Floor disabled: this test covers traversal + provenance, not pruning.
+    let no_floor = SearchConfig {
+        min_relevance: 0.0,
+        ..default_config()
+    };
     let results = search(
         &conn,
         "ranking",
         QueryEmbeddings::none(),
         &params,
-        &default_config(),
+        &no_floor,
     )
     .unwrap();
 
@@ -213,6 +227,63 @@ fn graph_expansion_follows_edges() {
     assert!(func2.is_some());
     let func2 = func2.unwrap();
     assert_eq!(func2.graph_path, vec!["obs1", "func1", "func2"]);
+}
+
+#[test]
+fn min_relevance_prunes_weak_two_hop_structural_expansion() {
+    let storage = setup_storage();
+    let conn = storage.conn();
+    let model = MockEmbeddingModel::new();
+
+    insert_with_embedding(
+        &conn,
+        &model,
+        "obs1",
+        "observation",
+        "FTS5 ranking bug",
+        "ranking bug",
+    );
+    insert_with_embedding(
+        &conn,
+        &model,
+        "func1",
+        "function",
+        "build_sql",
+        "builds the search query",
+    );
+    insert_with_embedding(
+        &conn,
+        &model,
+        "func2",
+        "function",
+        "search_all",
+        "executes the search query",
+    );
+
+    insert_edge(&conn, "obs1", "func1", "references");
+    insert_edge(&conn, "func1", "func2", "calls");
+
+    let params = SearchParams {
+        expand: true,
+        max_hops: 2,
+        ..Default::default()
+    };
+    // FTS-only: seed scores cap at ~0.5, so 1-hop references = 0.15
+    // survives the 0.05 floor, but 2-hop calls = 0.5×0.09×0.5 = 0.0225
+    // does not. Curated edges outrank structural at equal hops.
+    let results = search(
+        &conn,
+        "ranking",
+        QueryEmbeddings::none(),
+        &params,
+        &default_config(),
+    )
+    .unwrap();
+
+    let func1 = results.results.iter().find(|r| r.entity.id == "func1");
+    assert!(func1.is_some());
+    assert!(results.results.iter().all(|r| r.entity.id != "func2"));
+    assert!(results.filtered_count >= 1);
 }
 
 #[test]

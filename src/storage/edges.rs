@@ -183,6 +183,63 @@ pub fn count_edges(conn: &Connection) -> Result<i64, StorageError> {
     Ok(count)
 }
 
+/// Edge types that represent human-authored or curated semantic
+/// links — the provenance signal for `search.provenance_boost`.
+/// `auto_references` is deliberately excluded: it is generated, so it
+/// says nothing about whether a human considered the entity worth
+/// linking.
+pub const CURATED_EDGE_TYPES: [&str; 6] = [
+    "references",
+    "supports",
+    "contradicts",
+    "superseded_by",
+    "derived_from",
+    "promoted_from",
+];
+
+/// Count curated incoming edges per entity for a batch of target
+/// IDs — the "how often did knowledge/rules deliberately link here"
+/// prior. One grouped query hitting `idx_edges_target`.
+pub fn curated_in_degree_batch(
+    conn: &Connection,
+    entity_ids: &[String],
+) -> Result<std::collections::HashMap<String, u32>, StorageError> {
+    let mut result = std::collections::HashMap::new();
+    if entity_ids.is_empty() {
+        return Ok(result);
+    }
+    let id_placeholders = (0..entity_ids.len())
+        .map(|_| "?")
+        .collect::<Vec<_>>()
+        .join(",");
+    let type_placeholders = CURATED_EDGE_TYPES
+        .iter()
+        .map(|_| "?")
+        .collect::<Vec<_>>()
+        .join(",");
+    let sql = format!(
+        "SELECT target_id, COUNT(*) FROM edges
+         WHERE target_id IN ({id_placeholders}) AND edge_type IN ({type_placeholders})
+         GROUP BY target_id"
+    );
+    let mut params: Vec<&dyn rusqlite::ToSql> = entity_ids
+        .iter()
+        .map(|s| s as &dyn rusqlite::ToSql)
+        .collect();
+    for t in CURATED_EDGE_TYPES.iter() {
+        params.push(t);
+    }
+    let mut stmt = conn.prepare(&sql)?;
+    let rows = stmt.query_map(params.as_slice(), |r| {
+        Ok((r.get::<_, String>(0)?, r.get::<_, u32>(1)?))
+    })?;
+    for row in rows {
+        let (id, n) = row?;
+        result.insert(id, n);
+    }
+    Ok(result)
+}
+
 /// Get all edges from a source entity.
 pub fn get_edges_from(conn: &Connection, source_id: &str) -> Result<Vec<Edge>, StorageError> {
     let mut stmt = conn.prepare(

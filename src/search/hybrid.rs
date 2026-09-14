@@ -21,16 +21,20 @@ use rusqlite::Connection;
 
 use crate::config::SearchConfig;
 use crate::storage::crud::{Entity, get_entities_batch};
-use crate::storage::embeddings::{EmbeddingSpace, knn_search_with_filters};
-use crate::storage::query::{count_active_code, count_active_knowledge, fts_search};
+use crate::storage::embeddings::EmbeddingSpace;
+use crate::storage::query::fts_search;
 
 use super::QueryEmbeddings;
 use super::SearchError;
-use super::balance::detect_proportions;
+use super::balance::{channel_strength, mean_top_k_similarity};
 use super::describe::build_path_descriptions_batch;
-use super::expand::expand_with_paths;
+use super::expand::{edge_weight, expand_with_paths};
+use super::rank::{
+    ChannelInput, apply_post_merge, merge_channels, normalize_scores, resolve_channel_weights,
+};
 use super::rrf::fuse;
 use super::{SearchMode, SearchParams, SearchResult, SearchResults};
+use hybrid_helpers::knn_channel;
 
 /// Run a hybrid search.
 ///
@@ -67,6 +71,7 @@ pub fn search(
         status_filter,
         !params.include_tests,
         limit,
+        config.fts_title_weight,
     )?;
 
     // Seed entity_map with FTS results so we don't re-fetch them later
@@ -118,35 +123,62 @@ pub fn search(
         (false, false) => SearchMode::FtsOnly,
     };
 
-    // 6. Detect source-type proportions from KNN similarity scores.
-    //    When models are available, the query's semantic closeness to
-    //    each embedding space determines how much weight code vs
-    //    knowledge gets in the fused ranking. FTS-only mode uses 50/50.
-    let (code_prop, knowledge_prop) =
-        if search_mode == SearchMode::FtsOnly || !config.source_balance_enabled {
-            (0.5, 0.5)
-        } else {
-            // Collection sizes for normalizing FTS match rates. Code entities
-            // vastly outnumber knowledge entities, so raw match counts bias
-            // toward code. Match rate (matches / collection_size) corrects this.
-            let code_size = count_active_code(conn).unwrap_or(0) as usize;
-            let knowledge_size = count_active_knowledge(conn).unwrap_or(0) as usize;
-            detect_proportions(
-                &code_distances,
-                &knowledge_distances,
-                code_fts_ids.len(),
-                knowledge_fts_ids.len(),
-                code_size,
-                knowledge_size,
-                config.min_source_proportion,
-            )
-        };
+    // 5b. Per-channel signals, computed once — used by the silence
+    //     gate below and exposed in the response so callers can see
+    //     why results were weighted, filtered, or silenced.
+    let signals = if search_mode == SearchMode::FtsOnly {
+        None
+    } else {
+        Some(super::ChannelSignals {
+            code_strength: channel_strength(&code_distances),
+            knowledge_strength: channel_strength(&knowledge_distances),
+            code_gradient: mean_top_k_similarity(&code_distances, 5),
+            knowledge_gradient: mean_top_k_similarity(&knowledge_distances, 5),
+        })
+    };
+
+    // 5c. Silence gate: when no embedding space produced a distinctive
+    //     match (within-batch gradient flat on every active channel),
+    //     the honest answer is an empty result — not a normalized list
+    //     of garbage. FTS-only skips the gate: with no vector signal
+    //     there is nothing to judge by.
+    if let Some(s) = &signals
+        && config.silence_threshold > 0.0
+        && s.code_gradient < config.silence_threshold
+        && s.knowledge_gradient < config.silence_threshold
+    {
+        return Ok(SearchResults {
+            results: Vec::new(),
+            search_mode,
+            filtered_count: fts_entities.len() + code_ids.len() + knowledge_ids.len(),
+            signals: Some(s.clone()),
+        });
+    }
+
+    // 6. Resolve per-channel merge weights for the configured
+    //    strategy (see rank::resolve_channel_weights).
+    let (code_prop, knowledge_prop) = resolve_channel_weights(
+        conn,
+        config,
+        search_mode,
+        &ChannelInput {
+            distances: &code_distances,
+            fts_count: code_fts_ids.len(),
+            knn_count: code_ids.len(),
+        },
+        &ChannelInput {
+            distances: &knowledge_distances,
+            fts_count: knowledge_fts_ids.len(),
+            knn_count: knowledge_ids.len(),
+        },
+    )?;
 
     tracing::debug!(
         code_proportion = code_prop,
         knowledge_proportion = knowledge_prop,
         search_mode = search_mode.as_str(),
-        "source balance detected"
+        merge_strategy = config.merge_strategy.as_str(),
+        "channel weights resolved"
     );
 
     // 7. Fuse per source type with original RRF weights (no proportion
@@ -179,27 +211,40 @@ pub fn search(
         Vec::new()
     };
 
-    // 8. Normalize each fused list to [0, 1] and apply proportions.
-    //    Normalization makes scores comparable across source types
-    //    regardless of RRF weight differences. Proportions then
-    //    directly control the relative ranking between code and
-    //    knowledge.
+    // 8. Normalize each fused list to [0, 1], apply channel weights,
+    //    and drop entries below the relevance floor. Under the
+    //    "strength" strategy the weights are absolute match strengths,
+    //    not quota shares — a channel whose best match is weak
+    //    contributes low-scored results that the floor then removes.
     let code_normalized = normalize_scores(&code_fused);
     let knowledge_normalized = normalize_scores(&knowledge_fused);
 
-    let mut fused: Vec<(String, f64)> = code_normalized
-        .into_iter()
-        .map(|(id, score)| (id, score * code_prop))
-        .chain(
-            knowledge_normalized
-                .into_iter()
-                .map(|(id, score)| (id, score * knowledge_prop)),
-        )
-        .collect();
-    fused.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    let (fused, mut filtered_count) = merge_channels(
+        code_normalized,
+        knowledge_normalized,
+        code_prop,
+        knowledge_prop,
+        config.min_relevance,
+    );
+
+    // 8b–8d. Post-merge ranking: provenance prior, MMR
+    //    diversification, and the diversity-slot guarantee.
+    let fused = apply_post_merge(
+        conn,
+        fused,
+        config,
+        search_mode,
+        code_prop,
+        knowledge_prop,
+        params.limit as usize,
+    )?;
 
     // 9. Select top results
-    let top_n: Vec<(String, f64)> = fused.into_iter().take(params.limit as usize).collect();
+    let top_n: Vec<(String, f64)> = fused
+        .into_iter()
+        .take(params.limit as usize)
+        .map(|(id, s, _)| (id, s))
+        .collect();
 
     // 10. Build direct search results (entities already in entity_map)
     let mut results: Vec<SearchResult> = top_n
@@ -253,8 +298,7 @@ pub fn search(
 
         let paths_to_describe: Vec<Vec<String>> =
             expansions.iter().map(|e| e.graph_path.clone()).collect();
-        let descriptions =
-            build_path_descriptions_batch(conn, &paths_to_describe).unwrap_or_default();
+        let descriptions = build_path_descriptions_batch(conn, &paths_to_describe)?;
 
         let mut expanded_results: Vec<SearchResult> = Vec::new();
         let mut seen_expanded: HashSet<String> = HashSet::new();
@@ -263,14 +307,23 @@ pub fn search(
                 continue;
             }
             if let Some(entity) = entity_map.get(&exp.entity_id) {
-                // Relevance decays aggressively with hop distance: 0.3^hops.
-                // This creates clear separation between direct matches and
-                // graph-expanded entities, so the token budget prioritizes
-                // direct hits over tangential graph connections.
-                // 1-hop: 30%, 2-hop: 9%, 3-hop: 2.7%
+                // Relevance decays aggressively with hop distance: 0.3^hops,
+                // multiplied by edge-type weights so curated semantic edges
+                // (references, supports, ...) outrank mass structural fan-out
+                // (imports, contains) in the expansion cap.
+                // 1-hop: 30% × edge weight, 2-hop: 9% × edge weights.
                 let hop = exp.graph_path.len().saturating_sub(1);
                 let seed_score = seed_relevance.get(&exp.seed_id).copied().unwrap_or(0.0);
-                let decayed = seed_score * 0.3_f32.powi(hop as i32);
+                let edge_w: f32 = if config.edge_weighted_expansion {
+                    exp.edge_path.iter().map(|t| edge_weight(t)).product()
+                } else {
+                    1.0
+                };
+                let decayed = seed_score * 0.3_f32.powi(hop as i32) * edge_w;
+                if decayed < config.min_relevance as f32 {
+                    filtered_count += 1;
+                    continue;
+                }
                 expanded_results.push(SearchResult {
                     entity: entity.clone(),
                     relevance: decayed,
@@ -299,76 +352,9 @@ pub fn search(
     Ok(SearchResults {
         results,
         search_mode,
+        filtered_count,
+        signals,
     })
-}
-
-/// Run a single KNN channel: KNN search, batch-fetch entities, filter
-/// by type/status/test-path. Returns filtered ID list and the
-/// distances of the filtered results (for source-type proportion
-/// detection).
-#[allow(clippy::too_many_arguments)]
-fn knn_channel(
-    conn: &Connection,
-    query: &[f32],
-    space: EmbeddingSpace,
-    entity_map: &mut std::collections::HashMap<String, Entity>,
-    type_filter: Option<&str>,
-    status_filter: Option<&str>,
-    include_tests: bool,
-    limit: i64,
-) -> Result<(Vec<String>, Vec<f32>), SearchError> {
-    // Push type, status, and test-path filters into the KNN query so
-    // non-matching entities don't consume KNN slots. All filtering is
-    // done in SQL to prevent starvation in bounded KNN windows.
-    let knn_limit = limit * 3;
-    let knn_results = knn_search_with_filters(
-        conn,
-        space,
-        query,
-        knn_limit,
-        type_filter,
-        status_filter,
-        !include_tests,
-    )?;
-
-    let uncached_ids: Vec<String> = knn_results
-        .iter()
-        .map(|(id, _)| id.clone())
-        .filter(|id| !entity_map.contains_key(id))
-        .collect();
-    let fetched = get_entities_batch(conn, &uncached_ids)?;
-    for entity in fetched {
-        entity_map.insert(entity.id.clone(), entity);
-    }
-
-    // All filters applied in SQL — just collect results up to limit.
-    let mut filtered_ids = Vec::new();
-    let mut filtered_distances = Vec::new();
-    for (id, dist) in knn_results {
-        filtered_ids.push(id);
-        filtered_distances.push(dist);
-        if filtered_ids.len() >= limit as usize {
-            break;
-        }
-    }
-    Ok((filtered_ids, filtered_distances))
-}
-
-/// Normalize RRF scores to [0, 1] range using max normalization.
-/// The highest score becomes 1.0, others scale proportionally.
-/// An empty list returns empty.
-fn normalize_scores(scores: &[(String, f64)]) -> Vec<(String, f64)> {
-    if scores.is_empty() {
-        return Vec::new();
-    }
-    let max_score = scores.iter().map(|(_, s)| *s).fold(0.0_f64, f64::max);
-    if max_score <= 0.0 {
-        return scores.to_vec();
-    }
-    scores
-        .iter()
-        .map(|(id, s)| (id.clone(), s / max_score))
-        .collect()
 }
 
 #[cfg(test)]

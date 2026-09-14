@@ -26,6 +26,30 @@ fn default_config() -> SearchConfig {
         max_results: 20,
         min_source_proportion: 0.2,
         source_balance_enabled: false,
+        merge_strategy: "strength".to_string(),
+        min_relevance: 0.05,
+        edge_weighted_expansion: true,
+        silence_threshold: 0.0,
+        top_diversity_share: 0.0,
+        calibration: crate::config::CalibrationConfig::default(),
+        provenance_boost: 0.0,
+        fts_title_weight: 1.0,
+        mmr_lambda: 0.0,
+    }
+}
+
+fn fixed_config() -> SearchConfig {
+    SearchConfig {
+        merge_strategy: "fixed".to_string(),
+        min_relevance: 0.0,
+        edge_weighted_expansion: false,
+        silence_threshold: 0.0,
+        top_diversity_share: 0.0,
+        calibration: crate::config::CalibrationConfig::default(),
+        provenance_boost: 0.0,
+        fts_title_weight: 1.0,
+        mmr_lambda: 0.0,
+        ..default_config()
     }
 }
 
@@ -248,4 +272,105 @@ fn balanced_fusion_knowledge_favored_when_query_closer_to_knowledge() {
     // Knowledge entity should rank higher — query embedding is closer to knowledge space
     assert_eq!(results.results[0].entity.id, "k1");
     assert_eq!(results.results[1].entity.id, "f1");
+}
+
+// ─── edge_weight ─────────────────────────────────────────────────
+
+#[test]
+fn edge_weight_orders_curated_above_structural() {
+    assert_eq!(edge_weight("references"), 1.0);
+    assert_eq!(edge_weight("supports"), 1.0);
+    assert!(edge_weight("auto_references") > edge_weight("imports"));
+    assert!(edge_weight("references") > edge_weight("calls"));
+    assert_eq!(edge_weight("unknown_edge_type"), 0.5);
+}
+
+// ─── strength merge end-to-end ───────────────────────────────────
+
+#[test]
+fn strength_merge_suppresses_far_channel() {
+    let conn = setup();
+    insert_entity(
+        &conn,
+        &Entity::new(
+            "k1",
+            "knowledge",
+            "Search pipeline indexing",
+            "indexing pipeline content",
+        ),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new(
+            "f1",
+            "function",
+            "index_code",
+            "fn index_code() { indexing }",
+        ),
+    )
+    .unwrap();
+    // Knowledge embedding identical to query; code embedding far.
+    insert_embedding(&conn, "k1", "knowledge", &vec![0.1_f32; 768]).unwrap();
+    insert_embedding(&conn, "f1", "function", &vec![0.9_f32; 768]).unwrap();
+
+    let query_vec = vec![0.1_f32; 768];
+    let params = SearchParams {
+        expand: false,
+        ..Default::default()
+    };
+    let results = search(
+        &conn,
+        "indexing",
+        QueryEmbeddings::both(&query_vec, &query_vec),
+        &params,
+        &default_config(),
+    )
+    .unwrap();
+
+    // Under "fixed" both survive (quota). Under "strength" + floor,
+    // the far code channel's normalized-1.0 top hit scales by its
+    // absolute strength (~0 for an orthogonal vector) and is dropped.
+    assert_eq!(results.results.len(), 1);
+    assert_eq!(results.results[0].entity.id, "k1");
+    assert_eq!(results.filtered_count, 1);
+}
+
+#[test]
+fn fixed_strategy_keeps_quota_behavior() {
+    let conn = setup();
+    insert_entity(
+        &conn,
+        &Entity::new("k1", "knowledge", "indexing", "indexing content"),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new(
+            "f1",
+            "function",
+            "index_code",
+            "fn index_code() { indexing }",
+        ),
+    )
+    .unwrap();
+    insert_embedding(&conn, "k1", "knowledge", &vec![0.1_f32; 768]).unwrap();
+    insert_embedding(&conn, "f1", "function", &vec![0.9_f32; 768]).unwrap();
+
+    let query_vec = vec![0.1_f32; 768];
+    let params = SearchParams {
+        expand: false,
+        ..Default::default()
+    };
+    let results = search(
+        &conn,
+        "indexing",
+        QueryEmbeddings::both(&query_vec, &query_vec),
+        &params,
+        &fixed_config(),
+    )
+    .unwrap();
+
+    assert_eq!(results.results.len(), 2);
+    assert_eq!(results.filtered_count, 0);
 }

@@ -1,6 +1,11 @@
 //! Helper functions extracted from hybrid.rs for file-size compliance.
 
-use crate::storage::crud::{Entity, EntityType};
+use rusqlite::Connection;
+
+use crate::storage::crud::{Entity, EntityType, get_entities_batch};
+use crate::storage::embeddings::{EmbeddingSpace, knn_search_with_filters};
+
+use super::SearchError;
 
 /// Split FTS results into code and knowledge entity ID lists.
 /// Code entities: function, class, file, module.
@@ -30,4 +35,52 @@ pub(super) fn resolve_status_filter(status: Option<&str>) -> Option<&str> {
         Some("all") => None,
         Some(s) => Some(s),
     }
+}
+
+/// Run KNN for one embedding space, push filters into SQL so
+/// non-matching entities don't consume KNN slots, and cache fetched
+/// entities into `entity_map`.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn knn_channel(
+    conn: &Connection,
+    query: &[f32],
+    space: EmbeddingSpace,
+    entity_map: &mut std::collections::HashMap<String, Entity>,
+    type_filter: Option<&str>,
+    status_filter: Option<&str>,
+    include_tests: bool,
+    limit: i64,
+) -> Result<(Vec<String>, Vec<f32>), SearchError> {
+    let knn_limit = limit * 3;
+    let knn_results = knn_search_with_filters(
+        conn,
+        space,
+        query,
+        knn_limit,
+        type_filter,
+        status_filter,
+        !include_tests,
+    )?;
+
+    let uncached_ids: Vec<String> = knn_results
+        .iter()
+        .map(|(id, _)| id.clone())
+        .filter(|id| !entity_map.contains_key(id))
+        .collect();
+    let fetched = get_entities_batch(conn, &uncached_ids)?;
+    for entity in fetched {
+        entity_map.insert(entity.id.clone(), entity);
+    }
+
+    // All filters applied in SQL — just collect results up to limit.
+    let mut filtered_ids = Vec::new();
+    let mut filtered_distances = Vec::new();
+    for (id, dist) in knn_results {
+        filtered_ids.push(id);
+        filtered_distances.push(dist);
+        if filtered_ids.len() >= limit as usize {
+            break;
+        }
+    }
+    Ok((filtered_ids, filtered_distances))
 }

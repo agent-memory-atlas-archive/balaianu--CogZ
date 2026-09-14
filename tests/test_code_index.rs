@@ -367,6 +367,15 @@ fn build_sql_query(table: &str) -> String {
         max_results: 20,
         min_source_proportion: 0.2,
         source_balance_enabled: false,
+        merge_strategy: "strength".to_string(),
+        min_relevance: 0.05,
+        edge_weighted_expansion: true,
+        silence_threshold: 0.0,
+        top_diversity_share: 0.0,
+        calibration: cogz::config::CalibrationConfig::default(),
+        provenance_boost: 0.0,
+        fts_title_weight: 1.0,
+        mmr_lambda: 0.0,
     };
     let results = search(
         &conn,

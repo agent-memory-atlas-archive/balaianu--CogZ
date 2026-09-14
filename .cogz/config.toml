@@ -18,8 +18,16 @@ fts_weight = 0.4
 vec_weight = 0.6
 rrf_k = 60
 max_results = 20
-min_source_proportion = 0.2
+min_source_proportion = 0.3
 source_balance_enabled = false
+merge_strategy = "detect"
+min_relevance = 0.05
+edge_weighted_expansion = true
+silence_threshold = 0.02
+top_diversity_share = 0.3
+provenance_boost = 0.3
+fts_title_weight = 5.0
+mmr_lambda = 0.7
 
 [consolidation]
 dedup_threshold = 0.85

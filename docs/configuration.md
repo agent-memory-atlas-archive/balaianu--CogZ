@@ -28,6 +28,14 @@ rrf_k = 60
 max_results = 20
 min_source_proportion = 0.2
 source_balance_enabled = false
+merge_strategy = "detect"
+min_relevance = 0.05
+edge_weighted_expansion = true
+silence_threshold = 0.02
+top_diversity_share = 0.3
+provenance_boost = 0.3
+fts_title_weight = 5.0
+mmr_lambda = 0.7
 
 [consolidation]
 dedup_threshold = 0.85
@@ -106,7 +114,16 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `rrf_k` | u32 | `60` | RRF smoothing constant. Lower = sharper ranking. Must be > 0. |
 | `max_results` | u32 | `20` | Max results before graph expansion. Must be > 0. |
 | `min_source_proportion` | f64 | `0.2` | Floor for each source type's proportion in balanced fusion. Ensures neither code nor knowledge is completely suppressed. |
-| `source_balance_enabled` | bool | `false` | Enable query-sensitive source balancing. Experimental — the fixed 0.5/0.5 split outperforms balance detection on overall retrieval quality. |
+| `source_balance_enabled` | bool | `false` | Legacy alias for `merge_strategy = "detect"`. |
+| `merge_strategy` | string | `"detect"` | Channel merge: `detect` (intent-proportioned shares), `fixed` (0.5/0.5), `strength` (absolute cosine — biases toward knowledge), `gradient` (within-batch spread — suppresses code), `calibrated` (detect shares × logistic-calibrated strength; best MRR, weaker graph recall). |
+| `top_diversity_share` | f64 | `0.3` | A channel earning at least this merge-weight share is guaranteed a slot in the top-5 window. 0.0 disables. |
+| `calibration` | table | see code | `[search.calibration]` — `code`/`knowledge` sub-tables with `mid`/`width` for the `calibrated` strategy. Model-pair-specific. |
+| `min_relevance` | f64 | `0.05` | Drop results below this score; 0.0 disables. ≥0.09 makes all two-hop expansions unreachable. |
+| `provenance_boost` | f64 | `0.3` | Multiply direct scores by `1 + boost·ln(1 + curated in-degree)` — incoming `references`/`supports`/`contradicts`/`superseded_by`/`derived_from`/`promoted_from` edges as a quality prior. `auto_references` and structural edges excluded. 0.0 disables. |
+| `fts_title_weight` | f64 | `5.0` | FTS5 `bm25()` column weight for the title column (content stays 1.0). 1.0 = uniform ranking, values >1 favor title matches. |
+| `mmr_lambda` | f64 | `0.7` | MMR diversification: `λ·relevance − (1−λ)·max cosine to already-selected same-channel items`. Similarity never crosses channels (different embedding spaces). 0.0 disables; skipped in FTS-only mode. |
+| `edge_weighted_expansion` | bool | `true` | Traverse edges strongest-first and weight expansion scores by edge type (curated semantic > auto_references > structural). |
+| `silence_threshold` | f64 | `0.02` | Return empty when both channels' KNN gradients are below this. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
 
 ### `[consolidation]`
 
