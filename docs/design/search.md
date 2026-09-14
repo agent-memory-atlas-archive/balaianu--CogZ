@@ -79,7 +79,7 @@ The diversity-slot guarantee (`top_diversity_share`, described above) runs last,
 
 ## Cross-encoder rerank
 
-After the top-N list is materialized and before graph expansion, an optional cross-encoder rescores the top `rerank_depth` (default 20) direct results (`rerank_enabled`, default true; `reranker_model`, default `cross-encoder/ms-marco-TinyBERT-L-2-v2`).
+After the top-N list is materialized and before graph expansion, an optional cross-encoder rescores the top `rerank_depth` (default 20) direct results (`rerank_enabled`, default false — measured neutral on the self-corpus, so opt-in; `reranker_model`, default `cross-encoder/ms-marco-TinyBERT-L-2-v2`).
 
 Unlike the bi-encoder stages, the cross-encoder reads each `(query, "title\ncontent")` pair jointly in a single batched inference — its sigmoid-calibrated probabilities are comparable across channels regardless of which embedding space retrieved the candidate. Inside the reranked window the merge-proportion mismatch dissolves, which is what lifts near-miss retrieval (expected entity in the candidate pool but outranked by semantically-adjacent ones) into the top-5. Entries beyond `rerank_depth` keep their fused order.
 

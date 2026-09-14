@@ -36,7 +36,7 @@ top_diversity_share = 0.3
 provenance_boost = 0.3
 fts_title_weight = 5.0
 mmr_lambda = 0.7
-rerank_enabled = true
+rerank_enabled = false
 rerank_depth = 20
 rerank_anchor = 3
 rerank_code = false
@@ -132,7 +132,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `mmr_lambda` | f64 | `0.7` | MMR diversification: `λ·relevance − (1−λ)·max cosine to already-selected same-channel items`. Similarity never crosses channels (different embedding spaces). 0.0 disables; skipped in FTS-only mode. |
 | `edge_weighted_expansion` | bool | `true` | Traverse edges strongest-first and weight expansion scores by edge type (curated semantic > auto_references > structural). |
 | `silence_threshold` | f64 | `0.02` | Return empty when both channels' KNN gradients are below this. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
-| `rerank_enabled` | bool | `true` | Rescore the top `rerank_depth` direct results with a cross-encoder after merge, before graph expansion. Requires the model on disk; absent model → stage skipped. |
+| `rerank_enabled` | bool | `false` | Rescore the top `rerank_depth` direct results with a cross-encoder after merge, before graph expansion. Requires the model on disk; absent model → stage skipped. Off by default — measured neutral on the v2 self-corpus; opt-in with a reranker suited to your corpus. |
 | `rerank_depth` | usize | `20` | How many top direct results the cross-encoder rescores. One batched inference per query (~30-60ms at depth 20 on CPU). |
 | `rerank_anchor` | usize | `3` | How many top fused positions stay pinned during rerank. Bounds worst-case damage from prose-biased cross-encoders while preserving deep-rank lifts. |
 | `rerank_code` | bool | `false` | Whether the cross-encoder may reorder code entities. Default false: code entities hold their fused slots because passage-domain rerankers have no signal for source code. Set true only with a code-capable reranker. |

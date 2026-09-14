@@ -176,8 +176,10 @@ pub struct SearchConfig {
     /// cross-encoder scores are comparable across channels — the
     /// rerank dissolves merge-proportion mismatches inside the
     /// reranked window. Requires the model on disk; absent model →
-    /// stage skipped (never required).
-    #[serde(default = "default_true")]
+    /// stage skipped (never required). Default false: measured
+    /// neutral on the v2 self-corpus (+0.003 MRR, +9% latency) —
+    /// opt-in until a reranker earns the cost.
+    #[serde(default)]
     pub rerank_enabled: bool,
     /// How many top direct results the cross-encoder rescores.
     /// Deeper reranking costs one batched inference per query
@@ -407,7 +409,7 @@ impl Config {
                 provenance_boost: default_provenance_boost(),
                 fts_title_weight: default_fts_title_weight(),
                 mmr_lambda: default_mmr_lambda(),
-                rerank_enabled: true,
+                rerank_enabled: false,
                 rerank_depth: default_rerank_depth(),
                 rerank_anchor: default_rerank_anchor(),
                 rerank_code: false,
