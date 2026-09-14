@@ -1,6 +1,8 @@
 //! Context pack assembly — builds a [`ContextPack`] from search
 //! results or recent entities, depending on the mode.
 
+use std::collections::HashMap;
+
 use rusqlite::Connection;
 
 use crate::config::{Config, SearchConfig};
@@ -9,7 +11,7 @@ use crate::storage::crud::Entity;
 use crate::storage::query::get_entities_by_type;
 
 use super::code_map::code_map_sections;
-use super::compress::{fit_budget, section_tokens, sort_by_priority};
+use super::compress::{fit_budget, relax_code_sections, section_tokens, sort_by_priority};
 use super::modes::ContextMode;
 use super::{ContextPack, ContextSection, PackMetadata};
 
@@ -77,10 +79,10 @@ pub fn assemble_context(
         None
     };
 
-    let (sections, search_mode) = match params.mode {
+    let (sections, search_mode, full_content) = match params.mode {
         ContextMode::ColdStart => {
             let sections = cold_start_sections(conn, config, cold_start_status)?;
-            (sections, SearchMode::FtsOnly)
+            (sections, SearchMode::FtsOnly, HashMap::new())
         }
         ContextMode::Task | ContextMode::Escalation => {
             let query = params
@@ -112,7 +114,10 @@ pub fn assemble_context(
 
     let mut sections = sections;
     sort_by_priority(&mut sections, params.mode);
-    let (kept, dropped) = fit_budget(sections, token_budget);
+    let (mut kept, dropped) = fit_budget(sections, token_budget);
+    if !full_content.is_empty() {
+        relax_code_sections(&mut kept, &full_content, token_budget);
+    }
 
     let size_tokens = kept.iter().map(section_tokens).sum();
     let selected_sources: Vec<String> = {
@@ -262,6 +267,10 @@ fn cold_start_sections(
     Ok(sections)
 }
 
+/// Sections plus the full (unsummarized) content of code entities,
+/// kept for the headroom relax pass.
+type SectionBundle = (Vec<ContextSection>, SearchMode, HashMap<String, String>);
+
 /// Build sections from search results (task and escalation modes).
 #[allow(clippy::too_many_arguments)]
 fn query_sections(
@@ -273,7 +282,7 @@ fn query_sections(
     max_hops: usize,
     status: Option<&str>,
     search_config: &SearchConfig,
-) -> Result<(Vec<ContextSection>, SearchMode), AssembleError> {
+) -> Result<SectionBundle, AssembleError> {
     let params = SearchParams {
         entity_type: None,
         status: status.map(|s| s.to_string()),
@@ -290,13 +299,19 @@ fn query_sections(
     let results = search::search(conn, query, embeddings, &params, search_config)?;
     let search_mode = results.search_mode;
 
+    let mut full_content = HashMap::new();
     let sections = results
         .results
         .into_iter()
-        .map(search_result_to_section)
+        .map(|r| {
+            if is_code_entity(&r.entity.r#type) {
+                full_content.insert(r.entity.id.clone(), r.entity.content.clone());
+            }
+            search_result_to_section(r)
+        })
         .collect();
 
-    Ok((sections, search_mode))
+    Ok((sections, search_mode, full_content))
 }
 
 /// Convert a search result to a context section.
@@ -336,15 +351,5 @@ fn summarize_code_content(content: &str, entity_type: &str) -> String {
         "file" => 15,
         _ => 10,
     };
-    let lines: Vec<&str> = content.lines().collect();
-    if lines.len() <= max_lines {
-        return content.to_string();
-    }
-    let summary: String = lines
-        .iter()
-        .take(max_lines)
-        .cloned()
-        .collect::<Vec<_>>()
-        .join("\n");
-    format!("{summary}\n... ({} more lines)", lines.len() - max_lines)
+    super::compress::excerpt_lines(content, max_lines)
 }

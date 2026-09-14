@@ -82,11 +82,42 @@ def score_run(raw: dict, qset: dict, k: int, floor: float) -> dict:
         # context-pack metrics if present
         ctx = r.get("context")
         if ctx and "sections" in ctx:
-            sec_ids = [s.get("entity_id") for s in ctx["sections"]]
+            secs = ctx["sections"]
+            sec_ids = [s.get("entity_id") for s in secs]
             entry["pack_recall"] = (len([e for e in live_expected if e in sec_ids]) / len(live_expected)) if live_expected else None
             entry["pack_sections"] = len(sec_ids)
             meta = ctx.get("metadata") or {}
             entry["pack_tokens"] = meta.get("size_tokens")
+            entry["pack_dropped"] = len(meta.get("dropped_sources") or [])
+
+            def _trunc(c):
+                return c.endswith("...") or c.endswith("more lines)")
+            truncated = [s for s in secs if _trunc(s.get("content") or "")]
+            entry["pack_truncated"] = len(truncated)
+            entry["pack_expected_truncated"] = len(
+                [s for s in truncated if s.get("entity_id") in live_expected])
+
+            # Section-overlap dup rate: max pairwise Jaccard over content
+            # line-sets. File sections subsume their functions' lines —
+            # that's the overlap this catches.
+            line_sets = []
+            for s in secs:
+                lines = {ln.strip() for ln in (s.get("content") or "").splitlines()
+                         if len(ln.strip()) > 3}
+                line_sets.append(lines)
+            dup_max = 0.0
+            dup_pairs = 0
+            for i in range(len(line_sets)):
+                for j in range(i + 1, len(line_sets)):
+                    a, b = line_sets[i], line_sets[j]
+                    if not a or not b:
+                        continue
+                    jac = len(a & b) / len(a | b)
+                    dup_max = max(dup_max, jac)
+                    if jac >= 0.5:
+                        dup_pairs += 1
+            entry["pack_dup_max"] = round(dup_max, 3)
+            entry["pack_dup_pairs"] = dup_pairs
 
         per_query.append(entry)
 
@@ -129,6 +160,20 @@ def score_run(raw: dict, qset: dict, k: int, floor: float) -> dict:
         "by_intent": by_intent,
         "per_query": per_query,
     }
+
+    pack_rows = [x for x in per_query if x.get("pack_sections") is not None]
+    if pack_rows:
+        out["pack"] = {
+            "n": len(pack_rows),
+            "recall": agg(pack_rows, "pack_recall"),
+            "avg_sections": agg(pack_rows, "pack_sections"),
+            "avg_tokens": agg(pack_rows, "pack_tokens"),
+            "avg_dropped": agg(pack_rows, "pack_dropped"),
+            "avg_truncated": agg(pack_rows, "pack_truncated"),
+            "expected_truncated": sum(x.get("pack_expected_truncated", 0) for x in pack_rows),
+            "avg_dup_max": agg(pack_rows, "pack_dup_max"),
+            "packs_with_dup": len([x for x in pack_rows if x.get("pack_dup_pairs", 0) > 0]),
+        }
     return out
 
 
@@ -158,6 +203,12 @@ def main():
     for intent, m in report["by_intent"].items():
         extra = f"  neg_ok={m['negative_ok_rate']}" if intent == "negative" else ""
         print(f"{intent:<10} {m['n']:>3} {str(m['p_at_k']):>6} {str(m['mrr']):>6} {str(m['recall_at_20']):>6} {m['avg_expanded']:>6} {str(m['avg_latency_ms']):>7}{extra}")
+    if "pack" in report:
+        p = report["pack"]
+        print(f"\npacks ({p['n']}): recall={p['recall']}  sections={p['avg_sections']}  "
+              f"tokens={p['avg_tokens']}  dropped={p['avg_dropped']}  trunc={p['avg_truncated']}  "
+              f"exp_trunc={p['expected_truncated']}  dup_max={p['avg_dup_max']}  "
+              f"packs_w_dup={p['packs_with_dup']}")
 
 
 if __name__ == "__main__":

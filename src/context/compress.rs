@@ -113,6 +113,73 @@ pub fn fit_budget(
     (kept, dropped)
 }
 
+/// Relaxed excerpt caps for the headroom pass — the middle tier
+/// between the tight pack summary and full content. Bounded so a
+/// single large entity cannot consume all leftover budget.
+fn relaxed_excerpt_lines(entity_type: &str) -> usize {
+    match entity_type {
+        "module" => 3,
+        "file" => 30,
+        _ => 40,
+    }
+}
+
+/// Spend leftover budget expanding summarized code sections.
+///
+/// Sections must be sorted by priority already (relevance order for
+/// task/escalation). Two passes: first regrow every summarized code
+/// section to a bounded relaxed cap so headroom is shared broadly,
+/// then fill remaining budget with full contents in order. No-op when
+/// `fit_budget` consumed the whole budget.
+pub fn relax_code_sections(
+    sections: &mut [ContextSection],
+    full_content: &std::collections::HashMap<String, String>,
+    token_budget: usize,
+) {
+    let mut used: usize = sections.iter().map(section_tokens).sum();
+    for capped in [true, false] {
+        for s in sections.iter_mut() {
+            if used >= token_budget {
+                return;
+            }
+            let Some(full) = full_content.get(&s.entity_id) else {
+                continue;
+            };
+            let headroom = token_budget - used;
+            let cur_cost = estimate_tokens(&s.content);
+            let candidate = if capped {
+                excerpt_lines(full, relaxed_excerpt_lines(&s.source))
+            } else {
+                full.clone()
+            };
+            let candidate = if estimate_tokens(&candidate) > headroom + cur_cost {
+                truncate_to_tokens(&candidate, headroom + cur_cost)
+            } else {
+                candidate
+            };
+            if candidate.len() <= s.content.len() {
+                continue;
+            }
+            used += estimate_tokens(&candidate) - cur_cost;
+            s.content = candidate;
+        }
+    }
+}
+
+/// Excerpt the first `max_lines` of content, noting how many lines
+/// were dropped.
+pub(crate) fn excerpt_lines(content: &str, max_lines: usize) -> String {
+    let lines: Vec<&str> = content.lines().collect();
+    if lines.len() <= max_lines {
+        return content.to_string();
+    }
+    format!(
+        "{}\n... ({} more lines)",
+        lines[..max_lines].join("\n"),
+        lines.len() - max_lines
+    )
+}
+
 /// Truncate content to approximately `max_tokens` tokens using the
 /// chars/4 heuristic. Adds an ellipsis if truncated.
 fn truncate_to_tokens(content: &str, max_tokens: usize) -> String {
@@ -240,6 +307,73 @@ mod tests {
         assert_eq!(kept.len(), 3);
         assert!(dropped.is_empty());
         assert!(kept[2].content.ends_with("..."));
+    }
+
+    #[test]
+    fn relax_grows_code_sections_into_headroom() {
+        let full: String = (0..50)
+            .map(|i| format!("fn line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let mut full_map = std::collections::HashMap::new();
+        full_map.insert("test-id".to_string(), full.clone());
+        let mut secs = vec![section("function", "f", &excerpt_lines(&full, 10), 0.9)];
+        let before = section_tokens(&secs[0]);
+        relax_code_sections(&mut secs, &full_map, 1000);
+        assert!(section_tokens(&secs[0]) > before);
+        assert!(secs[0].content.contains("fn line 49"));
+    }
+
+    #[test]
+    fn relax_shares_headroom_before_filling() {
+        // Two sections, budget fits both relaxed excerpts but only one
+        // full body: both must reach the relaxed cap before either
+        // claims remaining headroom for full content.
+        let full_a: String = (0..80)
+            .map(|i| format!("a line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let full_b: String = (0..80)
+            .map(|i| format!("b line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let mut full_map = std::collections::HashMap::new();
+        full_map.insert("id-a".to_string(), full_a.clone());
+        full_map.insert("id-b".to_string(), full_b.clone());
+        let mut sec_a = section("function", "a", &excerpt_lines(&full_a, 10), 0.9);
+        sec_a.entity_id = "id-a".to_string();
+        let mut sec_b = section("function", "b", &excerpt_lines(&full_b, 10), 0.8);
+        sec_b.entity_id = "id-b".to_string();
+        let mut secs = vec![sec_a, sec_b];
+        // ~10 chars/line: relaxed ≈ 100 tokens each, full ≈ 200 each.
+        // Budget 300 fits both relaxed excerpts but only one full body.
+        relax_code_sections(&mut secs, &full_map, 300);
+        assert!(secs[0].content.contains("a line 79"));
+        assert!(secs[1].content.len() > excerpt_lines(&full_b, 10).len());
+        assert!(!secs[1].content.contains("b line 79"));
+    }
+
+    #[test]
+    fn relax_is_noop_when_budget_exhausted() {
+        let full: String = (0..50)
+            .map(|i| format!("fn line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let mut full_map = std::collections::HashMap::new();
+        full_map.insert("test-id".to_string(), full);
+        let mut secs = vec![section("function", "f", "short", 0.9)];
+        // "short" is already the full content length-wise? no: content
+        // differs from map entry — but with zero headroom nothing moves.
+        relax_code_sections(&mut secs, &full_map, 0);
+        assert_eq!(secs[0].content, "short");
+    }
+
+    #[test]
+    fn relax_skips_sections_not_in_map() {
+        let full_map = std::collections::HashMap::new();
+        let mut secs = vec![section("rule", "r", "content", 0.9)];
+        relax_code_sections(&mut secs, &full_map, 1000);
+        assert_eq!(secs[0].content, "content");
     }
 
     #[test]

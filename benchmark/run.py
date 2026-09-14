@@ -156,7 +156,10 @@ def main():
                         "latency_ms": round((time.monotonic() - t1) * 1000),
                         "sections": [
                             {"entity_id": s.get("entity_id"), "source": s.get("source"),
-                             "relevance": s.get("relevance")}
+                             "title": s.get("title"), "relevance": s.get("relevance"),
+                             "content": s.get("content"),
+                             "graph_path": s.get("graph_path"),
+                             "graph_path_description": s.get("graph_path_description")}
                             for s in ctx.get("sections", [])
                         ],
                         "metadata": ctx.get("metadata"),
