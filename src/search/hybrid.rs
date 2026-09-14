@@ -32,6 +32,7 @@ use super::expand::{edge_weight, expand_with_paths};
 use super::rank::{
     ChannelInput, apply_post_merge, merge_channels, normalize_scores, resolve_channel_weights,
 };
+use super::rerank::rerank_directs;
 use super::rrf::fuse;
 use super::{SearchMode, SearchParams, SearchResult, SearchResults};
 use hybrid_helpers::knn_channel;
@@ -51,6 +52,7 @@ pub fn search(
     embeddings: QueryEmbeddings<'_>,
     params: &SearchParams,
     config: &SearchConfig,
+    reranker: Option<&dyn crate::embed::RerankModel>,
 ) -> Result<SearchResults, SearchError> {
     // Reject empty or whitespace-only queries early. An empty MATCH
     // expression causes an FTS5 syntax error — return an empty result
@@ -259,6 +261,26 @@ pub fn search(
         })
         .collect();
 
+    // 11. Cross-encoder rerank — rescoring the top directs jointly
+    //     with the query dissolves merge-proportion mismatches inside
+    //     the reranked window and lifts near-misses into the top-5.
+    //     Runs before expansion so the reranked order propagates
+    //     into expansion seeding. Absent model → skipped; the fused
+    //     list is still a valid answer.
+    if config.rerank_enabled
+        && let Some(model) = reranker
+        && model.model_files_exist()
+    {
+        rerank_directs(
+            query,
+            &mut results,
+            config.rerank_depth,
+            config.rerank_anchor,
+            config.rerank_code,
+            model,
+        );
+    }
+
     // Track access counts for direct results only (derived state for
     // composite scoring). Graph expansions are context, not retrieval.
     let accessed_ids: Vec<String> = results.iter().map(|r| r.entity.id.clone()).collect();
@@ -273,10 +295,13 @@ pub fn search(
         let seed_ids: Vec<String> = results.iter().map(|r| r.entity.id.clone()).collect();
         let exclude_ids: HashSet<String> = results.iter().map(|r| r.entity.id.clone()).collect();
 
-        // Build seed relevance map for decayed scoring of expanded entities
-        let seed_relevance: HashMap<String, f32> = results
+        // Expansion seeds keep the fused score, not the cross-encoder
+        // probability the rerank wrote into `relevance`: CE probs are
+        // near-binary, so mid-window seeds would decay every expansion
+        // below the relevance floor. top_n holds pre-rerank scores.
+        let seed_relevance: HashMap<String, f32> = top_n
             .iter()
-            .map(|r| (r.entity.id.clone(), r.relevance))
+            .map(|(id, s)| (id.clone(), *s as f32))
             .collect();
 
         let expansions = expand_with_paths(

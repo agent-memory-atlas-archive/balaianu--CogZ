@@ -40,6 +40,7 @@ fn balanced_fusion_fts_only_splits_by_type() {
         QueryEmbeddings::none(),
         &params,
         &balanced_config(),
+        None,
     )
     .unwrap();
 
@@ -98,6 +99,7 @@ fn balanced_fusion_floor_prevents_knowledge_suppression() {
         QueryEmbeddings::both(&query_vec, &query_vec),
         &params,
         &balanced_config(),
+        None,
     )
     .unwrap();
 
@@ -140,6 +142,7 @@ fn search_with_graph_expansion() {
         QueryEmbeddings::none(),
         &params,
         &balanced_config(),
+        None,
     )
     .unwrap();
 
@@ -173,6 +176,7 @@ fn search_no_results() {
         QueryEmbeddings::none(),
         &params,
         &balanced_config(),
+        None,
     )
     .unwrap();
     assert!(results.results.is_empty());
@@ -196,6 +200,7 @@ fn search_status_all_includes_stale() {
         QueryEmbeddings::none(),
         &params,
         &balanced_config(),
+        None,
     )
     .unwrap();
     assert!(results.results.is_empty());
@@ -212,6 +217,7 @@ fn search_status_all_includes_stale() {
         QueryEmbeddings::none(),
         &params,
         &balanced_config(),
+        None,
     )
     .unwrap();
     assert_eq!(results.results.len(), 1);

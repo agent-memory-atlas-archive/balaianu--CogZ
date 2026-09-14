@@ -13,6 +13,7 @@ pub mod nli;
 pub mod onnx;
 pub mod pooling;
 pub mod registry;
+pub mod rerank;
 pub mod resources;
 pub mod runtime;
 pub mod similarity;
@@ -24,12 +25,13 @@ pub use download::{
 };
 pub use model::{
     EmbeddingModel, EmbeddingResult, MockEmbeddingModel, MockNliModel, NliLabel, NliModel,
-    NliProbabilities,
+    NliProbabilities, RerankModel,
 };
 pub use model_type::ModelType;
 pub use nli::OnnxNliModel;
 pub use onnx::OnnxEmbeddingModel;
 pub use registry::{ModelKind, lookup, onnx_filename, onnx_relative_path, resolve_source};
+pub use rerank::OnnxRerankModel;
 pub use runtime::ensure_ort;
 
 /// Get the models directory: `~/.local/share/cogz/models/` on Linux,

@@ -190,7 +190,7 @@ Get CogZ system status: database stats, model availability, entity counts by typ
 |---|---|---|---|
 | `repo` | string | yes | Absolute path to project root |
 
-**Returns:** JSON with `db_path`, `entity_counts` (by type), `stale_count`, `models` (`embedding_code`, `embedding_knowledge`, `nli` — each with `available` and `name`), `db_size_bytes`, `schema_version`.
+**Returns:** JSON with `db_path`, `entity_counts` (by type), `stale_count`, `models` (`embedding_code`, `embedding_knowledge`, `nli`, `reranker` — each with `available` and `name`), `db_size_bytes`, `schema_version`.
 
 ### `consolidate`
 

@@ -54,6 +54,12 @@ pub fn run_search(
         knowledge: knowledge_emb.as_deref(),
         code: code_emb.as_deref(),
     };
+    let reranker = cogz::embed::OnnxRerankModel::with_resource_config(
+        &models_dir(),
+        &config.search.reranker_model,
+        config.embedding.model_idle_ttl,
+        config.embedding.model_min_free_mb,
+    );
 
     let params = cogz::search::SearchParams {
         entity_type,
@@ -70,7 +76,14 @@ pub fn run_search(
 
     let results = {
         let conn = storage.conn();
-        cogz::search::search(&conn, query, embeddings, &params, &config.search)?
+        cogz::search::search(
+            &conn,
+            query,
+            embeddings,
+            &params,
+            &config.search,
+            Some(&reranker),
+        )?
     };
 
     println!("Search mode: {}", results.search_mode.as_str());
@@ -151,6 +164,12 @@ pub fn run_context(
 
     let knowledge_embedding = query.and_then(|q| embed_query(&config, q));
     let code_embedding = query.and_then(|q| embed_query_with_model(&config, q, true));
+    let reranker = cogz::embed::OnnxRerankModel::with_resource_config(
+        &models_dir(),
+        &config.search.reranker_model,
+        config.embedding.model_idle_ttl,
+        config.embedding.model_min_free_mb,
+    );
 
     let params = cogz::context::AssembleParams {
         mode,
@@ -159,6 +178,7 @@ pub fn run_context(
         code_embedding: code_embedding.as_deref(),
         max_tokens,
         include_stale,
+        reranker: Some(&reranker),
     };
 
     let pack = {

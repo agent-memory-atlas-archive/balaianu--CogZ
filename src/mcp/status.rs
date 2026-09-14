@@ -8,10 +8,10 @@ use crate::storage::{Storage, crud, events};
 
 /// Check whether the embedding models are available on disk (without
 /// loading them). Returns a JSON object matching the MCP contract:
-/// `embedding_code`, `embedding_knowledge`, and `nli` — each with
-/// `{available, name}`.
+/// `embedding_code`, `embedding_knowledge`, `nli`, and `reranker` —
+/// each with `{available, name}`.
 pub fn model_availability(config: &Config) -> serde_json::Value {
-    use crate::embed::{ModelType, OnnxEmbeddingModel, OnnxNliModel};
+    use crate::embed::{ModelType, OnnxEmbeddingModel, OnnxNliModel, OnnxRerankModel, RerankModel};
 
     let models_dir = crate::embed::models_dir();
     let knowledge = OnnxEmbeddingModel::with_model_id(
@@ -49,6 +49,16 @@ pub fn model_availability(config: &Config) -> serde_json::Value {
                 serde_json::Value::Null
             } else {
                 json!(config.embedding.nli_model)
+            },
+        },
+        "reranker": {
+            "available": config.search.rerank_enabled
+                && OnnxRerankModel::new(&models_dir, &config.search.reranker_model)
+                    .model_files_exist(),
+            "name": if config.search.rerank_enabled {
+                json!(config.search.reranker_model)
+            } else {
+                serde_json::Value::Null
             },
         },
     })

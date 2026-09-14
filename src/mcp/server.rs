@@ -13,7 +13,7 @@ use rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt, model::*, tool_handler, transport::stdio,
 };
 
-use crate::embed::{ModelType, OnnxEmbeddingModel, OnnxNliModel};
+use crate::embed::{ModelType, OnnxEmbeddingModel, OnnxNliModel, OnnxRerankModel};
 use crate::mcp::errors::mcp_invalid_parameter;
 use crate::mcp::repo_cache::{RepoCache, RepoState, make_repo_state, open_repo};
 
@@ -23,6 +23,9 @@ type EmbeddingModelKey = (String, usize, ModelType);
 /// Cache key for NLI models: model_id only (no dimension or type).
 type NliModelKey = String;
 
+/// Cache key for reranker models: model_id only.
+type RerankModelKey = String;
+
 /// The MCP server. Holds a cache of repo states and a cache of model
 /// instances shared across repos. Every tool call must specify which
 /// repo it targets via the required `repo` parameter.
@@ -31,6 +34,7 @@ pub struct CogzServer {
     models_dir: PathBuf,
     embedding_models: Mutex<HashMap<EmbeddingModelKey, Arc<OnnxEmbeddingModel>>>,
     nli_models: Mutex<HashMap<NliModelKey, Arc<OnnxNliModel>>>,
+    rerank_models: Mutex<HashMap<RerankModelKey, Arc<OnnxRerankModel>>>,
 }
 
 impl CogzServer {
@@ -42,6 +46,7 @@ impl CogzServer {
             models_dir: models_dir.to_path_buf(),
             embedding_models: Mutex::new(HashMap::new()),
             nli_models: Mutex::new(HashMap::new()),
+            rerank_models: Mutex::new(HashMap::new()),
         }
     }
 
@@ -83,10 +88,17 @@ impl CogzServer {
             config.embedding.model_idle_ttl,
             config.embedding.model_min_free_mb,
         ));
+        let rerank_model = Arc::new(OnnxRerankModel::with_resource_config(
+            models_dir,
+            &config.search.reranker_model,
+            config.embedding.model_idle_ttl,
+            config.embedding.model_min_free_mb,
+        ));
 
         let knowledge_model_id = config.embedding.knowledge_model.clone();
         let code_model_id = config.embedding.code_model.clone();
         let nli_model_id = config.embedding.nli_model.clone();
+        let reranker_model_id = config.search.reranker_model.clone();
         let dimension = config.embedding.dimension;
 
         let state = make_repo_state(
@@ -96,6 +108,7 @@ impl CogzServer {
             query_model.clone(),
             code_model.clone(),
             nli_model.clone(),
+            rerank_model.clone(),
         );
 
         let repo_cache = RepoCache::new();
@@ -110,12 +123,15 @@ impl CogzServer {
 
         let mut nli_models = HashMap::new();
         nli_models.insert(nli_model_id, nli_model);
+        let mut rerank_models = HashMap::new();
+        rerank_models.insert(reranker_model_id, rerank_model);
 
         Self {
             repo_cache,
             models_dir: models_dir.to_path_buf(),
             embedding_models: Mutex::new(embedding_models),
             nli_models: Mutex::new(nli_models),
+            rerank_models: Mutex::new(rerank_models),
         }
     }
 
@@ -162,6 +178,7 @@ impl CogzServer {
                 &canonical,
                 |mt, id, dim, ttl, mb| self.get_or_create_embedding_model(mt, id, dim, ttl, mb),
                 |id, ttl, mb| self.get_or_create_nli_model(id, ttl, mb),
+                |id, ttl, mb| self.get_or_create_rerank_model(id, ttl, mb),
             ) {
                 Ok(state) => {
                     self.repo_cache.finish_open(canonical, state.clone());
@@ -241,6 +258,36 @@ impl CogzServer {
         ));
 
         let mut cache = self.nli_models.lock().unwrap_or_else(|e| e.into_inner());
+        if let Some(existing) = cache.get(model_id) {
+            return Ok(existing.clone());
+        }
+        cache.insert(model_id.to_string(), model.clone());
+        Ok(model)
+    }
+
+    /// Get a shared reranker model from the cache, or create and
+    /// cache a new one.
+    fn get_or_create_rerank_model(
+        &self,
+        model_id: &str,
+        idle_ttl: u64,
+        min_free_mb: u64,
+    ) -> Result<Arc<OnnxRerankModel>, McpError> {
+        {
+            let cache = self.rerank_models.lock().unwrap_or_else(|e| e.into_inner());
+            if let Some(model) = cache.get(model_id) {
+                return Ok(model.clone());
+            }
+        }
+
+        let model = Arc::new(OnnxRerankModel::with_resource_config(
+            &self.models_dir,
+            model_id,
+            idle_ttl,
+            min_free_mb,
+        ));
+
+        let mut cache = self.rerank_models.lock().unwrap_or_else(|e| e.into_inner());
         if let Some(existing) = cache.get(model_id) {
             return Ok(existing.clone());
         }

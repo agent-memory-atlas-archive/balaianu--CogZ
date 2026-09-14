@@ -181,10 +181,10 @@ Model management.
 ### `cogz models download`
 
 ```
-cogz models download [--repo <path>] [--code] [--knowledge] [--nli]
+cogz models download [--repo <path>] [--code] [--knowledge] [--nli] [--reranker]
 ```
 
-Download configured models from HuggingFace. Without flags, downloads all three. With `--code`, `--knowledge`, or `--nli`, downloads only the specified model.
+Download configured models from HuggingFace. Without flags, downloads all enabled models. With `--code`, `--knowledge`, `--nli`, or `--reranker`, downloads only the specified model.
 
 ### `cogz models list`
 

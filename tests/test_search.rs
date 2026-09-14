@@ -31,6 +31,11 @@ fn default_config() -> SearchConfig {
         provenance_boost: 0.0,
         fts_title_weight: 1.0,
         mmr_lambda: 0.0,
+        rerank_enabled: false,
+        rerank_depth: 20,
+        rerank_anchor: 3,
+        rerank_code: false,
+        reranker_model: "cross-encoder/ms-marco-TinyBERT-L-2-v2".to_string(),
     }
 }
 
@@ -102,6 +107,7 @@ fn fts_only_search_finds_relevant_entities() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -150,6 +156,7 @@ fn hybrid_search_fuses_fts_and_vector() {
         QueryEmbeddings::knowledge(&query_vec[0]),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -209,6 +216,7 @@ fn graph_expansion_follows_edges() {
         QueryEmbeddings::none(),
         &params,
         &no_floor,
+        None,
     )
     .unwrap();
 
@@ -277,6 +285,7 @@ fn min_relevance_prunes_weak_two_hop_structural_expansion() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -320,6 +329,7 @@ fn graph_expansion_disabled() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -362,6 +372,7 @@ fn search_filters_by_entity_type() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -391,6 +402,7 @@ fn search_excludes_stale_by_default() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
     assert!(results.results.is_empty());
@@ -419,6 +431,7 @@ fn search_includes_stale_with_status_all() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
     assert_eq!(results.results.len(), 1);
@@ -449,6 +462,7 @@ fn search_no_results_for_nonexistent_query() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
     assert!(results.results.is_empty());
@@ -509,6 +523,7 @@ fn search_with_mock_embedding_end_to_end() {
             QueryEmbeddings::none(),
             &params,
             &config.search,
+            None,
         )
         .unwrap()
     };
@@ -579,6 +594,7 @@ fn rrf_fusion_produces_sensible_ordering() {
         QueryEmbeddings::knowledge(&query_vec[0]),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -619,6 +635,7 @@ fn search_limit_truncates_results() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 
@@ -695,6 +712,7 @@ fn search_expansion_deduplicates_across_seeds() {
         QueryEmbeddings::none(),
         &params,
         &default_config(),
+        None,
     )
     .unwrap();
 

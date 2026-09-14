@@ -20,6 +20,10 @@ pub enum OnnxLayout {
     OnnxSubdir,
     /// `onnx/model_quint8_avx2.onnx` — INT8 quantized for AVX2 CPUs.
     OnnxSubdirQuantizedAvx2,
+    /// `onnx/model_quantized.onnx` — dynamic-quantized Xenova export.
+    OnnxSubdirQuantized,
+    /// `onnx/model_q4.onnx` — 4-bit quantized Xenova export.
+    OnnxSubdirQ4,
 }
 
 /// A model entry in the registry.
@@ -45,6 +49,7 @@ pub enum ModelKind {
     Code,
     Knowledge,
     Nli,
+    Reranker,
 }
 
 impl ModelKind {
@@ -53,6 +58,7 @@ impl ModelKind {
             Self::Code => "code",
             Self::Knowledge => "knowledge",
             Self::Nli => "nli",
+            Self::Reranker => "reranker",
         }
     }
 }
@@ -63,6 +69,7 @@ impl ModelKind {
 pub const DEFAULT_CODE_MODEL: &str = "nomic-ai/CodeRankEmbed-int8";
 pub const DEFAULT_KNOWLEDGE_MODEL: &str = "BAAI/bge-base-en-v1.5";
 pub const DEFAULT_NLI_MODEL: &str = "cross-encoder/nli-deberta-v3-xsmall";
+pub const DEFAULT_RERANKER_MODEL: &str = "cross-encoder/ms-marco-TinyBERT-L-2-v2";
 pub const DEFAULT_DIMENSION: usize = 768;
 
 /// Look up a model ID in the registry. Returns the actual HF source
@@ -130,6 +137,60 @@ pub fn lookup(model_id: &str) -> Option<ModelEntry> {
             query_prefix: "",
         }),
 
+        // Reranker: TinyBERT-L-2 cross-encoder — ~17MB ONNX, scores
+        // (query, candidate) pairs. dim is unused for non-embedding
+        // models.
+        "cross-encoder/ms-marco-TinyBERT-L-2-v2" => Some(ModelEntry {
+            hf_source: "cross-encoder/ms-marco-TinyBERT-L-2-v2",
+            onnx_layout: OnnxLayout::OnnxSubdir,
+            dim: 0,
+            size_mb: 17,
+            query_prefix: "",
+        }),
+
+        // Reranker alternative: MiniLM-L-6 — slightly larger, stronger.
+        "cross-encoder/ms-marco-MiniLM-L-6-v2" => Some(ModelEntry {
+            hf_source: "cross-encoder/ms-marco-MiniLM-L-6-v2",
+            onnx_layout: OnnxLayout::OnnxSubdir,
+            dim: 0,
+            size_mb: 23,
+            query_prefix: "",
+        }),
+
+        // Reranker alternative: bge-reranker-base — trained on
+        // multi-domain pairs including code, so it does not share
+        // ms-marco's prose bias. XLM-R backbone; heavier (~280MB
+        // quantized). Xenova export carries the ONNX files.
+        "BAAI/bge-reranker-base" => Some(ModelEntry {
+            hf_source: "Xenova/bge-reranker-base",
+            onnx_layout: OnnxLayout::OnnxSubdirQuantized,
+            dim: 0,
+            size_mb: 280,
+            query_prefix: "",
+        }),
+
+        // Same model, 4-bit weights — ~4x faster CPU inference at a
+        // small quality cost. The practical choice when base latency
+        // is too high.
+        "BAAI/bge-reranker-base-q4" => Some(ModelEntry {
+            hf_source: "Xenova/bge-reranker-base",
+            onnx_layout: OnnxLayout::OnnxSubdirQ4,
+            dim: 0,
+            size_mb: 150,
+            query_prefix: "",
+        }),
+
+        // Reranker alternative: mxbai xsmall — DeBERTa-v2, 71M params,
+        // broad-domain training without ms-marco's prose bias. The
+        // latency middle ground between TinyBERT and bge-base.
+        "mixedbread-ai/mxbai-rerank-xsmall-v1" => Some(ModelEntry {
+            hf_source: "mixedbread-ai/mxbai-rerank-xsmall-v1",
+            onnx_layout: OnnxLayout::OnnxSubdirQuantized,
+            dim: 0,
+            size_mb: 72,
+            query_prefix: "",
+        }),
+
         _ => None,
     }
 }
@@ -162,6 +223,8 @@ pub fn onnx_filename(layout: OnnxLayout) -> &'static str {
         OnnxLayout::RootOptimized => "model_optimized.onnx",
         OnnxLayout::OnnxSubdir => "onnx/model.onnx",
         OnnxLayout::OnnxSubdirQuantizedAvx2 => "onnx/model_quint8_avx2.onnx",
+        OnnxLayout::OnnxSubdirQuantized => "onnx/model_quantized.onnx",
+        OnnxLayout::OnnxSubdirQ4 => "onnx/model_q4.onnx",
     }
 }
 
@@ -172,6 +235,8 @@ pub fn onnx_relative_path(layout: OnnxLayout) -> &'static str {
         OnnxLayout::RootOptimized => "model_optimized.onnx",
         OnnxLayout::OnnxSubdir => "onnx/model.onnx",
         OnnxLayout::OnnxSubdirQuantizedAvx2 => "onnx/model_quint8_avx2.onnx",
+        OnnxLayout::OnnxSubdirQuantized => "onnx/model_quantized.onnx",
+        OnnxLayout::OnnxSubdirQ4 => "onnx/model_q4.onnx",
     }
 }
 

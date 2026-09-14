@@ -209,6 +209,32 @@ impl NliModel for MockNliModel {
     }
 }
 
+/// Trait for cross-encoder reranker models.
+///
+/// Scores `(query, candidate)` pairs jointly — unlike bi-encoder
+/// embeddings, the model reads both texts together, so its scores are
+/// comparable across candidates regardless of which embedding space
+/// retrieved them. Used by the search pipeline's rerank stage.
+/// `OnnxRerankModel` is the production implementation.
+pub trait RerankModel: Send + Sync {
+    /// Score each candidate against the query. Returns one relevance
+    /// probability per candidate, same order as the input slice.
+    fn score_batch(&self, query: &str, candidates: &[&str]) -> EmbeddingResult<Vec<f32>>;
+
+    /// Model identifier for logging.
+    fn model_name(&self) -> &str;
+
+    /// Whether the model is loaded and ready for inference.
+    fn is_available(&self) -> bool;
+
+    /// Whether the model files exist on disk — lets callers skip the
+    /// rerank stage without paying a failed load attempt per query.
+    /// Default true so lightweight mocks need no filesystem.
+    fn model_files_exist(&self) -> bool {
+        true
+    }
+}
+
 fn has_negation(text: &str) -> bool {
     let negations = [
         " not ",

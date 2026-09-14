@@ -63,6 +63,7 @@ fn session_start_records_event_and_returns_cold_start_pack() {
         &model,
         &code_mod,
         None,
+        None,
         &LifecycleInput {
             event: LifecycleEvent::SessionStart,
             prompt: None,
@@ -102,6 +103,7 @@ fn prompt_submit_records_event_and_returns_task_pack() {
         &model,
         &code_mod,
         None,
+        None,
         &LifecycleInput {
             event: LifecycleEvent::PromptSubmit,
             prompt: Some("testing"),
@@ -137,6 +139,7 @@ fn pre_tool_use_records_event_only() {
         &cogz_dir,
         &model,
         &code_mod,
+        None,
         None,
         &LifecycleInput {
             event: LifecycleEvent::PreToolUse,
@@ -175,6 +178,7 @@ fn post_tool_use_records_event_but_not_observation() {
         &cogz_dir,
         &model,
         &code_mod,
+        None,
         None,
         &LifecycleInput {
             event: LifecycleEvent::PostToolUse,
@@ -224,6 +228,7 @@ fn post_tool_use_without_tool_result_records_event_only() {
         &cogz_dir,
         &model,
         &code_mod,
+        None,
         None,
         &LifecycleInput {
             event: LifecycleEvent::PostToolUse,
@@ -284,6 +289,7 @@ fn file_save_for_cogz_file_triggers_sync_not_reindex() {
         &model,
         &code_mod,
         None,
+        None,
         &LifecycleInput {
             event: LifecycleEvent::FileSave,
             prompt: None,
@@ -324,6 +330,7 @@ fn file_save_without_path_records_event_only() {
         &model,
         &code_mod,
         None,
+        None,
         &LifecycleInput {
             event: LifecycleEvent::FileSave,
             prompt: None,
@@ -354,6 +361,7 @@ fn session_end_records_event_and_runs_consolidation() {
         &cogz_dir,
         &model,
         &code_mod,
+        None,
         None,
         &LifecycleInput {
             event: LifecycleEvent::SessionEnd,

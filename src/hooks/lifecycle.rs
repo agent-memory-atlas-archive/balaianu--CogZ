@@ -126,6 +126,7 @@ pub struct ReindexSummary {
 
 /// Handle a lifecycle event: record it, optionally assemble a context
 /// pack, optionally record an observation.
+#[allow(clippy::too_many_arguments)]
 pub fn handle_lifecycle_event(
     storage: &Arc<Storage>,
     config: &Config,
@@ -133,6 +134,7 @@ pub fn handle_lifecycle_event(
     query_model: &OnnxEmbeddingModel,
     code_model: &OnnxEmbeddingModel,
     nli_model: Option<&dyn NliModel>,
+    reranker: Option<&dyn crate::embed::RerankModel>,
     input: &LifecycleInput,
 ) -> Result<LifecycleOutput, LifecycleError> {
     let event_type = input.event.event_type();
@@ -191,6 +193,7 @@ pub fn handle_lifecycle_event(
             code_model,
             ContextMode::ColdStart,
             None,
+            reranker,
         )?),
         LifecycleEvent::PromptSubmit => {
             let query = input.prompt;
@@ -201,6 +204,7 @@ pub fn handle_lifecycle_event(
                 code_model,
                 ContextMode::Task,
                 query,
+                reranker,
             )?)
         }
         _ => None,
@@ -261,6 +265,7 @@ fn assemble_pack(
     code_model: &OnnxEmbeddingModel,
     mode: ContextMode,
     query: Option<&str>,
+    reranker: Option<&dyn crate::embed::RerankModel>,
 ) -> Result<ContextPack, LifecycleError> {
     let knowledge_embedding = query.and_then(|q| {
         use crate::embed::EmbeddingModel;
@@ -289,6 +294,7 @@ fn assemble_pack(
                 code_embedding: code_embedding.as_deref(),
                 max_tokens: None,
                 include_stale: false,
+                reranker,
             },
             config,
         )?

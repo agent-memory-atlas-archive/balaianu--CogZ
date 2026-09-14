@@ -120,6 +120,20 @@ pub fn run_status(repo: &Path) -> anyhow::Result<()> {
             "not found"
         }
     );
+    if config.search.rerank_enabled {
+        use cogz::embed::RerankModel;
+        let rerank_model =
+            cogz::embed::OnnxRerankModel::new(&models_dir, &config.search.reranker_model);
+        println!(
+            "    Reranker ({}): {}",
+            config.search.reranker_model,
+            if rerank_model.model_files_exist() {
+                "available"
+            } else {
+                "not found"
+            }
+        );
+    }
     let embedding_count = cogz::storage::embeddings::count_embeddings(&conn)?;
     println!("  Embeddings stored: {}", embedding_count);
 
