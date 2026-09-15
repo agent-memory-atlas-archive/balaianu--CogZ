@@ -24,33 +24,6 @@ impl DeliveryKind {
             Self::Search => "search",
         }
     }
-
-    fn from(s: &str) -> Result<Self, StorageError> {
-        match s {
-            "pack" => Ok(Self::Pack),
-            "search" => Ok(Self::Search),
-            other => Err(StorageError::InvalidUsage(format!(
-                "unknown delivery kind: {other}"
-            ))),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Delivery {
-    pub id: i64,
-    pub kind: DeliveryKind,
-    pub event_id: Option<i64>,
-    pub closed: bool,
-    pub created_at: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct EntityUsage {
-    pub delivery_id: i64,
-    pub entity_id: String,
-    pub outcome: String,
-    pub created_at: String,
 }
 
 #[derive(Debug, Default, Clone)]
@@ -169,33 +142,6 @@ pub fn pending_entities(conn: &Connection) -> Result<Vec<(String, String)>, Stor
         out.push(r?);
     }
     Ok(out)
-}
-
-/// Most recent delivery, if any.
-pub fn latest_delivery(conn: &Connection) -> Result<Option<Delivery>, StorageError> {
-    let mut stmt = conn.prepare(
-        "SELECT id, kind, event_id, closed, created_at FROM deliveries ORDER BY id DESC LIMIT 1",
-    )?;
-    let mut rows = stmt.query_map([], |r| {
-        Ok((
-            r.get::<_, i64>(0)?,
-            r.get::<_, String>(1)?,
-            r.get::<_, Option<i64>>(2)?,
-            r.get::<_, i64>(3)?,
-            r.get::<_, String>(4)?,
-        ))
-    })?;
-    match rows.next() {
-        Some(Ok((id, kind, event_id, closed, created_at))) => Ok(Some(Delivery {
-            id,
-            kind: DeliveryKind::from(&kind)?,
-            event_id,
-            closed: closed != 0,
-            created_at,
-        })),
-        Some(Err(e)) => Err(e.into()),
-        None => Ok(None),
-    }
 }
 
 /// Aggregate usage outcomes, optionally scoped to a delivery kind.

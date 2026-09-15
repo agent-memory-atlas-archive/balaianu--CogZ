@@ -80,20 +80,8 @@ const SECTION_DUP_JACCARD: f64 = 0.5;
 /// boilerplate entities repeat (every test file's `mod tests` module
 /// is the same one-liner). Keeping both spends budget twice on the
 /// same text. Sections must be sorted by priority first — the first
-/// occurrence wins. Returns kept sections plus descriptions of
-/// dropped dupes.
-pub fn dedup_sections(sections: Vec<ContextSection>) -> (Vec<ContextSection>, Vec<String>) {
-    let (kept, dupes) = partition_dups(sections);
-    let dropped = dupes
-        .into_iter()
-        .map(|s| format!("{}:{} (duplicate content)", s.source, s.title))
-        .collect();
-    (kept, dropped)
-}
-
-/// Split sections into kept and content-duplicate sections. Same rule
-/// as [`dedup_sections`] but returns the dropped sections themselves
-/// so the caller can demote them instead of discarding.
+/// occurrence wins. Returns kept sections plus the dropped dupes
+/// themselves so the caller can demote them instead of discarding.
 pub fn partition_dups(sections: Vec<ContextSection>) -> (Vec<ContextSection>, Vec<ContextSection>) {
     let mut kept: Vec<(ContextSection, std::collections::HashSet<String>)> =
         Vec::with_capacity(sections.len());
@@ -369,11 +357,11 @@ mod tests {
             section("function", "func", &func_lines, 0.8),
         ];
         sort_by_priority(&mut secs, ContextMode::Task);
-        let (kept, dropped) = dedup_sections(secs);
+        let (kept, dropped) = partition_dups(secs);
         assert_eq!(kept.len(), 1);
         assert_eq!(kept[0].source, "file");
         assert_eq!(dropped.len(), 1);
-        assert!(dropped[0].contains("duplicate"));
+        assert_eq!(dropped[0].title, "func");
     }
 
     #[test]
@@ -385,7 +373,7 @@ mod tests {
             section("module", "tests a", "mod tests", 0.9),
             section("module", "tests b", "mod tests", 0.8),
         ];
-        let (kept, dropped) = dedup_sections(secs);
+        let (kept, dropped) = partition_dups(secs);
         assert_eq!(kept.len(), 1);
         assert_eq!(dropped.len(), 1);
     }
@@ -396,7 +384,7 @@ mod tests {
             section("file", "a.rs", "alpha beta gamma delta epsilon", 0.9),
             section("function", "b", "zeta eta theta iota kappa", 0.8),
         ];
-        let (kept, dropped) = dedup_sections(secs);
+        let (kept, dropped) = partition_dups(secs);
         assert_eq!(kept.len(), 2);
         assert!(dropped.is_empty());
     }
