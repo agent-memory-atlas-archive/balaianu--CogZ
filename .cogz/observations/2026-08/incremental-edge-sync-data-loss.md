@@ -2,9 +2,9 @@
 id: 63d8e153-f773-4975-9674-1ca830f1110d
 title: Incremental reindex lost all structural edges (sync_code_edges global delete)
 type: observation
-status: active
+status: stale
 created_at: "2026-08-31T10:00:00Z"
-updated_at: "2026-09-05T12:17:25.597153443+00:00"
+updated_at: "2026-09-15T16:50:46.237995756+00:00"
 references: []
 source: agent
 confidence: 0.9

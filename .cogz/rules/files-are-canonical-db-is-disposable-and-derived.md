@@ -2,9 +2,9 @@
 id: 78fe7be0-c777-4c7b-afab-1d378f16daeb
 title: Files are canonical — DB is disposable and derived
 type: rule
-status: active
+status: stale
 created_at: "2026-08-28T19:34:00Z"
-updated_at: "2026-09-06T07:32:43.444969904+00:00"
+updated_at: "2026-09-15T16:50:46.296610970+00:00"
 references: []
 confidence: 1
 validation_count: 2

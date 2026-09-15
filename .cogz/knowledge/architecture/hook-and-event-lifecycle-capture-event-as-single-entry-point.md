@@ -2,9 +2,9 @@
 id: fafa51e8-83a0-41cf-896d-78ac2f4ad720
 title: Hook and event lifecycle — capture-event as single entry point
 type: knowledge
-status: active
+status: stale
 created_at: "2026-09-13T21:42:37.625349447+00:00"
-updated_at: "2026-09-13T21:42:37.625349447+00:00"
+updated_at: "2026-09-15T16:50:47.735614872+00:00"
 references: ["59203bdf-b181-50bc-94c2-eb5e755667c7", "2f2833b0-4956-5683-8c29-b5b06ede478c"]
 category: architecture
 tags: ["architecture", "hooks", "events", "lifecycle"]

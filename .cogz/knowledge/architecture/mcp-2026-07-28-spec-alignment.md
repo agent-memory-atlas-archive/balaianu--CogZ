@@ -2,9 +2,9 @@
 id: 12b7be64-e950-4f69-99f2-ceb31da698b6
 title: MCP 2026-07-28 spec alignment
 type: knowledge
-status: active
+status: stale
 created_at: "2026-09-05T07:07:11.328112049+00:00"
-updated_at: "2026-09-05T07:07:11.328112049+00:00"
+updated_at: "2026-09-15T16:50:45.703104489+00:00"
 references: []
 category: architecture
 tags: ["mcp", "protocol", "spec", "alignment"]

@@ -24,6 +24,7 @@ merge_strategy = "detect"
 min_relevance = 0.05
 edge_weighted_expansion = true
 silence_threshold = 0.02
+graph_seed_min_sim = 0.7
 top_diversity_share = 0.3
 provenance_boost = 0.3
 fts_title_weight = 5.0
@@ -47,7 +48,7 @@ default_token_budget = 4096
 task_token_budget = 8192
 escalation_token_budget = 8192
 cold_start_rules = 5
-task_max_results = 25
+task_max_results = 40
 task_max_hops = 2
 escalation_max_results = 20
 escalation_max_hops = 3
@@ -55,3 +56,4 @@ escalation_max_hops = 3
 [retention]
 observation_prune_after_days = 90
 tombstone_max_count = 1000
+

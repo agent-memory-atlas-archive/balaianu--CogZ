@@ -2,9 +2,9 @@
 id: aa6fefb2-87ad-4fc6-a531-44e204535419
 title: "Degradation must be loud, never silent"
 type: rule
-status: active
+status: stale
 created_at: "2026-09-13T21:43:09.786665067+00:00"
-updated_at: "2026-09-13T21:43:09.786665067+00:00"
+updated_at: "2026-09-15T16:50:46.832643542+00:00"
 references: ["e251d8d5-24b1-5758-b4d6-f598690f2721", "047656c5-e449-58d7-b951-3b948a609cd9", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227"]
 confidence: 0.95
 ---

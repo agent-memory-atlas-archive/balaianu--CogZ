@@ -2,9 +2,9 @@
 id: c1e3f4a5-09cc-414e-831c-8f5710374d4a
 title: Destructive operations must update DB before destroying the file
 type: rule
-status: active
+status: stale
 created_at: "2026-09-03T12:13:00Z"
-updated_at: "2026-09-04T09:20:00.799545738+00:00"
+updated_at: "2026-09-15T16:50:47.284218617+00:00"
 references: []
 category: correctness
 tags: ["prune", "deletion", "ordering", "file-first"]

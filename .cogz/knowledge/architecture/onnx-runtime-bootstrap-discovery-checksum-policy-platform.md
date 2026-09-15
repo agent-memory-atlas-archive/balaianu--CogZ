@@ -2,9 +2,9 @@
 id: 3d5567f4-0294-4f88-923c-d449a1e14b67
 title: "ONNX Runtime bootstrap — discovery, checksum policy, platform matrix"
 type: knowledge
-status: active
+status: stale
 created_at: "2026-09-13T21:42:36.555826008+00:00"
-updated_at: "2026-09-13T21:42:36.555826008+00:00"
+updated_at: "2026-09-15T16:50:46.004042843+00:00"
 references: ["50362381-7da8-564d-acc8-fc88130ab3ba", "2cb3afdc-72f0-56c0-a4ff-401674f1e87d"]
 category: architecture
 tags: ["architecture", "onnx", "embedding", "degradation"]

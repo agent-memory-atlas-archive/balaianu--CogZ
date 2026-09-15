@@ -2,9 +2,9 @@
 id: 0f94c6ed-7c73-4467-9b9a-ebe4d1581f51
 title: "Cross-encoder rerank: implemented, measured, reverted — no real gain on v2 corpus"
 type: knowledge
-status: active
+status: stale
 created_at: "2026-09-14T22:33:39.550018+00:00"
-updated_at: "2026-09-15T02:15:00.000000+00:00"
+updated_at: "2026-09-15T16:50:45.585953229+00:00"
 references: []
 category: decisions
 tags: ["decision", "search", "rerank", "benchmark", "reverted"]

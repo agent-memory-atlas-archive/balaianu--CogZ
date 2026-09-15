@@ -2,9 +2,9 @@
 id: c4d5e6f7-89ab-4cde-f012-345678900113
 title: FTS5 query crash on hyphenated search terms
 type: observation
-status: active
+status: stale
 created_at: "2026-08-29T23:30:00Z"
-updated_at: "2026-09-03T21:27:12.291624157+00:00"
+updated_at: "2026-09-15T16:50:47.334336068+00:00"
 references: []
 source: agent
 confidence: 0.9
