@@ -32,9 +32,12 @@ CogZ is a local-first, code-aware engineering cognition runtime. This document d
 
 ```
 src/
+  lib.rs               Library root
   main.rs              CLI entry point (clap)
   cli.rs               CLI command dispatch
   cli_embed.rs         CLI embedding helpers
+  net.rs               HTTP agents with bounded timeouts
+  security/            Secret pattern scanning
   commands/            CLI command implementations
     mod.rs             index, reindex, status, reset, consolidate
     doctor.rs          doctor health check
@@ -45,6 +48,7 @@ src/
   storage/             SQLite layer
     schema.rs          Migrations, schema version
     crud.rs            Entity CRUD, EntityType enum
+    crud_batch.rs      Batched entity ops (stale marks, tombstones, cascade deletes)
     edges.rs           Edge CRUD (graph relationships)
     embeddings.rs      vec0 embedding storage and KNN search
     events.rs          Domain event recording
@@ -52,33 +56,45 @@ src/
     query.rs           Entity queries (by type, by reference)
     status.rs          Status state machine
     access.rs          Entity access tracking
+    usage.rs           Delivery + entity-usage tracking
   files/               File I/O and file→DB sync
     frontmatter.rs     Minimal YAML frontmatter parser
     entities.rs        EntityFile struct, read/write
     sync.rs            File→DB synchronization
     sync_ops.rs        Sync operations (create/update/stale)
     embed_sync.rs      Embedding computation and storage
+    events.rs          Event recording for sync operations
+    refs.rs            File-backed edge sync from frontmatter
   embed/               ONNX model loading and inference
     onnx.rs            Embedding model (CodeRankEmbed, bge-base)
     nli.rs             NLI model (contradiction detection)
+    inference.rs       Batched tokenization and embedding extraction
+    pooling.rs         Mean pooling over token embeddings
+    model_type.rs      Code vs knowledge model kind
     runtime.rs         ONNX Runtime initialization
     download.rs        Model download via hf-hub
     registry.rs        Model ID → HF source mapping
+    resources.rs       Resource checks for load decisions
+    checksum.rs        ORT lib path + checksum verification
     cache.rs           Content-hash embedding cache
     model.rs           Traits: EmbeddingModel, NliModel
     suppress.rs        Stderr suppression during ONNX init
     similarity.rs      Cosine similarity, L2→cosine conversion
   search/              Hybrid search
-    hybrid.rs          FTS + vector fusion
+    hybrid.rs          FTS + vector + graph fusion orchestrator
+    hybrid_helpers.rs  Helpers extracted for the 400-line limit
+    graph_retrieval.rs Graph-first channel: seeds → traversal → candidates
+    prf.rs             Pseudo-relevance feedback (second FTS pass)
     rrf.rs             Reciprocal Rank Fusion
-    expand.rs          Graph expansion (BFS)
+    rank.rs            Post-merge ranking: floor, provenance, MMR
+    expand.rs          Post-merge graph expansion (BFS)
     balance.rs         Source-type balancing (experimental)
     scoring.rs         Relevance scoring, recency decay
     describe.rs        Graph path description
   context/             Context pack assembly
     assemble.rs        Mode-specific assembly orchestrator
     modes.rs           ContextMode enum (cold_start, task, escalation)
-    compress.rs        Token estimation, priority sorting, budget fitting
+    compress.rs        Token estimation, dedup, budget fitting
     code_map.rs        Cold-start code map generation
   consolidate/         Memory consolidation
     dedup.rs           Duplicate detection (title + embedding)
@@ -91,27 +107,38 @@ src/
     detection.rs       Unified change detection (wraps git_diff)
     baseline.rs        Baseline commit read/write/should-update
     reindex.rs         Processing layer (takes changed files, processes them)
-    tree_sitter.rs     AST extraction (7 languages)
+    tree_sitter/       AST extraction, per-language (rust, python, go, js/ts/tsx, bash)
     gitignore.rs       Gitignore-aware source file scanner
     git_diff.rs        Git diff-based change detection
-    code_graph.rs      Structural edge sync (calls, imports, extends, contains)
-    sync.rs            Code entity DB sync
+    code_graph/        Structural edge sync (calls, imports, extends, contains)
+    sync/              Code entity DB sync
     auto_link.rs       Knowledge → code auto-linking
     stale_flagging.rs  Stale knowledge flagging on code changes
   mcp/                 MCP server
     server.rs          ServerHandler impl, repo/model caching
+    repo_cache.rs      Repo cache: herd protection, LRU, staleness
     tools.rs           Tool router (13 tools)
+    tools_write.rs     record_observation, create_rule, create_knowledge, update_knowledge
+    tools_query.rs     query_*, list_entities
+    tools_search.rs    search, get_context
+    tools_system.rs    get_status, consolidate, capture_event
     params.rs          Tool parameter structs
+    responses.rs       Response JSON builders
+    status.rs          get_status response builder
     helpers.rs         Shared helpers (file writes, response builders)
     entity_helpers.rs  Entity creation with dedup/contradiction
+    update_knowledge.rs update_knowledge helper (extracted)
+    dedup.rs           Re-export of consolidate/dedup
+    errors.rs          Structured MCP error helpers
   hooks/               Lifecycle event handlers
-    lifecycle.rs       Event dispatch, context pack assembly, background reindex spawn
+    lifecycle.rs       Event dispatch, context packs, delivery/hit tracking
     capture.rs         CLI capture-event handler
     handlers.rs        Event-specific handlers (file_save, session_end)
     reindex.rs         Background reindex spawn + debounce
   doctor/              Health checks
     checks.rs          Doctor report, all check implementations
     checks_analysis.rs Extracted analysis helpers
+    prune.rs           Observation pruning with tombstones
   init.rs              cogz init
   update.rs            Self-update from GitHub releases
 ```

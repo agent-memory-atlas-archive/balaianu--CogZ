@@ -230,6 +230,7 @@ cogz doctor [--repo <path>] [--prune-observations] [--confirm]
 **Usage metrics** (schema v4+):
 
 - `Memory hit rate` — share of delivered pack entities the agent later touched (hits / delivered). Hits are detected on `post_tool_use`: a tool touching an entity's file, or a result containing the entity's id or title. Attribution is approximate — knowledge and rules are undercounted when the agent acts on their content without re-reading the file.
+- `Search hit rate` — same measure for `search` tool deliveries. Printed alongside the pack rate so push vs pull efficacy can be compared.
 - `Dead weight` — entities never surfaced in any delivery over the recent session window (default: last 10 sessions).
 - `Write quality` — file-backed entities (observation, rule, knowledge) never delivered at all.
 

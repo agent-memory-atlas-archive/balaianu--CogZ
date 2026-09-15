@@ -164,13 +164,13 @@ Normal operation is automatic: hooks fire on lifecycle events, the agent drives 
 | `cogz init` | Initialize `.cogz/` in a repository |
 | `cogz index [--no-download]` | Sync files to DB + index source code |
 | `cogz reindex` | Incremental reindex (changed files only) |
-| `cogz search <query>` | Hybrid FTS + vector search |
+| `cogz search <query>` | Hybrid FTS + vector + graph search |
 | `cogz context --mode <mode> [query]` | Assemble context pack |
 | `cogz status` | DB stats, entity counts, model status |
 | `cogz consolidate [--dry-run]` | Run promotion and merge |
 | `cogz capture-event <type>` | Capture lifecycle event from hooks |
 | `cogz models <download\|list\|clean>` | Model management |
-| `cogz doctor [--prune-observations]` | Health check + policy violations |
+| `cogz doctor [--prune-observations]` | Health check, policy violations, usage metrics |
 | `cogz update [--check]` | Self-update from GitHub releases |
 | `cogz reset [--purge]` | Drop DB (optionally purge observations) |
 | `cogz mcp-stdio` | Run MCP server over stdio |

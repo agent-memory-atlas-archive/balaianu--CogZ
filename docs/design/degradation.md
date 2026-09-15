@@ -13,7 +13,7 @@ When no models are available (not downloaded, download disabled, or insufficient
 | `cogz init` | yes | No models needed |
 | `cogz index` | yes | Files sync without embeddings; code entities indexed without vector embeddings |
 | `cogz reindex` | yes | Incremental sync works |
-| `cogz search` | yes | FTS5 search only, no vector results |
+| `cogz search` | yes | FTS5 search only, no vector results; graph-first retrieval and PRF still run (both seed from FTS hits) |
 | `cogz context` | yes | FTS-only retrieval, no vector ranking |
 | `cogz status` | yes | Reports models as unavailable |
 | `cogz consolidate` | yes | Title-based dedup only; no NLI contradiction detection; no NLI-confirmed merge |
@@ -33,6 +33,7 @@ When no models are available (not downloaded, download disabled, or insufficient
 | NLI contradiction detection | no contradiction flagging | No NLI model |
 | NLI-confirmed merge | candidates reported but not merged | No NLI model; conservative — no merge without confirmation |
 | Code embeddings | code entities have no vectors | No code model |
+| Silence gate | skipped | Needs KNN channel signals; FTS-only mode never silences |
 
 ## Model unavailability
 

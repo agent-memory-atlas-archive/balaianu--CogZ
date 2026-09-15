@@ -177,7 +177,7 @@ Assemble a context pack — a coherent, scoped, ranked collection of information
 | `include_stale` | boolean | no | Include stale entities (default: `false`) |
 | `max_tokens` | integer | no | Override token budget from config |
 
-**Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`).
+**Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`). A trailing section with `source: "overflow_index"` lists entities that were retrieved but didn't fit the token budget as compact `type:title:id` pointers — pull them individually via `search` or a narrower `get_context` query.
 
 ## System tools
 
