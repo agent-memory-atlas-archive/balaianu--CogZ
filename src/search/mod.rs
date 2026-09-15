@@ -9,12 +9,15 @@
 pub mod balance;
 pub mod describe;
 pub mod expand;
+pub mod graph_retrieval;
 pub mod hybrid;
+pub mod prf;
 pub mod rank;
 pub mod rrf;
 pub mod scoring;
 
 pub use expand::ExpansionResult;
+pub use graph_retrieval::graph_retrieve;
 pub use hybrid::search;
 pub use rrf::fuse;
 pub use scoring::{ScoreWeights, cold_start_score, recency_decay};

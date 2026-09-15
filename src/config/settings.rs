@@ -170,6 +170,60 @@ pub struct SearchConfig {
     /// measured on the CogZ self-corpus (0.5 ≈ 0.7, marginally worse).
     #[serde(default = "default_mmr_lambda")]
     pub mmr_lambda: f64,
+    /// Graph-first retrieval: traverse edges outward from FTS seeds
+    /// before the merge, producing candidates that compete with FTS
+    /// and KNN at full score. Targets recall — entities reachable via
+    /// the call/reference graph that embedding similarity can't
+    /// surface. Works in FTS-only mode (needs no embeddings). Set
+    /// false for the legacy graph-as-decayed-expansion-only pipeline.
+    #[serde(default = "default_true")]
+    pub graph_first_enabled: bool,
+    /// FTS hits used as graph traversal seeds.
+    #[serde(default = "default_graph_max_seeds")]
+    pub graph_max_seeds: usize,
+    /// Traversal depth for primary graph retrieval.
+    #[serde(default = "default_graph_max_hops")]
+    pub graph_max_hops: usize,
+    /// Per-hop score decay for graph candidates. Less aggressive than
+    /// the 0.3 expansion decay because these are primary candidates.
+    #[serde(default = "default_graph_hop_decay")]
+    pub graph_hop_decay: f64,
+    /// RRF weight for the graph candidate channel in the merge.
+    #[serde(default = "default_graph_weight")]
+    pub graph_weight: f64,
+    /// Absolute-strength escape hatch for the silence gate: even when
+    /// within-batch gradients are flat, a channel whose top-3 cosine
+    /// reaches this floor counts as a real match and prevents
+    /// silencing. Model-scale dependent — measured on
+    /// bge-base/CodeRankEmbed where real matches sit ≥0.65 and
+    /// negatives ≤0.66.
+    #[serde(default = "default_silence_strength_floor")]
+    pub silence_strength_floor: f64,
+    /// Pseudo-relevance feedback: mine informative terms from the top
+    /// FTS hits and run a second, expanded FTS pass whose novel hits
+    /// join the expansion set — they count for recall but can never
+    /// displace direct results. Targets vocabulary-mismatch misses —
+    /// entities whose identifiers share no terms with the query but
+    /// share domain vocabulary with the top hits.
+    #[serde(default = "default_true")]
+    pub prf_enabled: bool,
+    /// Feedback documents mined for expansion terms.
+    #[serde(default = "default_prf_feedback_docs")]
+    pub prf_feedback_docs: usize,
+    /// Expansion terms added to the second-pass query.
+    #[serde(default = "default_prf_max_terms")]
+    pub prf_max_terms: usize,
+    /// Minimum absolute cosine similarity for a KNN hit to count as a
+    /// direct-eligible graph seed. Semantic neighbors are noisier than
+    /// lexical hits — on lexically-aligned queries weak KNN seeds pull
+    /// corroborated-but-irrelevant candidates into the direct merge.
+    /// Sub-floor seeds still traverse, but candidates reachable only
+    /// through them are demoted to the expansion set (inform, never
+    /// displace). FTS seeds are always direct-eligible. 0.0 disables
+    /// the floor. Model-scale dependent — fit on bge-base/
+    /// CodeRankEmbed where real matches sit ≥0.65.
+    #[serde(default = "default_graph_seed_min_sim")]
+    pub graph_seed_min_sim: f64,
 }
 
 fn default_code_vec_weight() -> f64 {
@@ -214,6 +268,38 @@ fn default_fts_title_weight() -> f64 {
 
 fn default_mmr_lambda() -> f64 {
     0.7
+}
+
+fn default_graph_max_seeds() -> usize {
+    20
+}
+
+fn default_graph_max_hops() -> usize {
+    2
+}
+
+fn default_graph_seed_min_sim() -> f64 {
+    0.7
+}
+
+fn default_graph_hop_decay() -> f64 {
+    0.5
+}
+
+fn default_graph_weight() -> f64 {
+    0.35
+}
+
+fn default_silence_strength_floor() -> f64 {
+    0.64
+}
+
+fn default_prf_feedback_docs() -> usize {
+    5
+}
+
+fn default_prf_max_terms() -> usize {
+    8
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -320,7 +406,7 @@ impl Default for ContextConfig {
             task_token_budget: 8192,
             escalation_token_budget: 8192,
             cold_start_rules: 5,
-            task_max_results: 25,
+            task_max_results: 40,
             task_max_hops: 2,
             escalation_max_results: 20,
             escalation_max_hops: 3,
@@ -364,6 +450,16 @@ impl Config {
                 provenance_boost: default_provenance_boost(),
                 fts_title_weight: default_fts_title_weight(),
                 mmr_lambda: default_mmr_lambda(),
+                graph_first_enabled: true,
+                graph_max_seeds: 10,
+                graph_max_hops: 2,
+                graph_hop_decay: 0.5,
+                graph_weight: 0.35,
+                silence_strength_floor: 0.64,
+                prf_enabled: true,
+                prf_feedback_docs: 5,
+                prf_max_terms: 8,
+                graph_seed_min_sim: 0.0,
             },
             consolidation: ConsolidationConfig {
                 dedup_threshold: 0.85,

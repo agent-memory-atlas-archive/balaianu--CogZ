@@ -9,7 +9,8 @@ Query
   → embed query (knowledge model + code model, if available)
   → FTS5 search (always available)
   → KNN vector search (knowledge_embeddings + code_embeddings, if available)
-  → RRF fusion (combine FTS + vector results)
+  → Graph-first retrieval (BFS from FTS seeds → scored candidates)
+  → RRF fusion (combine FTS + vector + graph results)
   → Graph expansion (BFS from matched entities)
   → Return ranked results with graph provenance
 ```
@@ -80,7 +81,17 @@ The diversity-slot guarantee (`top_diversity_share`, described above) runs last,
 
 `min_relevance` (default: 0.05) drops merged and expanded results below the threshold; `filtered_count` in the response reports how many were removed. Note the decay interaction: any floor ≥ 0.09 makes all two-hop expansions unreachable (max expanded score is `seed × 0.3²`).
 
-`silence_threshold` (default: 0.02) is the silence gate: when *neither* channel's KNN batch shows a distinctive match (within-batch gradient below the threshold on both), search returns empty instead of a confidently-ranked list of irrelevant entities. 0.0 disables. Skipped in FTS-only mode. The `signals` field in the response exposes both channels' strength and gradient for recalibration.
+`silence_threshold` (default: 0.02) is the silence gate: when *neither* channel's KNN batch shows a distinctive match (within-batch gradient below the threshold on both) **and** neither channel's top-3 absolute cosine reaches `silence_strength_floor` (default: 0.64), search returns empty instead of a confidently-ranked list of irrelevant entities. The strength escape matters: flat gradients also occur when a query's nearest neighbors are uniformly *decent* (no standout), which suppressed real queries entirely. 0.0 disables. Skipped in FTS-only mode. The `signals` field in the response exposes both channels' strength and gradient for recalibration.
+
+## Graph-first retrieval
+
+With `graph_first_enabled` (default: true), the top `graph_max_seeds` (default: 20) hits of **each direct channel** — FTS, code KNN, and knowledge KNN — seed a bounded BFS before fusion over **curated edge types only** (`references`, `supports`, `contradicts`, `superseded_by`, `derived_from`, `promoted_from`). Multi-channel seeding matters because a lexical miss can still be a semantic hit: a rule titled "Degradation must be loud" is unreachable from "error handling rule" via FTS but a KNN top hit can still seed its `references` edges. Seeds are capped at `graph_max_seeds × 3` total after per-channel rank-weighting.
+
+Traversal runs **per seed** (the shared visited set in `expand_with_paths` would otherwise claim each entity for its first-reaching seed and hide corroboration), and a candidate's score is the **sum over all (seed, path) contributions**: `seed_weight × graph_hop_decay^hops × edge_weights`. Summed reinforcement is the selectivity signal that lets wide seeding add recall — entities adjacent to several seeds outrank single-seed noise. Candidates below 0.2 are dropped (a lone weak path can't outrank real evidence but would still occupy RRF ranks). `graph_hop_decay` defaults to 0.5 (vs. the 0.3 expansion decay — these are primary candidates, not context).
+
+KNN seeds are additionally gated by `graph_seed_min_sim` (default: 0.7 cosine): a KNN hit below the floor still traverses, but a candidate reachable **only** through sub-floor seeds is marked weak and demoted to the post-merge expansion set — it can add recall but never occupy a direct slot. FTS seeds are always direct-eligible (a lexical match is a reliable prior). This bounds the graph channel's noise on lexically-aligned queries, where weak semantic neighbors otherwise pull in corroborated-but-irrelevant candidates. Candidates split by entity type and fuse into the code and knowledge channels as a third list weighted `graph_weight` (default: 0.35).
+
+Structural edges (`contains`, `calls`, `imports`) are deliberately excluded from this channel — measured on the benchmark, their fan-out injected more noise than signal and displaced correct direct results. `auto_references` (auto-extracted knowledge→code mentions) were tested and also excluded: reachable to real misses but not selective enough for direct slots. Both remain in the post-merge expansion path. In FTS-only mode seeds come from FTS alone. Set `graph_first_enabled = false` for the legacy pipeline.
 
 ## Graph expansion
 
@@ -89,6 +100,11 @@ After RRF fusion, the top results are used as seeds for BFS graph expansion. The
 With `edge_weighted_expansion` (default: true), edges are traversed strongest-first during BFS so curated semantic edges (`references`, `supports`, `contradicts`, `superseded_by`, `derived_from`, `promoted_from` = 1.0) claim contested nodes before `auto_references` (0.7) or structural edges like `imports`/`contains` (0.5). Expanded entities get a decayed relevance score: `seed_relevance × 0.3^hops × edge_weights`. This ensures direct matches rank higher than graph-expanded results and curated references survive the expansion cap instead of losing to mass structural fan-out.
 
 Each result includes a `graph_path` — the list of entity IDs from the seed to this entity — and a human-readable `graph_path_description`.
+
+Two non-edge sources also join the expansion set, scored like 1-hop expansions and subject to the same cap:
+
+- **PRF second pass** (`prf_enabled`, default: true): informative terms mined from the top `prf_feedback_docs` (5) FTS hits — appearing in at least two of them, title-weighted — extend the query for a second FTS pass (`prf_max_terms`, 8). Hits not already in the first-pass results join as "shares vocabulary" expansions. This is the only vocabulary-mismatch recall path when embedding models are absent.
+- **Deep-channel candidates**: channels fetch `limit × 3` and entities ranked beyond `limit` in *at least two* channels join as "deep candidate" expansions. Single-channel deep hits are usually noise; multi-channel corroboration is the selectivity test.
 
 **Max hops** is configurable per mode:
 - Task mode: `task_max_hops` (default: 2)

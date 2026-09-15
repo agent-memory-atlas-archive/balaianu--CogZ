@@ -36,6 +36,12 @@ top_diversity_share = 0.3
 provenance_boost = 0.3
 fts_title_weight = 5.0
 mmr_lambda = 0.7
+graph_first_enabled = true
+graph_max_seeds = 20
+graph_seed_min_sim = 0.7
+graph_max_hops = 2
+graph_hop_decay = 0.5
+graph_weight = 0.35
 
 [consolidation]
 dedup_threshold = 0.85
@@ -60,7 +66,7 @@ default_token_budget = 4096
 task_token_budget = 8192
 escalation_token_budget = 8192
 cold_start_rules = 5
-task_max_results = 25
+task_max_results = 40
 task_max_hops = 2
 escalation_max_results = 20
 escalation_max_hops = 3
@@ -123,7 +129,17 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `fts_title_weight` | f64 | `5.0` | FTS5 `bm25()` column weight for the title column (content stays 1.0). 1.0 = uniform ranking, values >1 favor title matches. |
 | `mmr_lambda` | f64 | `0.7` | MMR diversification: `λ·relevance − (1−λ)·max cosine to already-selected same-channel items`. Similarity never crosses channels (different embedding spaces). 0.0 disables; skipped in FTS-only mode. |
 | `edge_weighted_expansion` | bool | `true` | Traverse edges strongest-first and weight expansion scores by edge type (curated semantic > auto_references > structural). |
-| `silence_threshold` | f64 | `0.02` | Return empty when both channels' KNN gradients are below this. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
+| `silence_threshold` | f64 | `0.02` | Return empty when both channels' KNN gradients are below this AND both top-3 strengths are below `silence_strength_floor`. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
+| `silence_strength_floor` | f64 | `0.64` | Escape hatch on the silence gate: a channel whose top-3 absolute cosine reaches this floor prevents silencing even with flat gradients. Model-scale dependent — calibrated on bge-base/CodeRankEmbed. |
+| `prf_enabled` | bool | `true` | Pseudo-relevance feedback: mine informative terms from the top FTS hits, re-run FTS, and add novel hits as expansion results. The only vocabulary-mismatch recall path in FTS-only mode. |
+| `prf_feedback_docs` | usize | `5` | FTS hits mined for expansion terms. |
+| `prf_max_terms` | usize | `8` | Expansion terms appended to the second-pass query. |
+| `graph_first_enabled` | bool | `true` | Traverse curated edges from top direct-channel hits (FTS + KNN) before the merge, fusing graph candidates at full score. `false` = legacy graph-as-expansion-only pipeline. |
+| `graph_max_seeds` | usize | `20` | Top hits per direct channel (FTS + each KNN space) used as graph traversal seeds. |
+| `graph_seed_min_sim` | f64 | `0.7` | Minimum cosine similarity for a KNN hit to count as a direct-eligible graph seed. Sub-floor seeds still traverse, but candidates reachable only through them are demoted to expansion. FTS seeds always qualify. `0.0` disables. |
+| `graph_max_hops` | usize | `2` | Traversal depth for primary graph retrieval. |
+| `graph_hop_decay` | f64 | `0.5` | Per-hop score decay for graph candidates — less aggressive than the 0.3 expansion decay since these are primary results. |
+| `graph_weight` | f64 | `0.35` | RRF weight for the graph candidate channel in the merge. |
 
 ### `[consolidation]`
 
@@ -160,7 +176,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `task_token_budget` | usize | `8192` | Token budget for task context packs. Must be > 0. |
 | `escalation_token_budget` | usize | `8192` | Token budget for escalation context packs. Must be > 0. |
 | `cold_start_rules` | usize | `5` | Number of recent rules to include in cold_start mode. |
-| `task_max_results` | u32 | `25` | Max search results in task mode before expansion. |
+| `task_max_results` | u32 | `40` | Max search results in task mode before expansion. |
 | `task_max_hops` | usize | `2` | Graph expansion hops in task mode. |
 | `escalation_max_results` | u32 | `20` | Max search results in escalation mode before expansion. |
 | `escalation_max_hops` | usize | `3` | Graph expansion hops in escalation mode. |

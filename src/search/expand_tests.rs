@@ -36,7 +36,8 @@ fn expand_1_hop() {
     insert_edge(&conn, &edge("obs1", "func1", "references")).unwrap();
 
     let exclude = HashSet::new();
-    let results = expand_with_paths(&conn, &["obs1".to_string()], 1, &exclude, None, true).unwrap();
+    let results =
+        expand_with_paths(&conn, &["obs1".to_string()], 1, &exclude, None, true, None).unwrap();
 
     assert_eq!(results.len(), 1);
     assert_eq!(results[0].entity_id, "func1");
@@ -56,7 +57,8 @@ fn expand_2_hops() {
     insert_edge(&conn, &edge("func1", "func2", "calls")).unwrap();
 
     let exclude = HashSet::new();
-    let results = expand_with_paths(&conn, &["obs1".to_string()], 2, &exclude, None, true).unwrap();
+    let results =
+        expand_with_paths(&conn, &["obs1".to_string()], 2, &exclude, None, true, None).unwrap();
 
     assert_eq!(results.len(), 2);
     let func2 = results.iter().find(|r| r.entity_id == "func2").unwrap();
@@ -75,7 +77,8 @@ fn expand_excludes_specified_ids() {
     let mut exclude = HashSet::new();
     exclude.insert("func1".to_string());
 
-    let results = expand_with_paths(&conn, &["obs1".to_string()], 1, &exclude, None, true).unwrap();
+    let results =
+        expand_with_paths(&conn, &["obs1".to_string()], 1, &exclude, None, true, None).unwrap();
     assert!(results.is_empty());
 }
 
@@ -85,7 +88,8 @@ fn expand_no_edges() {
     insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
 
     let exclude = HashSet::new();
-    let results = expand_with_paths(&conn, &["obs1".to_string()], 2, &exclude, None, true).unwrap();
+    let results =
+        expand_with_paths(&conn, &["obs1".to_string()], 2, &exclude, None, true, None).unwrap();
     assert!(results.is_empty());
 }
 
@@ -95,7 +99,8 @@ fn expand_zero_hops() {
     insert_entity(&conn, &Entity::new("obs1", "observation", "Bug", "c")).unwrap();
 
     let exclude = HashSet::new();
-    let results = expand_with_paths(&conn, &["obs1".to_string()], 0, &exclude, None, true).unwrap();
+    let results =
+        expand_with_paths(&conn, &["obs1".to_string()], 0, &exclude, None, true, None).unwrap();
     assert!(results.is_empty());
 }
 
@@ -117,6 +122,7 @@ fn expand_filters_by_status() {
         &exclude,
         Some("active"),
         true,
+        None,
     )
     .unwrap();
     assert!(results.is_empty());
@@ -128,6 +134,7 @@ fn expand_filters_by_status() {
         &exclude,
         Some("stale"),
         true,
+        None,
     )
     .unwrap();
     assert_eq!(results.len(), 1);

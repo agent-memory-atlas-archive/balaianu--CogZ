@@ -25,6 +25,19 @@ pub(crate) fn edge_weight(edge_type: &str) -> f32 {
     }
 }
 
+/// Human-authored semantic edge types (the `edge_weight == 1.0` set).
+/// Graph-first retrieval traverses these plus `auto_references`;
+/// structural edges (`contains`, `imports`) fan out into adjacency
+/// noise while semantic links are high-precision relevance signals.
+pub(crate) const CURATED_EDGE_TYPES: &[&str] = &[
+    "references",
+    "supports",
+    "contradicts",
+    "superseded_by",
+    "derived_from",
+    "promoted_from",
+];
+
 /// A graph-expanded entity with its provenance path.
 #[derive(Debug, Clone)]
 pub struct ExpansionResult {
@@ -49,6 +62,8 @@ pub struct ExpansionResult {
 /// Follows both outgoing and incoming edges. Entities already in
 /// `exclude_ids` are not returned (prevents duplicating direct search
 /// matches). Only entities matching `status_filter` are included.
+/// `edge_types` restricts which edge types are traversed; `None`
+/// follows all edges.
 pub fn expand_with_paths(
     conn: &Connection,
     seed_ids: &[String],
@@ -56,6 +71,7 @@ pub fn expand_with_paths(
     exclude_ids: &HashSet<String>,
     status_filter: Option<&str>,
     include_tests: bool,
+    edge_types: Option<&HashSet<&str>>,
 ) -> Result<Vec<ExpansionResult>, StorageError> {
     if max_hops == 0 || seed_ids.is_empty() {
         return Ok(Vec::new());
@@ -88,6 +104,9 @@ pub fn expand_with_paths(
 
         // Single query: all edges where either endpoint is in the frontier
         let mut edges = get_edges_involving_batch(conn, &frontier)?;
+        if let Some(allowed) = edge_types {
+            edges.retain(|(_, _, t)| allowed.contains(t.as_str()));
+        }
         if edges.is_empty() {
             break;
         }

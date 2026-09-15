@@ -376,6 +376,16 @@ fn build_sql_query(table: &str) -> String {
         provenance_boost: 0.0,
         fts_title_weight: 1.0,
         mmr_lambda: 0.0,
+        graph_first_enabled: false,
+        graph_max_seeds: 10,
+        graph_max_hops: 2,
+        graph_hop_decay: 0.5,
+        graph_weight: 0.35,
+        silence_strength_floor: 0.64,
+        prf_enabled: false,
+        prf_feedback_docs: 5,
+        prf_max_terms: 8,
+        graph_seed_min_sim: 0.0,
     };
     let results = search(
         &conn,

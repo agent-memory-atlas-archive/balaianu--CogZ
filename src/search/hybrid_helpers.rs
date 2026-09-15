@@ -6,6 +6,20 @@ use crate::storage::crud::{Entity, EntityType, get_entities_batch};
 use crate::storage::embeddings::{EmbeddingSpace, knn_search_with_filters};
 
 use super::SearchError;
+use crate::search::ChannelSignals;
+
+/// Silence-gate predicate: true means "no channel produced any
+/// evidence of a match" — flat within-batch gradient AND top-3
+/// absolute strength below the floor on every channel. The strength
+/// clause is the escape hatch for queries whose nearest neighbors are
+/// uniformly decent (flat gradient, real matches).
+pub(super) fn should_silence(signals: &ChannelSignals, threshold: f64, floor: f64) -> bool {
+    threshold > 0.0
+        && signals.code_gradient < threshold
+        && signals.knowledge_gradient < threshold
+        && signals.code_strength < floor
+        && signals.knowledge_strength < floor
+}
 
 /// Split FTS results into code and knowledge entity ID lists.
 /// Code entities: function, class, file, module.
@@ -72,15 +86,13 @@ pub(super) fn knn_channel(
         entity_map.insert(entity.id.clone(), entity);
     }
 
-    // All filters applied in SQL — just collect results up to limit.
+    // Keep the full knn_limit fetch — the wider list gives RRF a real
+    // candidate pool; the merge caps output at the caller's limit.
     let mut filtered_ids = Vec::new();
     let mut filtered_distances = Vec::new();
     for (id, dist) in knn_results {
         filtered_ids.push(id);
         filtered_distances.push(dist);
-        if filtered_ids.len() >= limit as usize {
-            break;
-        }
     }
     Ok((filtered_ids, filtered_distances))
 }
