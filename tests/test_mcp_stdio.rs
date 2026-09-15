@@ -22,6 +22,47 @@ const COGZ_BIN: &str = env!("CARGO_BIN_EXE_cogz");
 /// indexed database.
 const REAL_REPO: &str = env!("CARGO_MANIFEST_DIR");
 
+/// Bound for subprocess calls that must exit on their own — a wedged
+/// `cogz` child must fail the test fast, not hang the job for hours.
+const SUBPROCESS_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(180);
+
+/// Run `cogz <args> --repo <repo>` to completion with a hard timeout.
+/// Kills the child and fails the test if it outlives the bound.
+fn run_cogz(args: &[&str], repo: &std::path::Path) -> std::process::ExitStatus {
+    run_cogz_env(args, repo, &[])
+}
+
+fn run_cogz_env(
+    args: &[&str],
+    repo: &std::path::Path,
+    env: &[(String, String)],
+) -> std::process::ExitStatus {
+    let mut child = Command::new(COGZ_BIN)
+        .args(args)
+        .arg("--repo")
+        .arg(repo)
+        .envs(env.iter().map(|(k, v)| (k.as_str(), v.as_str())))
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .expect("failed to spawn cogz");
+    let deadline = std::time::Instant::now() + SUBPROCESS_TIMEOUT;
+    loop {
+        match child.try_wait() {
+            Ok(Some(status)) => return status,
+            Ok(None) if std::time::Instant::now() < deadline => {
+                std::thread::sleep(std::time::Duration::from_millis(200));
+            }
+            Ok(None) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                panic!("cogz {args:?} timed out after {SUBPROCESS_TIMEOUT:?}");
+            }
+            Err(e) => panic!("cogz {args:?} wait failed: {e}"),
+        }
+    }
+}
+
 // ── JSON-RPC client ─────────────────────────────────────────────
 
 /// Read one JSON-RPC line from stdout, skipping any non-JSON lines.
@@ -164,13 +205,7 @@ impl TempRepo {
         let path = dir.path().to_path_buf();
 
         // cogz init
-        let status = Command::new(COGZ_BIN)
-            .args(["init", "--repo"])
-            .arg(&path)
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .expect("failed to run cogz init");
+        let status = run_cogz(&["init"], &path);
         assert!(status.success(), "cogz init failed");
 
         // Add a knowledge file so search and queries have something to find.
@@ -190,13 +225,7 @@ impl TempRepo {
         ).unwrap();
 
         // cogz index --no-download (FTS-only, no ONNX models needed)
-        let status = Command::new(COGZ_BIN)
-            .args(["index", "--no-download", "--repo"])
-            .arg(&path)
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .expect("failed to run cogz index");
+        let status = run_cogz(&["index", "--no-download"], &path);
         assert!(status.success(), "cogz index failed");
 
         Self { dir, path }
@@ -870,14 +899,11 @@ fn ensure_real_repo_indexed(env: &[(String, String)]) {
     if db_path.exists() {
         return;
     }
-    let status = Command::new(COGZ_BIN)
-        .args(["index", "--no-download", "--repo"])
-        .arg(REAL_REPO)
-        .envs(env.iter().map(|(k, v)| (k.as_str(), v.as_str())))
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .expect("failed to run cogz index on real repo");
+    let status = run_cogz_env(
+        &["index", "--no-download"],
+        std::path::Path::new(REAL_REPO),
+        env,
+    );
     assert!(
         status.success(),
         "cogz index --no-download failed on real repo"
