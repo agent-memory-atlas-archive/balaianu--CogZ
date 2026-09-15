@@ -65,6 +65,23 @@ impl std::fmt::Display for IssueKind {
     }
 }
 
+/// Usage instrumentation summary. `None` when the usage tables don't
+/// exist (pre-v4 database) — doctor degrades rather than fails.
+#[derive(Debug, Default, Clone)]
+pub struct UsageReport {
+    pub pack_hits: usize,
+    pub pack_misses: usize,
+    pub search_hits: usize,
+    pub search_misses: usize,
+    pub pending: usize,
+    /// Entities never surfaced in any delivery within the recent
+    /// session window.
+    pub dead_weight: Vec<String>,
+    /// File-backed entities (observation/rule/knowledge) never
+    /// delivered at all.
+    pub never_retrieved_files: Vec<String>,
+}
+
 /// Full doctor report.
 #[derive(Debug, Default)]
 pub struct DoctorReport {
@@ -74,6 +91,7 @@ pub struct DoctorReport {
     pub entity_count: i64,
     pub edge_count: i64,
     pub models_available: bool,
+    pub usage: Option<UsageReport>,
 }
 
 /// Run all health checks and return a report.
@@ -114,7 +132,50 @@ pub fn run_doctor(
     // Corrupt entity properties or event payloads
     check_corrupt_json(&conn, &mut report);
 
+    // Usage instrumentation (hit rate, dead weight, write quality)
+    report.usage = check_usage(&conn);
+
     report
+}
+
+/// Sessions a dead-weight entity must have survived to count.
+const DEAD_WEIGHT_SESSIONS: usize = 10;
+
+fn check_usage(conn: &Connection) -> Option<UsageReport> {
+    let tables: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM sqlite_master \
+             WHERE type = 'table' AND name IN ('deliveries', 'entity_usage')",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap_or(0);
+    if tables != 2 {
+        return None;
+    }
+
+    use crate::storage::usage;
+    let pack = usage::usage_summary(conn, Some(usage::DeliveryKind::Pack)).ok()?;
+    let search = usage::usage_summary(conn, Some(usage::DeliveryKind::Search)).ok()?;
+    let cutoff = usage::session_cutoff(conn, DEAD_WEIGHT_SESSIONS)
+        .ok()
+        .flatten();
+    let dead_weight = match cutoff {
+        Some(ts) => usage::never_delivered_since(conn, &ts).ok()?,
+        None => usage::never_delivered(conn).ok()?,
+    };
+    let never_retrieved_files =
+        usage::never_delivered_by_type(conn, &["observation", "rule", "knowledge"]).ok()?;
+
+    Some(UsageReport {
+        pack_hits: pack.hits,
+        pack_misses: pack.misses,
+        search_hits: search.hits,
+        search_misses: search.misses,
+        pending: pack.pending + search.pending,
+        dead_weight,
+        never_retrieved_files,
+    })
 }
 
 fn check_integrity(conn: &Connection) -> bool {

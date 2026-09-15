@@ -227,6 +227,14 @@ cogz doctor [--repo <path>] [--prune-observations] [--confirm]
 - Corrupt JSON in entity properties or event payloads
 - Corrupt embedding blobs
 
+**Usage metrics** (schema v4+):
+
+- `Memory hit rate` — share of delivered pack entities the agent later touched (hits / delivered). Hits are detected on `post_tool_use`: a tool touching an entity's file, or a result containing the entity's id or title. Attribution is approximate — knowledge and rules are undercounted when the agent acts on their content without re-reading the file.
+- `Dead weight` — entities never surfaced in any delivery over the recent session window (default: last 10 sessions).
+- `Write quality` — file-backed entities (observation, rule, knowledge) never delivered at all.
+
+Deliveries are recorded on every context pack (`session_start`, `prompt_submit`, `get_context`) and every `search` call. Entities start `pending`; a tool touch marks them `hit`, and the next delivery boundary or `session_end` closes the rest as `miss`. Usage tables are disposable derived state — `cogz reset` + `cogz index` rebuilds cleanly without them.
+
 ## `cogz update`
 
 Self-update from GitHub releases.

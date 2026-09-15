@@ -42,6 +42,31 @@ pub fn run_doctor(repo: &Path, prune_observations: bool, confirm: bool) -> anyho
         }
     );
 
+    if let Some(usage) = &report.usage {
+        let pack_total = usage.pack_hits + usage.pack_misses;
+        let pct = (usage.pack_hits * 100).checked_div(pack_total).unwrap_or(0);
+        println!(
+            "  Memory hit rate: {}% ({} hits / {} pack entities)",
+            pct, usage.pack_hits, pack_total
+        );
+        let search_total = usage.search_hits + usage.search_misses;
+        let spct = (usage.search_hits * 100)
+            .checked_div(search_total)
+            .unwrap_or(0);
+        println!(
+            "  Search hit rate: {}% ({} hits / {} search entities)",
+            spct, usage.search_hits, search_total
+        );
+        println!(
+            "  Dead weight: {} entities never retrieved in last 10 sessions",
+            usage.dead_weight.len()
+        );
+        println!(
+            "  Write quality: {} file entities never retrieved",
+            usage.never_retrieved_files.len()
+        );
+    }
+
     if report.issues.is_empty() {
         println!("\n  No issues found.");
     } else {

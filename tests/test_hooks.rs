@@ -395,3 +395,104 @@ fn insert_test_observation(storage: &Storage, title: &str, content: &str) {
     let conn = storage.conn();
     insert_entity(&conn, &entity).unwrap();
 }
+
+#[test]
+fn usage_tracking_delivers_hits_and_misses() {
+    use cogz::storage::usage;
+    let (storage, config, cogz_dir, _dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    // The cold-start pack always includes the top-scored knowledge
+    // entry — a knowledge entity is a guaranteed delivery without
+    // depending on search/model behavior.
+    let id = uuid::Uuid::new_v4().to_string();
+    {
+        use cogz::storage::crud::{Entity, insert_entity};
+        let mut entity = Entity::new(
+            &id,
+            "knowledge",
+            "usage tracking entity",
+            "content about usage tracking",
+        );
+        entity.file_path = Some("knowledge/usage-tracking.md".to_string());
+        let conn = storage.conn();
+        insert_entity(&conn, &entity).unwrap();
+    }
+
+    let fire = |input: LifecycleInput| {
+        handle_lifecycle_event(
+            &storage, &config, &cogz_dir, &model, &code_mod, None, &input,
+        )
+        .unwrap()
+    };
+
+    let pack = fire(LifecycleInput {
+        event: LifecycleEvent::SessionStart,
+        prompt: None,
+        tool_name: None,
+        tool_result: None,
+        file_path: None,
+    })
+    .context_pack
+    .expect("pack");
+
+    let delivered = pack.sections.iter().any(|s| s.entity_id == id);
+    assert!(delivered, "test entity must be in the cold-start pack");
+
+    // Touch the entity's file — an absolute path inside .cogz/.
+    let abs_path = cogz_dir.join("knowledge/usage-tracking.md");
+    fire(LifecycleInput {
+        event: LifecycleEvent::PostToolUse,
+        prompt: None,
+        tool_name: Some("read_file"),
+        tool_result: Some("ok"),
+        file_path: Some(abs_path.to_str().unwrap()),
+    });
+
+    {
+        let conn = storage.conn();
+        let outcome: String = conn
+            .query_row(
+                "SELECT outcome FROM entity_usage WHERE entity_id = ?",
+                [&id],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(outcome, "hit");
+    }
+
+    // Next pack closes the previous delivery — untouched entities miss.
+    fire(LifecycleInput {
+        event: LifecycleEvent::PromptSubmit,
+        prompt: Some("something else entirely"),
+        tool_name: None,
+        tool_result: None,
+        file_path: None,
+    });
+
+    {
+        let conn = storage.conn();
+        let pack_summary = usage::usage_summary(&conn, Some(usage::DeliveryKind::Pack)).unwrap();
+        assert!(pack_summary.hits >= 1);
+        assert_eq!(pack_summary.pending, 0);
+    }
+
+    // session_end closes the remaining open delivery.
+    fire(LifecycleInput {
+        event: LifecycleEvent::SessionEnd,
+        prompt: None,
+        tool_name: None,
+        tool_result: None,
+        file_path: None,
+    });
+    let conn = storage.conn();
+    let open: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM deliveries WHERE closed = 0",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(open, 0);
+}

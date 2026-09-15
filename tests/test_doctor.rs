@@ -414,3 +414,39 @@ fn doctor_detects_corrupt_entity_json() {
         "corrupt JSON issue should reference the entity ID"
     );
 }
+
+#[test]
+fn doctor_reports_usage_metrics() {
+    use cogz::storage::usage;
+    let (storage, config, cogz_dir, _dir) = setup();
+
+    let obs = make_observation("Used obs", "content");
+    write_and_sync(&storage, &cogz_dir, &obs, "observations/2026-08");
+    let dead = make_observation("Dead weight obs", "content");
+    write_and_sync(&storage, &cogz_dir, &dead, "observations/2026-08");
+
+    {
+        let conn = storage.conn();
+        let did = usage::record_delivery(&conn, usage::DeliveryKind::Pack, None).unwrap();
+        usage::record_delivered(&conn, did, std::slice::from_ref(&obs.id)).unwrap();
+        usage::record_hits(&conn, std::slice::from_ref(&obs.id)).unwrap();
+        usage::close_open_deliveries(&conn).unwrap();
+    }
+
+    let report = run_doctor(&storage, &config, &cogz_dir, &cogz_dir);
+    let usage = report.usage.expect("usage report");
+    assert_eq!(usage.pack_hits, 1);
+    assert_eq!(usage.pack_misses, 0);
+    assert!(
+        usage.dead_weight.contains(&dead.id),
+        "never-delivered entity should be dead weight"
+    );
+    assert!(
+        !usage.dead_weight.contains(&obs.id),
+        "delivered entity is not dead weight"
+    );
+    assert!(
+        usage.never_retrieved_files.contains(&dead.id),
+        "never-delivered observation is a write-quality signal"
+    );
+}

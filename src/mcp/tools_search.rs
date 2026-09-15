@@ -51,13 +51,36 @@ pub async fn search(
             max_hops: if expand { task_max_hops } else { 0 },
             include_tests: false,
         };
-        search_entities(
+        let results = search_entities(
             &conn,
             &params.query,
             embeddings,
             &search_params,
             &search_config,
-        )
+        )?;
+        // Usage tracking: record what was delivered so post_tool_use
+        // hits can credit it. Best-effort — a tracking failure must
+        // never fail a search.
+        let delivered: Vec<String> = results
+            .results
+            .iter()
+            .map(|r| r.entity.id.clone())
+            .collect();
+        match crate::storage::usage::record_delivery(
+            &conn,
+            crate::storage::usage::DeliveryKind::Search,
+            None,
+        ) {
+            Ok(delivery_id) => {
+                if let Err(e) =
+                    crate::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                {
+                    tracing::warn!("usage tracking: record delivered failed: {e}");
+                }
+            }
+            Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
+        }
+        Ok::<_, crate::search::SearchError>(results)
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
@@ -89,7 +112,13 @@ pub async fn get_context(
             .as_deref()
             .and_then(|q| embed_query_for_search(&code_model, q));
         let conn = storage.conn();
-        assemble_context(
+        // An agent-pulled pack is the same delivery boundary as a
+        // pushed one: prior pending entities become misses, and this
+        // pack's sections are tracked for hits.
+        if let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
+            tracing::warn!("usage tracking: close deliveries failed: {e}");
+        }
+        let pack = assemble_context(
             &conn,
             &AssembleParams {
                 mode,
@@ -100,7 +129,23 @@ pub async fn get_context(
                 include_stale: params.include_stale.unwrap_or(false),
             },
             &config,
-        )
+        )?;
+        let delivered: Vec<String> = pack.sections.iter().map(|s| s.entity_id.clone()).collect();
+        match crate::storage::usage::record_delivery(
+            &conn,
+            crate::storage::usage::DeliveryKind::Pack,
+            None,
+        ) {
+            Ok(delivery_id) => {
+                if let Err(e) =
+                    crate::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                {
+                    tracing::warn!("usage tracking: record delivered failed: {e}");
+                }
+            }
+            Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
+        }
+        Ok::<_, crate::context::AssembleError>(pack)
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?

@@ -183,33 +183,62 @@ pub fn handle_lifecycle_event(
     }
 
     // Assemble context pack for session_start and prompt_submit.
+    // A new pack is a usage boundary: entities pending in earlier
+    // deliveries that the agent never touched become misses. The
+    // delivery window is pack-to-pack (or pack-to-session-end), which
+    // is the honest unit of "did the agent use what we gave it".
     let context_pack = match input.event {
-        LifecycleEvent::SessionStart => Some(assemble_pack(
-            storage,
-            config,
-            query_model,
-            code_model,
-            ContextMode::ColdStart,
-            None,
-        )?),
-        LifecycleEvent::PromptSubmit => {
-            let query = input.prompt;
-            Some(assemble_pack(
-                storage,
-                config,
-                query_model,
-                code_model,
-                ContextMode::Task,
-                query,
-            )?)
+        LifecycleEvent::SessionStart | LifecycleEvent::PromptSubmit => {
+            {
+                let conn = storage.conn();
+                if let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
+                    tracing::warn!("usage tracking: close deliveries failed: {e}");
+                }
+            }
+            let (mode, query) = match input.event {
+                LifecycleEvent::SessionStart => (ContextMode::ColdStart, None),
+                _ => (ContextMode::Task, input.prompt),
+            };
+            let pack = assemble_pack(storage, config, query_model, code_model, mode, query)?;
+            {
+                let conn = storage.conn();
+                let entity_ids: Vec<String> =
+                    pack.sections.iter().map(|s| s.entity_id.clone()).collect();
+                match crate::storage::usage::record_delivery(
+                    &conn,
+                    crate::storage::usage::DeliveryKind::Pack,
+                    Some(event_id),
+                ) {
+                    Ok(delivery_id) => {
+                        if let Err(e) =
+                            crate::storage::usage::record_delivered(&conn, delivery_id, &entity_ids)
+                        {
+                            tracing::warn!("usage tracking: record delivered failed: {e}");
+                        }
+                    }
+                    Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
+                }
+            }
+            Some(pack)
         }
         _ => None,
     };
 
-    // post_tool_use: event is recorded above (audit trail). We no longer
+    // post_tool_use: event is recorded above (audit trail) — plus usage
+    // hit detection: if the tool touched a file or named an entity that
+    // a pending delivery surfaced, mark it used. We no longer
     // auto-create observation files for every tool use — that flooded
     // .cogz/observations/ with low-value entries. The agent decides
     // what's salient via the record_observation MCP tool.
+    if input.event == LifecycleEvent::PostToolUse {
+        let conn = storage.conn();
+        let hits = detect_touched_entities(&conn, cogz_dir, input.file_path, input.tool_result);
+        if !hits.is_empty()
+            && let Err(e) = crate::storage::usage::record_hits(&conn, &hits)
+        {
+            tracing::warn!("usage tracking: record hits failed: {e}");
+        }
+    }
     let observation_id: Option<String> = None;
 
     // For file_save, either reindex source code (source files) or
@@ -235,6 +264,13 @@ pub fn handle_lifecycle_event(
     // are git-tracked and reviewable; merged entities are superseded
     // (not deleted) and remain in the graph.
     let consolidation_summary = if input.event == LifecycleEvent::SessionEnd {
+        // Session boundary closes all open deliveries — anything the
+        // agent didn't touch by now is a miss.
+        let conn = storage.conn();
+        if let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
+            tracing::warn!("usage tracking: close deliveries failed: {e}");
+        }
+        drop(conn);
         Some(crate::hooks::handlers::handle_session_end(
             storage, config, cogz_dir, nli_model,
         ))
@@ -249,6 +285,79 @@ pub fn handle_lifecycle_event(
         reindex_summary,
         consolidation_summary,
     })
+}
+
+/// Entities the agent touched in a tool call. Attribution is
+/// approximate: a file read/write credits every entity on that path
+/// (file + its functions/classes), and a tool result mentioning a
+/// pending entity's title or id credits that entity. Knowledge-entity
+/// hits undercount — the agent can act on a rule without re-reading
+/// its file.
+fn detect_touched_entities(
+    conn: &rusqlite::Connection,
+    cogz_dir: &Path,
+    file_path: Option<&str>,
+    tool_result: Option<&str>,
+) -> Vec<String> {
+    let mut ids: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+    if let Some(raw) = file_path {
+        for candidate in normalize_file_candidates(raw, cogz_dir) {
+            match crate::storage::usage::entities_for_file(conn, &candidate) {
+                Ok(found) => ids.extend(found),
+                Err(e) => tracing::warn!("usage tracking: file lookup failed: {e}"),
+            }
+        }
+    }
+
+    if let Some(text) = tool_result
+        && !text.is_empty()
+        && let Ok(pending) = crate::storage::usage::pending_entities(conn)
+    {
+        for (id, title) in pending {
+            if text.contains(&id) || (title.len() >= 8 && text.contains(&title)) {
+                ids.insert(id);
+            }
+        }
+    }
+
+    ids.into_iter().collect()
+}
+
+/// Candidate `entities.file_path` forms for a hook-supplied path.
+/// Code entities store repo-relative paths; entity files store
+/// cogz-relative paths. cogz_dir may itself be relative (`./.cogz`
+/// when --repo is `.`), so strip prefixes against its canonical
+/// absolute form too. Returns every form worth matching.
+fn normalize_file_candidates(raw: &str, cogz_dir: &Path) -> Vec<String> {
+    let mut out = Vec::new();
+    let path = Path::new(raw);
+
+    let cogz_abs = std::fs::canonicalize(cogz_dir).unwrap_or_else(|_| cogz_dir.to_path_buf());
+    for base in [cogz_dir, cogz_abs.as_path()] {
+        if let Ok(rel) = path.strip_prefix(base) {
+            out.push(rel.to_string_lossy().to_string());
+        }
+        if let Some(repo_root) = base.parent()
+            && let Ok(rel) = path.strip_prefix(repo_root)
+        {
+            let rel = rel.to_string_lossy().to_string();
+            out.push(rel.clone());
+            if let Some(inner) = rel.strip_prefix(".cogz/") {
+                out.push(inner.to_string());
+            }
+        }
+    }
+
+    let trimmed = raw.trim_start_matches("./").trim_start_matches('/');
+    out.push(trimmed.to_string());
+    if let Some(inner) = trimmed.strip_prefix(".cogz/") {
+        out.push(inner.to_string());
+    }
+
+    out.sort();
+    out.dedup();
+    out
 }
 
 /// Assemble a context pack, embedding the query with both models

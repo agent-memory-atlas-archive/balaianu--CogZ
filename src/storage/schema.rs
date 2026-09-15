@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 3;
+pub const SCHEMA_VERSION: u32 = 4;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -32,6 +32,10 @@ pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), Sto
 
     if current < 3 {
         migrate_v3(conn, embedding_dim)?;
+    }
+
+    if current < 4 {
+        migrate_v4(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -276,6 +280,41 @@ fn migrate_v3(conn: &Connection, embedding_dim: usize) -> Result<(), StorageErro
     Ok(())
 }
 
+/// Migration v4: usage instrumentation. `deliveries` tracks each batch
+/// of entities shown to the agent (a context pack or a search result
+/// set); `entity_usage` tracks the per-entity outcome — `pending`
+/// until the agent touches it (`hit`) or the next delivery boundary
+/// closes it (`miss`). Derived state: both tables are disposable and
+/// rebuilt from agent activity, never from canonical files.
+fn migrate_v4(conn: &Connection) -> Result<(), StorageError> {
+    conn.execute_batch(
+        r#"
+        CREATE TABLE IF NOT EXISTS deliveries (
+            id          INTEGER PRIMARY KEY,
+            kind        TEXT NOT NULL,
+            event_id    INTEGER,
+            closed      INTEGER DEFAULT 0,
+            created_at  TEXT NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS entity_usage (
+            id          INTEGER PRIMARY KEY,
+            delivery_id INTEGER NOT NULL REFERENCES deliveries(id),
+            entity_id   TEXT NOT NULL REFERENCES entities(id),
+            outcome     TEXT NOT NULL DEFAULT 'pending',
+            created_at  TEXT NOT NULL
+        );
+
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_usage_unique
+            ON entity_usage(delivery_id, entity_id);
+        CREATE INDEX IF NOT EXISTS idx_usage_delivery ON entity_usage(delivery_id);
+        CREATE INDEX IF NOT EXISTS idx_usage_entity   ON entity_usage(entity_id);
+        CREATE INDEX IF NOT EXISTS idx_usage_outcome  ON entity_usage(outcome);
+        "#,
+    )?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -298,6 +337,8 @@ mod tests {
         assert!(tables.contains(&"edges".to_string()));
         assert!(tables.contains(&"events".to_string()));
         assert!(tables.contains(&"meta".to_string()));
+        assert!(tables.contains(&"deliveries".to_string()));
+        assert!(tables.contains(&"entity_usage".to_string()));
         // FTS5 and vec0 tables appear as virtual tables
         assert!(tables.iter().any(|t| t.contains("entities_fts")));
         assert!(tables.iter().any(|t| t.contains("code_embeddings")));
@@ -377,5 +418,29 @@ mod tests {
         run_migrations(&conn, 768).unwrap();
         // Running again should not error
         run_migrations(&conn, 768).unwrap();
+    }
+
+    #[test]
+    fn migrate_v4_is_idempotent_and_forward_only() {
+        let conn = Connection::open_in_memory().unwrap();
+        crate::storage::ensure_vec_extension();
+        run_migrations(&conn, 768).unwrap();
+
+        // Direct re-run must not error (IF NOT EXISTS guards).
+        migrate_v4(&conn).unwrap();
+
+        let version: u32 = conn
+            .query_row("PRAGMA user_version", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(version, SCHEMA_VERSION);
+
+        // Simulated v3 database upgrade: roll the version back and
+        // re-run the full migration path.
+        conn.pragma_update(None, "user_version", 3u32).unwrap();
+        run_migrations(&conn, 768).unwrap();
+        let version: u32 = conn
+            .query_row("PRAGMA user_version", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(version, 4);
     }
 }

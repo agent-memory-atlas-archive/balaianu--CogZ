@@ -13,6 +13,7 @@ pub mod graph;
 pub mod query;
 pub mod schema;
 pub mod status;
+pub mod usage;
 
 pub use crud::{Entity, EntityType};
 pub use edges::Edge;
@@ -40,6 +41,8 @@ pub enum StorageError {
     SchemaVersionMismatch { db: u32, expected: u32 },
     #[error("file operation failed: {0}")]
     File(String),
+    #[error("invalid usage value: {0}")]
+    InvalidUsage(String),
 }
 
 /// Ensures sqlite-vec extension is registered exactly once before any

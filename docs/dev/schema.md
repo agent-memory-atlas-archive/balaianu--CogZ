@@ -2,7 +2,7 @@
 
 CogZ uses SQLite with WAL mode. The schema is versioned via `PRAGMA user_version`. Migrations are forward-only and idempotent.
 
-**Current schema version:** 3
+**Current schema version:** 4
 
 ## Tables
 
@@ -112,6 +112,32 @@ Access tracking (derived, not in canonical files).
 | `access_count` | INTEGER DEFAULT 0 | Number of times accessed |
 | `last_accessed` | TEXT | RFC 3339 timestamp |
 
+### `deliveries`
+
+Usage instrumentation — one row per context delivery (pack or search result). Derived state, disposable.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | INTEGER PRIMARY KEY | Auto-increment |
+| `kind` | TEXT NOT NULL | `pack` or `search` |
+| `event_id` | INTEGER | FK to `events(id)`, nullable |
+| `closed` | INTEGER DEFAULT 0 | 1 once a new delivery boundary or session_end closes it |
+| `created_at` | TEXT NOT NULL | RFC 3339 timestamp |
+
+### `entity_usage`
+
+One row per entity per delivery. `outcome` starts `pending`, becomes `hit` when a post_tool_use touches the entity, or `miss` when the delivery closes without a touch.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | INTEGER PRIMARY KEY | Auto-increment |
+| `delivery_id` | INTEGER NOT NULL | FK to `deliveries(id)` |
+| `entity_id` | TEXT NOT NULL | FK to `entities(id)` |
+| `outcome` | TEXT DEFAULT 'pending' | `pending`, `hit`, `miss` |
+| `created_at` | TEXT NOT NULL | RFC 3339 timestamp |
+
+**Indexes:** `idx_usage_unique` (delivery_id, entity_id), `idx_usage_delivery`, `idx_usage_entity`, `idx_usage_outcome`.
+
 ## Migrations
 
 Migrations are forward-only and idempotent. On a fresh database, all migrations run in order. On an existing database, only new migrations run.
@@ -129,6 +155,10 @@ Adds the `meta` table for key-value metadata (e.g. `last_indexed_commit` for inc
 Splits the old single `entity_embeddings` table into `code_embeddings` and `knowledge_embeddings`. Existing embeddings are migrated to the correct table based on entity type, then the old table is dropped.
 
 On fresh databases (v1 already creates the two new tables), this migration is a no-op.
+
+### v4 — Usage instrumentation
+
+Adds `deliveries` (one row per context-pack or search-result delivery, with `closed` lifecycle) and `entity_usage` (one row per delivered entity: `pending` → `hit` | `miss`). Both tables are disposable derived state — they track whether delivered context was used, never canonical content.
 
 ## Version checking
 
