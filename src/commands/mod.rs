@@ -171,8 +171,11 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         }
     }
 
-    let conn = storage.conn();
-    let total = cogz::storage::crud::count_all(&conn)?;
+    // Scope the guard: update_baseline re-acquires the connection.
+    let total = {
+        let conn = storage.conn();
+        cogz::storage::crud::count_all(&conn)?
+    };
     println!("\n  Total entities: {}", total);
 
     // Only advance the baseline if all source files were successfully
