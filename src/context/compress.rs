@@ -70,6 +70,75 @@ pub fn sort_by_priority(sections: &mut [ContextSection], mode: ContextMode) {
     }
 }
 
+/// Line-overlap threshold for section dedup. Matches the benchmark's
+/// duplicate-pair definition (Jaccard ≥ 0.5 over content line-sets).
+const SECTION_DUP_JACCARD: f64 = 0.5;
+
+/// Drop sections whose content substantially overlaps an already-kept,
+/// higher-priority section. Two mechanisms produce real duplicates: a
+/// file or class excerpt subsumes its functions' opening lines, and
+/// boilerplate entities repeat (every test file's `mod tests` module
+/// is the same one-liner). Keeping both spends budget twice on the
+/// same text. Sections must be sorted by priority first — the first
+/// occurrence wins. Returns kept sections plus descriptions of
+/// dropped dupes.
+pub fn dedup_sections(sections: Vec<ContextSection>) -> (Vec<ContextSection>, Vec<String>) {
+    let (kept, dupes) = partition_dups(sections);
+    let dropped = dupes
+        .into_iter()
+        .map(|s| format!("{}:{} (duplicate content)", s.source, s.title))
+        .collect();
+    (kept, dropped)
+}
+
+/// Split sections into kept and content-duplicate sections. Same rule
+/// as [`dedup_sections`] but returns the dropped sections themselves
+/// so the caller can demote them instead of discarding.
+pub fn partition_dups(sections: Vec<ContextSection>) -> (Vec<ContextSection>, Vec<ContextSection>) {
+    let mut kept: Vec<(ContextSection, std::collections::HashSet<String>)> =
+        Vec::with_capacity(sections.len());
+    let mut dupes = Vec::new();
+    for s in sections {
+        let lines = line_set(&s.content);
+        let is_dup = !lines.is_empty()
+            && kept
+                .iter()
+                .any(|(_k, kl)| !kl.is_empty() && jaccard(&lines, kl) >= SECTION_DUP_JACCARD);
+        if is_dup {
+            dupes.push(s);
+        } else {
+            kept.push((s, lines));
+        }
+    }
+    (kept.into_iter().map(|(s, _)| s).collect(), dupes)
+}
+
+/// Whether `section`'s content overlaps any of `others` at the dup
+/// threshold. Used to check a demoted excerpt against already-kept
+/// sections before keeping it.
+pub fn is_dup_of(section: &ContextSection, others: &[ContextSection]) -> bool {
+    let lines = line_set(&section.content);
+    !lines.is_empty()
+        && others.iter().any(|o| {
+            let ol = line_set(&o.content);
+            !ol.is_empty() && jaccard(&lines, &ol) >= SECTION_DUP_JACCARD
+        })
+}
+
+fn line_set(content: &str) -> std::collections::HashSet<String> {
+    content
+        .lines()
+        .map(|l| l.trim().to_string())
+        .filter(|l| l.len() > 3)
+        .collect()
+}
+
+fn jaccard(a: &std::collections::HashSet<String>, b: &std::collections::HashSet<String>) -> f64 {
+    let inter = a.intersection(b).count();
+    let union = a.union(b).count();
+    inter as f64 / union as f64
+}
+
 /// Fit sections into a token budget. Returns the sections that fit
 /// (possibly with the last one truncated) and a list of dropped
 /// section descriptions.
@@ -82,7 +151,7 @@ pub fn sort_by_priority(sections: &mut [ContextSection], mode: ContextMode) {
 pub fn fit_budget(
     sections: Vec<ContextSection>,
     token_budget: usize,
-) -> (Vec<ContextSection>, Vec<String>) {
+) -> (Vec<ContextSection>, Vec<ContextSection>) {
     let mut kept = Vec::with_capacity(sections.len());
     let mut dropped = Vec::new();
     let mut used = 0usize;
@@ -103,14 +172,34 @@ pub fn fit_budget(
             kept.push(truncated);
             used = token_budget;
         } else {
-            dropped.push(format!(
-                "{}:{} (over token budget)",
-                section.source, section.title
-            ));
+            dropped.push(section);
         }
     }
 
     (kept, dropped)
+}
+
+/// Rank beyond which sections get minimal excerpts. The head of the
+/// relevance-sorted list carries the strong evidence; the tail is
+/// weak-evidence context where a signature beats a drop.
+const TAIL_COMPRESS_RANK: usize = 20;
+
+/// Compress sections past the head of the priority order to minimal
+/// excerpts. Weak-evidence tail entities should be discoverable, not
+/// full-length — a 0.10-relevance file excerpt doesn't deserve 15
+/// lines when the budget is finite, but dropping it entirely loses
+/// the pointer. Sections must be sorted by priority first.
+pub fn compress_tail(sections: &mut [ContextSection]) {
+    for s in sections.iter_mut().skip(TAIL_COMPRESS_RANK) {
+        let max_lines = match s.source.as_str() {
+            "module" => 1,
+            "file" => 8,
+            "function" | "class" => 4,
+            "knowledge" | "observation" | "rule" => 8,
+            _ => continue,
+        };
+        s.content = excerpt_lines(&s.content, max_lines);
+    }
 }
 
 /// Relaxed excerpt caps for the headroom pass — the middle tier
@@ -262,6 +351,70 @@ mod tests {
         ];
         sort_by_priority(&mut sections, ContextMode::ColdStart);
         assert_eq!(sections[0].title, "R2"); // higher relevance first
+    }
+
+    #[test]
+    fn dedup_drops_overlapping_section() {
+        // File excerpt subsumes the function's lines — Jaccard ≥ 0.5.
+        let file_lines = (0..10)
+            .map(|i| format!("line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let func_lines = (0..6)
+            .map(|i| format!("line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let mut secs = vec![
+            section("file", "f.rs", &file_lines, 0.9),
+            section("function", "func", &func_lines, 0.8),
+        ];
+        sort_by_priority(&mut secs, ContextMode::Task);
+        let (kept, dropped) = dedup_sections(secs);
+        assert_eq!(kept.len(), 1);
+        assert_eq!(kept[0].source, "file");
+        assert_eq!(dropped.len(), 1);
+        assert!(dropped[0].contains("duplicate"));
+    }
+
+    #[test]
+    fn dedup_drops_same_source_boilerplate() {
+        // Every test file's `mod tests` module entity is the same
+        // one-liner — identical excerpts across entities are redundant
+        // regardless of source type.
+        let secs = vec![
+            section("module", "tests a", "mod tests", 0.9),
+            section("module", "tests b", "mod tests", 0.8),
+        ];
+        let (kept, dropped) = dedup_sections(secs);
+        assert_eq!(kept.len(), 1);
+        assert_eq!(dropped.len(), 1);
+    }
+
+    #[test]
+    fn dedup_keeps_distinct_sections() {
+        let secs = vec![
+            section("file", "a.rs", "alpha beta gamma delta epsilon", 0.9),
+            section("function", "b", "zeta eta theta iota kappa", 0.8),
+        ];
+        let (kept, dropped) = dedup_sections(secs);
+        assert_eq!(kept.len(), 2);
+        assert!(dropped.is_empty());
+    }
+
+    #[test]
+    fn compress_tail_shrinks_only_past_head() {
+        let long = (0..30)
+            .map(|i| format!("line {i}"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let mut secs: Vec<ContextSection> = (0..25)
+            .map(|i| section("function", &format!("f{i}"), &long, 0.5))
+            .collect();
+        compress_tail(&mut secs);
+        // Head sections keep their full excerpt; tail is 4 lines.
+        assert!(secs[10].content.lines().count() > 10);
+        assert_eq!(secs[21].content.lines().count(), 5); // 4 + ellipsis
+        assert_eq!(secs[24].content.lines().count(), 5);
     }
 
     #[test]

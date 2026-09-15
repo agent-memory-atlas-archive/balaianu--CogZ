@@ -147,7 +147,11 @@ Agent calls get_context MCP tool
       → RRF fusion of FTS + vector results
       → Graph expansion (BFS from matched entities)
     → sort_by_priority() — rules > observations > knowledge > code
+    → dedup_sections() — drop excerpts subsumed by a kept section
+    → compress_tail() — minimal excerpts for weak-evidence tail
     → fit_budget() — truncate/drop sections to fit token budget
+    → relax_code_sections() — regrow code excerpts into headroom
+    → overflow index — dropped entities listed as title/id pointers
   → return ContextPack JSON
 ```
 

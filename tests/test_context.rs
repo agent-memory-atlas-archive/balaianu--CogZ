@@ -119,7 +119,11 @@ fn task_mode_includes_graph_paths() {
     .unwrap();
     insert_edge(&conn, &edge("o1", "k1")).unwrap();
 
-    let config = default_config();
+    // graph_first off: this test covers decayed-expansion provenance
+    // in packs. With graph-first on, k1 enters as a direct hit
+    // (path ["k1"]) — the behavior this asserts against.
+    let mut config = default_config();
+    config.search.graph_first_enabled = false;
     let params = AssembleParams {
         mode: ContextMode::Task,
         query: Some("ranking"),
@@ -174,8 +178,8 @@ fn escalation_produces_wider_pack() {
 fn token_budget_is_respected() {
     let storage = Storage::open_memory().unwrap();
     let conn = storage.conn();
-    let big_content = "x".repeat(2000);
     for i in 0..10 {
+        let big_content = format!("rule body {i} {}", "x".repeat(2000));
         insert_entity(
             &conn,
             &Entity::new(&format!("r{i}"), "rule", &format!("Rule {i}"), &big_content),
@@ -199,9 +203,10 @@ fn token_budget_is_respected() {
 fn dropped_sources_are_listed() {
     let storage = Storage::open_memory().unwrap();
     let conn = storage.conn();
-    let big_content = "x".repeat(2000);
+    let big_content = format!("first body {}", "x".repeat(2000));
+    let big_content2 = format!("second body {}", "y".repeat(2000));
     insert_entity(&conn, &Entity::new("r1", "rule", "R1", &big_content)).unwrap();
-    insert_entity(&conn, &Entity::new("r2", "rule", "R2", &big_content)).unwrap();
+    insert_entity(&conn, &Entity::new("r2", "rule", "R2", &big_content2)).unwrap();
 
     let config = default_config();
     let params = AssembleParams {
@@ -238,7 +243,12 @@ fn cold_start_respects_config_limits() {
     for i in 0..10 {
         insert_entity(
             &conn,
-            &Entity::new(&format!("r{i}"), "rule", &format!("Rule {i}"), "content"),
+            &Entity::new(
+                &format!("r{i}"),
+                "rule",
+                &format!("Rule {i}"),
+                &format!("rule body {i} distinct"),
+            ),
         )
         .unwrap();
     }
@@ -258,10 +268,14 @@ fn cold_start_respects_config_limits() {
 fn include_stale_includes_stale_entities() {
     let storage = Storage::open_memory().unwrap();
     let conn = storage.conn();
-    let mut e1 = Entity::new("r1", "rule", "Stale rule", "content");
+    let mut e1 = Entity::new("r1", "rule", "Stale rule", "stale rule body");
     e1.status = "stale".to_string();
     insert_entity(&conn, &e1).unwrap();
-    insert_entity(&conn, &Entity::new("r2", "rule", "Active rule", "content")).unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("r2", "rule", "Active rule", "active rule body"),
+    )
+    .unwrap();
 
     let config = default_config();
 

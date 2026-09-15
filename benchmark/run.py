@@ -103,6 +103,7 @@ def main():
     ap.add_argument("--with-context", action="store_true")
     ap.add_argument("--no-expand", action="store_true")
     ap.add_argument("--code-search", action="store_true")
+    ap.add_argument("--status", default=None, help='entity status filter passed to search, e.g. "all"')
     args = ap.parse_args()
 
     repo = str(Path(args.repo).resolve())
@@ -118,13 +119,16 @@ def main():
         for q in qset["queries"]:
             t0 = time.monotonic()
             try:
-                data = sess.tool_json("search", {
+                params = {
                     "repo": repo,
                     "query": q["query"],
                     "limit": args.limit,
                     "expand": not args.no_expand,
                     "code_search": args.code_search,
-                })
+                }
+                if args.status:
+                    params["status"] = args.status
+                data = sess.tool_json("search", params)
             except Exception as exc:
                 raw["results"].append({"id": q["id"], "error": str(exc)})
                 print(f"  {q['id']}: ERROR {exc}", file=sys.stderr)
@@ -149,9 +153,10 @@ def main():
             if args.with_context:
                 t1 = time.monotonic()
                 try:
-                    ctx = sess.tool_json("get_context", {
-                        "repo": repo, "query": q["query"], "mode": "task",
-                    })
+                    ctx_params = {"repo": repo, "query": q["query"], "mode": "task"}
+                    if args.status:
+                        ctx_params["include_stale"] = args.status == "all"
+                    ctx = sess.tool_json("get_context", ctx_params)
                     entry["context"] = {
                         "latency_ms": round((time.monotonic() - t1) * 1000),
                         "sections": [

@@ -11,7 +11,9 @@ use crate::storage::crud::Entity;
 use crate::storage::query::get_entities_by_type;
 
 use super::code_map::code_map_sections;
-use super::compress::{fit_budget, relax_code_sections, section_tokens, sort_by_priority};
+use super::compress::{
+    compress_tail, fit_budget, relax_code_sections, section_tokens, sort_by_priority,
+};
 use super::modes::ContextMode;
 use super::{ContextPack, ContextSection, PackMetadata};
 
@@ -114,16 +116,94 @@ pub fn assemble_context(
 
     let mut sections = sections;
     sort_by_priority(&mut sections, params.mode);
-    let (mut kept, dropped) = fit_budget(sections, token_budget);
+    // A file excerpt subsumes its functions' opening lines — dedup
+    // before budgeting so overlap can't spend the budget twice. Runs
+    // on full excerpts: compressing first would shrink line-sets below
+    // the Jaccard threshold and let the duplicates through.
+    let (mut sections, dedup_losers) = super::compress::partition_dups(sections);
+    let mut dropped: Vec<String> = dedup_losers
+        .iter()
+        .map(|s| format!("{}:{} (duplicate content)", s.source, s.title))
+        .collect();
+    // Weak-evidence tail entities get minimal excerpts — a signature
+    // is enough for context and the freed budget fits more entities.
+    compress_tail(&mut sections);
+    let (mut kept, budget_dropped) = fit_budget(sections, token_budget);
+    dropped.extend(
+        budget_dropped
+            .iter()
+            .map(|s| format!("{}:{} (over token budget)", s.source, s.title)),
+    );
+
+    // Every dropped entity keeps a discoverable pointer in the
+    // overflow index — the agent can pull one by title/id instead of
+    // never learning it exists. Covers dedup losers, budget drops,
+    // and regrown dupes whose minimal excerpt still duplicates.
+    let mut overflow: Vec<ContextSection> = dedup_losers;
+    overflow.extend(budget_dropped.iter().cloned());
+
     if !full_content.is_empty() {
         relax_code_sections(&mut kept, &full_content, token_budget);
+        // Regrown excerpts can recreate the overlap dedup removed — a
+        // file relaxed to 30 lines again covers its functions. Demote
+        // the regrown dupe back to a minimal excerpt rather than
+        // dropping it: the content is delivered via the container, and
+        // the entity stays present as a pointer. If even the minimal
+        // excerpt still duplicates, the entity drops to the index.
+        let (deduped, regrowth_dupes) = super::compress::partition_dups(kept);
+        kept = deduped;
+        for s in regrowth_dupes {
+            dropped.push(format!("{}:{} (duplicate content)", s.source, s.title));
+            let mut demoted = s;
+            demoted.content = super::compress::excerpt_lines(&demoted.content, 4);
+            if super::compress::is_dup_of(&demoted, &kept) {
+                overflow.push(demoted);
+            } else {
+                kept.push(demoted);
+            }
+        }
+    }
+
+    // The index itself must fit inside whatever budget remains.
+    if !overflow.is_empty() {
+        let title = "Also relevant";
+        let mut avail = token_budget.saturating_sub(kept.iter().map(section_tokens).sum::<usize>());
+        avail = avail.saturating_sub(super::compress::estimate_tokens(title));
+        overflow.sort_by(|a, b| {
+            b.relevance
+                .partial_cmp(&a.relevance)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        let mut index: Vec<String> = Vec::new();
+        for s in overflow.iter().take(25) {
+            let line = format!("- [{}] {} — id {}", s.source, s.title, s.entity_id);
+            let cost = super::compress::estimate_tokens(&line) + 1;
+            if cost > avail {
+                break;
+            }
+            avail -= cost;
+            index.push(line);
+        }
+        if !index.is_empty() {
+            kept.push(ContextSection {
+                source: "overflow_index".to_string(),
+                entity_id: "index".to_string(),
+                title: title.to_string(),
+                content: index.join("\n"),
+                relevance: 0.0,
+                graph_path: vec![],
+                graph_path_description: String::new(),
+            });
+        }
     }
 
     let size_tokens = kept.iter().map(section_tokens).sum();
+    // selected_sources lists entity types delivered — the synthetic
+    // overflow index is navigation, not an entity type.
     let selected_sources: Vec<String> = {
         let mut seen: Vec<String> = Vec::new();
         for s in &kept {
-            if !seen.contains(&s.source) {
+            if s.source != "overflow_index" && !seen.contains(&s.source) {
                 seen.push(s.source.clone());
             }
         }
