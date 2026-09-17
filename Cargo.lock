@@ -379,7 +379,7 @@ dependencies = [
 
 [[package]]
 name = "cogz"
-version = "0.1.5"
+version = "0.2.0"
 dependencies = [
  "aho-corasick",
  "anyhow",
