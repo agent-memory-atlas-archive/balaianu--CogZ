@@ -53,10 +53,12 @@ src/
     embeddings.rs      vec0 embedding storage and KNN search
     events.rs          Domain event recording
     graph.rs            Graph traversal (BFS expansion)
+    graph_queries.rs   Targeted graph queries (callers, impact, orphans)
+    mining.rs          Write-path mining (observation candidates)
     query.rs           Entity queries (by type, by reference)
     status.rs          Status state machine
     access.rs          Entity access tracking
-    usage.rs           Delivery + entity-usage tracking
+    usage.rs           Delivery + entity-usage tracking (tiers, hit rates)
   files/               File I/O and file→DB sync
     frontmatter.rs     Minimal YAML frontmatter parser
     entities.rs        EntityFile struct, read/write
@@ -92,7 +94,9 @@ src/
     scoring.rs         Relevance scoring, recency decay
     describe.rs        Graph path description
   context/             Context pack assembly
-    assemble.rs        Mode-specific assembly orchestrator
+    assemble.rs        Tiered-push pipeline (Tier 0/1/2 assembly)
+    baseline.rs        Tier-0 orientation builders
+    query_sections.rs  Search results → Tier-1 sections
     modes.rs           ContextMode enum (cold_start, task, escalation)
     compress.rs        Token estimation, dedup, budget fitting
     code_map.rs        Cold-start code map generation
@@ -117,10 +121,12 @@ src/
   mcp/                 MCP server
     server.rs          ServerHandler impl, repo/model caching
     repo_cache.rs      Repo cache: herd protection, LRU, staleness
-    tools.rs           Tool router (13 tools)
+    tools.rs           Tool router (17 tools)
     tools_write.rs     record_observation, create_rule, create_knowledge, update_knowledge
     tools_query.rs     query_*, list_entities
     tools_search.rs    search, get_context
+    tools_graph.rs     get_callers, get_impact, find_orphans
+    tools_mining.rs    suggest_observations
     tools_system.rs    get_status, consolidate, capture_event
     params.rs          Tool parameter structs
     responses.rs       Response JSON builders
@@ -168,7 +174,8 @@ The file is written first. If the file write fails, the DB is not updated. This 
 ```
 Agent calls get_context MCP tool
   → assemble_context()
-    → search::search() — hybrid FTS + vector with RRF fusion
+    → search::search(silence_gate: false) — hybrid FTS + vector with RRF
+      fusion; per-result relevance floor applies, wholesale silencing does not
       → FTS5 query (always available)
       → KNN vector query (if embeddings available)
       → RRF fusion of FTS + vector results

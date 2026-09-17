@@ -20,7 +20,7 @@ When no models are available (not downloaded, download disabled, or insufficient
 | `cogz capture-event` | yes | Use `--fts-only` flag for fast hook calls |
 | `cogz doctor` | yes | All checks work; reports models as unavailable |
 | `cogz doctor --prune-observations` | yes | Pruning works |
-| `cogz mcp-stdio` | yes | All 13 tools work; search returns FTS-only results |
+| `cogz mcp-stdio` | yes | All 17 tools work; search returns FTS-only results |
 | All MCP tools | yes | `search_mode` reports `fts_only` |
 | All hooks | yes | Use `--fts-only` for speed |
 

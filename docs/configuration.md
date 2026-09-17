@@ -70,6 +70,8 @@ task_max_results = 40
 task_max_hops = 2
 escalation_max_results = 20
 escalation_max_hops = 3
+tiered_push = true
+tier0_rules = 3
 ```
 
 ## Section reference
@@ -180,6 +182,8 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `task_max_hops` | usize | `2` | Graph expansion hops in task mode. |
 | `escalation_max_results` | u32 | `20` | Max search results in escalation mode before expansion. |
 | `escalation_max_hops` | usize | `3` | Graph expansion hops in escalation mode. |
+| `tiered_push` | bool | `true` | Tiered push: task/escalation packs carry Tier-0 orientation (identity + top rules) and gate Tier-1 search content on retrieval confidence. Off → pre-tiering pack behavior. |
+| `tier0_rules` | usize | `3` | Number of top-scored rules in a task/escalation pack's Tier-0 baseline. |
 
 ## Validation
 

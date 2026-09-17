@@ -40,21 +40,21 @@ For hooks, speed matters more than ranking quality. The MCP server (persistent p
 | Event | When | What CogZ does | Output |
 |---|---|---|---|
 | `session_start` | Agent session begins | Records event, assembles cold_start context pack, spawns background reindex | Context pack (recent rules + observations) |
-| `prompt_submit` | User submits a prompt | Records event, assembles task context pack using the prompt, spawns background reindex (debounced 60s) | Context pack (query-scoped retrieval) |
+| `prompt_submit` | User submits a prompt | Records event, resolves usage hits on still-open deliveries (prompt names a delivered entity's file path or title), then assembles task context pack, spawns background reindex (debounced 60s) | Context pack (query-scoped retrieval) |
 | `pre_tool_use` | Before a tool call | Records event only | None (audit trail) |
 | `post_tool_use` | After a tool call | Records event; marks usage hits on delivered entities (tool touched an entity's file, or output mentioned its id/title) | None |
-| `file_save` | A file is saved | Records event, triggers single-file code reindex if source file, flags stale knowledge, syncs `.cogz/` file if under `.cogz/` | Reindex summary |
-| `session_end` | Agent session ends | Records event, closes open usage deliveries, runs consolidation (promotion + merge) | Consolidation summary |
+| `file_save` | A file is saved | Records event, marks usage hits on delivered entities in the saved file, triggers single-file code reindex if source file, flags stale knowledge, syncs `.cogz/` file if under `.cogz/` | Reindex summary |
+| `session_end` | Agent session ends | Records event, closes open usage deliveries, runs consolidation (promotion + merge), counts mined observation candidates | Consolidation summary + `suggestion_count` |
 | `stop` | Agent stops | Records event only | None |
 
 ## CLI usage
 
 ```bash
 # Session start (from a hook config)
-cogz capture-event session_start --hook-json --fts-only
+cogz capture-event session_start --hook-json
 
 # Prompt submit (from a hook config, reading prompt from stdin or file)
-cogz capture-event prompt_submit --hook-json --fts-only --prompt "implement auth"
+cogz capture-event prompt_submit --hook-json --prompt "implement auth"
 
 # File save (from a hook config, triggered on edit/write)
 cogz capture-event file_save --hook-json --fts-only --file-path src/auth.rs
@@ -77,16 +77,16 @@ This is the canonical hook config. Copy it into your agent's hook configuration 
       "matcher": "",
       "hooks": [{
         "type": "command",
-        "command": "cogz capture-event session_start --hook-json --fts-only",
-        "timeout": 10
+        "command": "cogz capture-event session_start --hook-json",
+        "timeout": 15
       }]
     }],
     "UserPromptSubmit": [{
       "matcher": "",
       "hooks": [{
         "type": "command",
-        "command": "cogz capture-event prompt_submit --hook-json --fts-only",
-        "timeout": 10
+        "command": "cogz capture-event prompt_submit --hook-json",
+        "timeout": 15
       }]
     }],
     "PostToolUse": [
@@ -127,7 +127,9 @@ This is the canonical hook config. Copy it into your agent's hook configuration 
 }
 ```
 
-**Timeouts:** `session_start` and `prompt_submit` need 10s (FTS-only context assembly; background reindex is detached and doesn't block). `file_save` needs 20s (single-file reindex). `session_end` needs 30s (consolidation). `stop` needs 5s (event recording only).
+**Timeouts:** `session_start` and `prompt_submit` need 15s — context assembly is hybrid when models are installed (model load + query embedding adds a few seconds; background reindex is detached and doesn't block). Record-only events keep `--fts-only` because they never assemble a pack. `file_save` needs 20s (single-file reindex). `session_end` needs 30s (consolidation). `stop` needs 5s (event recording only).
+
+**`--fts-only`:** forces lexical-only mode even when models are installed — useful for pack-producing events on constrained machines, at the cost of semantic retrieval in packs.
 
 ## Background reindex
 

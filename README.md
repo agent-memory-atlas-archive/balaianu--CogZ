@@ -130,7 +130,7 @@ CogZ runs as a stateless MCP server over stdio. Every tool call specifies which 
 }
 ```
 
-The server exposes 13 tools: `record_observation`, `query_observations`, `create_rule`, `query_rules`, `create_knowledge`, `update_knowledge`, `query_knowledge`, `search`, `get_context`, `get_status`, `list_entities`, `consolidate`, `capture_event`.
+The server exposes 17 tools: `record_observation`, `query_observations`, `create_rule`, `query_rules`, `create_knowledge`, `update_knowledge`, `query_knowledge`, `search`, `get_context`, `get_status`, `list_entities`, `consolidate`, `capture_event`, `get_callers`, `get_impact`, `find_orphans`, `suggest_observations`.
 
 See [MCP Tools](docs/integration/mcp-tools.md) for full parameter reference and example responses. See [Agent Setup](docs/integration/agent-setup.md) for configuration examples for Claude Code, Cursor, Devin, and other agents.
 
@@ -145,8 +145,8 @@ Hooks capture lifecycle events and inject context packs into agent sessions. Cog
       "matcher": "",
       "hooks": [{
         "type": "command",
-        "command": "cogz capture-event session_start --hook-json --fts-only",
-        "timeout": 10
+        "command": "cogz capture-event session_start --hook-json",
+        "timeout": 15
       }]
     }]
   }
@@ -233,7 +233,7 @@ Cross-platform team collaboration is supported: code entity UUIDs use forward-sl
 - [CLI Reference](docs/cli-reference.md) — every command and flag
 
 **Integration:**
-- [MCP Tools](docs/integration/mcp-tools.md) — 13 tool parameters and responses
+- [MCP Tools](docs/integration/mcp-tools.md) — 17 tool parameters and responses
 - [Hooks](docs/integration/hooks.md) — lifecycle events and output format
 - [Agent Setup](docs/integration/agent-setup.md) — Claude Code, Cursor, Devin, generic MCP
 

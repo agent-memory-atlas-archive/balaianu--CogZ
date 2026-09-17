@@ -1,6 +1,6 @@
 # MCP Tools
 
-CogZ exposes 13 tools via the Model Context Protocol (MCP) over stdio. The server is stateless per the 2026-07-28 MCP spec (SEP-2577) — no Roots, no sessions, no cwd inference. Every tool call must include a `repo` parameter with the absolute path to the project root containing `.cogz/`.
+CogZ exposes 17 tools via the Model Context Protocol (MCP) over stdio. The server is stateless per the 2026-07-28 MCP spec (SEP-2577) — no Roots, no sessions, no cwd inference. Every tool call must include a `repo` parameter with the absolute path to the project root containing `.cogz/`.
 
 ## Server setup
 
@@ -16,6 +16,18 @@ CogZ exposes 13 tools via the Model Context Protocol (MCP) over stdio. The serve
 ```
 
 The server starts with no pre-loaded repos. Repos are opened and cached on first use. Models are shared across repos — if two repos use the same model, they share one ONNX session instance.
+
+## Usage tracking
+
+Every tool call that returns entity *content* also records a *delivery* (`pack`, `search`, or `pull`) listing those entities as pending — `search`, `get_context`, `get_callers`, `get_impact`, `find_orphans`, and the three `query_*` tools. `list_entities` is excluded: it returns an id/title directory, not content, and its results are not treated as delivered context. Hits resolve against all open deliveries:
+
+- `file_save`/`post_tool_use`/`prompt_submit` hooks credit entities whose file was touched or whose title/id appeared in the prompt or tool output.
+- Pulling deeper on a delivered entity (`get_callers`/`get_impact` seed) credits it directly.
+- A pull result that resurfaces a pending `pointer` converts it — the pointer menu steered the pull.
+- Writing an entity whose `references` cite delivered entities credits them — new memory drawing on delivered memory is the strongest use signal.
+- Deliveries close at the next pack boundary or `session_end`; unresolved pending rows become misses.
+
+`cogz search` on the CLI records the same `search` delivery, so terminal pulls are measured identically to MCP pulls.
 
 ## Write tools
 
@@ -177,7 +189,68 @@ Assemble a context pack — a coherent, scoped, ranked collection of information
 | `include_stale` | boolean | no | Include stale entities (default: `false`) |
 | `max_tokens` | integer | no | Override token budget from config |
 
-**Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`). A trailing section with `source: "overflow_index"` lists entities that were retrieved but didn't fit the token budget as compact `type:title:id` pointers — pull them individually via `search` or a narrower `get_context` query.
+**Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`, `tier`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`, `pointer_ids`, `signals` — per-channel `code_strength`/`knowledge_strength`/gradients when retrieval ran in hybrid mode).
+
+Tiered push (on by default via `context.tiered_push`): each section carries a `tier` — `baseline` (Tier 0: identity + top rules, always shipped in task/escalation packs), `full` (Tier 1: search content), or `pointer` (Tier 2: index entry — presence without depth). A trailing section with `source: "overflow_index"` lists entities that were retrieved but didn't fit the token budget as compact `type:title:id` pointers — pull them individually via `search` or a narrower `get_context` query; their ids also appear in `metadata.pointer_ids`.
+
+## Graph tools
+
+Targeted structural queries over the code graph — the cheap pull surface behind the pointer index. Results are tracked as `pull` deliveries; the queried entity itself is credited as engaged in any open delivery, and results that resurface pending pointers count as conversions (see [Usage tracking](#usage-tracking)).
+
+### `get_callers`
+
+Find entities that call a function or method — direct incoming `calls` edges.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `repo` | string | yes | Absolute path to project root |
+| `entity_id` | string | yes | Entity UUID (function or method) |
+| `limit` | integer | no | Max callers (default 50) |
+
+**Returns:** JSON with `entity_id`, `entity_type`, `title`, `callers` (brief entity objects), `count`.
+
+### `get_impact`
+
+Transitive dependents of an entity — what breaks or needs updating when it changes. Follows incoming `calls`/`imports`/`extends`/`contains` edges up to `max_depth` hops (default 2, capped at 4). Also lists `referenced_by`: knowledge entities that reference the entity and may go stale when it changes.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `repo` | string | yes | Absolute path to project root |
+| `entity_id` | string | yes | Entity UUID |
+| `max_depth` | integer | no | Traversal depth (default 2, max 4) |
+| `limit` | integer | no | Max entities per depth (default 50) |
+
+**Returns:** JSON with `entity_id`, `impacted` (entities with `depth`), `referenced_by` (knowledge entities), `count`.
+
+### `find_orphans`
+
+Code entities with no incoming structural dependency edges — dead-code candidates. Test code is excluded; entry points like `main()` surface by design.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `repo` | string | yes | Absolute path to project root |
+| `entity_type` | string | no | `function`, `class`, `file`, or `module` (default: functions and classes) |
+| `limit` | integer | no | Max results (default 50) |
+
+**Returns:** JSON with `orphans` (brief entity objects), `count`.
+
+## Mining tools
+
+### `suggest_observations`
+
+Mine recent usage for observation candidates — the write-path counterpart to delivery tracking. Four signals: `uncharted_edit` (a pack where nothing was used, followed by file edits), `recurring_use` (an entity hit in multiple deliveries — promotion candidate), `hot_file` (a file saved repeatedly), `error_fix` (a tool error followed by a succeeding call on the same tool). Nothing is written: each suggestion carries `signal`, `evidence`, `suggested_title`, `suggested_content`, `suggested_refs` — confirm salient ones via `record_observation`.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `repo` | string | yes | Absolute path to project root |
+| `days` | integer | no | How far back to mine (default 7, max 90) |
+| `limit` | integer | no | Max candidates (default 10, max 50) |
+
+**Returns:** JSON with `suggestions`, `count`, `window_days`. Each call is logged as a `suggestions_requested` event — adoption of the write path is itself measured.
 
 ## System tools
 
@@ -218,7 +291,7 @@ Capture a lifecycle event. Called by hook scripts. For `session_start` and `prom
 | `tool_result` | string | no | Tool result summary (for `post_tool_use`) |
 | `file_path` | string | no | Saved file path, relative to repo root (for `file_save`) |
 
-**Returns:** JSON with `event_id`, and depending on event type: `context_pack` (for `session_start`/`prompt_submit`), `reindex_summary` (for `file_save`), `consolidation_summary` (for `session_end`).
+**Returns:** JSON with `event_id`, and depending on event type: `context_pack` (for `session_start`/`prompt_submit`), `reindex_summary` (for `file_save`), `consolidation_summary` and `suggestion_count` (for `session_end` — the count of mined observation candidates available via `suggest_observations`).
 
 ## Error handling
 

@@ -233,8 +233,10 @@ cogz doctor [--repo <path>] [--prune-observations] [--confirm]
 - `Search hit rate` — same measure for `search` tool deliveries. Printed alongside the pack rate so push vs pull efficacy can be compared.
 - `Dead weight` — entities never surfaced in any delivery over the recent session window (default: last 10 sessions).
 - `Write quality` — file-backed entities (observation, rule, knowledge) never delivered at all.
+- `Tier <tier>` — hit rate per delivery tier (schema v5+): `baseline` (Tier-0 orientation), `full` (Tier-1 content), `pointer` (Tier-2 index entries). The measurement a future learned gate reads.
+- `Type <type>` — hit rate per entity type — which kinds of memory actually get used when delivered.
 
-Deliveries are recorded on every context pack (`session_start`, `prompt_submit`, `get_context`) and every `search` call. Entities start `pending`; a tool touch marks them `hit`, and the next delivery boundary or `session_end` closes the rest as `miss`. Usage tables are disposable derived state — `cogz reset` + `cogz index` rebuilds cleanly without them.
+Deliveries are recorded on every context pack (`session_start`, `prompt_submit`, `get_context`), every `search` call, and every targeted graph pull (`get_callers`, `get_impact`, `find_orphans`). Entities start `pending`; a tool touch marks them `hit`, and the next delivery boundary or `session_end` closes the rest as `miss`. Usage tables are disposable derived state — `cogz reset` + `cogz index` rebuilds cleanly without them.
 
 ## `cogz update`
 
