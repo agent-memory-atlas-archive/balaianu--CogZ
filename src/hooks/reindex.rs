@@ -9,6 +9,12 @@ use std::path::{Path, PathBuf};
 /// within this window, subsequent triggers are skipped.
 const DEBOUNCE_SECONDS: i64 = 60;
 
+/// Age after which a debounce marker is considered dead. Markers
+/// outlive their usefulness the moment the debounce window passes;
+/// without a sweep, markers for deleted repos (worktrees, scratch
+/// clones) accumulate in the temp dir forever.
+const SWEEP_AGE_SECONDS: u64 = 3600;
+
 /// Spawn a background reindex process for the given repo. The hook
 /// returns immediately; the reindex runs in a detached process.
 ///
@@ -88,8 +94,34 @@ fn touch_debounce_file(repo: &Path) -> std::io::Result<()> {
     let path = debounce_file(repo);
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;
+        sweep_stale_debounce_files(parent);
     }
     std::fs::write(&path, b"")
+}
+
+/// Remove debounce markers older than `SWEEP_AGE_SECONDS` from the
+/// given directory. Best-effort: failures are ignored so cleanup can
+/// never break the hook path.
+fn sweep_stale_debounce_files(dir: &Path) {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
+    let cutoff = std::time::SystemTime::now() - std::time::Duration::from_secs(SWEEP_AGE_SECONDS);
+    for entry in entries.flatten() {
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        if !name.starts_with("cogz-reindex-debounce-") {
+            continue;
+        }
+        let Ok(modified) = entry.metadata().and_then(|m| m.modified()) else {
+            continue;
+        };
+        if modified < cutoff {
+            let _ = std::fs::remove_file(entry.path());
+        }
+    }
 }
 
 /// Path for the debounce marker file. Uses a hash of the canonical
@@ -119,4 +151,44 @@ fn resolve_db_path(repo: &Path) -> Option<PathBuf> {
         return None;
     }
     Some(db_path)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sweep_removes_only_stale_debounce_markers() {
+        let dir = std::env::temp_dir().join(format!("cogz-sweep-test-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+
+        let stale = dir.join("cogz-reindex-debounce-stale.txt");
+        let fresh = dir.join("cogz-reindex-debounce-fresh.txt");
+        let unrelated = dir.join("unrelated.txt");
+        std::fs::write(&stale, b"").unwrap();
+        std::fs::write(&fresh, b"").unwrap();
+        std::fs::write(&unrelated, b"").unwrap();
+
+        let old =
+            std::time::SystemTime::now() - std::time::Duration::from_secs(SWEEP_AGE_SECONDS + 60);
+        std::fs::File::options()
+            .write(true)
+            .open(&stale)
+            .unwrap()
+            .set_modified(old)
+            .unwrap();
+
+        sweep_stale_debounce_files(&dir);
+
+        assert!(!stale.exists());
+        assert!(fresh.exists());
+        assert!(unrelated.exists());
+
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn sweep_ignores_missing_dir() {
+        sweep_stale_debounce_files(Path::new("/nonexistent/cogz-sweep-test"));
+    }
 }
