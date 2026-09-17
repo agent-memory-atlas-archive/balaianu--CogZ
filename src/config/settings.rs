@@ -389,6 +389,15 @@ pub struct ContextConfig {
     pub escalation_max_results: u32,
     /// Graph expansion hops in escalation mode.
     pub escalation_max_hops: usize,
+    /// Tiered push: every task pack carries Tier-0 orientation
+    /// (identity + top rules); Tier-1 search sections ship whatever
+    /// retrieval returns, and overflow demotes to the pointer index.
+    /// Tiers 0 and 2 are structural.
+    #[serde(default = "default_tiered_push")]
+    pub tiered_push: bool,
+    /// Number of top-scored rules in a task pack's Tier-0 baseline.
+    #[serde(default = "default_tier0_rules")]
+    pub tier0_rules: usize,
 }
 
 fn default_task_token_budget() -> usize {
@@ -397,6 +406,14 @@ fn default_task_token_budget() -> usize {
 
 fn default_escalation_token_budget() -> usize {
     8192
+}
+
+fn default_tiered_push() -> bool {
+    true
+}
+
+fn default_tier0_rules() -> usize {
+    3
 }
 
 impl Default for ContextConfig {
@@ -410,6 +427,8 @@ impl Default for ContextConfig {
             task_max_hops: 2,
             escalation_max_results: 20,
             escalation_max_hops: 3,
+            tiered_push: default_tiered_push(),
+            tier0_rules: default_tier0_rules(),
         }
     }
 }

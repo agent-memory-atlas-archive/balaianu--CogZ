@@ -13,7 +13,7 @@ use crate::search::ChannelSignals;
 /// absolute strength below the floor on every channel. The strength
 /// clause is the escape hatch for queries whose nearest neighbors are
 /// uniformly decent (flat gradient, real matches).
-pub(super) fn should_silence(signals: &ChannelSignals, threshold: f64, floor: f64) -> bool {
+pub(crate) fn should_silence(signals: &ChannelSignals, threshold: f64, floor: f64) -> bool {
     threshold > 0.0
         && signals.code_gradient < threshold
         && signals.knowledge_gradient < threshold

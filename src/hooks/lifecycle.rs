@@ -90,7 +90,9 @@ pub struct LifecycleInput<'a> {
 
 /// Result of handling a lifecycle event.
 pub struct LifecycleOutput {
-    pub event_id: i64,
+    /// None when event recording exhausted busy retries — the hook
+    /// still produces its output, only the audit row is missing.
+    pub event_id: Option<i64>,
     /// Context pack for session_start and prompt_submit; None for tool events.
     pub context_pack: Option<ContextPack>,
     /// Observation UUID if an observation was recorded (post_tool_use only).
@@ -99,6 +101,9 @@ pub struct LifecycleOutput {
     pub reindex_summary: Option<ReindexSummary>,
     /// Consolidation dry-run summary if session_end triggered it.
     pub consolidation_summary: Option<ConsolidationSummary>,
+    /// Mined observation candidates available at session_end — a nudge
+    /// to call `suggest_observations` before the trail goes cold.
+    pub suggestion_count: Option<usize>,
 }
 
 /// Summary of a consolidation dry-run triggered by session_end.
@@ -159,10 +164,14 @@ pub fn handle_lifecycle_event(
         LifecycleEvent::Stop => json!({}),
     };
 
-    // Record the event.
+    // Record the event. A transient lock from the detached reindex can
+    // outlive busy_timeout — retry, then degrade to event_id=None so
+    // pack assembly still ships (audit must never break the hook).
     let event_id = {
         let conn = storage.conn();
-        events::record_event(&conn, event_type, None, &payload)?
+        with_busy_retry("record event", || {
+            events::record_event(&conn, event_type, None, &payload)
+        })
     };
 
     // Spawn background reindex for session_start and prompt_submit
@@ -191,9 +200,24 @@ pub fn handle_lifecycle_event(
         LifecycleEvent::SessionStart | LifecycleEvent::PromptSubmit => {
             {
                 let conn = storage.conn();
-                if let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
-                    tracing::warn!("usage tracking: close deliveries failed: {e}");
+                // Resolve hits before the new pack boundary closes them:
+                // a prompt naming a delivered entity or file is evidence
+                // the context was used. Devin does not dispatch
+                // PostToolUse, so prompt_submit is a primary hit surface.
+                if input.event == LifecycleEvent::PromptSubmit {
+                    let paths: Vec<String> =
+                        input.prompt.map(prompt_file_tokens).unwrap_or_default();
+                    let path_refs: Vec<&str> = paths.iter().map(String::as_str).collect();
+                    let hits = detect_touched_entities(&conn, cogz_dir, &path_refs, input.prompt);
+                    if !hits.is_empty() {
+                        with_busy_retry("record hits", || {
+                            crate::storage::usage::record_hits(&conn, &hits)
+                        });
+                    }
                 }
+                with_busy_retry("close deliveries", || {
+                    crate::storage::usage::close_open_deliveries(&conn)
+                });
             }
             let (mode, query) = match input.event {
                 LifecycleEvent::SessionStart => (ContextMode::ColdStart, None),
@@ -202,21 +226,40 @@ pub fn handle_lifecycle_event(
             let pack = assemble_pack(storage, config, query_model, code_model, mode, query)?;
             {
                 let conn = storage.conn();
-                let entity_ids: Vec<String> =
-                    pack.sections.iter().map(|s| s.entity_id.clone()).collect();
-                match crate::storage::usage::record_delivery(
-                    &conn,
-                    crate::storage::usage::DeliveryKind::Pack,
-                    Some(event_id),
-                ) {
-                    Ok(delivery_id) => {
-                        if let Err(e) =
-                            crate::storage::usage::record_delivered(&conn, delivery_id, &entity_ids)
-                        {
-                            tracing::warn!("usage tracking: record delivered failed: {e}");
+                let entries = delivered_entries(&pack);
+                if let Some(delivery_id) = with_busy_retry("record delivery", || {
+                    crate::storage::usage::record_delivery(
+                        &conn,
+                        crate::storage::usage::DeliveryKind::Pack,
+                        event_id,
+                    )
+                }) {
+                    with_busy_retry("record delivered", || {
+                        crate::storage::usage::record_delivered(&conn, delivery_id, &entries)
+                    });
+                }
+                // Persist pack metadata onto the event so pack shape
+                // (size, pointer count) is analyzable later.
+                if let Some(eid) = event_id {
+                    let meta = serde_json::json!({
+                        "pack": {
+                            "size_tokens": pack.metadata.size_tokens,
+                            "sections": pack.sections.len(),
+                            "pointers": pack.metadata.pointer_ids.len(),
+                            "search_mode": pack.metadata.search_mode,
+                            "signals": pack.metadata.signals.as_ref().map(|s| {
+                                serde_json::json!({
+                                    "code_strength": s.code_strength,
+                                    "code_gradient": s.code_gradient,
+                                    "knowledge_strength": s.knowledge_strength,
+                                    "knowledge_gradient": s.knowledge_gradient,
+                                })
+                            }),
                         }
-                    }
-                    Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
+                    });
+                    with_busy_retry("annotate event", || {
+                        events::annotate_event(&conn, eid, &meta)
+                    });
                 }
             }
             Some(pack)
@@ -224,19 +267,26 @@ pub fn handle_lifecycle_event(
         _ => None,
     };
 
-    // post_tool_use: event is recorded above (audit trail) — plus usage
-    // hit detection: if the tool touched a file or named an entity that
-    // a pending delivery surfaced, mark it used. We no longer
-    // auto-create observation files for every tool use — that flooded
-    // .cogz/observations/ with low-value entries. The agent decides
-    // what's salient via the record_observation MCP tool.
-    if input.event == LifecycleEvent::PostToolUse {
+    // post_tool_use / file_save: event is recorded above (audit
+    // trail) — plus usage hit detection: if the tool touched a file or
+    // named an entity that a pending delivery surfaced, mark it used.
+    // file_save doubles as the hit surface on hosts that never dispatch
+    // post_tool_use (editing a delivered file is direct evidence of
+    // use). We no longer auto-create observation files for every tool
+    // use — that flooded .cogz/observations/ with low-value entries.
+    // The agent decides what's salient via the record_observation MCP
+    // tool.
+    if matches!(
+        input.event,
+        LifecycleEvent::PostToolUse | LifecycleEvent::FileSave
+    ) {
         let conn = storage.conn();
-        let hits = detect_touched_entities(&conn, cogz_dir, input.file_path, input.tool_result);
-        if !hits.is_empty()
-            && let Err(e) = crate::storage::usage::record_hits(&conn, &hits)
-        {
-            tracing::warn!("usage tracking: record hits failed: {e}");
+        let paths: Vec<&str> = input.file_path.into_iter().collect();
+        let hits = detect_touched_entities(&conn, cogz_dir, &paths, input.tool_result);
+        if !hits.is_empty() {
+            with_busy_retry("record hits", || {
+                crate::storage::usage::record_hits(&conn, &hits)
+            });
         }
     }
     let observation_id: Option<String> = None;
@@ -267,13 +317,29 @@ pub fn handle_lifecycle_event(
         // Session boundary closes all open deliveries — anything the
         // agent didn't touch by now is a miss.
         let conn = storage.conn();
-        if let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
-            tracing::warn!("usage tracking: close deliveries failed: {e}");
-        }
+        with_busy_retry("close deliveries", || {
+            crate::storage::usage::close_open_deliveries(&conn)
+        });
         drop(conn);
         Some(crate::hooks::handlers::handle_session_end(
             storage, config, cogz_dir, nli_model,
         ))
+    } else {
+        None
+    };
+
+    // session_end is the natural moment to surface unmined candidates —
+    // the session's usage signals are closed and complete.
+    let suggestion_count = if input.event == LifecycleEvent::SessionEnd {
+        let conn = storage.conn();
+        match crate::storage::mining::mine_suggestions(&conn, 7, 50) {
+            Ok(s) if s.is_empty() => None,
+            Ok(s) => Some(s.len()),
+            Err(e) => {
+                tracing::warn!("suggestion mining failed at session_end: {e}");
+                None
+            }
+        }
     } else {
         None
     };
@@ -284,7 +350,26 @@ pub fn handle_lifecycle_event(
         observation_id,
         reindex_summary,
         consolidation_summary,
+        suggestion_count,
     })
+}
+
+/// The (entity_id, tier) pairs a pack delivered: each section's own
+/// tier plus every entity listed in the pointer index as `Pointer`.
+fn delivered_entries(pack: &ContextPack) -> Vec<(String, crate::storage::usage::DeliveryTier)> {
+    use crate::storage::usage::DeliveryTier;
+    let mut entries: Vec<(String, DeliveryTier)> = pack
+        .sections
+        .iter()
+        .map(|s| (s.entity_id.clone(), s.tier))
+        .collect();
+    entries.extend(
+        pack.metadata
+            .pointer_ids
+            .iter()
+            .map(|id| (id.clone(), DeliveryTier::Pointer)),
+    );
+    entries
 }
 
 /// Entities the agent touched in a tool call. Attribution is
@@ -296,12 +381,12 @@ pub fn handle_lifecycle_event(
 fn detect_touched_entities(
     conn: &rusqlite::Connection,
     cogz_dir: &Path,
-    file_path: Option<&str>,
+    file_paths: &[&str],
     tool_result: Option<&str>,
 ) -> Vec<String> {
     let mut ids: std::collections::HashSet<String> = std::collections::HashSet::new();
 
-    if let Some(raw) = file_path {
+    for raw in file_paths {
         for candidate in normalize_file_candidates(raw, cogz_dir) {
             match crate::storage::usage::entities_for_file(conn, &candidate) {
                 Ok(found) => ids.extend(found),
@@ -358,6 +443,60 @@ fn normalize_file_candidates(raw: &str, cogz_dir: &Path) -> Vec<String> {
     out.sort();
     out.dedup();
     out
+}
+
+/// Lifecycle DB writes retry on transient lock contention: the
+/// detached reindex can hold the write lock past busy_timeout, and a
+/// dropped close leaks deliveries open until the next boundary. Other
+/// errors warn once and give up — telemetry must never break the hook.
+fn with_busy_retry<T>(
+    what: &str,
+    mut f: impl FnMut() -> Result<T, crate::storage::StorageError>,
+) -> Option<T> {
+    for attempt in 0..4 {
+        match f() {
+            Ok(v) => return Some(v),
+            Err(e) if is_busy(&e) => {
+                std::thread::sleep(std::time::Duration::from_millis(150 * (attempt + 1)));
+            }
+            Err(e) => {
+                tracing::warn!("usage tracking: {what} failed: {e}");
+                return None;
+            }
+        }
+    }
+    tracing::warn!("usage tracking: {what} failed: lock still held after retries");
+    None
+}
+
+fn is_busy(e: &crate::storage::StorageError) -> bool {
+    matches!(
+        e,
+        crate::storage::StorageError::Sqlite(rusqlite::Error::SqliteFailure(code, _))
+            if matches!(
+                code.code,
+                rusqlite::ErrorCode::DatabaseBusy | rusqlite::ErrorCode::DatabaseLocked
+            )
+    )
+}
+
+/// Source extensions worth treating as file references inside a
+/// prompt. Keeps token extraction cheap — a bare word like `fix`
+/// never becomes a file candidate.
+const PROMPT_FILE_EXTS: &[&str] = &[
+    ".rs", ".py", ".go", ".js", ".jsx", ".ts", ".tsx", ".sh", ".md", ".toml", ".json",
+];
+
+/// Tokens in a prompt that look like file paths — either contain a
+/// path separator or end in a known source extension. Prompts are the
+/// main hit surface on hosts without post_tool_use, and users
+/// reference files by path constantly ("fix src/storage/usage.rs").
+fn prompt_file_tokens(prompt: &str) -> Vec<String> {
+    prompt
+        .split(|c: char| c.is_whitespace() || matches!(c, '`' | '"' | '\'' | '(' | ')' | ',' | ';'))
+        .filter(|t| t.contains('/') || PROMPT_FILE_EXTS.iter().any(|e| t.ends_with(e)))
+        .map(str::to_string)
+        .collect()
 }
 
 /// Assemble a context pack, embedding the query with both models

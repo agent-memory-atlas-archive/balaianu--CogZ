@@ -570,3 +570,47 @@ fn silence_gate_truth_table() {
     // threshold 0 disables the gate entirely.
     assert!(!hybrid_helpers::should_silence(&flat_low, 0.0, 0.64));
 }
+
+#[test]
+fn silence_gate_flag_controls_empty_results() {
+    // Query vector orthogonal to every stored embedding: flat
+    // gradient + zero strength — the silence predicate fires. The
+    // params flag decides whether that means "no results" (agent-
+    // facing search) or "ship what the floor let through" (packs).
+    let conn = setup();
+    for i in 0..3 {
+        let id = format!("k{i}");
+        insert_entity(
+            &conn,
+            &Entity::new(&id, "knowledge", &format!("unrelated {i}"), "content"),
+        )
+        .unwrap();
+        let mut v = vec![0.0_f32; 768];
+        v[1] = 1.0;
+        v[2] = i as f32 * 1e-4;
+        insert_embedding(&conn, &id, "knowledge", &v).unwrap();
+    }
+    let mut qv = vec![0.0_f32; 768];
+    qv[0] = 1.0;
+    let config = SearchConfig {
+        silence_threshold: 0.02,
+        min_relevance: 0.0,
+        merge_strategy: "detect".to_string(),
+        ..default_config()
+    };
+    for (gate, want_empty) in [(true, true), (false, false)] {
+        let params = SearchParams {
+            silence_gate: gate,
+            ..Default::default()
+        };
+        let results = search(
+            &conn,
+            "qqqzzz",
+            QueryEmbeddings::knowledge(&qv),
+            &params,
+            &config,
+        )
+        .unwrap();
+        assert_eq!(results.results.is_empty(), want_empty, "gate={gate}");
+    }
+}

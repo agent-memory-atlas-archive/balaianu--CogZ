@@ -80,6 +80,10 @@ pub struct UsageReport {
     /// File-backed entities (observation/rule/knowledge) never
     /// delivered at all.
     pub never_retrieved_files: Vec<String>,
+    /// (tier, hits, misses) — resolved outcomes per delivery tier.
+    pub tier_rates: Vec<(String, usize, usize)>,
+    /// (entity_type, hits, misses) — resolved outcomes per type.
+    pub type_rates: Vec<(String, usize, usize)>,
 }
 
 /// Full doctor report.
@@ -166,6 +170,8 @@ fn check_usage(conn: &Connection) -> Option<UsageReport> {
     };
     let never_retrieved_files =
         usage::never_delivered_by_type(conn, &["observation", "rule", "knowledge"]).ok()?;
+    let tier_rates = usage::hit_rate_by_tier(conn).unwrap_or_default();
+    let type_rates = usage::hit_rate_by_type(conn).unwrap_or_default();
 
     Some(UsageReport {
         pack_hits: pack.hits,
@@ -175,6 +181,8 @@ fn check_usage(conn: &Connection) -> Option<UsageReport> {
         pending: pack.pending + search.pending,
         dead_weight,
         never_retrieved_files,
+        tier_rates,
+        type_rates,
     })
 }
 

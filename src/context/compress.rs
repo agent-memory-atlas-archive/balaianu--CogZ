@@ -284,6 +284,7 @@ mod tests {
             relevance,
             graph_path: vec!["test-id".to_string()],
             graph_path_description: String::new(),
+            tier: crate::storage::usage::DeliveryTier::Full,
         }
     }
 

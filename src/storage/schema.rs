@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 4;
+pub const SCHEMA_VERSION: u32 = 5;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -36,6 +36,10 @@ pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), Sto
 
     if current < 4 {
         migrate_v4(conn)?;
+    }
+
+    if current < 5 {
+        migrate_v5(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -315,6 +319,26 @@ fn migrate_v4(conn: &Connection) -> Result<(), StorageError> {
     Ok(())
 }
 
+/// Migration v5: delivery tiers. `entity_usage.tier` records how an
+/// entity was delivered — 'baseline' (Tier-0 orientation), 'full'
+/// (Tier-1 content), 'pointer' (Tier-2 index entry) — so hit rates
+/// can be measured per tier. Existing rows default to 'full', which
+/// is what they were.
+fn migrate_v5(conn: &Connection) -> Result<(), StorageError> {
+    // ALTER TABLE has no IF NOT EXISTS — check the column first so a
+    // rolled-back user_version doesn't fail on re-migration.
+    let has_tier = conn
+        .prepare("PRAGMA table_info(entity_usage)")?
+        .query_map([], |r| r.get::<_, String>(1))?
+        .any(|name| name.ok().as_deref() == Some("tier"));
+    if !has_tier {
+        conn.execute_batch(
+            "ALTER TABLE entity_usage ADD COLUMN tier TEXT NOT NULL DEFAULT 'full';",
+        )?;
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -421,13 +445,10 @@ mod tests {
     }
 
     #[test]
-    fn migrate_v4_is_idempotent_and_forward_only() {
+    fn migrations_are_idempotent_and_forward_only() {
         let conn = Connection::open_in_memory().unwrap();
         crate::storage::ensure_vec_extension();
         run_migrations(&conn, 768).unwrap();
-
-        // Direct re-run must not error (IF NOT EXISTS guards).
-        migrate_v4(&conn).unwrap();
 
         let version: u32 = conn
             .query_row("PRAGMA user_version", [], |r| r.get(0))
@@ -435,12 +456,21 @@ mod tests {
         assert_eq!(version, SCHEMA_VERSION);
 
         // Simulated v3 database upgrade: roll the version back and
-        // re-run the full migration path.
+        // re-run the full migration path — v4 creates the usage
+        // tables, v5 adds the tier column.
         conn.pragma_update(None, "user_version", 3u32).unwrap();
         run_migrations(&conn, 768).unwrap();
         let version: u32 = conn
             .query_row("PRAGMA user_version", [], |r| r.get(0))
             .unwrap();
-        assert_eq!(version, 4);
+        assert_eq!(version, SCHEMA_VERSION);
+
+        let tier_col: bool = conn
+            .prepare("PRAGMA table_info(entity_usage)")
+            .unwrap()
+            .query_map([], |r| r.get::<_, String>(1))
+            .unwrap()
+            .any(|name| name.ok().as_deref() == Some("tier"));
+        assert!(tier_col, "entity_usage should have a tier column");
     }
 }

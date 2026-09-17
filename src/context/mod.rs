@@ -6,10 +6,13 @@
 //! and token budgeting to produce a `ContextPack`.
 
 pub mod assemble;
+mod baseline;
 pub mod code_map;
 pub mod compress;
 pub mod modes;
+mod query_sections;
 
+pub use crate::storage::usage::DeliveryTier;
 pub use assemble::{AssembleError, AssembleParams, assemble_context};
 pub use modes::ContextMode;
 
@@ -45,6 +48,9 @@ pub struct ContextSection {
     /// "Search pipeline → hybrid.rs → fuse"). Empty for direct
     /// matches and cold-start sections.
     pub graph_path_description: String,
+    /// Delivery tier: `Baseline` orientation, `Full` content, or
+    /// `Pointer` (index entry — presence without depth).
+    pub tier: DeliveryTier,
 }
 
 /// Metadata about a context pack's construction.
@@ -60,4 +66,12 @@ pub struct PackMetadata {
     pub dropped_sources: Vec<String>,
     /// How search was executed: "hybrid" or "fts_only".
     pub search_mode: String,
+    /// Entity ids listed in the pointer index — delivered as pull
+    /// affordances, not content.
+    pub pointer_ids: Vec<String>,
+    /// Retrieval signals from the pack's search, when the query ran
+    /// in a vector-capable mode. Persisted on prompt_submit events so
+    /// delivery quality is analyzable per prompt. `None` for
+    /// cold-start and FTS-only packs.
+    pub signals: Option<crate::search::ChannelSignals>,
 }

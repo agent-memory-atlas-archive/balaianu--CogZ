@@ -29,6 +29,9 @@ pub enum EventType {
     FileSave,
     SessionEnd,
     Stop,
+    /// The agent asked for mined observation candidates — an audit
+    /// trail for whether write-path mining gets used at all.
+    SuggestionsRequested,
 }
 
 impl EventType {
@@ -52,6 +55,7 @@ impl EventType {
             Self::FileSave => "file_save",
             Self::SessionEnd => "session_end",
             Self::Stop => "stop",
+            Self::SuggestionsRequested => "suggestions_requested",
         }
     }
 }
@@ -129,6 +133,20 @@ pub fn count_events(conn: &Connection) -> Result<i64, StorageError> {
     Ok(count)
 }
 
+/// Merge `patch` into an event's JSON payload (json_patch: top-level
+/// keys merge, nested objects replace). Attaches post-hoc detail —
+/// e.g. pack metadata — to an event recorded before it was known.
+pub fn annotate_event(
+    conn: &Connection,
+    event_id: i64,
+    patch: &serde_json::Value,
+) -> Result<usize, StorageError> {
+    Ok(conn.execute(
+        "UPDATE events SET payload = json_patch(payload, ?) WHERE id = ?",
+        params![patch.to_string(), event_id],
+    )?)
+}
+
 fn row_to_event(row: &rusqlite::Row<'_>) -> Result<DomainEvent, rusqlite::Error> {
     let payload_str: String = row.get(3)?;
     let payload = serde_json::from_str(&payload_str).unwrap_or_else(|e| {
@@ -184,6 +202,31 @@ mod tests {
         let events = get_recent_events(&conn, "code_changed", 10).unwrap();
         assert_eq!(events.len(), 1);
         assert!(events[0].entity_id.is_none());
+    }
+
+    #[test]
+    fn annotate_event_merges_payload_keys() {
+        let conn = setup();
+        let id = record_event(
+            &conn,
+            EventType::PromptSubmit,
+            None,
+            &serde_json::json!({"prompt": "fix x"}),
+        )
+        .unwrap();
+
+        annotate_event(
+            &conn,
+            id,
+            &serde_json::json!({"pack": {"size_tokens": 1234, "gated": true}}),
+        )
+        .unwrap();
+
+        let events = get_recent_events(&conn, "prompt_submit", 1).unwrap();
+        // Original keys preserved, new keys merged in.
+        assert_eq!(events[0].payload["prompt"], "fix x");
+        assert_eq!(events[0].payload["pack"]["size_tokens"], 1234);
+        assert_eq!(events[0].payload["pack"]["gated"], true);
     }
 
     #[test]

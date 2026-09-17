@@ -369,7 +369,8 @@ pub fn search(
     //     real matches) — strength is the check that nothing is close.
     //     FTS-only skips the gate: with no vector signal there is
     //     nothing to judge by.
-    if let Some(s) = &signals
+    if params.silence_gate
+        && let Some(s) = &signals
         && hybrid_helpers::should_silence(
             s,
             config.silence_threshold,

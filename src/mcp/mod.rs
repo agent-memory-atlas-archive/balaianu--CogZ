@@ -13,6 +13,8 @@ pub mod responses;
 pub mod server;
 pub mod status;
 pub mod tools;
+pub mod tools_graph;
+pub mod tools_mining;
 pub mod tools_query;
 pub mod tools_search;
 pub mod tools_system;

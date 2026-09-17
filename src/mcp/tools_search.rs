@@ -50,6 +50,7 @@ pub async fn search(
             expand,
             max_hops: if expand { task_max_hops } else { 0 },
             include_tests: false,
+            silence_gate: true,
         };
         let results = search_entities(
             &conn,
@@ -61,10 +62,15 @@ pub async fn search(
         // Usage tracking: record what was delivered so post_tool_use
         // hits can credit it. Best-effort — a tracking failure must
         // never fail a search.
-        let delivered: Vec<String> = results
+        let delivered: Vec<(String, crate::storage::usage::DeliveryTier)> = results
             .results
             .iter()
-            .map(|r| r.entity.id.clone())
+            .map(|r| {
+                (
+                    r.entity.id.clone(),
+                    crate::storage::usage::DeliveryTier::Full,
+                )
+            })
             .collect();
         match crate::storage::usage::record_delivery(
             &conn,
@@ -79,6 +85,14 @@ pub async fn search(
                 }
             }
             Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
+        }
+        let result_ids: Vec<String> = results
+            .results
+            .iter()
+            .map(|r| r.entity.id.clone())
+            .collect();
+        if let Err(e) = crate::storage::usage::record_pointer_conversions(&conn, &result_ids) {
+            tracing::warn!("usage tracking: pointer conversion failed: {e}");
         }
         Ok::<_, crate::search::SearchError>(results)
     })
@@ -130,7 +144,17 @@ pub async fn get_context(
             },
             &config,
         )?;
-        let delivered: Vec<String> = pack.sections.iter().map(|s| s.entity_id.clone()).collect();
+        let mut delivered: Vec<(String, crate::storage::usage::DeliveryTier)> = pack
+            .sections
+            .iter()
+            .map(|s| (s.entity_id.clone(), s.tier))
+            .collect();
+        delivered.extend(
+            pack.metadata
+                .pointer_ids
+                .iter()
+                .map(|id| (id.clone(), crate::storage::usage::DeliveryTier::Pointer)),
+        );
         match crate::storage::usage::record_delivery(
             &conn,
             crate::storage::usage::DeliveryKind::Pack,

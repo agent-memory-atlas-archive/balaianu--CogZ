@@ -5,6 +5,7 @@ use cogz::context::{AssembleParams, ContextMode, assemble_context};
 use cogz::storage::Storage;
 use cogz::storage::crud::{Entity, insert_entity};
 use cogz::storage::edges::{Edge, insert_edge};
+use cogz::storage::embeddings::insert_embedding;
 
 fn default_config() -> Config {
     Config::default_for("test")
@@ -339,6 +340,239 @@ fn selected_sources_lists_unique_source_types() {
         "expected deduplicated source types, got {:?}",
         pack.metadata.selected_sources
     );
+}
+
+#[test]
+fn task_pack_includes_tier0_baseline() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "rule", "Rule A", "rule content a"),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "FTS5 bug", "ranking bug content"),
+    )
+    .unwrap();
+
+    let config = default_config();
+    let params = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("ranking"),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+
+    use cogz::context::DeliveryTier;
+    // Tier 0: identity + rule ship as baseline alongside search hits.
+    let identity = pack.sections.iter().find(|s| s.source == "identity");
+    assert!(identity.is_some(), "task pack should carry orientation");
+    assert_eq!(identity.unwrap().tier, DeliveryTier::Baseline);
+    let baseline_rule = pack
+        .sections
+        .iter()
+        .find(|s| s.entity_id == "r1" && s.tier == DeliveryTier::Baseline);
+    assert!(baseline_rule.is_some());
+    // Tier 1: the search hit ships full content.
+    let hit = pack.sections.iter().find(|s| s.entity_id == "o1");
+    assert_eq!(hit.unwrap().tier, DeliveryTier::Full);
+}
+
+#[test]
+fn task_pack_baseline_survives_tight_budget() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    insert_entity(&conn, &Entity::new("r1", "rule", "Short rule", "short")).unwrap();
+    let big = format!("big body {}", "x".repeat(2000));
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "ranking hit", &big),
+    )
+    .unwrap();
+
+    let config = default_config();
+    // Budget smaller than the search hit — Tier 0 still ships and the
+    // oversized hit is truncated into what remains rather than pushing
+    // the baseline out.
+    let params = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("ranking"),
+        max_tokens: Some(120),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+
+    use cogz::context::DeliveryTier;
+    assert!(pack.sections.iter().any(|s| s.source == "identity"));
+    assert!(
+        pack.sections
+            .iter()
+            .any(|s| s.entity_id == "r1" && s.tier == DeliveryTier::Baseline)
+    );
+    let hit = pack.sections.iter().find(|s| s.entity_id == "o1");
+    assert!(hit.is_some());
+    assert!(hit.unwrap().content.len() < 2000);
+}
+
+#[test]
+fn dedup_loser_keeps_pointer_index_entry() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    // Identical content — the dedup loser should still be discoverable.
+    let body = format!("ranking investigation {}", "z".repeat(400));
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "first finding", &body),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("o2", "observation", "second finding", &body),
+    )
+    .unwrap();
+
+    let config = default_config();
+    let params = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("ranking"),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+
+    use cogz::context::DeliveryTier;
+    let idx = pack.sections.iter().find(|s| s.source == "overflow_index");
+    assert!(idx.is_some(), "dedup loser should keep a pointer entry");
+    assert_eq!(idx.unwrap().tier, DeliveryTier::Pointer);
+    assert!(pack.metadata.pointer_ids.contains(&"o2".to_string()));
+}
+
+#[test]
+fn tiered_push_disabled_omits_baseline() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "rule", "Rule A", "rule content a"),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "FTS5 bug", "ranking bug content"),
+    )
+    .unwrap();
+
+    let mut config = default_config();
+    config.context.tiered_push = false;
+    let params = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("ranking"),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+
+    assert!(!pack.sections.iter().any(|s| s.source == "identity"));
+    assert!(pack.sections.iter().any(|s| s.entity_id == "o1"));
+    // r1 was not search-relevant, so it must not appear at all.
+    assert!(!pack.sections.iter().any(|s| s.entity_id == "r1"));
+}
+
+#[test]
+fn task_pack_with_no_search_hits_is_orientation_only() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "rule", "Rule A", "rule content a"),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "unrelated", "nothing matching"),
+    )
+    .unwrap();
+
+    let config = default_config();
+    let params = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("zzqqxy nonexistent token"),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+
+    use cogz::context::DeliveryTier;
+    assert!(pack.sections.iter().any(|s| s.source == "identity"));
+    assert!(!pack.sections.iter().any(|s| s.tier == DeliveryTier::Full));
+    assert!(!pack.sections.iter().any(|s| s.entity_id == "o1"));
+}
+
+#[test]
+fn task_pack_ships_semantic_hits_below_silence_confidence() {
+    // Embeddings orthogonal to the query produce silence-gate-level
+    // signals — pack assembly ships them anyway; silence is a
+    // search-surface semantic, not a delivery policy.
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    for i in 0..3 {
+        let id = format!("k{i}");
+        insert_entity(
+            &conn,
+            &Entity::new(
+                &id,
+                "knowledge",
+                &format!("note {i}"),
+                ["alpha", "beta", "gamma"][i],
+            ),
+        )
+        .unwrap();
+        let mut v = vec![0.0_f32; 768];
+        v[1] = 1.0;
+        v[2] = i as f32 * 1e-4;
+        insert_embedding(&conn, &id, "knowledge", &v).unwrap();
+    }
+    let mut qv = vec![0.0_f32; 768];
+    qv[0] = 1.0;
+
+    // Floor at zero isolates the silence gate: anything retrieval
+    // returns must reach the pack.
+    let mut config = default_config();
+    config.search.min_relevance = 0.0;
+    let params = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("qqqzzz"),
+        knowledge_embedding: Some(&qv),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+    assert!(pack.sections.iter().any(|s| s.entity_id == "k0"));
+    assert!(pack.metadata.signals.is_some());
+}
+
+#[test]
+fn escalation_pack_has_baseline() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "rule", "Rule A", "rule content a"),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "FTS5 bug", "ranking bug content"),
+    )
+    .unwrap();
+
+    let config = default_config();
+    let params = AssembleParams {
+        mode: ContextMode::Escalation,
+        query: Some("ranking"),
+        ..Default::default()
+    };
+    let pack = assemble_context(&conn, &params, &config).unwrap();
+
+    assert!(pack.sections.iter().any(|s| s.source == "identity"));
 }
 
 #[test]

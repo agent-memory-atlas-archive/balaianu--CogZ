@@ -129,6 +129,7 @@ pub async fn capture_event(
         }),
         "reindex_summary": result.reindex_summary,
         "consolidation_summary": result.consolidation_summary,
+        "suggestion_count": result.suggestion_count,
     });
 
     Ok(tool_success(response))

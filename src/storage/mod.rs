@@ -10,6 +10,8 @@ pub mod edges;
 pub mod embeddings;
 pub mod events;
 pub mod graph;
+pub mod graph_queries;
+pub mod mining;
 pub mod query;
 pub mod schema;
 pub mod status;

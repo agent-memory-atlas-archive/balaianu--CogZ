@@ -73,7 +73,7 @@ fn session_start_records_event_and_returns_cold_start_pack() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     let pack = output
         .context_pack
         .expect("session_start should return a pack");
@@ -112,7 +112,7 @@ fn prompt_submit_records_event_and_returns_task_pack() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     let pack = output
         .context_pack
         .expect("prompt_submit should return a pack");
@@ -123,6 +123,15 @@ fn prompt_submit_records_event_and_returns_task_pack() {
     let conn = storage.conn();
     let events = get_recent_events(&conn, "prompt_submit", 10).unwrap();
     assert_eq!(events.len(), 1);
+    // Pack metadata is persisted onto the event for later analysis.
+    let pack_meta = &events[0].payload["pack"];
+    assert!(pack_meta["size_tokens"].is_number());
+    assert!(pack_meta["sections"].is_number());
+    assert!(pack_meta["pointers"].is_number());
+    assert_eq!(
+        pack_meta["search_mode"].as_str().unwrap(),
+        pack.metadata.search_mode
+    );
 }
 
 #[test]
@@ -148,7 +157,7 @@ fn pre_tool_use_records_event_only() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     assert!(
         output.context_pack.is_none(),
         "pre_tool_use should not return a pack"
@@ -186,7 +195,7 @@ fn post_tool_use_records_event_but_not_observation() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     assert!(output.context_pack.is_none());
     // post_tool_use no longer auto-records observations — the agent
     // decides what's salient via the record_observation MCP tool.
@@ -235,7 +244,7 @@ fn post_tool_use_without_tool_result_records_event_only() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     assert!(
         output.observation_id.is_none(),
         "post_tool_use should not auto-record an observation"
@@ -294,7 +303,7 @@ fn file_save_for_cogz_file_triggers_sync_not_reindex() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     assert!(output.context_pack.is_none());
     assert!(output.observation_id.is_none());
     let summary = output
@@ -334,7 +343,7 @@ fn file_save_without_path_records_event_only() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     let summary = output
         .reindex_summary
         .expect("file_save should return a summary");
@@ -365,7 +374,7 @@ fn session_end_records_event_and_runs_consolidation() {
     )
     .unwrap();
 
-    assert!(output.event_id > 0);
+    assert!(output.event_id.is_some_and(|id| id > 0));
     assert!(output.context_pack.is_none());
     assert!(output.observation_id.is_none());
     assert!(
@@ -495,4 +504,115 @@ fn usage_tracking_delivers_hits_and_misses() {
         )
         .unwrap();
     assert_eq!(open, 0);
+}
+
+#[test]
+fn file_save_marks_delivered_entity_hit() {
+    use cogz::storage::crud::{Entity, insert_entity};
+    let (storage, config, cogz_dir, _dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    let id = uuid::Uuid::new_v4().to_string();
+    let mut entity = Entity::new(&id, "knowledge", "file save hit entity", "body");
+    entity.file_path = Some("knowledge/file-save-hit.md".to_string());
+    {
+        let conn = storage.conn();
+        insert_entity(&conn, &entity).unwrap();
+    }
+
+    let fire = |input: LifecycleInput| {
+        handle_lifecycle_event(
+            &storage, &config, &cogz_dir, &model, &code_mod, None, &input,
+        )
+        .unwrap()
+    };
+
+    let pack = fire(LifecycleInput {
+        event: LifecycleEvent::SessionStart,
+        prompt: None,
+        tool_name: None,
+        tool_result: None,
+        file_path: None,
+    })
+    .context_pack
+    .expect("pack");
+    assert!(pack.sections.iter().any(|s| s.entity_id == id));
+
+    // Hosts without post_tool_use dispatch still send file_save on
+    // edit/write — the path match must credit the delivered entity.
+    let abs_path = cogz_dir.join("knowledge/file-save-hit.md");
+    fire(LifecycleInput {
+        event: LifecycleEvent::FileSave,
+        prompt: None,
+        tool_name: None,
+        tool_result: None,
+        file_path: Some(abs_path.to_str().unwrap()),
+    });
+
+    let conn = storage.conn();
+    let outcome: String = conn
+        .query_row(
+            "SELECT outcome FROM entity_usage WHERE entity_id = ?",
+            [&id],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(outcome, "hit");
+}
+
+#[test]
+fn prompt_submit_resolves_hits_before_boundary() {
+    use cogz::storage::crud::{Entity, insert_entity};
+    let (storage, config, cogz_dir, _dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    let id = uuid::Uuid::new_v4().to_string();
+    let mut entity = Entity::new(&id, "knowledge", "prompt referenced knowledge", "body");
+    entity.file_path = Some("knowledge/prompt-ref.md".to_string());
+    {
+        let conn = storage.conn();
+        insert_entity(&conn, &entity).unwrap();
+    }
+
+    let fire = |input: LifecycleInput| {
+        handle_lifecycle_event(
+            &storage, &config, &cogz_dir, &model, &code_mod, None, &input,
+        )
+        .unwrap()
+    };
+
+    let pack = fire(LifecycleInput {
+        event: LifecycleEvent::SessionStart,
+        prompt: None,
+        tool_name: None,
+        tool_result: None,
+        file_path: None,
+    })
+    .context_pack
+    .expect("pack");
+    assert!(pack.sections.iter().any(|s| s.entity_id == id));
+
+    // A prompt naming the delivered entity's file is evidence the
+    // context was used — it must resolve BEFORE this prompt's pack
+    // closes the prior delivery as misses.
+    fire(LifecycleInput {
+        event: LifecycleEvent::PromptSubmit,
+        prompt: Some("now update knowledge/prompt-ref.md please"),
+        tool_name: None,
+        tool_result: None,
+        file_path: None,
+    });
+
+    let conn = storage.conn();
+    let outcome: String = conn
+        .query_row(
+            "SELECT outcome FROM entity_usage WHERE entity_id = ? AND delivery_id = \
+             (SELECT MIN(delivery_id) FROM entity_usage WHERE entity_id = ?)",
+            [&id, &id],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(outcome, "hit");
 }

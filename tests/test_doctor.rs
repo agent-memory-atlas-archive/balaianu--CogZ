@@ -428,7 +428,8 @@ fn doctor_reports_usage_metrics() {
     {
         let conn = storage.conn();
         let did = usage::record_delivery(&conn, usage::DeliveryKind::Pack, None).unwrap();
-        usage::record_delivered(&conn, did, std::slice::from_ref(&obs.id)).unwrap();
+        usage::record_delivered(&conn, did, &[(obs.id.clone(), usage::DeliveryTier::Full)])
+            .unwrap();
         usage::record_hits(&conn, std::slice::from_ref(&obs.id)).unwrap();
         usage::close_open_deliveries(&conn).unwrap();
     }

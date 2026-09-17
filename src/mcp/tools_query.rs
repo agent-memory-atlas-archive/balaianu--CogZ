@@ -14,6 +14,27 @@ use crate::mcp::helpers::{
 use crate::mcp::params::*;
 use crate::mcp::responses::{query_response, tool_success};
 use crate::mcp::server::CogzServer;
+use crate::storage::usage::{self, DeliveryKind};
+
+/// Record returned entities as a pull delivery so later hits — a
+/// reference in a write, a file touch — attribute back to this call.
+fn record_query_pull(conn: &rusqlite::Connection, entity_ids: &[String]) {
+    let entries: Vec<(String, usage::DeliveryTier)> = entity_ids
+        .iter()
+        .map(|id| (id.clone(), usage::DeliveryTier::Full))
+        .collect();
+    match usage::record_delivery(conn, DeliveryKind::Pull, None) {
+        Ok(delivery_id) => {
+            if let Err(e) = usage::record_delivered(conn, delivery_id, &entries) {
+                tracing::warn!("usage tracking: record delivered failed: {e}");
+            }
+        }
+        Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
+    }
+    if let Err(e) = usage::record_pointer_conversions(conn, entity_ids) {
+        tracing::warn!("usage tracking: pointer conversion failed: {e}");
+    }
+}
 
 pub async fn query_observations(
     server: &CogzServer,
@@ -25,13 +46,18 @@ pub async fn query_observations(
 
     let result = tokio::task::spawn_blocking(move || {
         let conn = storage.conn();
-        query_by_type_with_refs(
+        let result = query_by_type_with_refs(
             &conn,
             "observation",
             params.status.as_deref(),
             limit,
             params.references.as_deref(),
-        )
+        )?;
+        record_query_pull(
+            &conn,
+            &result.0.iter().map(|e| e.id.clone()).collect::<Vec<_>>(),
+        );
+        Ok::<_, crate::storage::StorageError>(result)
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
@@ -55,13 +81,18 @@ pub async fn query_rules(
 
     let result = tokio::task::spawn_blocking(move || {
         let conn = storage.conn();
-        query_by_type_with_refs(
+        let result = query_by_type_with_refs(
             &conn,
             "rule",
             params.status.as_deref(),
             limit,
             params.references.as_deref(),
-        )
+        )?;
+        record_query_pull(
+            &conn,
+            &result.0.iter().map(|e| e.id.clone()).collect::<Vec<_>>(),
+        );
+        Ok::<_, crate::storage::StorageError>(result)
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
@@ -81,13 +112,18 @@ pub async fn query_knowledge(
 
     let result = tokio::task::spawn_blocking(move || {
         let conn = storage.conn();
-        query_knowledge_with_refs(
+        let result = query_knowledge_with_refs(
             &conn,
             params.status.as_deref(),
             params.category.as_deref(),
             params.tags.as_deref(),
             limit,
-        )
+        )?;
+        record_query_pull(
+            &conn,
+            &result.0.iter().map(|e| e.id.clone()).collect::<Vec<_>>(),
+        );
+        Ok::<_, crate::storage::StorageError>(result)
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?

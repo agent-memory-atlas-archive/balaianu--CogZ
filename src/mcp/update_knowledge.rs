@@ -173,6 +173,12 @@ pub fn update_knowledge_file(
         ) {
             tracing::warn!("failed to record knowledge_updated event: {e}");
         }
+        // Citing delivered entities in updated memory is usage evidence.
+        if !entity_file.references.is_empty()
+            && let Err(e) = crate::storage::usage::record_hits(&conn, &entity_file.references)
+        {
+            tracing::warn!("usage tracking: reference hits failed: {e}");
+        }
     }
 
     Ok(json!({

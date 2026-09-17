@@ -156,6 +156,53 @@ async fn record_observation_creates_file_and_db_entry() {
     assert!(!files.is_empty(), "at least one observation file exists");
 }
 
+#[tokio::test]
+async fn record_observation_with_references_credits_delivered_entity() {
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+    std::fs::create_dir_all(cogz_dir.join("observations")).unwrap();
+
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let config = Config::default_for("test-project");
+
+    // Deliver a pending entity, then write an observation citing it —
+    // the reference is evidence the delivered entity was used.
+    let cited_id = "11111111-2222-4333-8444-555555555555";
+    {
+        use cogz::storage::crud::{Entity, insert_entity};
+        use cogz::storage::usage::*;
+        let conn = storage.conn();
+        insert_entity(&conn, &Entity::new(cited_id, "knowledge", "Cited", "c")).unwrap();
+        let did = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
+        record_delivered(&conn, did, &[(cited_id.to_string(), DeliveryTier::Full)]).unwrap();
+    }
+
+    let mut entity = cogz::files::EntityFile::new(
+        "Cites delivered knowledge",
+        cogz::files::FileEntityType::Observation,
+        "body",
+    );
+    entity.references = vec![cited_id.to_string()];
+    cogz::mcp::helpers::write_and_sync(
+        &storage,
+        &config,
+        &cogz_dir,
+        &entity,
+        "observation",
+        None,
+        None,
+    )
+    .unwrap();
+
+    let conn = storage.conn();
+    let s =
+        cogz::storage::usage::usage_summary(&conn, Some(cogz::storage::usage::DeliveryKind::Pack))
+            .unwrap();
+    assert_eq!(s.hits, 1);
+    assert_eq!(s.pending, 0);
+}
+
 // ── create_rule ───────────────────────────────────────────────────
 
 #[tokio::test]
@@ -270,6 +317,60 @@ async fn query_observations_returns_results() {
     assert_eq!(value["count"], 1);
     assert!(value["observations"].is_array());
     assert_eq!(value["observations"][0]["title"], "Test observation");
+}
+
+#[tokio::test]
+async fn query_observations_records_pull_delivery() {
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    std::fs::create_dir_all(cogz_dir.join("observations")).unwrap();
+    let models_dir = dir.path().join("models");
+    std::fs::create_dir_all(&models_dir).unwrap();
+
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let server = CogzServer::with_models_dir(
+        storage.clone(),
+        Config::default_for("test-project"),
+        cogz_dir,
+        &models_dir,
+    );
+    let client = spawn_server(server).await;
+
+    let _ = client
+        .call_tool(
+            CallToolRequestParams::new("record_observation").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"content": "Pull-tracked", "title": "Pull-tracked"}),
+                )
+                .unwrap(),
+            ),
+        )
+        .await
+        .unwrap();
+
+    let result = client
+        .call_tool(
+            CallToolRequestParams::new("query_observations")
+                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
+        )
+        .await
+        .unwrap();
+    let value = parse_result(result);
+    let queried_id = value["observations"][0]["id"].as_str().unwrap().to_string();
+
+    let conn = storage.conn();
+    let (kind, entity_id): (String, String) = conn
+        .query_row(
+            "SELECT d.kind, u.entity_id FROM entity_usage u
+             JOIN deliveries d ON d.id = u.delivery_id
+             WHERE u.entity_id = ?1",
+            [&queried_id],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .unwrap();
+    assert_eq!(kind, "pull");
+    assert_eq!(entity_id, queried_id);
 }
 
 // ── query_rules ───────────────────────────────────────────────────
@@ -1246,7 +1347,7 @@ async fn capture_event_invalid_type_returns_error() {
 }
 
 #[tokio::test]
-async fn mcp_server_lists_13_tools() {
+async fn mcp_server_lists_17_tools() {
     let (server, _dir) = setup();
     let client = spawn_server(server).await;
 
@@ -1254,11 +1355,19 @@ async fn mcp_server_lists_13_tools() {
 
     let tool_names: Vec<String> = tools.tools.iter().map(|t| t.name.to_string()).collect();
 
-    assert_eq!(tool_names.len(), 13, "server should expose 13 tools");
-    assert!(
-        tool_names.contains(&"capture_event".to_string()),
-        "capture_event should be listed"
-    );
+    assert_eq!(tool_names.len(), 17, "server should expose 17 tools");
+    for expected in [
+        "capture_event",
+        "get_callers",
+        "get_impact",
+        "find_orphans",
+        "suggest_observations",
+    ] {
+        assert!(
+            tool_names.contains(&expected.to_string()),
+            "{expected} should be listed"
+        );
+    }
 }
 
 #[tokio::test]

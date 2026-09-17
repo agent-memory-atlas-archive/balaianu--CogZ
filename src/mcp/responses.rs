@@ -113,6 +113,7 @@ pub fn context_response_ref(pack: &crate::context::ContextPack) -> serde_json::V
                 "relevance": s.relevance,
                 "graph_path": s.graph_path,
                 "graph_path_description": s.graph_path_description,
+                "tier": s.tier.as_str(),
             })
         })
         .collect();
@@ -125,6 +126,15 @@ pub fn context_response_ref(pack: &crate::context::ContextPack) -> serde_json::V
             "selected_sources": pack.metadata.selected_sources,
             "dropped_sources": pack.metadata.dropped_sources,
             "search_mode": pack.metadata.search_mode,
+            "pointer_ids": pack.metadata.pointer_ids,
+            "signals": pack.metadata.signals.as_ref().map(|s| {
+                serde_json::json!({
+                    "code_strength": s.code_strength,
+                    "code_gradient": s.code_gradient,
+                    "knowledge_strength": s.knowledge_strength,
+                    "knowledge_gradient": s.knowledge_gradient,
+                })
+            }),
         },
     })
 }

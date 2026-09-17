@@ -167,6 +167,53 @@ pub struct ConsolidateParams {
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct GetCallersParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// Entity ID whose callers to find (function, method).
+    pub entity_id: String,
+    #[serde(default)]
+    pub limit: Option<i64>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct GetImpactParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// Entity ID to analyze.
+    pub entity_id: String,
+    /// Max dependency hops to traverse (default 2, capped at 4).
+    #[serde(default)]
+    pub max_depth: Option<usize>,
+    #[serde(default)]
+    pub limit: Option<i64>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct FindOrphansParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// Code entity type to check: function, class, file, or module.
+    /// Default: functions and classes.
+    #[serde(default)]
+    pub entity_type: Option<String>,
+    #[serde(default)]
+    pub limit: Option<i64>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct SuggestObservationsParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// How far back to mine events and usage, in days (default 7).
+    #[serde(default)]
+    pub days: Option<u32>,
+    /// Max candidates to return (default 10, capped at 50).
+    #[serde(default)]
+    pub limit: Option<i64>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct CaptureEventParams {
     /// Absolute path to the project root containing `.cogz/`.
     pub repo: String,

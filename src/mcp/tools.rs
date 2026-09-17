@@ -4,6 +4,8 @@
 //! - `tools_write` — record_observation, create_rule, create_knowledge, update_knowledge
 //! - `tools_query` — query_observations, query_rules, query_knowledge, list_entities
 //! - `tools_search` — search, get_context
+//! - `tools_graph` — get_callers, get_impact, find_orphans
+//! - `tools_mining` — suggest_observations
 //! - `tools_system` — get_status, consolidate
 //!
 //! Parameter structs live in `params.rs`; shared helpers in `helpers.rs`.
@@ -15,7 +17,7 @@ use rmcp::{
 
 use crate::mcp::params::*;
 use crate::mcp::server::CogzServer;
-use crate::mcp::{tools_query, tools_search, tools_system, tools_write};
+use crate::mcp::{tools_graph, tools_mining, tools_query, tools_search, tools_system, tools_write};
 
 #[tool_router(vis = "pub")]
 impl CogzServer {
@@ -116,6 +118,50 @@ impl CogzServer {
         params: Parameters<GetContextParams>,
     ) -> Result<CallToolResult, McpError> {
         tools_search::get_context(self, params).await
+    }
+
+    #[tool(
+        name = "get_callers",
+        description = "Find entities that call this function or method. Answers 'who calls X?' — the direct dependents with incoming calls edges."
+    )]
+    async fn get_callers(
+        &self,
+        params: Parameters<GetCallersParams>,
+    ) -> Result<CallToolResult, McpError> {
+        tools_graph::get_callers(self, params).await
+    }
+
+    #[tool(
+        name = "get_impact",
+        description = "Transitive dependents of an entity — what breaks or needs updating when it changes (incoming calls/imports/extends, up to max_depth hops). Also lists knowledge entities referencing it, which may go stale."
+    )]
+    async fn get_impact(
+        &self,
+        params: Parameters<GetImpactParams>,
+    ) -> Result<CallToolResult, McpError> {
+        tools_graph::get_impact(self, params).await
+    }
+
+    #[tool(
+        name = "find_orphans",
+        description = "Find code entities with no incoming calls/imports/extends edges — dead-code candidates. Test code is excluded; entry points like main() surface by design."
+    )]
+    async fn find_orphans(
+        &self,
+        params: Parameters<FindOrphansParams>,
+    ) -> Result<CallToolResult, McpError> {
+        tools_graph::find_orphans(self, params).await
+    }
+
+    #[tool(
+        name = "suggest_observations",
+        description = "Mine recent usage for observation candidates: zero-hit packs followed by edits, repeatedly-hit entities, hot files, and error→fix sequences. Returns structured suggestions — confirm salient ones via record_observation."
+    )]
+    async fn suggest_observations(
+        &self,
+        params: Parameters<SuggestObservationsParams>,
+    ) -> Result<CallToolResult, McpError> {
+        tools_mining::suggest_observations(self, params).await
     }
 
     #[tool(

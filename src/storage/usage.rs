@@ -15,6 +15,9 @@ use super::StorageError;
 pub enum DeliveryKind {
     Pack,
     Search,
+    /// Results of a targeted pull tool (get_callers, get_impact,
+    /// find_orphans) — the agent asked for these entities explicitly.
+    Pull,
 }
 
 impl DeliveryKind {
@@ -22,6 +25,27 @@ impl DeliveryKind {
         match self {
             Self::Pack => "pack",
             Self::Search => "search",
+            Self::Pull => "pull",
+        }
+    }
+}
+
+/// How an entity was delivered — the tiered-push axis. `Baseline` is
+/// Tier-0 orientation (always shipped), `Full` is Tier-1 content,
+/// `Pointer` is a Tier-2 index entry (presence without depth).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DeliveryTier {
+    Baseline,
+    Full,
+    Pointer,
+}
+
+impl DeliveryTier {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Baseline => "baseline",
+            Self::Full => "full",
+            Self::Pointer => "pointer",
         }
     }
 }
@@ -51,21 +75,22 @@ pub fn record_delivery(
 }
 
 /// Record each delivered entity as pending until a hit or the next
-/// delivery boundary resolves it.
+/// delivery boundary resolves it. `entries` pairs each entity id with
+/// its delivery tier.
 pub fn record_delivered(
     conn: &Connection,
     delivery_id: i64,
-    entity_ids: &[String],
+    entries: &[(String, DeliveryTier)],
 ) -> Result<(), StorageError> {
     let tx = conn.unchecked_transaction()?;
     {
         let mut stmt = tx.prepare(
-            "INSERT OR IGNORE INTO entity_usage (delivery_id, entity_id, outcome, created_at) \
-             SELECT ?, ?, 'pending', datetime('now') \
+            "INSERT OR IGNORE INTO entity_usage (delivery_id, entity_id, outcome, tier, created_at) \
+             SELECT ?, ?, 'pending', ?, datetime('now') \
              WHERE EXISTS (SELECT 1 FROM entities WHERE id = ?)",
         )?;
-        for id in entity_ids {
-            stmt.execute(rusqlite::params![delivery_id, id, id])?;
+        for (id, tier) in entries {
+            stmt.execute(rusqlite::params![delivery_id, id, tier.as_str(), id])?;
         }
     }
     tx.commit()?;
@@ -85,6 +110,33 @@ pub fn record_hits(conn: &Connection, entity_ids: &[String]) -> Result<usize, St
         let mut stmt = tx.prepare(
             "UPDATE entity_usage SET outcome = 'hit' \
              WHERE entity_id = ? AND outcome = 'pending' \
+             AND delivery_id IN (SELECT id FROM deliveries WHERE closed = 0)",
+        )?;
+        for id in entity_ids {
+            updated += stmt.execute(rusqlite::params![id])?;
+        }
+    }
+    tx.commit()?;
+    Ok(updated)
+}
+
+/// A pull that resurfaces a pending pointer converts it: the pointer
+/// menu steered the agent to fetch the full entity. Only pointer-tier
+/// rows are credited — a full-tier entity re-appearing in results is
+/// not evidence the push helped.
+pub fn record_pointer_conversions(
+    conn: &Connection,
+    entity_ids: &[String],
+) -> Result<usize, StorageError> {
+    if entity_ids.is_empty() {
+        return Ok(0);
+    }
+    let tx = conn.unchecked_transaction()?;
+    let mut updated = 0usize;
+    {
+        let mut stmt = tx.prepare(
+            "UPDATE entity_usage SET outcome = 'hit' \
+             WHERE entity_id = ? AND outcome = 'pending' AND tier = 'pointer' \
              AND delivery_id IN (SELECT id FROM deliveries WHERE closed = 0)",
         )?;
         for id in entity_ids {
@@ -177,6 +229,44 @@ pub fn usage_summary(
         }
     }
     Ok(summary)
+}
+
+/// Resolved hit/miss counts grouped by delivery tier — the
+/// measurement the future learned gate reads. Callers should require
+/// a minimum sample before acting on any row.
+pub fn hit_rate_by_tier(conn: &Connection) -> Result<Vec<(String, usize, usize)>, StorageError> {
+    let mut stmt = conn.prepare(
+        "SELECT tier, \
+                SUM(outcome = 'hit'), SUM(outcome = 'miss') \
+         FROM entity_usage GROUP BY tier ORDER BY tier",
+    )?;
+    let rows = stmt.query_map([], |r| {
+        Ok((
+            r.get::<_, String>(0)?,
+            r.get::<_, i64>(1)? as usize,
+            r.get::<_, i64>(2)? as usize,
+        ))
+    })?;
+    rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
+}
+
+/// Resolved hit/miss counts grouped by entity type — which kinds of
+/// memory actually get used when delivered.
+pub fn hit_rate_by_type(conn: &Connection) -> Result<Vec<(String, usize, usize)>, StorageError> {
+    let mut stmt = conn.prepare(
+        "SELECT e.type, \
+                SUM(u.outcome = 'hit'), SUM(u.outcome = 'miss') \
+         FROM entity_usage u JOIN entities e ON e.id = u.entity_id \
+         GROUP BY e.type ORDER BY e.type",
+    )?;
+    let rows = stmt.query_map([], |r| {
+        Ok((
+            r.get::<_, String>(0)?,
+            r.get::<_, i64>(1)? as usize,
+            r.get::<_, i64>(2)? as usize,
+        ))
+    })?;
+    rows.collect::<Result<Vec<_>, _>>().map_err(Into::into)
 }
 
 /// Entities never delivered in any recorded delivery — the dead-weight
@@ -281,7 +371,15 @@ mod tests {
         insert_entity(&conn, "e1", "knowledge/x.md");
         insert_entity(&conn, "e2", "knowledge/y.md");
         let did = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
-        record_delivered(&conn, did, &["e1".to_string(), "e2".to_string()]).unwrap();
+        record_delivered(
+            &conn,
+            did,
+            &[
+                ("e1".to_string(), DeliveryTier::Full),
+                ("e2".to_string(), DeliveryTier::Pointer),
+            ],
+        )
+        .unwrap();
         let s = usage_summary(&conn, Some(DeliveryKind::Pack)).unwrap();
         assert_eq!(s.pending, 2);
         assert_eq!(s.hits, 0);
@@ -294,8 +392,8 @@ mod tests {
         insert_entity(&conn, "e1", "knowledge/x.md");
         let d1 = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
         let d2 = record_delivery(&conn, DeliveryKind::Search, None).unwrap();
-        record_delivered(&conn, d1, &["e1".to_string()]).unwrap();
-        record_delivered(&conn, d2, &["e1".to_string()]).unwrap();
+        record_delivered(&conn, d1, &[("e1".to_string(), DeliveryTier::Full)]).unwrap();
+        record_delivered(&conn, d2, &[("e1".to_string(), DeliveryTier::Full)]).unwrap();
         let updated = record_hits(&conn, &["e1".to_string()]).unwrap();
         assert_eq!(updated, 2);
         let s = usage_summary(&conn, None).unwrap();
@@ -310,7 +408,15 @@ mod tests {
         insert_entity(&conn, "e1", "knowledge/x.md");
         insert_entity(&conn, "e2", "knowledge/y.md");
         let d1 = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
-        record_delivered(&conn, d1, &["e1".to_string(), "e2".to_string()]).unwrap();
+        record_delivered(
+            &conn,
+            d1,
+            &[
+                ("e1".to_string(), DeliveryTier::Full),
+                ("e2".to_string(), DeliveryTier::Full),
+            ],
+        )
+        .unwrap();
         record_hits(&conn, &["e1".to_string()]).unwrap();
         close_open_deliveries(&conn).unwrap();
         let s = usage_summary(&conn, Some(DeliveryKind::Pack)).unwrap();
@@ -321,6 +427,33 @@ mod tests {
         // Hits recorded after close must not resurrect misses.
         let updated = record_hits(&conn, &["e2".to_string()]).unwrap();
         assert_eq!(updated, 0);
+    }
+
+    #[test]
+    fn pointer_conversion_marks_only_pointer_rows() {
+        let storage = Storage::open_memory().unwrap();
+        let conn = storage.conn();
+        insert_entity(&conn, "e1", "knowledge/x.md");
+        insert_entity(&conn, "e2", "knowledge/y.md");
+        let did = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
+        record_delivered(
+            &conn,
+            did,
+            &[
+                ("e1".to_string(), DeliveryTier::Pointer),
+                ("e2".to_string(), DeliveryTier::Full),
+            ],
+        )
+        .unwrap();
+
+        // A pull resurfacing both: only the pointer converts — the
+        // full-tier entity was already delivered in full.
+        let updated =
+            record_pointer_conversions(&conn, &["e1".to_string(), "e2".to_string()]).unwrap();
+        assert_eq!(updated, 1);
+        let s = usage_summary(&conn, Some(DeliveryKind::Pack)).unwrap();
+        assert_eq!(s.hits, 1);
+        assert_eq!(s.pending, 1);
     }
 
     #[test]
@@ -353,7 +486,7 @@ mod tests {
         conn.execute("UPDATE entities SET status = 'pruned' WHERE id = 'e3'", [])
             .unwrap();
         let did = record_delivery(&conn, DeliveryKind::Search, None).unwrap();
-        record_delivered(&conn, did, &["e1".to_string()]).unwrap();
+        record_delivered(&conn, did, &[("e1".to_string(), DeliveryTier::Full)]).unwrap();
         let mut dead = never_delivered(&conn).unwrap();
         dead.sort();
         assert_eq!(dead, vec!["e2".to_string()]);

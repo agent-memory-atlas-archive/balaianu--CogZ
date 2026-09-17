@@ -66,11 +66,47 @@ pub fn run_search(
             config.context.task_max_hops
         },
         include_tests: false,
+        silence_gate: true,
     };
 
     let results = {
         let conn = storage.conn();
-        cogz::search::search(&conn, query, embeddings, &params, &config.search)?
+        let results = cogz::search::search(&conn, query, embeddings, &params, &config.search)?;
+        // Same usage tracking as the MCP path — a CLI pull is still a
+        // pull. Best-effort: tracking failure must not fail the search.
+        let delivered: Vec<(String, cogz::storage::usage::DeliveryTier)> = results
+            .results
+            .iter()
+            .map(|r| {
+                (
+                    r.entity.id.clone(),
+                    cogz::storage::usage::DeliveryTier::Full,
+                )
+            })
+            .collect();
+        match cogz::storage::usage::record_delivery(
+            &conn,
+            cogz::storage::usage::DeliveryKind::Search,
+            None,
+        ) {
+            Ok(delivery_id) => {
+                if let Err(e) =
+                    cogz::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                {
+                    eprintln!("usage tracking: record delivered failed: {e}");
+                }
+            }
+            Err(e) => eprintln!("usage tracking: record delivery failed: {e}"),
+        }
+        let result_ids: Vec<String> = results
+            .results
+            .iter()
+            .map(|r| r.entity.id.clone())
+            .collect();
+        if let Err(e) = cogz::storage::usage::record_pointer_conversions(&conn, &result_ids) {
+            eprintln!("usage tracking: pointer conversion failed: {e}");
+        }
+        results
     };
 
     println!("Search mode: {}", results.search_mode.as_str());
@@ -163,12 +199,43 @@ pub fn run_context(
 
     let pack = {
         let conn = storage.conn();
-        cogz::context::assemble_context(&conn, &params, &config).map_err(|e| match e {
-            AssembleError::QueryRequired(m) => {
-                anyhow::anyhow!("query is required for {} mode", m)
+        // A pulled pack is the same delivery boundary as a pushed one.
+        if let Err(e) = cogz::storage::usage::close_open_deliveries(&conn) {
+            eprintln!("usage tracking: close deliveries failed: {e}");
+        }
+        let pack =
+            cogz::context::assemble_context(&conn, &params, &config).map_err(|e| match e {
+                AssembleError::QueryRequired(m) => {
+                    anyhow::anyhow!("query is required for {} mode", m)
+                }
+                other => anyhow::anyhow!("{other}"),
+            })?;
+        let mut delivered: Vec<(String, cogz::storage::usage::DeliveryTier)> = pack
+            .sections
+            .iter()
+            .map(|s| (s.entity_id.clone(), s.tier))
+            .collect();
+        delivered.extend(
+            pack.metadata
+                .pointer_ids
+                .iter()
+                .map(|id| (id.clone(), cogz::storage::usage::DeliveryTier::Pointer)),
+        );
+        match cogz::storage::usage::record_delivery(
+            &conn,
+            cogz::storage::usage::DeliveryKind::Pack,
+            None,
+        ) {
+            Ok(delivery_id) => {
+                if let Err(e) =
+                    cogz::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                {
+                    eprintln!("usage tracking: record delivered failed: {e}");
+                }
             }
-            other => anyhow::anyhow!("{other}"),
-        })?
+            Err(e) => eprintln!("usage tracking: record delivery failed: {e}"),
+        }
+        pack
     };
 
     println!("Context pack (mode: {})", pack.mode);
@@ -253,10 +320,13 @@ pub fn run_capture_event(input: &cogz::hooks::CaptureInput) -> anyhow::Result<()
     // In hook-json mode, stdout is reserved for the JSON response.
     // Status info goes to stderr so it doesn't corrupt the JSON.
     if !input.hook_json {
-        eprintln!(
-            "Event {} recorded (id: {})",
-            input.event_str, result.event_id
-        );
+        match result.event_id {
+            Some(id) => eprintln!("Event {} recorded (id: {})", input.event_str, id),
+            None => eprintln!(
+                "Event {} processed (record skipped: db busy)",
+                input.event_str
+            ),
+        }
     }
     if let Some(ref obs_id) = result.observation_id {
         eprintln!("Observation recorded: {}", obs_id);
@@ -282,6 +352,9 @@ pub fn run_capture_event(input: &cogz::hooks::CaptureInput) -> anyhow::Result<()
             "Consolidation: {} promoted, {} merged",
             summary.promotions, summary.merges
         );
+    }
+    if let Some(count) = result.suggestion_count {
+        eprintln!("Observations: {count} mined candidate(s) — run suggest_observations to review");
     }
 
     Ok(())

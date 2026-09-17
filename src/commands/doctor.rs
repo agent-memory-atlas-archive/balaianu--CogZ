@@ -65,6 +65,26 @@ pub fn run_doctor(repo: &Path, prune_observations: bool, confirm: bool) -> anyho
             "  Write quality: {} file entities never retrieved",
             usage.never_retrieved_files.len()
         );
+        for (tier, hits, misses) in &usage.tier_rates {
+            let total = hits + misses;
+            if total == 0 {
+                continue;
+            }
+            println!(
+                "  Tier {tier}: {}% hit rate ({hits}/{total})",
+                hits * 100 / total
+            );
+        }
+        for (etype, hits, misses) in &usage.type_rates {
+            let total = hits + misses;
+            if total == 0 {
+                continue;
+            }
+            println!(
+                "  Type {etype}: {}% hit rate ({hits}/{total})",
+                hits * 100 / total
+            );
+        }
     }
 
     if report.issues.is_empty() {

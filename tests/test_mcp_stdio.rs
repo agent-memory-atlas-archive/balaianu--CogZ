@@ -5,7 +5,7 @@
 //! tests (test_mcp_server.rs) cannot — specifically main()-level
 //! concerns like tracing subscriber configuration.
 //!
-//! All 13 tools are exercised over the real stdio transport against
+//! All 16 tools are exercised over the real stdio transport against
 //! a temporary repo initialized via `cogz init` + `cogz index`.
 //! The MCP server runs with a fake HOME so ONNX models are not
 //! found — search and get_context operate in FTS-only mode, which
@@ -235,6 +235,32 @@ impl TempRepo {
         self.path.to_str().unwrap()
     }
 
+    /// A repo with a small Rust call chain so graph tools have real
+    /// `calls` edges: caller_fn -> helper_fn, entry -> caller_fn.
+    fn with_code() -> Self {
+        let dir = tempfile::tempdir().expect("failed to create temp dir");
+        let path = dir.path().to_path_buf();
+
+        let status = run_cogz(&["init"], &path);
+        assert!(status.success(), "cogz init failed");
+
+        let src = path.join("src");
+        std::fs::create_dir_all(&src).unwrap();
+        std::fs::write(
+            src.join("main.rs"),
+            "fn helper_fn() -> i32 { 42 }\n\
+             fn caller_fn() -> i32 { helper_fn() }\n\
+             fn entry() -> i32 { caller_fn() }\n\
+             fn main() { println!(\"{}\", entry()); }\n",
+        )
+        .unwrap();
+
+        let status = run_cogz(&["index", "--no-download"], &path);
+        assert!(status.success(), "cogz index failed");
+
+        Self { dir, path }
+    }
+
     /// Environment for the MCP server: fake HOME so ONNX models are
     /// not found, forcing FTS-only mode for search/get_context.
     fn mcp_env(&self) -> Vec<(String, String)> {
@@ -272,7 +298,7 @@ fn mcp_stdio_handshake_and_tools() {
     let tools = resp["result"]["tools"]
         .as_array()
         .expect("tools should be an array");
-    assert_eq!(tools.len(), 13, "should expose 13 tools");
+    assert_eq!(tools.len(), 17, "should expose 17 tools");
 
     // Verify repo is required in every tool schema
     for tool in tools {
@@ -555,6 +581,133 @@ fn mcp_stdio_list_entities() {
     assert!(
         text.contains("entities") && text.contains("Test Design"),
         "list_entities should return the test knowledge, got: {text}"
+    );
+
+    child.kill().unwrap();
+    child.wait().unwrap();
+}
+
+// ── Tests: graph tools ──────────────────────────────────────────
+
+#[test]
+fn mcp_stdio_graph_tools() {
+    let repo = TempRepo::with_code();
+    let env = repo.mcp_env();
+    let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
+    client.initialize();
+
+    // Discover entity ids via list_entities — code entity UUIDs are
+    // deterministic but the test shouldn't hardcode them.
+    let functions_text = client.tool_text(
+        "list_entities",
+        serde_json::json!({"repo": repo.path_str(), "entity_type": "function"}),
+    );
+    let functions: serde_json::Value =
+        serde_json::from_str(&functions_text).expect("list_entities should return JSON");
+    let by_title = |title: &str| -> String {
+        functions["entities"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|e| e["title"].as_str().unwrap_or("").contains(title))
+            .unwrap_or_else(|| panic!("function '{title}' not indexed: {functions_text}"))["id"]
+            .as_str()
+            .unwrap()
+            .to_string()
+    };
+    let helper_id = by_title("helper_fn");
+    let entry_id = by_title("entry");
+
+    // get_callers: helper_fn's direct caller is caller_fn.
+    let callers_text = client.tool_text(
+        "get_callers",
+        serde_json::json!({"repo": repo.path_str(), "entity_id": helper_id}),
+    );
+    assert!(
+        callers_text.contains("caller_fn"),
+        "get_callers should return caller_fn, got: {callers_text}"
+    );
+
+    // get_impact: caller_fn at depth 1, entry+main deeper.
+    let impact_text = client.tool_text(
+        "get_impact",
+        serde_json::json!({"repo": repo.path_str(), "entity_id": helper_id, "max_depth": 3}),
+    );
+    let impact: serde_json::Value =
+        serde_json::from_str(&impact_text).expect("get_impact should return JSON");
+    let impacted_ids: Vec<&str> = impact["impacted"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|i| i["id"].as_str().unwrap())
+        .collect();
+    assert!(
+        impacted_ids.contains(&entry_id.as_str()),
+        "get_impact should include entry transitively, got: {impact_text}"
+    );
+
+    // find_orphans: entry/main have no callers; helper_fn is called.
+    let orphans_text = client.tool_text(
+        "find_orphans",
+        serde_json::json!({"repo": repo.path_str(), "entity_type": "function"}),
+    );
+    assert!(
+        orphans_text.contains(&entry_id),
+        "find_orphans should include entry, got: {orphans_text}"
+    );
+    assert!(
+        !orphans_text.contains(&helper_id),
+        "find_orphans should not include helper_fn, got: {orphans_text}"
+    );
+
+    // Nonexistent entity is a clean tool error, not a panic.
+    let bad = client.call_tool(
+        "get_callers",
+        serde_json::json!({"repo": repo.path_str(), "entity_id": "does-not-exist"}),
+    );
+    assert!(
+        bad.get("error").is_some() || bad["result"]["isError"].as_bool().unwrap_or(false),
+        "unknown entity should error, got: {bad}"
+    );
+
+    child.kill().unwrap();
+    child.wait().unwrap();
+}
+
+// ── Tests: mining ───────────────────────────────────────────────
+
+#[test]
+fn mcp_stdio_suggest_observations() {
+    let repo = TempRepo::with_code();
+    let env = repo.mcp_env();
+    let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
+    client.initialize();
+
+    // Seed the hot_file signal: three saves of the same file.
+    for _ in 0..3 {
+        client.tool_text(
+            "capture_event",
+            serde_json::json!({
+                "repo": repo.path_str(),
+                "event_type": "file_save",
+                "file_path": "src/churn.rs",
+            }),
+        );
+    }
+
+    let text = client.tool_text(
+        "suggest_observations",
+        serde_json::json!({"repo": repo.path_str()}),
+    );
+    let out: serde_json::Value =
+        serde_json::from_str(&text).expect("suggest_observations should return JSON");
+    assert!(
+        out["suggestions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|s| s["signal"] == "hot_file" && s["evidence"]["file_path"] == "src/churn.rs"),
+        "expected a hot_file suggestion for src/churn.rs, got: {text}"
     );
 
     child.kill().unwrap();

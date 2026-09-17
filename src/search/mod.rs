@@ -114,6 +114,11 @@ pub struct SearchParams {
     /// excluded by default to keep context packs focused on production
     /// code. Set to true to include test entities.
     pub include_tests: bool,
+    /// Whether the silence gate may suppress all results when no
+    /// channel shows a distinctive match. True for agent-facing
+    /// queries (an honest empty answer); false for context-pack
+    /// assembly, which ships whatever the relevance floor lets through.
+    pub silence_gate: bool,
 }
 
 impl Default for SearchParams {
@@ -125,6 +130,7 @@ impl Default for SearchParams {
             expand: true,
             max_hops: 2,
             include_tests: false,
+            silence_gate: true,
         }
     }
 }

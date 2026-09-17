@@ -31,11 +31,12 @@ pub enum CaptureError {
 
 /// Result of a capture-event call.
 pub struct CaptureResult {
-    pub event_id: i64,
+    pub event_id: Option<i64>,
     pub observation_id: Option<String>,
     pub context_pack: Option<crate::context::ContextPack>,
     pub reindex_summary: Option<crate::hooks::lifecycle::ReindexSummary>,
     pub consolidation_summary: Option<crate::hooks::lifecycle::ConsolidationSummary>,
+    pub suggestion_count: Option<usize>,
 }
 
 /// Input parameters for `capture-event`, grouping the optional fields
@@ -94,11 +95,12 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         if input.hook_json {
             println!("{{}}");
             return Ok(CaptureResult {
-                event_id: 0,
+                event_id: None,
                 observation_id: None,
                 context_pack: None,
                 reindex_summary: None,
                 consolidation_summary: None,
+                suggestion_count: None,
             });
         }
         return Err(CaptureError::Config(
@@ -116,11 +118,12 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         if input.hook_json {
             println!("{{}}");
             return Ok(CaptureResult {
-                event_id: 0,
+                event_id: None,
                 observation_id: None,
                 context_pack: None,
                 reindex_summary: None,
                 consolidation_summary: None,
+                suggestion_count: None,
             });
         }
         return Err(CaptureError::Config(
@@ -216,6 +219,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         context_pack: output.context_pack,
         reindex_summary: output.reindex_summary,
         consolidation_summary: output.consolidation_summary,
+        suggestion_count: output.suggestion_count,
     })
 }
 

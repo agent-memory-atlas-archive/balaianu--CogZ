@@ -149,6 +149,16 @@ pub fn write_and_sync(
         false
     };
 
+    // Citing a delivered entity is the strongest memory-usage signal:
+    // the write drew on what a pack or pull surfaced. Credit hits on
+    // the referenced entities in any open delivery. Best-effort.
+    if !entity.references.is_empty() {
+        let conn = storage.conn();
+        if let Err(e) = crate::storage::usage::record_hits(&conn, &entity.references) {
+            tracing::warn!("usage tracking: reference hits failed: {e}");
+        }
+    }
+
     // Sync already records the creation event via files::events::record_create_event.
     // We only need to record an additional event if dedup flagged something.
     if dedup.dedup_flagged {
