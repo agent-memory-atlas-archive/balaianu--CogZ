@@ -1,13 +1,13 @@
 ---
 id: 7c3d9e21-4f2a-4b8c-9d5e-6f7a8b9c0d1e
-type: knowledge
 title: "Delivery layer design: push the map, pull the territory"
-status: active
+type: knowledge
+status: stale
+created_at: "2026-09-16T01:10:00Z"
+updated_at: "2026-09-16T11:55:44.622544499+00:00"
 references: []
 category: decisions
 tags: ["decision", "context-packs", "push-pull", "write-path", "backlog-42-44"]
-created_at: 2026-09-16T01:10:00Z
-updated_at: 2026-09-16T01:10:00Z
 ---
 
 Decision recorded after the A→C measurement loop (2026-09-15/16):

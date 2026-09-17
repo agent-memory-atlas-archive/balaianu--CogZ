@@ -2,9 +2,9 @@
 id: d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f70
 title: Usage instrumentation — persistent delivery boundaries (Phase 2)
 type: knowledge
-status: active
+status: stale
 created_at: "2026-09-15T00:00:00Z"
-updated_at: "2026-09-15T00:00:00Z"
+updated_at: "2026-09-16T11:55:44.773510253+00:00"
 references: []
 category: decisions
 tags: ["usage-tracking", "instrumentation", "schema-v4", "hit-rate"]

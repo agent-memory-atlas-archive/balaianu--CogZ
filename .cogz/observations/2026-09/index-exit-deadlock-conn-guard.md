@@ -1,11 +1,11 @@
 ---
 id: 9f1c2a7e-3b4d-4e5f-8a6b-7c8d9e0f1a2b
-type: observation
 title: "cogz index hung at exit: conn guard held across update_baseline re-lock"
-status: active
-references: [39a06b6722b575394b217c8c175fb3c1df6efcfc]
-created_at: 2026-09-15T22:55:00Z
-updated_at: 2026-09-15T22:55:00Z
+type: observation
+status: stale
+created_at: "2026-09-15T22:55:00Z"
+updated_at: "2026-09-16T11:55:44.723328670+00:00"
+references: ["95663f30-f013-5db1-9bcf-fccf0d387e1c", "d9a05874-6f68-5705-841e-18305c903d30"]
 ---
 
 `cogz index` deadlocked deterministically at exit after completing all work
