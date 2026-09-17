@@ -2,6 +2,6 @@
 # Knowledge, rules, and observations are committed (team sharing).
 # Only the DB is local-only (disposable, rebuildable from files).
 cogz.db
-cogz.db-wal
-cogz.db-shm
+cogz.db-*
+cogz.db.*
 .lock

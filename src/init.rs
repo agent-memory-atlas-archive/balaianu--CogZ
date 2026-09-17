@@ -23,8 +23,9 @@ const GITIGNORE_CONTENT: &str = "\
 # Knowledge, rules, and observations are committed (team sharing).
 # Only the DB is local-only (disposable, rebuildable from files).
 cogz.db
-cogz.db-wal
-cogz.db-shm
+cogz.db-*
+cogz.db.*
+.lock
 ";
 
 /// Content of the generated `.cogz/.gitignore` (local-only mode).
@@ -197,8 +198,8 @@ mod tests {
         // Observations are now tracked in git (first-class citizens).
         assert!(!content.contains("observations/"));
         assert!(content.contains("cogz.db"));
-        assert!(content.contains("cogz.db-wal"));
-        assert!(content.contains("cogz.db-shm"));
+        assert!(content.contains("cogz.db-*"));
+        assert!(content.contains("cogz.db.*"));
     }
 
     #[test]
