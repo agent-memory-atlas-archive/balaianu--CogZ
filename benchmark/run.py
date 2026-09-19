@@ -11,6 +11,7 @@ Usage:
 
 import argparse
 import json
+import sqlite3
 import subprocess
 import sys
 import time
@@ -81,16 +82,18 @@ class McpSession:
 
 
 def collect_corpus_ids(sess: McpSession, repo: str) -> set:
-    ids = set()
-    for et in ENTITY_TYPES:
-        try:
-            data = sess.tool_json("list_entities", {"repo": repo, "entity_type": et, "status": "all"})
-            for e in data.get("entities", data.get("items", [])):
-                if isinstance(e, dict) and e.get("id"):
-                    ids.add(e["id"])
-        except Exception as exc:
-            print(f"warn: list_entities({et}) failed: {exc}", file=sys.stderr)
-    return ids
+    """Corpus = entities default search can return: status='active'.
+
+    Reads the DB directly — list_entities is capped at 1000/type, which
+    silently truncates corpora with >1000 functions and registers the
+    survivors as falsely 'rotted'.
+    """
+    db = Path(repo) / ".cogz" / "cogz.db"
+    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+    try:
+        return {r[0] for r in conn.execute("SELECT id FROM entities WHERE status = 'active'")}
+    finally:
+        conn.close()
 
 
 def main():
@@ -146,6 +149,8 @@ def main():
                         "title": r.get("title"),
                         "relevance": r.get("relevance"),
                         "graph_path_len": len(r.get("graph_path") or []),
+                        "drift_count": r.get("drift_count"),
+                        "stale": r.get("stale"),
                     }
                     for r in data.get("results", [])
                 ],
@@ -162,6 +167,7 @@ def main():
                         "sections": [
                             {"entity_id": s.get("entity_id"), "source": s.get("source"),
                              "title": s.get("title"), "relevance": s.get("relevance"),
+                             "drift_count": s.get("drift_count"),
                              "content": s.get("content"),
                              "graph_path": s.get("graph_path"),
                              "graph_path_description": s.get("graph_path_description")}

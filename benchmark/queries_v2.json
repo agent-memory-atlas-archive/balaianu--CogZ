@@ -128,7 +128,7 @@
       "intent": "code",
       "query": "which function marks entities stale when source files are removed",
       "expected_entity_ids": [
-        "e251d8d5-24b1-5758-b4d6-f598690f2721"
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"
       ],
       "expected_titles": [
         "mark_stale_for_removed_entities"
@@ -202,7 +202,7 @@
       "expected_entity_ids": [
         "aa6fefb2-87ad-4fc6-a531-44e204535419",
         "047656c5-e449-58d7-b951-3b948a609cd9",
-        "e251d8d5-24b1-5758-b4d6-f598690f2721",
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440",
         "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227"
       ],
       "expected_titles": [
@@ -219,7 +219,7 @@
       "query": "stale marking sql errors silently skipped",
       "expected_entity_ids": [
         "a56e3a7c-2874-4d8d-8e9c-15dfefcf55cf",
-        "e251d8d5-24b1-5758-b4d6-f598690f2721"
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"
       ],
       "expected_titles": [
         "Stale-marking swallows SQL errors \u2014 invalidation silently skipped",
@@ -292,7 +292,7 @@
       "expected_entity_ids": [
         "047656c5-e449-58d7-b951-3b948a609cd9",
         "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227",
-        "e251d8d5-24b1-5758-b4d6-f598690f2721"
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"
       ],
       "expected_titles": [
         "open",
@@ -320,7 +320,7 @@
       "intent": "graph",
       "query": "what code does the stale marking observation reference",
       "expected_entity_ids": [
-        "e251d8d5-24b1-5758-b4d6-f598690f2721",
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440",
         "eeeb377b-1fab-5129-b252-f88d01e403c7"
       ],
       "expected_titles": [
@@ -626,7 +626,7 @@
       "expected_entity_ids": [
         "aa6fefb2-87ad-4fc6-a531-44e204535419",
         "047656c5-e449-58d7-b951-3b948a609cd9",
-        "e251d8d5-24b1-5758-b4d6-f598690f2721"
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"
       ],
       "expected_titles": [
         "Degradation must be loud, never silent",
@@ -670,7 +670,7 @@
       "expected_entity_ids": [
         "1d847b1e-6fd4-491d-86eb-bdbcdb7be8c7",
         "eeeb377b-1fab-5129-b252-f88d01e403c7",
-        "e251d8d5-24b1-5758-b4d6-f598690f2721"
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"
       ],
       "expected_titles": [
         "Stale-knowledge flagging pipeline \u2014 code change to frontmatter status",
@@ -718,7 +718,7 @@
       "expected_entity_ids": [
         "047656c5-e449-58d7-b951-3b948a609cd9",
         "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227",
-        "e251d8d5-24b1-5758-b4d6-f598690f2721"
+        "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"
       ],
       "expected_titles": [
         "open",

@@ -54,7 +54,7 @@
      "notes": "Storage::open in src/storage/mod.rs — verified signature in content"},
 
     {"id": "c03", "intent": "code", "query": "which function marks entities stale when source files are removed",
-     "expected_entity_ids": ["e251d8d5-24b1-5758-b4d6-f598690f2721"],
+     "expected_entity_ids": ["cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"],
      "expected_titles": ["mark_stale_for_removed_entities"],
      "notes": "src/index/sync/mod.rs — the item-22 site"},
 
@@ -84,12 +84,12 @@
      "notes": "src/security/scan.rs — the actual scanner"},
 
     {"id": "m01", "intent": "mixed", "query": "silent degradation and swallowed errors",
-     "expected_entity_ids": ["aa6fefb2-87ad-4fc6-a531-44e204535419", "047656c5-e449-58d7-b951-3b948a609cd9", "e251d8d5-24b1-5758-b4d6-f598690f2721", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227"],
+     "expected_entity_ids": ["aa6fefb2-87ad-4fc6-a531-44e204535419", "047656c5-e449-58d7-b951-3b948a609cd9", "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227"],
      "expected_titles": ["Degradation must be loud, never silent", "open", "mark_stale_for_removed_entities", "migrate_v3"],
      "notes": "VERIFIED 2026-09-14 in live search — rule hits, graph expansion surfaces the three functions via references edges"},
 
     {"id": "m02", "intent": "mixed", "query": "stale marking sql errors silently skipped",
-     "expected_entity_ids": ["a56e3a7c-2874-4d8d-8e9c-15dfefcf55cf", "e251d8d5-24b1-5758-b4d6-f598690f2721"],
+     "expected_entity_ids": ["a56e3a7c-2874-4d8d-8e9c-15dfefcf55cf", "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"],
      "expected_titles": ["Stale-marking swallows SQL errors — invalidation silently skipped", "mark_stale_for_removed_entities"],
      "notes": "observation + its references target"},
 
@@ -114,7 +114,7 @@
      "notes": "observation + its references target"},
 
     {"id": "g01", "intent": "graph", "query": "which code entities does the loud degradation rule connect to",
-     "expected_entity_ids": ["047656c5-e449-58d7-b951-3b948a609cd9", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227", "e251d8d5-24b1-5758-b4d6-f598690f2721"],
+     "expected_entity_ids": ["047656c5-e449-58d7-b951-3b948a609cd9", "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227", "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440"],
      "expected_titles": ["open", "migrate_v3", "mark_stale_for_removed_entities"],
      "notes": "verified references edges from aa6fefb2 rule"},
 
@@ -124,7 +124,7 @@
      "notes": "verified inbound references edges to 047656c5"},
 
     {"id": "g03", "intent": "graph", "query": "what code does the stale marking observation reference",
-     "expected_entity_ids": ["e251d8d5-24b1-5758-b4d6-f598690f2721", "eeeb377b-1fab-5129-b252-f88d01e403c7"],
+     "expected_entity_ids": ["cbfb76f0-1cf9-5705-9cdd-6f4d03b82440", "eeeb377b-1fab-5129-b252-f88d01e403c7"],
      "expected_titles": ["mark_stale_for_removed_entities", "flag_stale_knowledge"],
      "notes": "verified references edges from a56e3a7c observation"},
 
