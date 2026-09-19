@@ -4,10 +4,11 @@ title: "A→C loop: usage instrumentation, pack assembly, weak-seed demotion"
 type: knowledge
 status: active
 created_at: "2026-09-15T21:30:00+00:00"
-updated_at: "2026-09-15T21:30:00+00:00"
+updated_at: "2026-09-19T18:38:57.463846542+00:00"
 references: ["9f2a1c3e-7b44-4a5f-9c6d-2e8f1a4b7c90"]
 category: decisions
 tags: ["decision", "usage-tracking", "context-pack", "graph-routing", "benchmark"]
+verified_against: ["9f2a1c3e-7b44-4a5f-9c6d-2e8f1a4b7c90=d0b459c4fddebb23d90b51e258db9a18fbf434099c80704603b31e213fcf0b21"]
 ---
 
 # A→C improvement loop results (2026-09-15)

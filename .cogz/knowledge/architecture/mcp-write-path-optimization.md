@@ -12,8 +12,8 @@ tags: ["mcp", "performance", "sync", "hot-path"]
 
 # MCP write path uses single-file sync for O(1) I/O
 
-MCP write tools (`create_knowledge`, `create_rule`,
-`record_observation`, `update_knowledge`) each modify a single
+MCP write tools (`create_entity`, `update_knowledge`,
+`verify_knowledge`) each modify a single
 entity file. Originally, they called `sync_incremental` to
 synchronize the file into the DB, which scanned and parsed every
 Markdown entity file in `.cogz/` — an O(n) operation.

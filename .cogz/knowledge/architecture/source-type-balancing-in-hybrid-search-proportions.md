@@ -2,12 +2,13 @@
 id: b64c3858-c1ca-43c6-82f3-7ffb63404264
 title: "Source-type balancing in hybrid search — proportions, normalization, quota semantics"
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-13T21:43:07.489014965+00:00"
-updated_at: "2026-09-15T16:50:47.183915816+00:00"
-references: ["94ab058f-a75a-508d-b763-1bc4ff58df41", "00b52191-18b2-5b98-8bf3-3bf155ba3ee2", "f13ff191-bfac-5eaa-bee1-bde497d80fe1"]
+updated_at: "2026-09-19T18:44:22.913745131+00:00"
+references: ["94ab058f-a75a-508d-b763-1bc4ff58df41", "f13ff191-bfac-5eaa-bee1-bde497d80fe1"]
 category: architecture
 tags: ["architecture", "search", "rrf", "ranking"]
+verified_against: ["94ab058f-a75a-508d-b763-1bc4ff58df41=9a53c8bf69276cb489f86d9fa8257ae82a5b534451d757c3e5e030dae901b9e6", "f13ff191-bfac-5eaa-bee1-bde497d80fe1=a8640d04cd22338ebfd98818dc45ff875e0d18d66bcac4210228ea4d2b9f8965"]
 ---
 
 # Source-type balancing in hybrid search

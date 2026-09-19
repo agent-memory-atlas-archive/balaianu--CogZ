@@ -2,12 +2,13 @@
 id: ac43ee1b-2322-4ba1-afcf-cd2464a2d065
 title: "Search pipeline — FTS, vector, RRF, graph expansion"
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-28T19:22:00Z"
-updated_at: "2026-09-15T16:50:46.882710097+00:00"
+updated_at: "2026-09-19T18:44:22.628627436+00:00"
 references: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd"]
 category: architecture
 tags: ["search", "fts5", "vector", "rrf", "graph-expansion"]
+verified_against: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd=3145d032b6d1c1836af620ad7d3c5b8d852477de0c76889f2cadf8c2423a502c"]
 ---
 
 The search pipeline in `src/search/hybrid.rs` runs six steps:

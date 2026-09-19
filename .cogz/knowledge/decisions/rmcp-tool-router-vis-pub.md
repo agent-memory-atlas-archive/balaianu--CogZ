@@ -8,6 +8,7 @@ updated_at: "2026-09-04T12:56:48.728025330+00:00"
 references: []
 category: decisions
 tags: ["mcp", "rmcp", "macros", "modules"]
+verified_against: ["d5def0af-8184-5415-9740-0d8f72a23cd2=5ed863a81467d69d48a45e85bf6c85b12c933b4691b194eb3218beeebdecc84f", "de4d1cde-3233-5d67-bb3b-0ab2330c47ae=467679fb13d6316ff22eb22eb3519ce37fab88e4dfaa24acbc3466620a2b1292"]
 ---
 
 # rmcp tool_router vis=pub requirement

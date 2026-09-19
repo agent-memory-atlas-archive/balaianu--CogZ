@@ -2,12 +2,13 @@
 id: 43fb22d9-f9aa-48ae-80e8-be4664bc8b36
 title: Dogfooding benchmark results — 2026-09-05
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-05T07:41:48.634115327+00:00"
-updated_at: "2026-09-15T16:50:46.062581779+00:00"
+updated_at: "2026-09-19T18:44:22.127619053+00:00"
 references: ["4dca380d-5f31-5532-bc15-ed61df929434", "66bf462e-c70e-564b-828f-4e354e24cd9b", "de4d1cde-3233-5d67-bb3b-0ab2330c47ae"]
 category: decisions
 tags: ["benchmark", "dogfooding", "quality", "metrics"]
+verified_against: ["4dca380d-5f31-5532-bc15-ed61df929434=655eee7ae75359eb2d96e364d36f394c57a0b24360f30ad82eb35cb0de6c96ec", "66bf462e-c70e-564b-828f-4e354e24cd9b=3d283cb6bd38c4e8973d81dfe82b512b2f904a54d0cd44d711565d4aebabb534", "de4d1cde-3233-5d67-bb3b-0ab2330c47ae=f661b273a2283d41e5e7261110c40d44be75f3a5d8ea983fe7dfe9d25053ab04"]
 ---
 
 Full end-to-end dogfooding benchmark run on 2026-09-05. 54 queries across all retrieval paths via MCP stdio and CLI.

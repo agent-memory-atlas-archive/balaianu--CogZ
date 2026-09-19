@@ -2,12 +2,14 @@
 id: 7f2a9c14-3b5e-4d8a-9f61-2e8c4a1b7d30
 title: "Cross-repo historical replay: CogZ-py generalization findings"
 type: knowledge
-status: active
+status: stale
 created_at: "2026-09-16T16:30:00+00:00"
-updated_at: "2026-09-16T16:30:00+00:00"
+updated_at: "2026-09-18T21:27:34.955555698+00:00"
 references: []
-category: "decisions"
+category: decisions
 tags: ["measurement", "replay", "cross-repo", "ablation"]
+stale_reason: code_orphaned
+verified_against: ["047656c5-e449-58d7-b951-3b948a609cd9=2573200a85d75170d672883dfed5d39c5e19f3c4d15c0dcb8d3c5e1aa82bfe59", "05bf18cf-a8bf-59b7-88ae-e280991f1c38=00e02a75f77d4f2865171ecd12232bc8a618873be8edb30f76222611ff13f5dd", "07eb50dc-31a4-5530-be0b-dd10afd9dcc9=5a8f9609d1527ecd9dab99bc771b168e6b4eecdc25f2cbb2db4ca727713ec60f", "1293b931-434d-5542-ad4a-dbbe1805c50f=850801a922a0720b00245f59a9b005fd241cc8b6a1965ce5fabbe773105f1419", "1f6687db-3a4e-55c2-80a3-301639b2c880=876bc8af885f46f941702c991a2cc34823b30ec08336830dad7a78476eb28b4b", "47f57663-237c-52a7-9481-dd39a2c7ce87=228a6567c34998d60eb7b361dbe5bf16d4f69b72ee308edf27317df89bca0cb7", "684e8d66-2b67-51f6-8408-7fbfacc5ced0=b77d4405c385d6b18e431bc8244fd59328fd4a682dbd96b215670fd31eec1397", "795bd6f4-14ab-5270-8b90-bd7dcc68a492=5c5d81f3d7620c60cae41903e3ff70c31fb7e1b0a9475460dc40dc95eeb8aa41", "80270134-25d8-5193-a790-f3bfa5247182=4c095032e338c834e5eb7ee190a0bbead7a17ce2c1e14a9022f4c7a5bab5ad1e", "8da4c6f0-bbbb-54bf-8e3f-39baa9c183dd=668e49f38f93b498db29de253cf4c12df2fb3c45491510db4cd6c152c1535bcd", "b163134f-ee7b-5fd7-9ac2-76d2f972e9ec=3a2ffc25b5682629eefddd078550caac480f0cf1d72bcf7551f9924f00134562", "bd10f9c8-b51f-537d-adf9-cef57d23c8e9=30b53cd3a67993c8863973b752cdd8dfba8ae85c090ebebb2cda032a2038fb77", "df753c4c-818b-5f3e-bab3-faeea3cf4d74=586e4d5db5d85e78c461ab517f3dc8c21acac0ca900f29397c9ddfd9f6168806"]
 ---
 
 # Cross-repo replay: Rust CogZ measured against CogZ-py history

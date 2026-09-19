@@ -4,10 +4,11 @@ title: cold_start and search use opposite None semantics for status filtering
 type: knowledge
 status: active
 created_at: "2026-08-28T19:40:00Z"
-updated_at: "2026-09-06T12:44:41.464882401+00:00"
+updated_at: "2026-09-19T18:39:00.403561287+00:00"
 references: ["b3c4d5e6-0001-4aaa-bbbb-000000000002"]
 category: gotchas
 tags: ["status", "filtering", "cold_start", "search", "gotcha"]
+verified_against: ["b3c4d5e6-0001-4aaa-bbbb-000000000002=64d401b9375e3b1edac5f1b8203fb5b141cf7b64d5d6908735b8c3d58fbb3dc5"]
 ---
 
 The storage query layer and the search layer use opposite

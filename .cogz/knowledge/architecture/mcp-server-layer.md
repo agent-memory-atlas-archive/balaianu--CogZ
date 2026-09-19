@@ -39,8 +39,8 @@ to AI agents via the Model Context Protocol over stdio transport.
 `Config`, and `cogz_dir` before entering the blocking closure. The
 SQLite mutex is never held during filesystem I/O.
 
-**File-first invariant:** Write tools (record_observation, create_rule,
-create_knowledge, update_knowledge) write the Markdown file first, then
+**File-first invariant:** Write tools (create_entity, update_knowledge,
+verify_knowledge) write the Markdown file first, then
 sync to DB, then run dedup checks. If the file write fails, the DB is
 not touched.
 

@@ -2,12 +2,13 @@
 id: fafa51e8-83a0-41cf-896d-78ac2f4ad720
 title: Hook and event lifecycle — capture-event as single entry point
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-13T21:42:37.625349447+00:00"
-updated_at: "2026-09-15T16:50:47.735614872+00:00"
+updated_at: "2026-09-19T18:44:22.244992032+00:00"
 references: ["59203bdf-b181-50bc-94c2-eb5e755667c7", "2f2833b0-4956-5683-8c29-b5b06ede478c"]
 category: architecture
 tags: ["architecture", "hooks", "events", "lifecycle"]
+verified_against: ["2f2833b0-4956-5683-8c29-b5b06ede478c=3222fe883feea50057658fedee2d4598505f8700e5859a2f274aaf3bbf6edc9c", "59203bdf-b181-50bc-94c2-eb5e755667c7=e5550f888a4b18b210b4cf0d8b486e11b33680af9608e9773018330829046652"]
 ---
 
 # Hook and event lifecycle
@@ -18,8 +19,14 @@ tags: ["architecture", "hooks", "events", "lifecycle"]
 
 **Per-event behavior:**
 - `session_start` / `prompt_submit` → assemble context pack → printed to stdout (or wrapped as `hookSpecificOutput.additionalContext` with --hook-json).
-- `pre_tool_use` / `post_tool_use` → event recorded only (audit trail). The agent decides salience via `record_observation` — deliberate design: observation judgment is the agent's job, not the hook's.
-- `file_save` → incremental code reindex + stale-knowledge flagging.
+- `pre_tool_use` / `post_tool_use` → event recorded only (audit trail). The agent decides salience via `create_entity` — deliberate design: observation judgment is the agent's job, not the hook's.
+- `file_save` → incremental code reindex + stale-knowledge flagging, then
+  two push surfaces: a scoped rules pack (entities on the saved path →
+  governing rules) when no pack exists, and a **write-time drift notice** —
+  knowledge entities whose references to the saved file's code just drifted
+  are named with `cogz verify <id>` instructions. The notice fires on every
+  save of a drifted-on path until verified — agent and human edits alike,
+  since the hook can't distinguish them.
 - `session_end` → consolidation (promotion + merge) runs, counts reported.
 
 **Silent-skip contract:** with `--hook-json`, missing `.cogz/` or missing DB prints `{}` and exits 0 — hooks must never break the agent loop. Without the flag, same conditions are hard errors (CLI users need the message).

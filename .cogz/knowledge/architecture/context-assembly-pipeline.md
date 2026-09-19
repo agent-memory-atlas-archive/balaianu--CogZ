@@ -2,12 +2,13 @@
 id: b3c4d5e6-0001-4aaa-bbbb-000000000002
 title: Context assembly pipeline
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-28T19:40:00Z"
-updated_at: "2026-09-15T16:50:46.983179941+00:00"
+updated_at: "2026-09-19T18:44:22.753813254+00:00"
 references: ["ac43ee1b-2322-4ba1-afcf-cd2464a2d065"]
 category: architecture
 tags: ["context", "phase-6", "modes", "token-budget"]
+verified_against: ["ac43ee1b-2322-4ba1-afcf-cd2464a2d065=17221dabc5bd12a86e5bd673cdef86f1d9a7d4670c0ab7b6d5a3d35c2a0c24f0"]
 ---
 
 The context assembly layer sits on top of search and produces

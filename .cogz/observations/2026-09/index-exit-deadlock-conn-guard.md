@@ -6,6 +6,7 @@ status: stale
 created_at: "2026-09-15T22:55:00Z"
 updated_at: "2026-09-16T11:55:44.723328670+00:00"
 references: ["95663f30-f013-5db1-9bcf-fccf0d387e1c", "d9a05874-6f68-5705-841e-18305c903d30"]
+verified_against: ["95663f30-f013-5db1-9bcf-fccf0d387e1c=137516c1ab6097543fd77c95d668d49b2a5313807587084e11043ca3b429cc25", "d9a05874-6f68-5705-841e-18305c903d30=8ee710398fc02a23f95c29bf6dd5accbb05f0c0f821def0cefc61e585e7a4083"]
 ---
 
 `cogz index` deadlocked deterministically at exit after completing all work

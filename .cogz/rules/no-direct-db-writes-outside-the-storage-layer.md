@@ -2,13 +2,14 @@
 id: 5a2bdf52-00e5-4ff6-8749-65282c5e048b
 title: No direct DB writes outside the storage layer
 type: rule
-status: stale
+status: active
 created_at: "2026-08-28T19:33:00Z"
-updated_at: "2026-09-15T16:50:46.179574317+00:00"
+updated_at: "2026-09-19T18:44:23.039241729+00:00"
 references: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd"]
 confidence: 1
 validation_count: 2
 supporting_ids: []
+verified_against: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd=3145d032b6d1c1836af620ad7d3c5b8d852477de0c76889f2cadf8c2423a502c"]
 ---
 
 All SQL writes (INSERT, UPDATE, DELETE) must go through functions

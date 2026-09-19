@@ -14,8 +14,7 @@ tags: ["dedup", "consolidation", "status-filter", "design-decision"]
 
 ## Context
 
-`check_duplicate` runs on every `record_observation`, `create_rule`,
-and `create_knowledge` call. It compares the new entity against
+`check_duplicate` runs on every `create_entity` call. It compares the new entity against
 existing entities by title similarity and embedding similarity.
 
 The original implementation queried all entities regardless of

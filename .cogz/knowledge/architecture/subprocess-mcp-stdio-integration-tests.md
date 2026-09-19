@@ -20,12 +20,12 @@ Test infrastructure:
 24 tests cover all 13 tools over stdio:
 - Handshake: initialize, tools/list (13 tools, repo required in all schemas)
 - Error handling: missing repo, invalid repo, invalid event_type, invalid context mode, nonexistent knowledge ID
-- Write tools: record_observation, create_rule, create_knowledge, update_knowledge (verifies files on disk)
-- Query tools: query_observations, query_rules, query_knowledge, list_entities
+- Write tools: create_entity (all three types), update_knowledge (verifies files on disk)
+- Query tools: query_entities (all three types), list_entities
 - Search/context: search (FTS-only), get_context cold_start + task + invalid mode
 - System tools: get_status, consolidate, capture_event session_start + invalid type
 - Round-trip: write observation → query it back → search for it
-- Real repo: get_status + query_knowledge against CogZ's own DB
+- Real repo: get_status + query_entities against CogZ's own DB
 - Regression: tracing stays on stderr (no stdout corruption)
 
 Key finding: the tracing-to-stdout bug was only detectable through subprocess testing. In-process tests bypass main() and its tracing setup, so they passed while the real binary was broken.

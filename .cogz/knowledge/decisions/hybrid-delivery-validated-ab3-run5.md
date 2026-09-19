@@ -4,10 +4,11 @@ title: "Hybrid delivery validated: pack-gate removal + full semantic arm (ab3 ru
 type: knowledge
 status: active
 created_at: "2026-09-18T00:00:00Z"
-updated_at: "2026-09-18T00:00:00Z"
+updated_at: "2026-09-19T18:44:24.041164807+00:00"
 references: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d"]
 category: decisions
 tags: ["decision", "ab-eval", "context-packs", "hybrid-search", "silence-gate", "delivery-model"]
+verified_against: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d=6b1608434c4fb661c3754e86e55f317b39038d9ab181b8bb00d4c0758f770d93"]
 ---
 
 # Hybrid delivery validated — supersedes the pack-gate recommendation

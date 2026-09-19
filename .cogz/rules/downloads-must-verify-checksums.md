@@ -8,7 +8,8 @@ updated_at: "2026-09-03T12:12:00Z"
 references: []
 category: security
 tags: ["security", "checksum", "download", "update"]
-confidence: 1.0
+confidence: 1
+verified_against: ["121b7634-cd8c-507a-88f6-96c9e60ca1fe=afac761f0bb1491c43eee899bba619a83593c939e28385680cefc7a69af9e813", "2eb60b46-4e76-56d0-ac99-c5a9ba2fdde4=ebbb64285fe69b8c5b841b2585d253763dd8d7b0813e0e12e04ec0a98dc11ecc", "619836ea-a07b-561b-81db-23c730e1f4ca=f88e8cbaa95a9161957439e119c64777154f0248d70afae906865cd71cdfd35c", "6e0bea61-dc49-5c60-a4e6-7a65576d2191=33ce1c4b3385e37e1758fd8f15270783bb190a86b0bc6619470af6362a04bb47", "eef7d3ea-08f7-584c-bd19-ec30d124fb15=debc2a0bfc5d9514a84ba21fe9dcb2d3ab688e511ffc96e6298873f449525d0f"]
 ---
 
 Any binary download (self-update, ONNX Runtime) must either verify

@@ -38,7 +38,7 @@ an internal LLM: the runtime mines candidates from `events`,
 delivered-and-used entities, repeated hot-file edits, error→fix
 sequences); a `suggest_observations` MCP tool returns them as
 structured candidates; the consuming agent's own model judges and
-confirms via `record_observation`. Optional `draft` status isolates
+confirms via `create_entity`. Optional `draft` status isolates
 mining noise from packs until confirmed.
 
 ## Sequencing

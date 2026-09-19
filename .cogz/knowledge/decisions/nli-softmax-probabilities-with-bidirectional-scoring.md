@@ -8,6 +8,7 @@ updated_at: "2026-09-05T09:13:27.804795109+00:00"
 references: []
 category: decisions
 tags: ["nli", "contradiction", "softmax", "bidirectional"]
+verified_against: ["034336be-ef90-55fb-8084-fc05f25701f3=30ea039cbd7cf18fd7b6d05c25bc890d6243193936d5e127fdf88dba08911b33", "07eb50dc-31a4-5530-be0b-dd10afd9dcc9=5a8f9609d1527ecd9dab99bc771b168e6b4eecdc25f2cbb2db4ca727713ec60f", "0f65e31a-4b23-59e2-9232-43229388bd69=ce0ff29aa64646f44f9afd66e6907d76dd3636b37fcc71f25def909f8653870a", "1293b931-434d-5542-ad4a-dbbe1805c50f=850801a922a0720b00245f59a9b005fd241cc8b6a1965ce5fabbe773105f1419", "b0ded8ae-028d-5861-b051-b97b2bedacee=a35c2cef65161e99c10b99e533a418a63fc9e62195fa221147d154ee26dc89c8"]
 ---
 
 # NLI Softmax Probabilities with Bidirectional Scoring

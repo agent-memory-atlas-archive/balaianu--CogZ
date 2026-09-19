@@ -2,12 +2,13 @@
 id: 0644e3bb-3600-42ef-a7a7-3c1bbd01e119
 title: "Embedding sync lock pattern — fetch, drop, infer, re-acquire"
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-28T19:30:00Z"
-updated_at: "2026-09-16T14:15:43.765454868+00:00"
+updated_at: "2026-09-19T18:38:55.206714529+00:00"
 references: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd"]
 category: gotchas
 tags: ["mutex", "concurrency", "embeddings", "onnx", "gotcha"]
+verified_against: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd=3145d032b6d1c1836af620ad7d3c5b8d852477de0c76889f2cadf8c2423a502c"]
 ---
 
 The `embed_synced` function in `src/cli.rs` follows a three-phase
