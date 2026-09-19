@@ -18,6 +18,9 @@ pub enum DeliveryKind {
     /// Results of a targeted pull tool (get_callers, get_impact,
     /// find_orphans) — the agent asked for these entities explicitly.
     Pull,
+    /// Rules pushed when a governed file was saved — edit-scoped
+    /// delivery via the file_save hook.
+    Scoped,
 }
 
 impl DeliveryKind {
@@ -26,6 +29,7 @@ impl DeliveryKind {
             Self::Pack => "pack",
             Self::Search => "search",
             Self::Pull => "pull",
+            Self::Scoped => "scoped",
         }
     }
 }

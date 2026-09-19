@@ -77,12 +77,18 @@ pub fn build_status_response(
     // Complete all DB queries in a scoped block, then drop the guard
     // before probing model files on disk. This avoids blocking all DB
     // work during filesystem metadata calls.
-    let (counts, total, stale, edges, events_count, schema_version, last_index) = {
+    let (counts, total, stale, drifted, edges, events_count, schema_version, last_index) = {
         let conn = storage.conn();
         (
             crate::storage::query::entity_counts_by_type(&conn)?,
             crud::count_all(&conn)?,
             crate::storage::query::count_stale(&conn)?,
+            conn.query_row::<i64, _, _>(
+                "SELECT COUNT(DISTINCT entity_id) FROM entity_drift",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap_or(0),
             crate::storage::edges::count_edges(&conn)?,
             events::count_events(&conn)?,
             conn.query_row::<u32, _, _>("PRAGMA user_version", [], |r| r.get(0))?,
@@ -102,6 +108,7 @@ pub fn build_status_response(
         "entities": counts.into_iter().collect::<std::collections::HashMap<_, _>>(),
         "total_entities": total,
         "stale_count": stale,
+        "drifted_count": drifted,
         "edges": edges,
         "events": events_count,
         "last_index": last_index,

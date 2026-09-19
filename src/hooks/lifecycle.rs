@@ -5,7 +5,7 @@
 //! `prompt_submit` also assemble a context pack for injection and
 //! spawn a background reindex to catch non-hook changes. `post_tool_use`
 //! records the event only (audit trail) — the agent decides what's
-//! salient via the `record_observation` MCP tool. `file_save` triggers
+//! salient via the `create_entity` MCP tool. `file_save` triggers
 //! a single-file code reindex and stale-knowledge flagging when the
 //! saved file is a source file (not under `.cogz/`). `stop` is a
 //! lightweight event that records the stop and returns — no context
@@ -18,7 +18,9 @@ use serde::Serialize;
 use serde_json::json;
 
 use crate::config::Config;
-use crate::context::{AssembleParams, ContextMode, ContextPack, assemble_context};
+use crate::context::{
+    AssembleParams, ContextMode, ContextPack, ContextSection, PackMetadata, assemble_context,
+};
 use crate::embed::{NliModel, OnnxEmbeddingModel};
 use crate::storage::{Storage, events};
 
@@ -99,6 +101,10 @@ pub struct LifecycleOutput {
     pub observation_id: Option<String>,
     /// Reindex summary if a file_save triggered code reindexing.
     pub reindex_summary: Option<ReindexSummary>,
+    /// Drift notice when a file_save invalidated knowledge entities —
+    /// the write-time half of the verify loop. Rendered for hook
+    /// injection alongside (or instead of) a context pack.
+    pub drift_notice: Option<String>,
     /// Consolidation dry-run summary if session_end triggered it.
     pub consolidation_summary: Option<ConsolidationSummary>,
     /// Mined observation candidates available at session_end — a nudge
@@ -196,7 +202,7 @@ pub fn handle_lifecycle_event(
     // deliveries that the agent never touched become misses. The
     // delivery window is pack-to-pack (or pack-to-session-end), which
     // is the honest unit of "did the agent use what we gave it".
-    let context_pack = match input.event {
+    let mut context_pack = match input.event {
         LifecycleEvent::SessionStart | LifecycleEvent::PromptSubmit => {
             {
                 let conn = storage.conn();
@@ -274,7 +280,7 @@ pub fn handle_lifecycle_event(
     // post_tool_use (editing a delivered file is direct evidence of
     // use). We no longer auto-create observation files for every tool
     // use — that flooded .cogz/observations/ with low-value entries.
-    // The agent decides what's salient via the record_observation MCP
+    // The agent decides what's salient via the create_entity MCP
     // tool.
     if matches!(
         input.event,
@@ -303,6 +309,36 @@ pub fn handle_lifecycle_event(
             query_model,
             input.file_path,
         ))
+    } else {
+        None
+    };
+
+    // file_save is also the edit-scoped delivery moment: rules
+    // referencing entities on the saved path are actionable now —
+    // the agent just touched the file they govern. Runs after the
+    // reindex so fresh entity ids are visible. Silent when nothing
+    // references the file — the hook injects nothing rather than
+    // noise. Only fires when the event produced no pack of its own.
+    if input.event == LifecycleEvent::FileSave
+        && context_pack.is_none()
+        && let Some(path) = input.file_path
+        && !path.is_empty()
+    {
+        context_pack = scoped_rules_pack(storage, cogz_dir, event_id, path);
+    }
+
+    // file_save is also the write-time verify moment: the save may
+    // have moved code that knowledge entities reference — and the
+    // hook fires identically whether the edit came from the agent or
+    // a human editor, so this is the surface that catches both. Runs
+    // after the reindex so the drift rows are fresh. Orthogonal to the
+    // scoped-rules pack (rules *about* the file vs knowledge
+    // *invalidated by* the file) — both can fire on one save.
+    let drift_notice = if input.event == LifecycleEvent::FileSave
+        && let Some(path) = input.file_path
+        && !path.is_empty()
+    {
+        drift_notice_for_path(storage, cogz_dir, path)
     } else {
         None
     };
@@ -349,8 +385,186 @@ pub fn handle_lifecycle_event(
         context_pack,
         observation_id,
         reindex_summary,
+        drift_notice,
         consolidation_summary,
         suggestion_count,
+    })
+}
+
+/// Max drifted entities listed in a file_save notice — a signal, not
+/// a report. The full queue lives in `cogz doctor`.
+const DRIFT_NOTICE_LIMIT: usize = 5;
+
+/// Knowledge entities drifted on references to the saved file's code —
+/// the write-time verify cue. `entities_for_file` maps the path to its
+/// code entities; `entities_drifted_on` inverts the drift index to find
+/// what the edit invalidated. The notice is persistent, not
+/// causal-diffed: every save of a file with still-drifted referencers
+/// re-surfaces them until someone verifies — same cue-until-closed
+/// contract as the read-side footer. Returns None when nothing on the
+/// path is drifted.
+fn drift_notice_for_path(
+    storage: &Arc<Storage>,
+    cogz_dir: &Path,
+    file_path: &str,
+) -> Option<String> {
+    let conn = storage.conn();
+    let mut entity_ids: Vec<String> = Vec::new();
+    for candidate in normalize_file_candidates(file_path, cogz_dir) {
+        if let Ok(found) = crate::storage::usage::entities_for_file(&conn, &candidate) {
+            entity_ids.extend(found);
+        }
+    }
+    entity_ids.sort();
+    entity_ids.dedup();
+
+    let drifted = crate::index::drift::entities_drifted_on(&conn, &entity_ids);
+    if drifted.is_empty() {
+        return None;
+    }
+
+    let mut notice = if drifted.len() == 1 {
+        format!(
+            "**1 knowledge entity references code in `{file_path}` and drifted since last verified:**"
+        )
+    } else {
+        format!(
+            "**{} knowledge entities reference code in `{file_path}` and drifted since last verified:**",
+            drifted.len()
+        )
+    };
+    for (id, title) in drifted.iter().take(DRIFT_NOTICE_LIMIT) {
+        notice.push_str(&format!("\n- {title} (`{id}`)"));
+    }
+    if drifted.len() > DRIFT_NOTICE_LIMIT {
+        notice.push_str(&format!(
+            "\n- … and {} more (`cogz doctor` lists the queue)",
+            drifted.len() - DRIFT_NOTICE_LIMIT
+        ));
+    }
+    notice.push_str(
+        "\n\nIf still accurate: `cogz verify <id>` (or `verify_knowledge` via MCP) re-stamps \
+         provenance. If outdated: update the knowledge file.",
+    );
+    Some(notice)
+}
+
+/// Max rules pushed per edit-scoped delivery — a reminder, not a
+/// briefing. Files with more governing rules truncate to the most
+/// recently updated.
+const SCOPED_RULE_LIMIT: usize = 5;
+
+/// Per-rule content cap (~200 tokens). Full text stays on disk —
+/// the pack tells the agent a rule exists and gives enough to act on.
+const SCOPED_CONTENT_CHARS: usize = 800;
+
+/// Build an edit-scoped pack for a file_save event: entities on the
+/// saved path → active rules referencing them (`references` +
+/// `auto_references` edges). The delivery is recorded as
+/// `DeliveryKind::Scoped` so its hit rate is measurable separately
+/// from packs. Returns None when nothing references the file — the
+/// hook stays silent rather than injecting noise.
+fn scoped_rules_pack(
+    storage: &Arc<Storage>,
+    cogz_dir: &Path,
+    event_id: Option<i64>,
+    file_path: &str,
+) -> Option<ContextPack> {
+    let conn = storage.conn();
+
+    let mut entity_ids: Vec<String> = Vec::new();
+    for candidate in normalize_file_candidates(file_path, cogz_dir) {
+        match crate::storage::usage::entities_for_file(&conn, &candidate) {
+            Ok(found) => entity_ids.extend(found),
+            Err(e) => tracing::warn!("scoped delivery: file lookup failed: {e}"),
+        }
+    }
+    entity_ids.sort();
+    entity_ids.dedup();
+
+    let rules = match crate::storage::graph_queries::rules_referencing(
+        &conn,
+        &entity_ids,
+        SCOPED_RULE_LIMIT,
+    ) {
+        Ok(rules) => rules,
+        Err(e) => {
+            tracing::warn!("scoped delivery: rule lookup failed: {e}");
+            return None;
+        }
+    };
+    if rules.is_empty() {
+        return None;
+    }
+
+    // Rules on a just-saved file are prime drift candidates — surface
+    // the marker so the pack's verify cue reaches edit-scoped pushes too.
+    let drift = crate::index::drift::drift_counts(
+        &conn,
+        &rules.iter().map(|r| r.id.clone()).collect::<Vec<_>>(),
+    );
+
+    let sections: Vec<ContextSection> = rules
+        .iter()
+        .map(|rule| {
+            let content = if rule.content.chars().count() > SCOPED_CONTENT_CHARS {
+                let head: String = rule.content.chars().take(SCOPED_CONTENT_CHARS).collect();
+                format!("{head}\n\n…")
+            } else {
+                rule.content.clone()
+            };
+            ContextSection {
+                source: rule.r#type.clone(),
+                entity_id: rule.id.clone(),
+                title: rule.title.clone().unwrap_or_else(|| rule.id.clone()),
+                content,
+                relevance: 0.0,
+                graph_path: vec![rule.id.clone()],
+                graph_path_description: String::new(),
+                tier: crate::storage::usage::DeliveryTier::Full,
+                drift_count: drift.get(&rule.id).copied().unwrap_or(0),
+            }
+        })
+        .collect();
+    let size_tokens: usize = sections.iter().map(|s| s.content.len() / 4).sum();
+    let rule_ids: Vec<String> = rules.iter().map(|r| r.id.clone()).collect();
+
+    // Same delivery bookkeeping as packs — scoped is its own kind so
+    // hit rates split by delivery moment.
+    if let Some(delivery_id) = with_busy_retry("record scoped delivery", || {
+        crate::storage::usage::record_delivery(
+            &conn,
+            crate::storage::usage::DeliveryKind::Scoped,
+            event_id,
+        )
+    }) {
+        let entries: Vec<(String, crate::storage::usage::DeliveryTier)> = rule_ids
+            .iter()
+            .map(|id| (id.clone(), crate::storage::usage::DeliveryTier::Full))
+            .collect();
+        with_busy_retry("record scoped delivered", || {
+            crate::storage::usage::record_delivered(&conn, delivery_id, &entries)
+        });
+    }
+    if let Some(eid) = event_id {
+        let meta = serde_json::json!({ "scoped_rules": rule_ids });
+        with_busy_retry("annotate event", || {
+            events::annotate_event(&conn, eid, &meta)
+        });
+    }
+
+    Some(ContextPack {
+        query: file_path.to_string(),
+        mode: ContextMode::Task,
+        sections,
+        metadata: PackMetadata {
+            size_tokens,
+            selected_sources: vec!["rule".to_string()],
+            dropped_sources: Vec::new(),
+            search_mode: "scoped".to_string(),
+            pointer_ids: Vec::new(),
+            signals: None,
+        },
     })
 }
 

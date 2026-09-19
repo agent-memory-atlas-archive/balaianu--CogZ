@@ -467,6 +467,24 @@ pub fn search(
         config.min_relevance,
     );
 
+    // 8a. Drift demotion: knowledge whose `verified_against`
+    //     provenance diverged from current code keeps surfacing
+    //     (invalidate ≠ delete) but scores below equally-relevant
+    //     current knowledge.
+    let fused = if config.drift_penalty < 1.0 {
+        let ids: Vec<String> = fused.iter().map(|(id, _, _)| id.clone()).collect();
+        let drift = crate::index::drift::drift_counts(conn, &ids);
+        fused
+            .into_iter()
+            .map(|(id, score, tag)| {
+                let n = drift.get(&id).copied().unwrap_or(0);
+                (id, score * config.drift_penalty.powi(n as i32), tag)
+            })
+            .collect()
+    } else {
+        fused
+    };
+
     // 8b–8d. Post-merge ranking: provenance prior, MMR
     //    diversification, and the diversity-slot guarantee.
     let fused = apply_post_merge(
@@ -495,6 +513,7 @@ pub fn search(
                 relevance: *score as f32,
                 graph_path: vec![id.clone()],
                 graph_path_description: String::new(),
+                drift_count: 0,
             })
         })
         .collect();
@@ -572,6 +591,7 @@ pub fn search(
                     relevance: decayed,
                     graph_path: exp.graph_path,
                     graph_path_description: desc,
+                    drift_count: 0,
                 });
             }
         }
@@ -595,6 +615,7 @@ pub fn search(
                 relevance: decayed,
                 graph_path: vec![seed_id, entity.id.clone()],
                 graph_path_description: "shares vocabulary with top hit".to_string(),
+                drift_count: 0,
             });
         }
 
@@ -617,6 +638,7 @@ pub fn search(
                     relevance: decayed,
                     graph_path: vec![results[0].entity.id.clone(), id.clone()],
                     graph_path_description: "deep candidate".to_string(),
+                    drift_count: 0,
                 });
             }
         }
@@ -644,6 +666,7 @@ pub fn search(
                     relevance: decayed,
                     graph_path: vec![results[0].entity.id.clone(), id.clone()],
                     graph_path_description: "weak-seed graph candidate".to_string(),
+                    drift_count: 0,
                 });
             }
         }
@@ -662,6 +685,16 @@ pub fn search(
         }
 
         results.extend(expanded_results);
+    }
+
+    // Surface per-result drift so consumers can discount or re-verify
+    // entities whose references moved since last verification.
+    {
+        let ids: Vec<String> = results.iter().map(|r| r.entity.id.clone()).collect();
+        let drift = crate::index::drift::drift_counts(conn, &ids);
+        for r in &mut results {
+            r.drift_count = drift.get(&r.entity.id).copied().unwrap_or(0);
+        }
     }
 
     Ok(SearchResults {

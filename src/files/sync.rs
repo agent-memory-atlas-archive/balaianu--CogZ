@@ -29,7 +29,7 @@ pub(crate) use sync_ops::{mark_deleted_as_stale, read_and_parse, sync_parsed_fil
 
 use crate::storage;
 
-use super::entities::EntityFile;
+use super::entities::{EntityFile, fm_value_to_json};
 
 /// Subdirectories of `.cogz/` that contain entity files.
 const ENTITY_DIRS: &[&str] = &["knowledge", "rules", "observations"];
@@ -68,6 +68,51 @@ pub struct SyncResult {
 pub fn content_hash(content: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(content.as_bytes());
+    let hash = hasher.finalize();
+    hash.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+/// Frontmatter keys rewritten by bookkeeping rather than by the author:
+/// provenance stamps, timestamps, lifecycle status. Drift compares
+/// semantic content — a `verify` re-stamp or stale mark on a target must
+/// not re-drift every entity that references it.
+const VOLATILE_FRONTMATTER_KEYS: &[&str] =
+    &["status", "updated_at", "verified_against", "stale_reason"];
+
+/// SHA-256 over the entity's semantic content — id, title, type,
+/// created_at, references, non-volatile frontmatter, body — with
+/// bookkeeping keys excluded. Deterministic across frontmatter key order.
+/// `verified_against` stamps and drift comparison use this, not the raw
+/// byte hash, so provenance writes don't cascade drift to referrers.
+pub fn semantic_hash(entity_file: &EntityFile) -> String {
+    let mut hasher = Sha256::new();
+    for part in [
+        entity_file.id.as_str(),
+        entity_file.title.as_str(),
+        entity_file.entity_type.as_str(),
+        entity_file.created_at.as_str(),
+    ] {
+        hasher.update(part.as_bytes());
+        hasher.update([0]);
+    }
+    for r in &entity_file.references {
+        hasher.update(r.as_bytes());
+        hasher.update([0]);
+    }
+    let mut entries: Vec<_> = entity_file
+        .frontmatter
+        .entries
+        .iter()
+        .filter(|(k, _)| !VOLATILE_FRONTMATTER_KEYS.contains(&k.as_str()))
+        .collect();
+    entries.sort_by(|a, b| a.0.cmp(&b.0));
+    for (k, v) in entries {
+        hasher.update(k.as_bytes());
+        hasher.update([0]);
+        hasher.update(fm_value_to_json(v).to_string().as_bytes());
+        hasher.update([0]);
+    }
+    hasher.update(entity_file.body.as_bytes());
     let hash = hasher.finalize();
     hash.iter().map(|b| format!("{:02x}", b)).collect()
 }

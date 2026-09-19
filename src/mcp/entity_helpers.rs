@@ -46,6 +46,16 @@ pub fn write_and_sync(
     embed_model: Option<&OnnxEmbeddingModel>,
     nli_model: Option<&dyn NliModel>,
 ) -> Result<serde_json::Value, McpError> {
+    // Stamp provenance for declared references before writing — the
+    // author asserts the content holds for the referenced entities'
+    // current state. Skipped when nothing is referenced.
+    let mut stamped_entity = entity.clone();
+    if !entity.references.is_empty() {
+        let conn = storage.conn();
+        crate::index::drift::stamp_new_reference_hashes(&conn, &mut stamped_entity);
+    }
+    let entity = &stamped_entity;
+
     // 0. Scan for secrets before writing to disk. Knowledge and rules
     // are committed to git — a secret there is nearly impossible to
     // remove from version history.

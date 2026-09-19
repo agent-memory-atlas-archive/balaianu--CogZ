@@ -98,6 +98,10 @@ pub fn update_knowledge_file(
         if let Some(ref refs) = params.references {
             entity_file.references = refs.clone();
             updated_fields.push("references");
+            // Newly-declared references get provenance stamps; existing
+            // entries keep their verified baseline.
+            let conn = storage.conn();
+            crate::index::drift::stamp_new_reference_hashes(&conn, &mut entity_file);
         }
         entity_file.updated_at = chrono::Utc::now().to_rfc3339();
 

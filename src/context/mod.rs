@@ -51,6 +51,10 @@ pub struct ContextSection {
     /// Delivery tier: `Baseline` orientation, `Full` content, or
     /// `Pointer` (index entry — presence without depth).
     pub tier: DeliveryTier,
+    /// Number of the entity's code references that diverged since the
+    /// entity was last verified (`entity_drift` rows). 0 for code
+    /// entities, structural sections, and fully-verified knowledge.
+    pub drift_count: usize,
 }
 
 /// Metadata about a context pack's construction.

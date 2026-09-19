@@ -32,6 +32,12 @@ pub enum EventType {
     /// The agent asked for mined observation candidates — an audit
     /// trail for whether write-path mining gets used at all.
     SuggestionsRequested,
+    /// A knowledge entity was explicitly verified against the current
+    /// code state — `verified_against` re-stamped, drift cleared.
+    KnowledgeVerified,
+    /// An orphaned-stale knowledge entity recovered automatically —
+    /// all references resolve active again.
+    StaleRecovered,
 }
 
 impl EventType {
@@ -56,6 +62,8 @@ impl EventType {
             Self::SessionEnd => "session_end",
             Self::Stop => "stop",
             Self::SuggestionsRequested => "suggestions_requested",
+            Self::KnowledgeVerified => "knowledge_verified",
+            Self::StaleRecovered => "stale_recovered",
         }
     }
 }

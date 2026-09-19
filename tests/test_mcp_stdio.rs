@@ -298,7 +298,7 @@ fn mcp_stdio_handshake_and_tools() {
     let tools = resp["result"]["tools"]
         .as_array()
         .expect("tools should be an array");
-    assert_eq!(tools.len(), 17, "should expose 17 tools");
+    assert_eq!(tools.len(), 14, "should expose 14 tools");
 
     // Verify repo is required in every tool schema
     for tool in tools {
@@ -505,7 +505,7 @@ fn mcp_stdio_consolidate() {
 // ── Tests: query tools ──────────────────────────────────────────
 
 #[test]
-fn mcp_stdio_query_observations() {
+fn mcp_stdio_query_entities_observation() {
     let repo = TempRepo::new();
     let env = repo.mcp_env();
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
@@ -513,12 +513,12 @@ fn mcp_stdio_query_observations() {
 
     // No observations in the temp repo, but the call should succeed.
     let text = client.tool_text(
-        "query_observations",
-        serde_json::json!({"repo": repo.path_str(), "limit": 10}),
+        "query_entities",
+        serde_json::json!({"entity_type": "observation","repo": repo.path_str(), "limit": 10}),
     );
     assert!(
         text.contains("observations") || text.contains("count"),
-        "query_observations should return results, got: {text}"
+        "query_entities should return results, got: {text}"
     );
 
     child.kill().unwrap();
@@ -526,17 +526,20 @@ fn mcp_stdio_query_observations() {
 }
 
 #[test]
-fn mcp_stdio_query_rules() {
+fn mcp_stdio_query_entities_rule() {
     let repo = TempRepo::new();
     let env = repo.mcp_env();
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
     // The temp repo has one rule: "Always write tests"
-    let text = client.tool_text("query_rules", serde_json::json!({"repo": repo.path_str()}));
+    let text = client.tool_text(
+        "query_entities",
+        serde_json::json!({"entity_type": "rule","repo": repo.path_str()}),
+    );
     assert!(
         text.contains("rules") && text.contains("Always write tests"),
-        "query_rules should return the test rule, got: {text}"
+        "query_entities should return the test rule, got: {text}"
     );
 
     child.kill().unwrap();
@@ -544,7 +547,7 @@ fn mcp_stdio_query_rules() {
 }
 
 #[test]
-fn mcp_stdio_query_knowledge() {
+fn mcp_stdio_query_entities_knowledge() {
     let repo = TempRepo::new();
     let env = repo.mcp_env();
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
@@ -552,12 +555,12 @@ fn mcp_stdio_query_knowledge() {
 
     // The temp repo has one knowledge entry: "Test Design"
     let text = client.tool_text(
-        "query_knowledge",
-        serde_json::json!({"repo": repo.path_str()}),
+        "query_entities",
+        serde_json::json!({"entity_type": "knowledge","repo": repo.path_str()}),
     );
     assert!(
         text.contains("knowledge") && text.contains("Test Design"),
-        "query_knowledge should return the test knowledge, got: {text}"
+        "query_entities should return the test knowledge, got: {text}"
     );
 
     child.kill().unwrap();
@@ -717,15 +720,15 @@ fn mcp_stdio_suggest_observations() {
 // ── Tests: write tools ──────────────────────────────────────────
 
 #[test]
-fn mcp_stdio_record_observation() {
+fn mcp_stdio_create_entity_observation() {
     let repo = TempRepo::new();
     let env = repo.mcp_env();
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
     let text = client.tool_text(
-        "record_observation",
-        serde_json::json!({
+        "create_entity",
+        serde_json::json!({"entity_type": "observation",
             "repo": repo.path_str(),
             "title": "Test observation via stdio",
             "content": "This observation was created through the MCP stdio transport.",
@@ -734,7 +737,7 @@ fn mcp_stdio_record_observation() {
     );
     assert!(
         text.contains("id") || text.contains("created"),
-        "record_observation should return an ID, got: {text}"
+        "create_entity should return an ID, got: {text}"
     );
 
     // Verify the file was created on disk
@@ -749,15 +752,15 @@ fn mcp_stdio_record_observation() {
 }
 
 #[test]
-fn mcp_stdio_create_rule() {
+fn mcp_stdio_create_entity_rule() {
     let repo = TempRepo::new();
     let env = repo.mcp_env();
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
     let text = client.tool_text(
-        "create_rule",
-        serde_json::json!({
+        "create_entity",
+        serde_json::json!({"entity_type": "rule",
             "repo": repo.path_str(),
             "title": "Test rule via stdio",
             "content": "Rules created through MCP must be tested.",
@@ -766,7 +769,7 @@ fn mcp_stdio_create_rule() {
     );
     assert!(
         text.contains("id") || text.contains("created"),
-        "create_rule should return an ID, got: {text}"
+        "create_entity should return an ID, got: {text}"
     );
 
     // Verify the file was created
@@ -782,15 +785,15 @@ fn mcp_stdio_create_rule() {
 }
 
 #[test]
-fn mcp_stdio_create_knowledge() {
+fn mcp_stdio_create_entity_knowledge() {
     let repo = TempRepo::new();
     let env = repo.mcp_env();
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
     let text = client.tool_text(
-        "create_knowledge",
-        serde_json::json!({
+        "create_entity",
+        serde_json::json!({"entity_type": "knowledge",
             "repo": repo.path_str(),
             "title": "Test knowledge via stdio",
             "content": "Knowledge created through the MCP stdio transport.",
@@ -800,7 +803,7 @@ fn mcp_stdio_create_knowledge() {
     );
     assert!(
         text.contains("id") || text.contains("created"),
-        "create_knowledge should return an ID, got: {text}"
+        "create_entity should return an ID, got: {text}"
     );
 
     // Verify the file was created
@@ -981,8 +984,8 @@ fn mcp_stdio_write_then_read_roundtrip() {
 
     // Write an observation
     let write_text = client.tool_text(
-        "record_observation",
-        serde_json::json!({
+        "create_entity",
+        serde_json::json!({"entity_type": "observation",
             "repo": repo.path_str(),
             "title": "Round-trip test observation",
             "content": "This observation will be queried back through the stdio transport.",
@@ -991,17 +994,17 @@ fn mcp_stdio_write_then_read_roundtrip() {
     );
     assert!(
         write_text.contains("id"),
-        "record_observation should return an ID, got: {write_text}"
+        "create_entity should return an ID, got: {write_text}"
     );
 
     // Query it back
     let query_text = client.tool_text(
-        "query_observations",
-        serde_json::json!({"repo": repo.path_str(), "limit": 10}),
+        "query_entities",
+        serde_json::json!({"entity_type": "observation","repo": repo.path_str(), "limit": 10}),
     );
     assert!(
         query_text.contains("Round-trip test observation"),
-        "query_observations should find the created observation, got: {query_text}"
+        "query_entities should find the created observation, got: {query_text}"
     );
 
     // Search for it
@@ -1082,18 +1085,21 @@ fn mcp_stdio_real_repo_get_status() {
 }
 
 #[test]
-fn mcp_stdio_real_repo_query_knowledge() {
+fn mcp_stdio_real_repo_query_entities_knowledge() {
     let env = real_repo_env();
     ensure_real_repo_indexed(&env);
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
-    let resp = client.call_tool("query_knowledge", serde_json::json!({"repo": REAL_REPO}));
+    let resp = client.call_tool(
+        "query_entities",
+        serde_json::json!({"repo": REAL_REPO, "entity_type": "knowledge"}),
+    );
     let text = resp["result"]["content"][0]["text"].as_str().unwrap_or("");
     // The real CogZ repo has knowledge entries
     assert!(
         text.contains("knowledge") && text.contains("count"),
-        "query_knowledge on real repo should return results, got: {resp}"
+        "query_entities on real repo should return results, got: {resp}"
     );
 
     child.kill().unwrap();

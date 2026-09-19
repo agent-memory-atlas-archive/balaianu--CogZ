@@ -2,7 +2,9 @@ use std::path::{Path, PathBuf};
 
 use crate::files::entities::{EntityFile, FileEntityType, fm_value_to_json};
 use crate::files::events;
-use crate::files::sync::{SyncAction, SyncError, SyncFailure, SyncResult, content_hash};
+use crate::files::sync::{
+    SyncAction, SyncError, SyncFailure, SyncResult, content_hash, semantic_hash,
+};
 use crate::storage;
 use crate::storage::crud::{ENTITY_COLUMNS, Entity, EntityType};
 
@@ -98,6 +100,12 @@ pub(crate) fn build_entity(entity_file: &EntityFile, hash: &str, relative_path: 
             properties.insert(key.clone(), fm_value_to_json(value));
         }
     }
+    // Drift compares semantic content, not raw bytes — bookkeeping
+    // writes (verify stamps, stale marks) must not re-drift referrers.
+    properties.insert(
+        "_semantic_hash".to_string(),
+        serde_json::Value::String(semantic_hash(entity_file)),
+    );
 
     Entity {
         id: entity_file.id.clone(),

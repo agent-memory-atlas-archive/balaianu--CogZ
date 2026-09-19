@@ -34,6 +34,7 @@ fn default_config() -> SearchConfig {
         top_diversity_share: 0.0,
         calibration: crate::config::CalibrationConfig::default(),
         provenance_boost: 0.0,
+        drift_penalty: 1.0,
         fts_title_weight: 1.0,
         mmr_lambda: 0.0,
         graph_first_enabled: false,

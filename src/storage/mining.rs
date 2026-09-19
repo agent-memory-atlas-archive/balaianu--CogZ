@@ -12,7 +12,7 @@ use rusqlite::Connection;
 use super::StorageError;
 
 /// A mined observation candidate. The agent confirms or dismisses it
-/// through `record_observation` — nothing here writes itself.
+/// through `create_entity` — nothing here writes itself.
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct Suggestion {
     /// Which mining signal produced this candidate.

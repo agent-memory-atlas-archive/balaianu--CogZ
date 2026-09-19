@@ -58,6 +58,18 @@ pub fn query_response(
     json!({ key: items, "count": items.len() })
 }
 
+/// Summary block for responses containing drifted entities — names
+/// the remedy (`verify_knowledge`) so agents can close the loop.
+fn drift_summary(ids: Vec<&str>) -> serde_json::Value {
+    json!({
+        "drifted_entities": ids.len(),
+        "entity_ids": ids,
+        "hint": "References changed since these entities were verified. Review their content \
+                 against current code; if still accurate, call verify_knowledge to re-stamp \
+                 provenance and clear the drift penalty.",
+    })
+}
+
 /// Build a search response from SearchResults.
 pub fn search_response(results: SearchResults) -> serde_json::Value {
     let items: Vec<_> = results
@@ -73,6 +85,7 @@ pub fn search_response(results: SearchResults) -> serde_json::Value {
                 "kind": if r.graph_path.len() > 1 { "expanded" } else { "direct" },
                 "graph_path": r.graph_path,
                 "graph_path_description": r.graph_path_description,
+                "drift_count": r.drift_count,
             })
         })
         .collect();
@@ -89,6 +102,15 @@ pub fn search_response(results: SearchResults) -> serde_json::Value {
             "code_gradient": s.code_gradient,
             "knowledge_gradient": s.knowledge_gradient,
         });
+    }
+    let drifted: Vec<&str> = results
+        .results
+        .iter()
+        .filter(|r| r.drift_count > 0)
+        .map(|r| r.entity.id.as_str())
+        .collect();
+    if !drifted.is_empty() {
+        out["drift"] = drift_summary(drifted);
     }
     out
 }
@@ -114,10 +136,17 @@ pub fn context_response_ref(pack: &crate::context::ContextPack) -> serde_json::V
                 "graph_path": s.graph_path,
                 "graph_path_description": s.graph_path_description,
                 "tier": s.tier.as_str(),
+                "drift_count": s.drift_count,
             })
         })
         .collect();
-    json!({
+    let drifted: Vec<&str> = pack
+        .sections
+        .iter()
+        .filter(|s| s.drift_count > 0)
+        .map(|s| s.entity_id.as_str())
+        .collect();
+    let mut out = json!({
         "query": pack.query,
         "mode": pack.mode.as_str(),
         "sections": sections,
@@ -136,5 +165,9 @@ pub fn context_response_ref(pack: &crate::context::ContextPack) -> serde_json::V
                 })
             }),
         },
-    })
+    });
+    if !drifted.is_empty() {
+        out["drift"] = drift_summary(drifted);
+    }
+    out
 }

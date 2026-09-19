@@ -42,7 +42,11 @@ pub(super) fn query_sections(
         limit: max_results,
         expand: max_hops > 0,
         max_hops,
-        include_tests: false,
+        // Task packs include test entities: tests encode the spec the
+        // task is asking the agent to build (fixtures, expected call
+        // signatures, CLI flags). Excluding them systematically drops
+        // spec-bearing files from delivered context.
+        include_tests: true,
         // Packs ship whatever survives the relevance floor — the
         // silence gate is an agent-facing answer semantic, not a
         // delivery policy. Its batch-level predicate can't separate
@@ -93,6 +97,7 @@ fn search_result_to_section(result: SearchResult) -> ContextSection {
         graph_path: result.graph_path,
         graph_path_description: result.graph_path_description,
         tier: DeliveryTier::Full,
+        drift_count: result.drift_count,
     }
 }
 

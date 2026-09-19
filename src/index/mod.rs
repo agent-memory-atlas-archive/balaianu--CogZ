@@ -8,6 +8,7 @@ pub mod auto_link;
 pub mod baseline;
 pub mod code_graph;
 pub mod detection;
+pub mod drift;
 pub mod git_diff;
 pub mod gitignore;
 pub mod parse;
@@ -16,7 +17,7 @@ pub mod stale_flagging;
 pub mod sync;
 pub mod tree_sitter;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::config::Config;
 use crate::storage;
@@ -184,8 +185,35 @@ pub fn reindex_single_file(
     file_path: &str,
 ) -> ReindexResult {
     let path = std::path::PathBuf::from(file_path);
+    // Hooks report absolute paths; entities must key on repo-relative
+    // paths or every save mints a duplicate entity set under different
+    // UUIDv5s. Components-normalize the relative branch too — a
+    // `./src/foo.py` input must land on `src/foo.py`'s UUID.
+    let rel = if path.is_absolute() {
+        let root_abs = std::fs::canonicalize(repo_root).unwrap_or_else(|_| repo_root.to_path_buf());
+        let stripped = path
+            .strip_prefix(&root_abs)
+            .map(PathBuf::from)
+            .ok()
+            .or_else(|| {
+                std::fs::canonicalize(&path)
+                    .ok()
+                    .and_then(|abs| abs.strip_prefix(&root_abs).ok().map(PathBuf::from))
+            });
+        match stripped {
+            Some(r) => r,
+            None => {
+                tracing::warn!("file_save reindex: {} outside repo root", file_path);
+                return ReindexResult::default();
+            }
+        }
+    } else {
+        path.components()
+            .filter(|c| !matches!(c, std::path::Component::CurDir))
+            .collect()
+    };
     let changed = vec![detection::ChangedFile {
-        path,
+        path: rel,
         change: detection::ChangeType::Modified,
     }];
     reindex::reindex_files(storage, repo_root, &changed)

@@ -1,8 +1,8 @@
 //! MCP tool router — dispatches tool calls to implementation modules.
 //!
 //! Tool implementations are grouped by category:
-//! - `tools_write` — record_observation, create_rule, create_knowledge, update_knowledge
-//! - `tools_query` — query_observations, query_rules, query_knowledge, list_entities
+//! - `tools_write` — create_entity, update_knowledge, verify_knowledge
+//! - `tools_query` — query_entities, list_entities
 //! - `tools_search` — search, get_context
 //! - `tools_graph` — get_callers, get_impact, find_orphans
 //! - `tools_mining` — suggest_observations
@@ -22,41 +22,19 @@ use crate::mcp::{tools_graph, tools_mining, tools_query, tools_search, tools_sys
 #[tool_router(vis = "pub")]
 impl CogzServer {
     #[tool(
-        name = "record_observation",
-        description = "Record an observation about the codebase. Observations are raw, unvalidated experience — bugs found, decisions made, patterns noticed. They persist across sessions and can be promoted to rules through consolidation."
+        name = "create_entity",
+        description = "Create a knowledge-layer entity. `entity_type` picks the lifecycle, not the topic — ask what the entry IS: 'observation' = something that happened (bug found, surprising behavior, decision noticed) — raw, append-only, unvalidated; consolidation promotes the good ones to rules. 'rule' = a verified directive agents must always follow (conventions, constraints) — pushed into every context pack; change via supersede, not edits. 'knowledge' = a curated reference doc (architecture, gotchas, design decisions) — the only editable type (update_knowledge). Requires: content always; title+category for knowledge."
     )]
-    async fn record_observation(
+    async fn create_entity(
         &self,
-        params: Parameters<RecordObservationParams>,
+        params: Parameters<CreateEntityParams>,
     ) -> Result<CallToolResult, McpError> {
-        tools_write::record_observation(self, params).await
-    }
-
-    #[tool(
-        name = "create_rule",
-        description = "Create a rule — a validated directive the agent should follow. Rules are git-tracked and shared. Use for coding standards, design decisions, and confirmed patterns."
-    )]
-    async fn create_rule(
-        &self,
-        params: Parameters<CreateRuleParams>,
-    ) -> Result<CallToolResult, McpError> {
-        tools_write::create_rule(self, params).await
-    }
-
-    #[tool(
-        name = "create_knowledge",
-        description = "Create a knowledge entry — structured documentation about the codebase. Knowledge is human-readable, git-tracked, and meant to be read by both humans and agents."
-    )]
-    async fn create_knowledge(
-        &self,
-        params: Parameters<CreateKnowledgeParams>,
-    ) -> Result<CallToolResult, McpError> {
-        tools_write::create_knowledge(self, params).await
+        tools_write::create_entity(self, params).await
     }
 
     #[tool(
         name = "update_knowledge",
-        description = "Update an existing knowledge entry's content. Knowledge is the only entity type that allows in-place content edits — observations and rules are append-only."
+        description = "Update an existing knowledge entry's content — use to correct or extend documentation when facts change. The only entity type allowing in-place edits; observations and rules are append-only."
     )]
     async fn update_knowledge(
         &self,
@@ -66,41 +44,30 @@ impl CogzServer {
     }
 
     #[tool(
-        name = "query_observations",
-        description = "Query observations with optional filters. Returns matching observations sorted by recency."
+        name = "verify_knowledge",
+        description = "Re-verify a knowledge entity against its referenced code — re-stamps verified_against provenance, clears drift annotations, and reactivates the entity if it was stale. Use after reading drift-flagged or stale knowledge and confirming it is still accurate — not for changing content (use update_knowledge instead)."
     )]
-    async fn query_observations(
+    async fn verify_knowledge(
         &self,
-        params: Parameters<QueryObservationsParams>,
+        params: Parameters<VerifyKnowledgeParams>,
     ) -> Result<CallToolResult, McpError> {
-        tools_query::query_observations(self, params).await
+        tools_write::verify_knowledge(self, params).await
     }
 
     #[tool(
-        name = "query_rules",
-        description = "Query rules with optional filters. Returns matching rules sorted by confidence then recency."
+        name = "query_entities",
+        description = "Browse knowledge-layer entities of one type — 'observation' (raw findings, recency order), 'rule' (verified directives, confidence order), or 'knowledge' (curated docs). Use to enumerate what exists before writing (avoid duplicates) or to review a type — for ranked retrieval on a question use search; for code entities use list_entities or search."
     )]
-    async fn query_rules(
+    async fn query_entities(
         &self,
-        params: Parameters<QueryRulesParams>,
+        params: Parameters<QueryEntitiesParams>,
     ) -> Result<CallToolResult, McpError> {
-        tools_query::query_rules(self, params).await
-    }
-
-    #[tool(
-        name = "query_knowledge",
-        description = "Query knowledge entries with optional filters."
-    )]
-    async fn query_knowledge(
-        &self,
-        params: Parameters<QueryKnowledgeParams>,
-    ) -> Result<CallToolResult, McpError> {
-        tools_query::query_knowledge(self, params).await
+        tools_query::query_entities(self, params).await
     }
 
     #[tool(
         name = "search",
-        description = "Search across all entities using hybrid FTS5 + vector search with RRF fusion. Results include graph expansion — related entities found by following edges."
+        description = "Ranked search across all entities — code (functions, files, classes) plus rules, observations, and knowledge — using hybrid lexical + semantic retrieval with graph expansion. Use when you know the concept but not the exact name, or want related entities surfaced automatically. For exact identifier/text matches, grep is faster and equally precise."
     )]
     async fn search(
         &self,
@@ -111,7 +78,7 @@ impl CogzServer {
 
     #[tool(
         name = "get_context",
-        description = "Assemble a context pack — a coherent, scoped, ranked collection of information for the current task. This is the primary output of CogZ."
+        description = "Assemble a context pack — a scoped, ranked bundle of orientation, rules, relevant code, and knowledge for a task query. Use at the start of substantial work on a topic instead of reading files broadly — narrower than a session-start pack, broader than a single search."
     )]
     async fn get_context(
         &self,
@@ -122,7 +89,7 @@ impl CogzServer {
 
     #[tool(
         name = "get_callers",
-        description = "Find entities that call this function or method. Answers 'who calls X?' — the direct dependents with incoming calls edges."
+        description = "Find entities that call this function — answers 'who calls X?' with resolved call edges, not text matches. Use instead of grepping for the name when you need real callers (not comments, strings, or same-named functions)."
     )]
     async fn get_callers(
         &self,
@@ -133,7 +100,7 @@ impl CogzServer {
 
     #[tool(
         name = "get_impact",
-        description = "Transitive dependents of an entity — what breaks or needs updating when it changes (incoming calls/imports/extends, up to max_depth hops). Also lists knowledge entities referencing it, which may go stale."
+        description = "Transitive dependents of an entity — what breaks or needs updating when it changes (incoming calls/imports/extends up to max_depth hops), plus knowledge that references it. Use before renaming, deleting, or changing a signature."
     )]
     async fn get_impact(
         &self,
@@ -144,7 +111,7 @@ impl CogzServer {
 
     #[tool(
         name = "find_orphans",
-        description = "Find code entities with no incoming calls/imports/extends edges — dead-code candidates. Test code is excluded; entry points like main() surface by design."
+        description = "Find code entities with no incoming calls/imports/extends edges — dead-code candidates. Use during cleanup audits. Entry points like main() surface by design; test code is excluded."
     )]
     async fn find_orphans(
         &self,
@@ -155,7 +122,7 @@ impl CogzServer {
 
     #[tool(
         name = "suggest_observations",
-        description = "Mine recent usage for observation candidates: zero-hit packs followed by edits, repeatedly-hit entities, hot files, and error→fix sequences. Returns structured suggestions — confirm salient ones via record_observation."
+        description = "Mine recent session usage for observation candidates — zero-hit packs followed by edits, hot files, error→fix sequences. Use at natural stopping points to capture what the session learned; confirm salient suggestions via create_entity."
     )]
     async fn suggest_observations(
         &self,
@@ -166,7 +133,7 @@ impl CogzServer {
 
     #[tool(
         name = "get_status",
-        description = "Get CogZ system status: database stats, model availability, entity counts by type, stale entity count."
+        description = "CogZ system status — entity counts, DB stats, model availability, staleness. Use to check the index is fresh and retrieval is at full capability before relying on it."
     )]
     async fn get_status(
         &self,
@@ -177,7 +144,7 @@ impl CogzServer {
 
     #[tool(
         name = "list_entities",
-        description = "List all entities of a given type. Returns IDs and titles only — use query tools for full content."
+        description = "List IDs and titles for all entities of a type. Use to enumerate a type or resolve an entity_id for get_callers/get_impact — returns no content; for substance use search or query_* tools."
     )]
     async fn list_entities(
         &self,
@@ -188,7 +155,7 @@ impl CogzServer {
 
     #[tool(
         name = "consolidate",
-        description = "Trigger background consolidation: promote supported observations to rules, merge confirmed duplicates. Dedup and contradiction detection happen automatically on every insert; this tool runs the deferred phases."
+        description = "Run deferred consolidation — promote supported observations to rules, merge confirmed duplicates. Housekeeping, not a write path; dedup and contradiction checks already run on every insert."
     )]
     async fn consolidate(
         &self,
@@ -199,7 +166,7 @@ impl CogzServer {
 
     #[tool(
         name = "capture_event",
-        description = "Capture a lifecycle event. Called by hook scripts (session_start, prompt_submit, pre_tool_use, post_tool_use, file_save, session_end). For session_start and prompt_submit, returns a context pack for injection and spawns a background reindex. For file_save, triggers a single-file code reindex and stale-knowledge flagging. For session_end, runs consolidation (promotion + merge) and reports counts."
+        description = "Capture a lifecycle event — called by hook scripts, not intended for direct use. session_start/prompt_submit return context packs; file_save reindexes and may return rules governing the edited file; session_end runs consolidation."
     )]
     async fn capture_event(
         &self,

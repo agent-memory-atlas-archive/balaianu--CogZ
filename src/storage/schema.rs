@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 5;
+pub const SCHEMA_VERSION: u32 = 6;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -40,6 +40,10 @@ pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), Sto
 
     if current < 5 {
         migrate_v5(conn)?;
+    }
+
+    if current < 6 {
+        migrate_v6(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -336,6 +340,29 @@ fn migrate_v5(conn: &Connection) -> Result<(), StorageError> {
             "ALTER TABLE entity_usage ADD COLUMN tier TEXT NOT NULL DEFAULT 'full';",
         )?;
     }
+    Ok(())
+}
+
+/// Migration v6: knowledge drift tracking. `entity_drift` records
+/// per-reference divergence between a knowledge entity's
+/// `verified_against` provenance (canonical frontmatter) and the
+/// referenced code entity's current content hash. Derived state —
+/// recomputed on every index; never written to canonical files.
+fn migrate_v6(conn: &Connection) -> Result<(), StorageError> {
+    conn.execute_batch(
+        r#"
+        CREATE TABLE IF NOT EXISTS entity_drift (
+            entity_id     TEXT NOT NULL REFERENCES entities(id),
+            code_id       TEXT NOT NULL,
+            verified_hash TEXT,
+            current_hash  TEXT,
+            cause         TEXT NOT NULL,
+            PRIMARY KEY (entity_id, code_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_drift_entity ON entity_drift(entity_id);
+        "#,
+    )?;
     Ok(())
 }
 

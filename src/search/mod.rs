@@ -39,6 +39,10 @@ pub struct SearchResult {
     /// Human-readable description of the graph path.
     /// Empty for direct matches.
     pub graph_path_description: String,
+    /// Number of references whose code drifted since this entity was
+    /// last verified. Non-zero means the content may be outdated —
+    /// surfaced so consumers can discount or re-verify it.
+    pub drift_count: usize,
 }
 
 /// How the search was executed.

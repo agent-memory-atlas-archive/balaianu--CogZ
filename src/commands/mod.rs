@@ -72,6 +72,17 @@ pub fn run_status(repo: &Path) -> anyhow::Result<()> {
     let stale = cogz::storage::query::count_stale(&conn)?;
     println!("  Stale entities: {}", stale);
 
+    let drifted: i64 = conn
+        .query_row(
+            "SELECT COUNT(DISTINCT entity_id) FROM entity_drift",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap_or(0);
+    if drifted > 0 {
+        println!("  Drifted entities: {} (verify or update)", drifted);
+    }
+
     let edges = cogz::storage::edges::count_edges(&conn)?;
     println!("  Edges: {}", edges);
 
@@ -171,6 +182,18 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         }
     }
 
+    let post = cogz::index::drift::post_index_pass(&storage, &cogz_dir);
+    if post.stale_flagged > 0
+        || post.healed > 0
+        || post.drifted_entities > 0
+        || post.verified_backfilled > 0
+    {
+        println!(
+            "  Stale knowledge flagged: {} | drifted: {} | healed: {} | provenance stamped: {}",
+            post.stale_flagged, post.drifted_entities, post.healed, post.verified_backfilled
+        );
+    }
+
     // Scope the guard: update_baseline re-acquires the connection.
     let total = {
         let conn = storage.conn();
@@ -243,14 +266,12 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
         }
     }
 
-    let mut all_changed = code_result.changed_code_ids;
-    all_changed.extend(code_result.deleted_code_ids.iter().cloned());
-    if !all_changed.is_empty() {
-        let flagged =
-            cogz::index::stale_flagging::flag_stale_knowledge(&storage, &cogz_dir, &all_changed);
-        if flagged > 0 {
-            println!("  Stale knowledge flagged: {}", flagged);
-        }
+    let post = cogz::index::drift::post_index_pass(&storage, &cogz_dir);
+    if post.stale_flagged > 0 || post.healed > 0 || post.drifted_entities > 0 {
+        println!(
+            "  Stale knowledge flagged: {} | drifted: {} | healed: {} | provenance stamped: {}",
+            post.stale_flagged, post.drifted_entities, post.healed, post.verified_backfilled
+        );
     }
 
     Ok(())
@@ -368,6 +389,31 @@ pub fn run_consolidate(repo: &Path, dry_run: bool) -> anyhow::Result<()> {
         println!("\n  (dry run — no changes made)");
     }
 
+    Ok(())
+}
+
+pub fn run_verify(repo: &Path, entity_id: &str) -> anyhow::Result<()> {
+    let (config, db_path) = load_config(repo)?;
+    let cogz_dir = repo.join(".cogz");
+
+    if !db_path.exists() {
+        anyhow::bail!(
+            "Database not found at {}. Run `cogz index` first.",
+            db_path.display()
+        );
+    }
+
+    let storage = cogz::storage::Storage::open(&db_path, config.embedding.dimension)?;
+    let (stamped, reactivated) = cogz::index::drift::verify_entity(&storage, &cogz_dir, entity_id)?;
+
+    println!(
+        "Verified {entity_id}: {stamped} reference(s) re-stamped{}",
+        if reactivated {
+            ", entity reactivated (stale → active)"
+        } else {
+            ""
+        }
+    );
     Ok(())
 }
 

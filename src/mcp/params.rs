@@ -80,6 +80,14 @@ pub struct CreateKnowledgeParams {
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct VerifyKnowledgeParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// UUID of the knowledge entity to verify.
+    pub id: String,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct UpdateKnowledgeParams {
     /// Absolute path to the project root containing `.cogz/`.
     pub repo: String,
@@ -105,6 +113,67 @@ pub struct QueryKnowledgeParams {
     pub tags: Option<Vec<String>>,
     #[serde(default)]
     pub status: Option<String>,
+    #[serde(default)]
+    pub limit: Option<i64>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct CreateEntityParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// Which lifecycle class to create: `observation` (raw finding,
+    /// append-only, unvalidated), `rule` (verified directive, always
+    /// delivered in packs, supersede to change), or `knowledge`
+    /// (curated reference doc, editable via update_knowledge).
+    pub entity_type: String,
+    /// Entity body. Required for all types.
+    pub content: String,
+    /// Title. Required for `knowledge`; auto-generated for
+    /// observation/rule when omitted.
+    #[serde(default)]
+    pub title: Option<String>,
+    /// Category — required for `knowledge` (e.g. architecture,
+    /// decisions, gotchas). Ignored otherwise.
+    #[serde(default)]
+    pub category: Option<String>,
+    /// `knowledge` only.
+    #[serde(default)]
+    pub tags: Option<Vec<String>>,
+    /// UUIDs of entities this entry references (code or knowledge).
+    #[serde(default)]
+    pub references: Option<Vec<String>>,
+    /// `observation` only: UUIDs of observations this one supports —
+    /// creates `supports` edges for promotion consolidation.
+    #[serde(default)]
+    pub supporting_ids: Option<Vec<String>>,
+    /// `observation` only: who or what produced it. Default: "agent".
+    #[serde(default)]
+    pub source: Option<String>,
+    /// `rule` only: confidence 0..1.
+    #[serde(default)]
+    pub confidence: Option<f64>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct QueryEntitiesParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// `observation` | `rule` | `knowledge`. For code entities use
+    /// `list_entities` or `search` instead.
+    pub entity_type: String,
+    /// Status filter. Default: active only; `all` for every status.
+    #[serde(default)]
+    pub status: Option<String>,
+    /// `knowledge` only.
+    #[serde(default)]
+    pub category: Option<String>,
+    /// `knowledge` only.
+    #[serde(default)]
+    pub tags: Option<Vec<String>>,
+    /// `observation`/`rule` only: filter to entities referencing this
+    /// target UUID.
+    #[serde(default)]
+    pub references: Option<String>,
     #[serde(default)]
     pub limit: Option<i64>,
 }

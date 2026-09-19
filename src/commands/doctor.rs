@@ -97,7 +97,54 @@ pub fn run_doctor(repo: &Path, prune_observations: bool, confirm: bool) -> anyho
         }
     }
 
+    print_review_queue(&storage);
+
     Ok(())
+}
+
+/// Print the staleness review queue — orphaned-stale knowledge plus
+/// drifted entities awaiting verification. These are the entities the
+/// automatic passes could not resolve: verify keeps them (`cogz
+/// verify`), update rewrites them (`update_knowledge`).
+fn print_review_queue(storage: &cogz::storage::Storage) {
+    let conn = storage.conn();
+
+    let stale: Vec<(String, String, String)> = conn
+        .prepare(
+            "SELECT id, COALESCE(title,''), COALESCE(json_extract(properties,'$.stale_reason'),'manual') \
+             FROM entities WHERE status = 'stale' \
+             AND type IN ('observation','rule','knowledge') ORDER BY updated_at DESC",
+        )
+        .and_then(|mut s| {
+            s.query_map([], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))
+                .map(|rows| rows.flatten().collect())
+        })
+        .unwrap_or_default();
+
+    let drifted: Vec<(String, String, i64)> = conn
+        .prepare(
+            "SELECT d.entity_id, COALESCE(e.title,''), COUNT(*) \
+             FROM entity_drift d JOIN entities e ON e.id = d.entity_id \
+             GROUP BY d.entity_id ORDER BY COUNT(*) DESC",
+        )
+        .and_then(|mut s| {
+            s.query_map([], |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)))
+                .map(|rows| rows.flatten().collect())
+        })
+        .unwrap_or_default();
+
+    if stale.is_empty() && drifted.is_empty() {
+        return;
+    }
+
+    println!("\n  Review queue:");
+    for (id, title, reason) in &stale {
+        println!("    [stale:{reason}] {id} — {title}");
+    }
+    for (id, title, n) in &drifted {
+        println!("    [drift:{n}] {id} — {title}");
+    }
+    println!("    → confirm accuracy, then `cogz verify <id>` to re-stamp provenance");
 }
 
 fn run_prune_report(

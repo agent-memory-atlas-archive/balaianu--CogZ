@@ -130,9 +130,11 @@ pub struct SearchConfig {
     /// irrelevant entities. Model-agnostic (relative spread, not
     /// absolute cosine). 0.0 disables. Skipped in FTS-only mode —
     /// with no embeddings there is no signal to judge by.
-    /// Calibrated on the CogZ self-corpus: negative queries measured
-    /// ≤0.015 max gradient, real queries ≥0.024 → 0.02 sits in the
-    /// gap. Thin margin; recalibrate via `signals` in the response
+    /// Calibrated across two corpora (CogZ self + telegram-bot):
+    /// negatives measured ≤0.039 max gradient, real queries escape via
+    /// the strength floor or a channel gradient ≥0.043 → 0.05 covers
+    /// the observed negatives while the strength floor protects real
+    /// queries. Thin margin; recalibrate via `signals` in the response
     /// when changing embedding models.
     #[serde(default = "default_silence_threshold")]
     pub silence_threshold: f64,
@@ -157,6 +159,12 @@ pub struct SearchConfig {
     /// on the CogZ self-corpus (0.15 under-boosts, 0.5 over-boosts).
     #[serde(default = "default_provenance_boost")]
     pub provenance_boost: f64,
+    /// Per-drifted-reference score multiplier for knowledge entities
+    /// whose `verified_against` provenance diverged from current code.
+    /// 1.0 disables demotion; 0.7 default keeps drifted knowledge
+    /// retrievable but below equally-relevant current knowledge.
+    #[serde(default = "default_drift_penalty")]
+    pub drift_penalty: f64,
     /// FTS5 column weight for `title` vs `content` in BM25. 1.0 is
     /// the library default (uniform); values > 1.0 make exact-name
     /// and title hits rank above body-term matches. Default 5.0 —
@@ -251,7 +259,7 @@ fn default_min_relevance() -> f64 {
 }
 
 fn default_silence_threshold() -> f64 {
-    0.02
+    0.05
 }
 
 fn default_top_diversity_share() -> f64 {
@@ -260,6 +268,10 @@ fn default_top_diversity_share() -> f64 {
 
 fn default_provenance_boost() -> f64 {
     0.3
+}
+
+fn default_drift_penalty() -> f64 {
+    0.7
 }
 
 fn default_fts_title_weight() -> f64 {
@@ -467,6 +479,7 @@ impl Config {
                 top_diversity_share: default_top_diversity_share(),
                 calibration: CalibrationConfig::default(),
                 provenance_boost: default_provenance_boost(),
+                drift_penalty: default_drift_penalty(),
                 fts_title_weight: default_fts_title_weight(),
                 mmr_lambda: default_mmr_lambda(),
                 graph_first_enabled: default_true(),

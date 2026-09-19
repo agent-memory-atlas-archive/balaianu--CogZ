@@ -64,6 +64,7 @@ pub fn code_map_sections(conn: &Connection, status: Option<&str>) -> Vec<Context
             graph_path: vec![],
             graph_path_description: String::new(),
             tier: crate::storage::usage::DeliveryTier::Baseline,
+            drift_count: 0,
         });
     }
 
@@ -128,6 +129,7 @@ pub fn code_map_sections(conn: &Connection, status: Option<&str>) -> Vec<Context
             graph_path: vec![],
             graph_path_description: String::new(),
             tier: crate::storage::usage::DeliveryTier::Baseline,
+            drift_count: 0,
         });
     }
 

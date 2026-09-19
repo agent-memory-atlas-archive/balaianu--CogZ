@@ -1,4 +1,4 @@
-//! Query tools — query_observations, query_rules, query_knowledge,
+//! Query tools — query_entities (observation/rule/knowledge),
 //! list_entities.
 //!
 //! All read-only. Each acquires the DB connection inside
@@ -8,8 +8,8 @@
 use rmcp::{ErrorData as McpError, handler::server::wrapper::Parameters, model::CallToolResult};
 
 use crate::mcp::helpers::{
-    list_entities_response, mcp_internal_error, query_by_type_with_refs, query_knowledge_with_refs,
-    validate_query_limit,
+    list_entities_response, mcp_internal_error, mcp_invalid_parameter, query_by_type_with_refs,
+    query_knowledge_with_refs, validate_query_limit,
 };
 use crate::mcp::params::*;
 use crate::mcp::responses::{query_response, tool_success};
@@ -155,4 +155,55 @@ pub async fn list_entities(
     .map_err(|e| mcp_internal_error("query", &e.to_string()))?;
 
     Ok(tool_success(result))
+}
+
+/// Single browse entry point for the knowledge layer. `entity_type`
+/// selects the lifecycle class; type-specific filters are documented
+/// on the params and rejected when they don't apply.
+pub async fn query_entities(
+    server: &CogzServer,
+    Parameters(params): Parameters<QueryEntitiesParams>,
+) -> Result<CallToolResult, McpError> {
+    match params.entity_type.as_str() {
+        "observation" => {
+            query_observations(
+                server,
+                Parameters(QueryObservationsParams {
+                    repo: params.repo,
+                    status: params.status,
+                    references: params.references,
+                    limit: params.limit,
+                }),
+            )
+            .await
+        }
+        "rule" => {
+            query_rules(
+                server,
+                Parameters(QueryRulesParams {
+                    repo: params.repo,
+                    status: params.status,
+                    references: params.references,
+                    limit: params.limit,
+                }),
+            )
+            .await
+        }
+        "knowledge" => {
+            query_knowledge(
+                server,
+                Parameters(QueryKnowledgeParams {
+                    repo: params.repo,
+                    category: params.category,
+                    tags: params.tags,
+                    status: params.status,
+                    limit: params.limit,
+                }),
+            )
+            .await
+        }
+        other => Err(mcp_invalid_parameter(&format!(
+            "invalid entity_type '{other}': expected observation, rule, or knowledge"
+        ))),
+    }
 }

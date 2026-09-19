@@ -148,6 +148,12 @@ pub fn flag_stale_knowledge(
         };
 
         entity_file.status = "stale".to_string();
+        entity_file.frontmatter.insert(
+            "stale_reason",
+            crate::files::frontmatter::FmValue::String(
+                crate::index::drift::STALE_REASON_ORPHANED.to_string(),
+            ),
+        );
         entity_file.updated_at = chrono::Utc::now().to_rfc3339();
 
         if let Err(e) = write_entity_file(path, &entity_file) {

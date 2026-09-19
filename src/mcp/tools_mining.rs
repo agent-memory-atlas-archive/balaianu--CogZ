@@ -1,7 +1,7 @@
 //! Write-path mining tool — `suggest_observations` surfaces structured
 //! candidates from usage signals. Nothing is written: the agent's own
 //! model reads the candidates and confirms through
-//! `record_observation`, keeping CogZ the store and the agent the
+//! `create_entity`, keeping CogZ the store and the agent the
 //! distiller.
 
 use rmcp::{ErrorData as McpError, handler::server::wrapper::Parameters, model::CallToolResult};

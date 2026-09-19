@@ -137,6 +137,51 @@ pub fn referencing_knowledge(
     ordered_batch(conn, &ids)
 }
 
+/// Active rules pointing at any of `entity_ids` via `references` or
+/// `auto_references` — the rule set governing a group of entities.
+/// `referencing_knowledge` serves one entity; this serves a whole
+/// file's entity set in one query (file_save edit-scoped delivery).
+/// Ordered most-recently-updated first for a stable, recency-favoring
+/// ranking.
+pub fn rules_referencing(
+    conn: &Connection,
+    entity_ids: &[String],
+    limit: usize,
+) -> Result<Vec<Entity>, StorageError> {
+    if entity_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let target_placeholders = entity_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+    let link_placeholders = KNOWLEDGE_LINK_TYPES
+        .iter()
+        .map(|_| "?")
+        .collect::<Vec<_>>()
+        .join(",");
+    let sql = format!(
+        "SELECT DISTINCT e.id FROM entities e \
+         JOIN edges ed ON ed.source_id = e.id \
+         WHERE ed.target_id IN ({target_placeholders}) \
+         AND ed.edge_type IN ({link_placeholders}) \
+         AND e.type = 'rule' AND e.status = 'active' \
+         ORDER BY e.updated_at DESC, e.id"
+    );
+    let mut params: Vec<&dyn rusqlite::ToSql> = Vec::new();
+    params.extend(entity_ids.iter().map(|id| id as &dyn rusqlite::ToSql));
+    params.extend(
+        KNOWLEDGE_LINK_TYPES
+            .iter()
+            .map(|t| t as &dyn rusqlite::ToSql),
+    );
+    let mut stmt = conn.prepare(&sql)?;
+    let rows = stmt.query_map(params.as_slice(), |r| r.get::<_, String>(0))?;
+    let mut ids = Vec::new();
+    for r in rows {
+        ids.push(r?);
+    }
+    ids.truncate(limit);
+    ordered_batch(conn, &ids)
+}
+
 /// Code entities with no incoming dependency edges — dead-code
 /// candidates. Test entities are excluded by default (they have no
 /// callers by design). Entry points like `main` still surface — the
@@ -327,6 +372,46 @@ mod tests {
         insert_edge(&conn, &edge("s1", "callee", "references")).unwrap();
         let refs = referencing_knowledge(&conn, "callee", 50).unwrap();
         assert_eq!(refs.len(), 2);
+    }
+
+    #[test]
+    fn rules_referencing_finds_rules_for_any_target_in_batch() {
+        let conn = setup();
+        call_chain(&conn);
+        insert_entity(&conn, &entity("r1", "rule", "never panic")).unwrap();
+        insert_entity(&conn, &entity("r2", "rule", "typed errors")).unwrap();
+        insert_edge(&conn, &edge("r1", "callee", "references")).unwrap();
+        insert_edge(&conn, &edge("r2", "caller", "auto_references")).unwrap();
+
+        // One query serves the whole file's entity set: rules land
+        // once even when several targets are passed.
+        let rules = rules_referencing(&conn, &["callee".into(), "caller".into()], 50).unwrap();
+        let ids: Vec<&str> = rules.iter().map(|e| e.id.as_str()).collect();
+        assert_eq!(ids.len(), 2);
+        assert!(ids.contains(&"r1"));
+        assert!(ids.contains(&"r2"));
+
+        // Non-rule knowledge-layer entities don't surface — scoped
+        // delivery is for directives, not documentation.
+        insert_entity(&conn, &entity("k1", "knowledge", "doc")).unwrap();
+        insert_edge(&conn, &edge("k1", "callee", "references")).unwrap();
+        let rules = rules_referencing(&conn, &["callee".into()], 50).unwrap();
+        assert!(rules.iter().all(|e| e.id != "k1"));
+
+        // Non-active rules don't surface; empty input short-circuits.
+        let mut stale = entity("r3", "rule", "old rule");
+        stale.status = "stale".to_string();
+        insert_entity(&conn, &stale).unwrap();
+        insert_edge(&conn, &edge("r3", "callee", "references")).unwrap();
+        let rules = rules_referencing(&conn, &["callee".into()], 50).unwrap();
+        assert_eq!(rules.len(), 1);
+        assert!(rules_referencing(&conn, &[], 50).unwrap().is_empty());
+        // A target nothing references yields nothing.
+        assert!(
+            rules_referencing(&conn, &["main_fn".into()], 50)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]

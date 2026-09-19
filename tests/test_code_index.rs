@@ -375,6 +375,7 @@ fn build_sql_query(table: &str) -> String {
         top_diversity_share: 0.0,
         calibration: cogz::config::CalibrationConfig::default(),
         provenance_boost: 0.0,
+        drift_penalty: 1.0,
         fts_title_weight: 1.0,
         mmr_lambda: 0.0,
         graph_first_enabled: false,
@@ -606,4 +607,58 @@ fn code_entity_types_are_is_code() {
         let etype = EntityType::parse(&e.r#type).unwrap();
         assert!(etype.is_code(), "function should be code entity");
     }
+}
+
+#[test]
+fn reindex_single_file_relativizes_absolute_hook_path() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir_all(root.join("src")).unwrap();
+    std::fs::write(root.join("src/foo.py"), "def helper():\n    return 1\n").unwrap();
+
+    let storage = Storage::open_memory().unwrap();
+    let abs = root.join("src/foo.py").to_string_lossy().to_string();
+    cogz::index::reindex_single_file(&storage, root, &abs);
+
+    let conn = storage.conn();
+    let ghost: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM entities WHERE file_path LIKE '/%'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    let rel: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM entities WHERE file_path = 'src/foo.py'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(ghost, 0, "absolute path must not mint ghost entities");
+    assert!(rel > 0, "entities should key on the repo-relative path");
+}
+
+#[test]
+fn reindex_single_file_normalizes_dot_relative_path() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::create_dir_all(root.join("src")).unwrap();
+    std::fs::write(root.join("src/foo.py"), "def helper():\n    return 1\n").unwrap();
+
+    let storage = Storage::open_memory().unwrap();
+    cogz::index::reindex_single_file(&storage, root, "./src/foo.py");
+
+    let conn = storage.conn();
+    let rel: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM entities WHERE file_path = 'src/foo.py'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert!(
+        rel > 0,
+        "'./' prefix must normalize to the canonical relative path"
+    );
 }

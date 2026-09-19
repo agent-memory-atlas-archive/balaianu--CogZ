@@ -198,7 +198,7 @@ fn post_tool_use_records_event_but_not_observation() {
     assert!(output.event_id.is_some_and(|id| id > 0));
     assert!(output.context_pack.is_none());
     // post_tool_use no longer auto-records observations — the agent
-    // decides what's salient via the record_observation MCP tool.
+    // decides what's salient via the create_entity MCP tool.
     assert!(
         output.observation_id.is_none(),
         "post_tool_use should not auto-record an observation"
@@ -615,4 +615,428 @@ fn prompt_submit_resolves_hits_before_boundary() {
         )
         .unwrap();
     assert_eq!(outcome, "hit");
+}
+
+/// Fire a file_save lifecycle event for `rel_path` under the fixture
+/// repo and return the output.
+fn fire_file_save(
+    storage: &Arc<Storage>,
+    config: &Config,
+    cogz_dir: &std::path::Path,
+    model: &OnnxEmbeddingModel,
+    code_mod: &OnnxEmbeddingModel,
+    rel_path: &str,
+) -> cogz::hooks::lifecycle::LifecycleOutput {
+    handle_lifecycle_event(
+        storage,
+        config,
+        cogz_dir,
+        model,
+        code_mod,
+        None,
+        &LifecycleInput {
+            event: LifecycleEvent::FileSave,
+            prompt: None,
+            tool_name: None,
+            tool_result: None,
+            file_path: Some(rel_path),
+        },
+    )
+    .unwrap()
+}
+
+/// Write a source file under the fixture repo root and save it once
+/// so the code index holds its entities. Returns the `file` entity id
+/// the reindex created for it.
+fn index_source_file(
+    storage: &Arc<Storage>,
+    config: &Config,
+    cogz_dir: &std::path::Path,
+    repo_root: &std::path::Path,
+    model: &OnnxEmbeddingModel,
+    code_mod: &OnnxEmbeddingModel,
+    rel_path: &str,
+    contents: &str,
+) -> String {
+    let abs = repo_root.join(rel_path);
+    std::fs::create_dir_all(abs.parent().unwrap()).unwrap();
+    std::fs::write(&abs, contents).unwrap();
+
+    fire_file_save(storage, config, cogz_dir, model, code_mod, rel_path);
+
+    let conn = storage.conn();
+    conn.query_row(
+        "SELECT id FROM entities WHERE type = 'file' AND file_path = ?",
+        [rel_path],
+        |r| r.get(0),
+    )
+    .unwrap_or_else(|_| panic!("reindex should have created a file entity for {rel_path}"))
+}
+
+#[test]
+fn file_save_pushes_rules_governing_saved_file() {
+    use cogz::storage::crud::{Entity, insert_entity};
+    use cogz::storage::edges::{Edge, insert_edge};
+    let (storage, config, cogz_dir, dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    let file_id = index_source_file(
+        &storage,
+        &config,
+        &cogz_dir,
+        dir.path(),
+        &model,
+        &code_mod,
+        "src/foo.rs",
+        "pub fn foo_work() {}\n",
+    );
+
+    // A rule that references the file entity — the shape
+    // auto_references produces when rule content names the path.
+    let rule_id = uuid::Uuid::new_v4().to_string();
+    let mut rule = Entity::new(
+        &rule_id,
+        "rule",
+        "no unwrap in foo module",
+        "Never use unwrap() in the foo module — return typed errors.",
+    );
+    rule.status = "active".to_string();
+    {
+        let conn = storage.conn();
+        insert_entity(&conn, &rule).unwrap();
+        insert_edge(
+            &conn,
+            &Edge {
+                source_id: rule_id.clone(),
+                target_id: file_id.clone(),
+                edge_type: "references".to_string(),
+                weight: 1.0,
+                created_at: chrono::Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+    }
+
+    // Saving the governed file pushes the rule as an edit-scoped pack.
+    let output = fire_file_save(
+        &storage,
+        &config,
+        &cogz_dir,
+        &model,
+        &code_mod,
+        "src/foo.rs",
+    );
+    let pack = output
+        .context_pack
+        .expect("file_save on a governed file should push its rules");
+    assert!(pack.sections.iter().any(|s| s.entity_id == rule_id));
+    assert!(
+        pack.sections
+            .iter()
+            .all(|s| s.tier == cogz::context::DeliveryTier::Full)
+    );
+
+    // The delivery is instrumented as its own kind so scoped hit
+    // rates split out from packs.
+    let conn = storage.conn();
+    let scoped: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM deliveries WHERE kind = 'scoped'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(scoped, 1);
+    let delivered: String = conn
+        .query_row(
+            "SELECT u.entity_id FROM entity_usage u \
+             JOIN deliveries d ON d.id = u.delivery_id \
+             WHERE d.kind = 'scoped'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(delivered, rule_id);
+}
+
+#[test]
+fn file_save_silent_when_no_rules_govern_file() {
+    use cogz::storage::crud::{Entity, insert_entity};
+    use cogz::storage::edges::{Edge, insert_edge};
+    let (storage, config, cogz_dir, dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    let foo_id = index_source_file(
+        &storage,
+        &config,
+        &cogz_dir,
+        dir.path(),
+        &model,
+        &code_mod,
+        "src/foo.rs",
+        "pub fn foo_work() {}\n",
+    );
+    let bar_id = index_source_file(
+        &storage,
+        &config,
+        &cogz_dir,
+        dir.path(),
+        &model,
+        &code_mod,
+        "src/bar.rs",
+        "pub fn bar_work() {}\n",
+    );
+
+    // The rule governs bar, not foo.
+    let rule_id = uuid::Uuid::new_v4().to_string();
+    let mut rule = Entity::new(&rule_id, "rule", "bar module rule", "bar must stay pure");
+    rule.status = "active".to_string();
+    {
+        let conn = storage.conn();
+        insert_entity(&conn, &rule).unwrap();
+        insert_edge(
+            &conn,
+            &Edge {
+                source_id: rule_id,
+                target_id: bar_id,
+                edge_type: "references".to_string(),
+                weight: 1.0,
+                created_at: chrono::Utc::now().to_rfc3339(),
+            },
+        )
+        .unwrap();
+    }
+
+    // Saving foo — an indexed file with no governing rules — stays
+    // silent. So does a file the index knows nothing about.
+    for path in ["src/foo.rs", "README.md"] {
+        let output = fire_file_save(&storage, &config, &cogz_dir, &model, &code_mod, path);
+        assert!(
+            output.context_pack.is_none(),
+            "file_save on {path} should not push rules"
+        );
+    }
+
+    let conn = storage.conn();
+    let scoped: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM deliveries WHERE kind = 'scoped'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(scoped, 0);
+    let _ = foo_id;
+}
+
+/// Write a knowledge entity (canonical file + DB row + references
+/// edge) whose `verified_against` baseline pins `code_id` to `hash` —
+/// the state `post_index_pass` compares against after a reindex.
+fn verified_knowledge_on(
+    storage: &Storage,
+    cogz_dir: &std::path::Path,
+    id: &str,
+    title: &str,
+    code_id: &str,
+    hash: &str,
+) {
+    use cogz::files::{EntityFile, FileEntityType, FmValue, write_entity_file};
+    use cogz::storage::crud::{Entity, insert_entity};
+    use cogz::storage::edges::{Edge, insert_edge};
+
+    let mut ef = EntityFile::new(title, FileEntityType::Knowledge, "content");
+    ef.id = id.to_string();
+    ef.status = "active".to_string();
+    ef.references = vec![code_id.to_string()];
+    ef.frontmatter.insert(
+        "verified_against",
+        FmValue::Array(vec![format!("{code_id}={hash}")]),
+    );
+    let path = ef.file_path(cogz_dir);
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+    write_entity_file(&path, &ef).unwrap();
+    let rel = path
+        .strip_prefix(cogz_dir)
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
+
+    let conn = storage.conn();
+    let mut db = Entity::new(id, "knowledge", title, "content");
+    db.file_path = Some(rel);
+    db.properties = serde_json::json!({"verified_against": [format!("{code_id}={hash}")]});
+    insert_entity(&conn, &db).unwrap();
+    insert_edge(
+        &conn,
+        &Edge {
+            source_id: id.to_string(),
+            target_id: code_id.to_string(),
+            edge_type: "references".to_string(),
+            weight: 1.0,
+            created_at: chrono::Utc::now().to_rfc3339(),
+        },
+    )
+    .unwrap();
+}
+
+#[test]
+fn file_save_surfaces_knowledge_drifted_by_edit() {
+    let (storage, config, cogz_dir, dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    index_source_file(
+        &storage,
+        &config,
+        &cogz_dir,
+        dir.path(),
+        &model,
+        &code_mod,
+        "src/foo.rs",
+        "pub fn foo_work() {}\n",
+    );
+
+    // Knowledge pinned to the function's current hash.
+    let (fn_id, fn_hash): (String, String) = {
+        let conn = storage.conn();
+        conn.query_row(
+            "SELECT id, content_hash FROM entities \
+             WHERE file_path = 'src/foo.rs' AND type = 'function'",
+            [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .expect("foo_work should be indexed")
+    };
+    verified_knowledge_on(
+        &storage,
+        &cogz_dir,
+        "dddddddd-0000-4000-8000-000000000001",
+        "foo_work invariants",
+        &fn_id,
+        &fn_hash,
+    );
+
+    // The edit — same input whether it came from an agent tool or a
+    // human editor. The hook can't and shouldn't distinguish.
+    std::fs::write(
+        dir.path().join("src/foo.rs"),
+        "pub fn foo_work() { println!(\"changed\"); }\n",
+    )
+    .unwrap();
+    let output = fire_file_save(
+        &storage,
+        &config,
+        &cogz_dir,
+        &model,
+        &code_mod,
+        "src/foo.rs",
+    );
+
+    let notice = output
+        .drift_notice
+        .expect("save that invalidated knowledge should carry a drift notice");
+    assert!(notice.contains("foo_work invariants"), "notice: {notice}");
+    assert!(notice.contains("dddddddd-0000"), "notice: {notice}");
+    assert!(notice.contains("src/foo.rs"), "notice: {notice}");
+    assert!(notice.contains("cogz verify"), "notice: {notice}");
+}
+
+#[test]
+fn file_save_no_notice_when_nothing_drifted() {
+    let (storage, config, cogz_dir, dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    index_source_file(
+        &storage,
+        &config,
+        &cogz_dir,
+        dir.path(),
+        &model,
+        &code_mod,
+        "src/foo.rs",
+        "pub fn foo_work() {}\n",
+    );
+
+    // Knowledge exists but pins a different file's code — editing
+    // foo.rs must not surface it.
+    index_source_file(
+        &storage,
+        &config,
+        &cogz_dir,
+        dir.path(),
+        &model,
+        &code_mod,
+        "src/bar.rs",
+        "pub fn bar_work() {}\n",
+    );
+    let (bar_fn, bar_hash): (String, String) = {
+        let conn = storage.conn();
+        conn.query_row(
+            "SELECT id, content_hash FROM entities \
+             WHERE file_path = 'src/bar.rs' AND type = 'function'",
+            [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .unwrap()
+    };
+    verified_knowledge_on(
+        &storage,
+        &cogz_dir,
+        "dddddddd-0000-4000-8000-000000000002",
+        "unrelated note",
+        &bar_fn,
+        &bar_hash,
+    );
+
+    std::fs::write(
+        dir.path().join("src/foo.rs"),
+        "pub fn foo_work() { println!(\"changed\"); }\n",
+    )
+    .unwrap();
+    let output = fire_file_save(
+        &storage,
+        &config,
+        &cogz_dir,
+        &model,
+        &code_mod,
+        "src/foo.rs",
+    );
+    assert!(
+        output.drift_notice.is_none(),
+        "save unrelated to any knowledge should stay silent: {:?}",
+        output.drift_notice
+    );
+
+    // An identical save — verified against the new hash — also stays
+    // silent: only drift *caused* surfaces, not drift already known.
+    let (fn_id, fn_hash): (String, String) = {
+        let conn = storage.conn();
+        conn.query_row(
+            "SELECT id, content_hash FROM entities \
+             WHERE file_path = 'src/foo.rs' AND type = 'function'",
+            [],
+            |r| Ok((r.get(0)?, r.get(1)?)),
+        )
+        .unwrap()
+    };
+    verified_knowledge_on(
+        &storage,
+        &cogz_dir,
+        "dddddddd-0000-4000-8000-000000000003",
+        "fresh note",
+        &fn_id,
+        &fn_hash,
+    );
+    let output = fire_file_save(
+        &storage,
+        &config,
+        &cogz_dir,
+        &model,
+        &code_mod,
+        "src/foo.rs",
+    );
+    assert!(output.drift_notice.is_none());
 }

@@ -43,6 +43,7 @@ pub(super) fn cold_start_sections(
         graph_path: vec![],
         graph_path_description: String::new(),
         tier: DeliveryTier::Baseline,
+        drift_count: 0,
     });
 
     // 2. Code map summary — top modules and files by connectivity.
@@ -83,6 +84,7 @@ pub(super) fn cold_start_sections(
             graph_path: vec![id],
             graph_path_description: String::new(),
             tier: DeliveryTier::Baseline,
+            drift_count: 0,
         });
     }
 
@@ -102,6 +104,7 @@ pub(super) fn cold_start_sections(
             graph_path: vec![],
             graph_path_description: String::new(),
             tier: DeliveryTier::Baseline,
+            drift_count: 0,
         });
     }
 
@@ -159,6 +162,7 @@ pub(super) fn baseline_rules(
             graph_path: vec![id],
             graph_path_description: String::new(),
             tier: DeliveryTier::Baseline,
+            drift_count: 0,
         });
     }
     Ok(out)

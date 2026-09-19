@@ -42,15 +42,14 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
         result.created, result.updated, result.marked_stale, result.skipped
     );
 
-    // Flag stale knowledge for changed/deleted code entities.
-    let mut all_changed = result.changed_code_ids;
-    all_changed.extend(result.deleted_code_ids);
-    if !all_changed.is_empty() {
-        let flagged =
-            index::stale_flagging::flag_stale_knowledge(&storage, &cogz_dir, &all_changed);
-        if flagged > 0 {
-            eprintln!("reindex-bg: {} knowledge entities flagged stale", flagged);
-        }
+    // Post-index maintenance: flag orphaned knowledge, backfill
+    // provenance, recompute drift, heal recovered orphans.
+    let post = index::drift::post_index_pass(&storage, &cogz_dir);
+    if post.stale_flagged > 0 || post.healed > 0 || post.drifted_entities > 0 {
+        eprintln!(
+            "reindex-bg: {} flagged stale, {} drifted, {} healed",
+            post.stale_flagged, post.drifted_entities, post.healed
+        );
     }
 
     // Defer embedding to the background process. Include both file-synced

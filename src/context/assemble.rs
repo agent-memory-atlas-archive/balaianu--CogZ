@@ -96,6 +96,12 @@ pub fn assemble_context(
                     config.context.task_max_hops,
                 )
             };
+            if max_results == 0 {
+                tracing::warn!(
+                    mode = ?params.mode,
+                    "context max_results is 0 — pack will contain baseline sections only"
+                );
+            }
             query_sections(
                 conn,
                 query,
@@ -124,6 +130,7 @@ pub fn assemble_context(
             graph_path: vec![],
             graph_path_description: String::new(),
             tier: DeliveryTier::Baseline,
+            drift_count: 0,
         });
         tier0.extend(baseline_rules(
             conn,
@@ -236,6 +243,7 @@ pub fn assemble_context(
                 graph_path: vec![],
                 graph_path_description: String::new(),
                 tier: DeliveryTier::Pointer,
+                drift_count: 0,
             });
         }
         pointer_ids_out.extend(pointer_ids);

@@ -267,10 +267,16 @@ impl ServerHandler for CogzServer {
             .with_server_info(Implementation::new("cogz", env!("CARGO_PKG_VERSION")))
             .with_instructions(
                 "CogZ — local-first engineering cognition runtime. \
-                 Tools: record_observation, query_observations, create_rule, \
-                 query_rules, create_knowledge, update_knowledge, query_knowledge, \
-                 search, get_context, get_status, list_entities, consolidate, \
-                 capture_event. \
+                 RETRIEVE: search (ranked hybrid retrieval), get_context \
+                 (assembled task pack), get_callers/get_impact/find_orphans \
+                 (code graph), query_entities (browse knowledge layer), \
+                 list_entities (id+title enumeration). \
+                 WRITE: create_entity (entity_type=observation|rule|knowledge — \
+                 pick by lifecycle: obs=raw finding, rule=verified directive, \
+                 knowledge=editable doc), update_knowledge (the only content \
+                 edit), verify_knowledge (re-stamp provenance, clear drift). \
+                 SYSTEM: get_status, suggest_observations, consolidate, \
+                 capture_event (hooks only). \
                  Every tool requires a `repo` parameter — the absolute path \
                  to the project root containing .cogz/."
                     .to_string(),

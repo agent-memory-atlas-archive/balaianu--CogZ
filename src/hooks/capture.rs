@@ -35,6 +35,7 @@ pub struct CaptureResult {
     pub observation_id: Option<String>,
     pub context_pack: Option<crate::context::ContextPack>,
     pub reindex_summary: Option<crate::hooks::lifecycle::ReindexSummary>,
+    pub drift_notice: Option<String>,
     pub consolidation_summary: Option<crate::hooks::lifecycle::ConsolidationSummary>,
     pub suggestion_count: Option<usize>,
 }
@@ -99,6 +100,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
                 observation_id: None,
                 context_pack: None,
                 reindex_summary: None,
+                drift_notice: None,
                 consolidation_summary: None,
                 suggestion_count: None,
             });
@@ -122,6 +124,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
                 observation_id: None,
                 context_pack: None,
                 reindex_summary: None,
+                drift_notice: None,
                 consolidation_summary: None,
                 suggestion_count: None,
             });
@@ -208,9 +211,19 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
 
     // Print output in the requested format.
     if input.hook_json {
-        print_hook_json(&event, output.context_pack.as_ref());
-    } else if let Some(ref pack) = output.context_pack {
-        print_context_pack(pack);
+        crate::hooks::format::print_hook_json(
+            &event,
+            output.context_pack.as_ref(),
+            file_path,
+            output.drift_notice.as_deref(),
+        );
+    } else {
+        if let Some(ref pack) = output.context_pack {
+            crate::hooks::format::print_context_pack(pack);
+        }
+        if let Some(ref notice) = output.drift_notice {
+            println!("{notice}");
+        }
     }
 
     Ok(CaptureResult {
@@ -218,6 +231,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         observation_id: output.observation_id,
         context_pack: output.context_pack,
         reindex_summary: output.reindex_summary,
+        drift_notice: output.drift_notice,
         consolidation_summary: output.consolidation_summary,
         suggestion_count: output.suggestion_count,
     })
@@ -315,88 +329,4 @@ fn parse_hook_stdin() -> (
         });
 
     (prompt, tool_name, tool_result, file_path)
-}
-
-/// Print a hook-compatible JSON response. If a context pack was
-/// produced, it's wrapped in `hookSpecificOutput.additionalContext`.
-/// Otherwise, prints `{}` (no action).
-fn print_hook_json(event: &LifecycleEvent, pack: Option<&crate::context::ContextPack>) {
-    if let Some(pack) = pack {
-        let markdown = format_context_pack(pack);
-        let event_name = match event {
-            LifecycleEvent::SessionStart => "SessionStart",
-            LifecycleEvent::PromptSubmit => "UserPromptSubmit",
-            LifecycleEvent::PostToolUse => "PostToolUse",
-            LifecycleEvent::SessionEnd => "SessionEnd",
-            LifecycleEvent::Stop => "Stop",
-            LifecycleEvent::PreToolUse => "PreToolUse",
-            LifecycleEvent::FileSave => "PostToolUse",
-        };
-        let json = serde_json::json!({
-            "hookSpecificOutput": {
-                "hookEventName": event_name,
-                "additionalContext": markdown,
-            }
-        });
-        println!(
-            "{}",
-            serde_json::to_string(&json).unwrap_or_else(|_| "{}".into())
-        );
-    } else {
-        println!("{{}}");
-    }
-}
-
-/// Format a context pack as markdown text for agent injection.
-fn format_context_pack(pack: &crate::context::ContextPack) -> String {
-    let mut out = String::new();
-
-    for (i, section) in pack.sections.iter().enumerate() {
-        let relevance = if section.relevance > 0.0 {
-            format!("{:.4}", section.relevance)
-        } else {
-            "—".to_string()
-        };
-
-        out.push_str(&format!(
-            "## {}. [{}] {} (relevance: {})\n\n",
-            i + 1,
-            section.source,
-            section.title,
-            relevance
-        ));
-
-        if section.graph_path.len() > 1 {
-            if !section.graph_path_description.is_empty() {
-                out.push_str(&format!(
-                    "  graph path: {}\n\n",
-                    section.graph_path_description
-                ));
-            } else {
-                out.push_str(&format!(
-                    "  graph path: {} -> {}\n\n",
-                    section.graph_path.first().unwrap_or(&section.entity_id),
-                    section.entity_id
-                ));
-            }
-        }
-
-        out.push_str(&section.content);
-        out.push_str("\n\n");
-    }
-
-    out
-}
-
-/// Print a context pack in a format suitable for CLI/human consumption.
-fn print_context_pack(pack: &crate::context::ContextPack) {
-    if !pack.metadata.dropped_sources.is_empty() {
-        eprintln!(
-            "Dropped: {} sections over token budget",
-            pack.metadata.dropped_sources.len()
-        );
-    }
-
-    let markdown = format_context_pack(pack);
-    print!("{}", markdown);
 }

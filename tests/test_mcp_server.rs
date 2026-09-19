@@ -93,7 +93,7 @@ fn parse_result(result: rmcp::model::CallToolResult) -> serde_json::Value {
     serde_json::from_str(text).expect("result is valid JSON")
 }
 
-// ── get_status ────────────────────────────────────────────────────
+// ── get_status ────────────────────────────────────────────────────────────
 
 #[tokio::test]
 async fn get_status_returns_db_stats() {
@@ -115,19 +115,19 @@ async fn get_status_returns_db_stats() {
     assert_eq!(value["stale_count"], 0);
 }
 
-// ── record_observation ────────────────────────────────────────────
+// ── create_entity: observation ────────────────────────────────────────────
 
 #[tokio::test]
-async fn record_observation_creates_file_and_db_entry() {
+async fn create_entity_observation_creates_file_and_db_entry() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Found a bug in the search ranking logic",
                         "title": "Search ranking bug",
                         "source": "test",
@@ -157,7 +157,7 @@ async fn record_observation_creates_file_and_db_entry() {
 }
 
 #[tokio::test]
-async fn record_observation_with_references_credits_delivered_entity() {
+async fn create_entity_observation_with_references_credits_delivered_entity() {
     let dir = tempfile::tempdir().unwrap();
     let cogz_dir = dir.path().join(".cogz");
     std::fs::create_dir_all(&cogz_dir).unwrap();
@@ -203,19 +203,89 @@ async fn record_observation_with_references_credits_delivered_entity() {
     assert_eq!(s.pending, 0);
 }
 
-// ── create_rule ───────────────────────────────────────────────────
+#[tokio::test]
+async fn create_entity_observation_supporting_ids_creates_supports_edge() {
+    // Custom setup: keep the storage Arc to inspect edges after the MCP call.
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+    std::fs::create_dir_all(cogz_dir.join("observations")).unwrap();
+    let models_dir = dir.path().join("models");
+    std::fs::create_dir_all(&models_dir).unwrap();
+
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let config = Config::default_for("test-project");
+    let server = CogzServer::with_models_dir(storage.clone(), config, cogz_dir, &models_dir);
+    let client = spawn_server(server).await;
+
+    let target = client
+        .call_tool(
+            CallToolRequestParams::new("create_entity").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"entity_type": "observation",
+                        "content": "FTS ranking ignores title terms",
+                        "title": "FTS title terms"}),
+                )
+                .unwrap(),
+            ),
+        )
+        .await
+        .unwrap();
+    let target_id = parse_result(target)["id"].as_str().unwrap().to_string();
+
+    let supporter = client
+        .call_tool(
+            CallToolRequestParams::new("create_entity").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"entity_type": "observation",
+                        "content": "Confirmed: titles not in FTS index",
+                        "title": "Confirm FTS titles",
+                        "supporting_ids": [target_id]}),
+                )
+                .unwrap(),
+            ),
+        )
+        .await
+        .unwrap();
+    let supporter_value = parse_result(supporter);
+    let supporter_id = supporter_value["id"].as_str().unwrap();
+
+    // File-first: the supporter file carries supporting_ids frontmatter.
+    let file = std::fs::read_to_string(
+        dir.path()
+            .join(".cogz")
+            .join(supporter_value["file_path"].as_str().unwrap()),
+    )
+    .unwrap();
+    assert!(file.contains("supporting_ids"), "frontmatter written");
+    assert!(file.contains(&target_id), "target id in frontmatter");
+
+    // DB: a supports edge supporter → target (promotion counts these).
+    let conn = storage.conn();
+    let edges = cogz::storage::edges::get_edges_from(&conn, supporter_id).unwrap();
+    assert!(
+        edges
+            .iter()
+            .any(|e| e.edge_type == "supports" && e.target_id == target_id),
+        "supports edge materialized"
+    );
+}
+
+// ── create_entity: rule ───────────────────────────────────────────────────
 
 #[tokio::test]
-async fn create_rule_creates_file_and_db_entry() {
+async fn create_entity_rule_creates_file_and_db_entry() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("create_rule").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "rule",
                         "content": "Always use parameterized SQL queries",
                         "title": "Use parameterized queries",
                         "confidence": 0.9,
@@ -236,19 +306,19 @@ async fn create_rule_creates_file_and_db_entry() {
     assert!(!files.is_empty(), "rule file exists");
 }
 
-// ── create_knowledge ──────────────────────────────────────────────
+// ── create_entity: knowledge ──────────────────────────────────────────────
 
 #[tokio::test]
-async fn create_knowledge_creates_file_and_db_entry() {
+async fn create_entity_knowledge_creates_file_and_db_entry() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "Search Architecture",
                         "content": "The search pipeline uses FTS5 and optional vector search.",
                         "category": "architecture",
@@ -280,20 +350,20 @@ async fn create_knowledge_creates_file_and_db_entry() {
     assert!(!files.is_empty(), "knowledge file exists in category dir");
 }
 
-// ── query_observations ────────────────────────────────────────────
+// ── query_entities: observation ───────────────────────────────────────────
 
 #[tokio::test]
-async fn query_observations_returns_results() {
+async fn query_entities_observation_returns_results() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     // Create an observation first
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Test observation content",
                         "title": "Test observation",
                     }),
@@ -306,10 +376,9 @@ async fn query_observations_returns_results() {
 
     // Query observations
     let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_observations")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
+        .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+            call_tool_args(dir.path(), json!({"entity_type": "observation",})).unwrap(),
+        ))
         .await
         .unwrap();
     let value = parse_result(result);
@@ -320,7 +389,7 @@ async fn query_observations_returns_results() {
 }
 
 #[tokio::test]
-async fn query_observations_records_pull_delivery() {
+async fn query_entities_observation_records_pull_delivery() {
     let dir = tempfile::tempdir().unwrap();
     let cogz_dir = dir.path().join(".cogz");
     std::fs::create_dir_all(cogz_dir.join("observations")).unwrap();
@@ -338,10 +407,10 @@ async fn query_observations_records_pull_delivery() {
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({"content": "Pull-tracked", "title": "Pull-tracked"}),
+                    json!({"entity_type": "observation","content": "Pull-tracked", "title": "Pull-tracked"}),
                 )
                 .unwrap(),
             ),
@@ -350,10 +419,9 @@ async fn query_observations_records_pull_delivery() {
         .unwrap();
 
     let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_observations")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
+        .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+            call_tool_args(dir.path(), json!({"entity_type": "observation",})).unwrap(),
+        ))
         .await
         .unwrap();
     let value = parse_result(result);
@@ -373,19 +441,19 @@ async fn query_observations_records_pull_delivery() {
     assert_eq!(entity_id, queried_id);
 }
 
-// ── query_rules ───────────────────────────────────────────────────
+// ── query_entities: rule ──────────────────────────────────────────────────
 
 #[tokio::test]
-async fn query_rules_returns_results() {
+async fn query_entities_rule_returns_results() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("create_rule").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "rule",
                         "content": "Always batch DB queries",
                         "title": "Batch DB queries",
                     }),
@@ -396,33 +464,33 @@ async fn query_rules_returns_results() {
         .await
         .unwrap();
 
-    let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_rules")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
-        .await
-        .unwrap();
+    let result =
+        client
+            .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+                call_tool_args(dir.path(), json!({"entity_type": "rule",})).unwrap(),
+            ))
+            .await
+            .unwrap();
     let value = parse_result(result);
 
     assert_eq!(value["count"], 1);
     assert_eq!(value["rules"][0]["title"], "Batch DB queries");
 }
 
-// ── query_knowledge ───────────────────────────────────────────────
+// ── query_entities: knowledge ─────────────────────────────────────────────
 
 #[tokio::test]
-async fn query_knowledge_filters_by_category() {
+async fn query_entities_knowledge_filters_by_category() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     for (title, category) in [("Search Arch", "architecture"), ("DB Design", "decisions")] {
         let _ = client
             .call_tool(
-                CallToolRequestParams::new("create_knowledge").with_arguments(
+                CallToolRequestParams::new("create_entity").with_arguments(
                     call_tool_args(
                         dir.path(),
-                        json!({
+                        json!({"entity_type": "knowledge",
                             "title": title,
                             "content": "content",
                             "category": category,
@@ -437,8 +505,12 @@ async fn query_knowledge_filters_by_category() {
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("query_knowledge").with_arguments(
-                call_tool_args(dir.path(), json!({"category": "architecture"})).unwrap(),
+            CallToolRequestParams::new("query_entities").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"entity_type": "knowledge","category": "architecture"}),
+                )
+                .unwrap(),
             ),
         )
         .await
@@ -449,7 +521,7 @@ async fn query_knowledge_filters_by_category() {
     assert_eq!(value["knowledge"][0]["title"], "Search Arch");
 }
 
-// ── search ────────────────────────────────────────────────────────
+// ── search ────────────────────────────────────────────────────────────────
 
 #[tokio::test]
 async fn search_returns_fts_results() {
@@ -462,10 +534,10 @@ async fn search_returns_fts_results() {
     ] {
         let _ = client
             .call_tool(
-                CallToolRequestParams::new("create_knowledge").with_arguments(
+                CallToolRequestParams::new("create_entity").with_arguments(
                     call_tool_args(
                         dir.path(),
-                        json!({
+                        json!({"entity_type": "knowledge",
                             "title": title,
                             "content": content,
                             "category": "search",
@@ -491,7 +563,72 @@ async fn search_returns_fts_results() {
     assert!(value["results"].is_array());
 }
 
-// ── get_context ───────────────────────────────────────────────────
+#[tokio::test]
+async fn search_response_includes_drift_hint() {
+    // Custom setup: keep the storage Arc to insert a drift row.
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+    std::fs::create_dir_all(cogz_dir.join("knowledge")).unwrap();
+    let models_dir = dir.path().join("models");
+    std::fs::create_dir_all(&models_dir).unwrap();
+
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let config = Config::default_for("test-project");
+    let server = CogzServer::with_models_dir(storage.clone(), config, cogz_dir, &models_dir);
+    let client = spawn_server(server).await;
+
+    let kn = client
+        .call_tool(
+            CallToolRequestParams::new("create_entity").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"entity_type": "knowledge",
+                        "title": "Drifted architecture note",
+                        "content": "ranking pipeline overview",
+                        "category": "architecture"}),
+                )
+                .unwrap(),
+            ),
+        )
+        .await
+        .unwrap();
+    let kn_id = parse_result(kn)["id"].as_str().unwrap().to_string();
+
+    {
+        let conn = storage.conn();
+        conn.execute(
+            "INSERT INTO entity_drift (entity_id, code_id, verified_hash, current_hash, cause) \
+             VALUES (?1, 'code-x', 'aaa', 'bbb', 'changed')",
+            [&kn_id],
+        )
+        .unwrap();
+    }
+
+    let result = client
+        .call_tool(CallToolRequestParams::new("search").with_arguments(
+            call_tool_args(dir.path(), json!({"query": "ranking pipeline"})).unwrap(),
+        ))
+        .await
+        .unwrap();
+    let value = parse_result(result);
+
+    assert!(value["count"].as_u64().unwrap() > 0, "entity found");
+    assert_eq!(value["drift"]["drifted_entities"], 1);
+    assert!(
+        value["drift"]["entity_ids"].to_string().contains(&kn_id),
+        "drift block names the entity"
+    );
+    assert!(
+        value["drift"]["hint"]
+            .as_str()
+            .unwrap()
+            .contains("verify_knowledge"),
+        "hint names the remedy"
+    );
+}
+
+// ── get_context ───────────────────────────────────────────────────────────
 
 #[tokio::test]
 async fn get_context_cold_start() {
@@ -500,10 +637,10 @@ async fn get_context_cold_start() {
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("create_rule").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "rule",
                         "content": "Always use typed errors",
                         "title": "Typed errors rule",
                     }),
@@ -555,7 +692,7 @@ async fn get_context_invalid_mode_errors() {
     assert!(result.is_err(), "invalid mode should error");
 }
 
-// ── list_entities ─────────────────────────────────────────────────
+// ── list_entities ─────────────────────────────────────────────────────────
 
 #[tokio::test]
 async fn list_entities_returns_ids_and_titles() {
@@ -564,10 +701,10 @@ async fn list_entities_returns_ids_and_titles() {
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("create_rule").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "rule",
                         "content": "Test rule",
                         "title": "Test rule title",
                     }),
@@ -592,7 +729,7 @@ async fn list_entities_returns_ids_and_titles() {
     assert_eq!(value["entities"][0]["title"], "Test rule title");
 }
 
-// ── update_knowledge ──────────────────────────────────────────────
+// ── update_knowledge ──────────────────────────────────────────────────────
 
 #[tokio::test]
 async fn update_knowledge_edits_content() {
@@ -604,10 +741,10 @@ async fn update_knowledge_edits_content() {
     // Create knowledge
     let create_result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "Original title",
                         "content": "Original content",
                         "category": "test",
@@ -682,20 +819,20 @@ async fn update_knowledge_nonexistent_id_errors() {
     assert!(result.is_err(), "nonexistent ID should error");
 }
 
-// ── dedup ─────────────────────────────────────────────────────────
+// ── dedup ─────────────────────────────────────────────────────────────────
 
 #[tokio::test]
-async fn record_observation_duplicate_title_warns() {
+async fn create_entity_observation_duplicate_title_warns() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     // First observation
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "First observation",
                         "title": "Duplicate title",
                     }),
@@ -709,10 +846,10 @@ async fn record_observation_duplicate_title_warns() {
     // Second observation with same title
     let result = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Second observation",
                         "title": "Duplicate title",
                     }),
@@ -731,7 +868,7 @@ async fn record_observation_duplicate_title_warns() {
     assert_eq!(value["duplicate_warning"]["title_match"], "exact");
 }
 
-// ── rebuildability ────────────────────────────────────────────────
+// ── rebuildability ────────────────────────────────────────────────────────
 
 #[tokio::test]
 async fn db_rebuildable_from_files_after_mcp_writes() {
@@ -741,16 +878,16 @@ async fn db_rebuildable_from_files_after_mcp_writes() {
     // Write entities via MCP tools
     for (tool, args) in [
         (
-            "record_observation",
-            json!({"content": "obs content", "title": "obs title"}),
+            "create_entity",
+            json!({"entity_type": "observation", "content": "obs content", "title": "obs title"}),
         ),
         (
-            "create_rule",
-            json!({"content": "rule content", "title": "rule title"}),
+            "create_entity",
+            json!({"entity_type": "rule", "content": "rule content", "title": "rule title"}),
         ),
         (
-            "create_knowledge",
-            json!({"title": "kn title", "content": "kn content", "category": "test"}),
+            "create_entity",
+            json!({"entity_type": "knowledge", "title": "kn title", "content": "kn content", "category": "test"}),
         ),
     ] {
         let _ = client
@@ -787,20 +924,20 @@ async fn db_rebuildable_from_files_after_mcp_writes() {
     assert_eq!(count, 3, "all entities rebuilt from files");
 }
 
-// ── query status defaults ─────────────────────────────────────────
+// ── query status defaults ─────────────────────────────────────────────────
 
 #[tokio::test]
-async fn query_observations_defaults_to_active_status() {
+async fn query_entities_observation_defaults_to_active_status() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     // Create an observation
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Active observation content",
                         "title": "Active obs",
                     }),
@@ -813,10 +950,9 @@ async fn query_observations_defaults_to_active_status() {
 
     // Query with no status filter — should default to active and return it
     let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_observations")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
+        .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+            call_tool_args(dir.path(), json!({"entity_type": "observation",})).unwrap(),
+        ))
         .await
         .unwrap();
     let value = parse_result(result);
@@ -825,8 +961,13 @@ async fn query_observations_defaults_to_active_status() {
     // Query with status="all" — should also return it
     let result = client
         .call_tool(
-            CallToolRequestParams::new("query_observations")
-                .with_arguments(call_tool_args(dir.path(), json!({"status": "all"})).unwrap()),
+            CallToolRequestParams::new("query_entities").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"entity_type": "observation","status": "all"}),
+                )
+                .unwrap(),
+            ),
         )
         .await
         .unwrap();
@@ -837,7 +978,7 @@ async fn query_observations_defaults_to_active_status() {
     );
 }
 
-// ── query response includes references ────────────────────────────
+// ── query response includes references ────────────────────────────────────
 
 #[tokio::test]
 async fn query_response_includes_references_field() {
@@ -847,10 +988,10 @@ async fn query_response_includes_references_field() {
     // Create a knowledge entry first to get a reference target
     let kn_result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "Architecture knowledge",
                         "content": "The system uses SQLite",
                         "category": "architecture",
@@ -867,10 +1008,10 @@ async fn query_response_includes_references_field() {
     // Create an observation that references the knowledge
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Confirmed the architecture",
                         "title": "Architecture confirmed",
                         "references": [kn_id],
@@ -884,10 +1025,9 @@ async fn query_response_includes_references_field() {
 
     // Query observations — should include references field
     let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_observations")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
+        .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+            call_tool_args(dir.path(), json!({"entity_type": "observation",})).unwrap(),
+        ))
         .await
         .unwrap();
     let value = parse_result(result);
@@ -901,20 +1041,20 @@ async fn query_response_includes_references_field() {
     assert_eq!(refs[0], kn_id, "reference matches the knowledge ID");
 }
 
-// ── query with references filter returns correct count ────────────
+// ── query with references filter returns correct count ────────────────────
 
 #[tokio::test]
-async fn query_observations_with_references_filter() {
+async fn query_entities_observation_with_references_filter() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     // Create a knowledge entry as the reference target
     let kn_result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "Reference target",
                         "content": "Target knowledge",
                         "category": "test",
@@ -932,10 +1072,10 @@ async fn query_observations_with_references_filter() {
         let refs = if i < 2 { json!([kn_id]) } else { json!([]) };
         let _ = client
             .call_tool(
-                CallToolRequestParams::new("record_observation").with_arguments(
+                CallToolRequestParams::new("create_entity").with_arguments(
                     call_tool_args(
                         dir.path(),
-                        json!({
+                        json!({"entity_type": "observation",
                             "content": format!("Observation {i}"),
                             "title": format!("Obs {i}"),
                             "references": refs,
@@ -952,10 +1092,10 @@ async fn query_observations_with_references_filter() {
     // by post-fetch filtering
     let result = client
         .call_tool(
-            CallToolRequestParams::new("query_observations").with_arguments(
+            CallToolRequestParams::new("query_entities").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "references": kn_id,
                         "limit": 20,
                     }),
@@ -972,19 +1112,19 @@ async fn query_observations_with_references_filter() {
     );
 }
 
-// ── query knowledge response includes category and tags ───────────
+// ── query knowledge response includes category and tags ───────────────────
 
 #[tokio::test]
-async fn query_knowledge_response_includes_category_and_tags() {
+async fn query_entities_knowledge_response_includes_category_and_tags() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "Tagged knowledge",
                         "content": "Important info",
                         "category": "testing",
@@ -998,10 +1138,9 @@ async fn query_knowledge_response_includes_category_and_tags() {
         .unwrap();
 
     let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_knowledge")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
+        .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+            call_tool_args(dir.path(), json!({"entity_type": "knowledge",})).unwrap(),
+        ))
         .await
         .unwrap();
     let value = parse_result(result);
@@ -1012,7 +1151,7 @@ async fn query_knowledge_response_includes_category_and_tags() {
     assert!(tags.len() == 2, "two tags present");
 }
 
-// ── get_status includes models and db_path ────────────────────────
+// ── get_status includes models and db_path ────────────────────────────────
 
 #[tokio::test]
 async fn get_status_includes_models_and_db_path() {
@@ -1054,19 +1193,19 @@ async fn get_status_includes_models_and_db_path() {
     );
 }
 
-// ── record_observation defaults source to "agent" ─────────────────
+// ── create_entity observation defaults source to "agent" ──────────────────
 
 #[tokio::test]
-async fn record_observation_defaults_source_to_agent() {
+async fn create_entity_observation_defaults_source_to_agent() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Observation without explicit source",
                         "title": "No source obs",
                     }),
@@ -1080,10 +1219,9 @@ async fn record_observation_defaults_source_to_agent() {
 
     // Query it back and verify source defaults to "agent"
     let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_observations")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
+        .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+            call_tool_args(dir.path(), json!({"entity_type": "observation",})).unwrap(),
+        ))
         .await
         .unwrap();
     let value = parse_result(result);
@@ -1094,19 +1232,19 @@ async fn record_observation_defaults_source_to_agent() {
     );
 }
 
-// ── record_observation defaults confidence to 0.5 ────────────────
+// ── create_entity observation defaults confidence to 0.5 ──────────────────
 
 #[tokio::test]
-async fn record_observation_defaults_confidence_to_half() {
+async fn create_entity_observation_defaults_confidence_to_half() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "observation",
                         "content": "Observation without explicit confidence",
                         "title": "Default confidence obs",
                     }),
@@ -1136,19 +1274,19 @@ async fn record_observation_defaults_confidence_to_half() {
     assert!(found, "expected at least one observation .md file");
 }
 
-// ── create_rule defaults confidence to 1.0 ────────────────────────
+// ── create_entity rule defaults confidence to 1.0 ─────────────────────────
 
 #[tokio::test]
-async fn create_rule_defaults_confidence_to_1() {
+async fn create_entity_rule_defaults_confidence_to_1() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let _ = client
         .call_tool(
-            CallToolRequestParams::new("create_rule").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "rule",
                         "content": "Rule without explicit confidence",
                         "title": "Default confidence rule",
                     }),
@@ -1160,13 +1298,13 @@ async fn create_rule_defaults_confidence_to_1() {
         .unwrap();
 
     // Query it back and verify confidence defaults to 1.0
-    let result = client
-        .call_tool(
-            CallToolRequestParams::new("query_rules")
-                .with_arguments(call_tool_args(dir.path(), json!({})).unwrap()),
-        )
-        .await
-        .unwrap();
+    let result =
+        client
+            .call_tool(CallToolRequestParams::new("query_entities").with_arguments(
+                call_tool_args(dir.path(), json!({"entity_type": "rule",})).unwrap(),
+            ))
+            .await
+            .unwrap();
     let value = parse_result(result);
     let rule = &value["rules"][0];
     assert_eq!(
@@ -1176,7 +1314,7 @@ async fn create_rule_defaults_confidence_to_1() {
     );
 }
 
-// ── update_knowledge with category change moves the file ──────────
+// ── update_knowledge with category change moves the file ──────────────────
 
 #[tokio::test]
 async fn update_knowledge_category_change_moves_file() {
@@ -1186,10 +1324,10 @@ async fn update_knowledge_category_change_moves_file() {
     // Create knowledge in category "original"
     let result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "Movable knowledge",
                         "content": "Will be recategorized",
                         "category": "original",
@@ -1305,7 +1443,7 @@ async fn capture_event_post_tool_use_records_event_only() {
         "post_tool_use should not return a context pack"
     );
     // post_tool_use no longer auto-records observations — the agent
-    // decides what's salient via the record_observation MCP tool.
+    // decides what's salient via the create_entity MCP tool.
     assert!(
         value["observation_id"].is_null(),
         "post_tool_use should not auto-record an observation"
@@ -1347,7 +1485,7 @@ async fn capture_event_invalid_type_returns_error() {
 }
 
 #[tokio::test]
-async fn mcp_server_lists_17_tools() {
+async fn mcp_server_lists_14_tools() {
     let (server, _dir) = setup();
     let client = spawn_server(server).await;
 
@@ -1355,7 +1493,7 @@ async fn mcp_server_lists_17_tools() {
 
     let tool_names: Vec<String> = tools.tools.iter().map(|t| t.name.to_string()).collect();
 
-    assert_eq!(tool_names.len(), 17, "server should expose 17 tools");
+    assert_eq!(tool_names.len(), 14, "server should expose 14 tools");
     for expected in [
         "capture_event",
         "get_callers",
@@ -1371,16 +1509,16 @@ async fn mcp_server_lists_17_tools() {
 }
 
 #[tokio::test]
-async fn create_knowledge_rejects_secret() {
+async fn create_entity_knowledge_rejects_secret() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
+            CallToolRequestParams::new("create_entity").with_arguments(
                 call_tool_args(
                     dir.path(),
-                    json!({
+                    json!({"entity_type": "knowledge",
                         "title": "API credentials",
                         "content": "The API key is ghp_1234567890abcdefghijklmnopqrstuvwxyz",
                         "category": "secrets",
@@ -1401,14 +1539,14 @@ async fn create_knowledge_rejects_secret() {
 }
 
 #[tokio::test]
-async fn record_observation_rejects_secret() {
+async fn create_entity_observation_rejects_secret() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("record_observation").with_arguments(
-                call_tool_args(dir.path(), json!({
+            CallToolRequestParams::new("create_entity").with_arguments(
+                call_tool_args(dir.path(), json!({"entity_type": "observation",
                     "content": "Found private key: -----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA",
                 }))
                 .unwrap(),
@@ -1426,14 +1564,14 @@ async fn record_observation_rejects_secret() {
 }
 
 #[tokio::test]
-async fn create_knowledge_allows_non_secret_content() {
+async fn create_entity_knowledge_allows_non_secret_content() {
     let (server, dir) = setup();
     let client = spawn_server(server).await;
 
     let result = client
         .call_tool(
-            CallToolRequestParams::new("create_knowledge").with_arguments(
-                call_tool_args(dir.path(), json!({
+            CallToolRequestParams::new("create_entity").with_arguments(
+                call_tool_args(dir.path(), json!({"entity_type": "knowledge",
                     "title": "API design notes",
                     "content": "When using API keys, store them in environment variables, not in code.",
                     "category": "architecture",

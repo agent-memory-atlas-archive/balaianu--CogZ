@@ -9,6 +9,7 @@
 //! `session_end`, runs consolidation.
 
 pub mod capture;
+pub mod format;
 pub mod handlers;
 pub mod lifecycle;
 pub mod reindex;

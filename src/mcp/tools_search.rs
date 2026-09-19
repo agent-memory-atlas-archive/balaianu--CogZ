@@ -49,7 +49,7 @@ pub async fn search(
             limit,
             expand,
             max_hops: if expand { task_max_hops } else { 0 },
-            include_tests: false,
+            include_tests: true,
             silence_gate: true,
         };
         let results = search_entities(

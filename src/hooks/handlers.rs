@@ -91,13 +91,17 @@ fn handle_cogz_file_save(
         embed_synced_entities(storage, query_model, &result.synced_entity_ids)
     };
 
+    // Maintenance on canonical edits too — a human fixing references
+    // heals orphaned knowledge; new references get provenance stamps.
+    let post = crate::index::drift::post_index_pass(storage, cogz_dir);
+
     ReindexSummary {
         reindexed: false,
         synced: true,
         created: result.created,
         updated: result.updated,
         marked_stale: result.marked_stale,
-        stale_knowledge_flagged: 0,
+        stale_knowledge_flagged: post.stale_flagged,
         embedded,
     }
 }
@@ -156,13 +160,8 @@ fn handle_source_file_save(
     let _ = config; // Config not needed for single-file reindex.
     let result = crate::index::reindex_single_file(storage, repo_root, path);
 
-    let mut all_changed = result.changed_code_ids.clone();
-    all_changed.extend(result.deleted_code_ids.iter().cloned());
-    let stale_flagged = if all_changed.is_empty() {
-        0
-    } else {
-        crate::index::stale_flagging::flag_stale_knowledge(storage, cogz_dir, &all_changed)
-    };
+    let post = crate::index::drift::post_index_pass(storage, cogz_dir);
+    let stale_flagged = post.stale_flagged;
 
     ReindexSummary {
         reindexed: true,

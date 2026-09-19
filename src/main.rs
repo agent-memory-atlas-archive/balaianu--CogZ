@@ -189,6 +189,20 @@ enum Commands {
         fts_only: bool,
     },
 
+    /// Verify a knowledge entity against its referenced code —
+    /// re-stamps `verified_against` provenance, clears drift rows,
+    /// and reactivates the entity when all references resolve active.
+    /// Use after confirming drifted or orphaned knowledge is still
+    /// accurate.
+    Verify {
+        /// Entity UUID to verify.
+        entity_id: String,
+
+        /// Repository root directory. Defaults to current directory.
+        #[arg(long, default_value = ".")]
+        repo: PathBuf,
+    },
+
     /// Model management — download, list, clean.
     Models {
         #[command(subcommand)]
@@ -338,6 +352,7 @@ fn main() -> anyhow::Result<()> {
         } => cli::run_context(&mode, query.as_deref(), &repo, include_stale, max_tokens),
         Commands::McpStdio => cli::run_mcp_stdio(),
         Commands::Consolidate { repo, dry_run } => commands::run_consolidate(&repo, dry_run),
+        Commands::Verify { entity_id, repo } => commands::run_verify(&repo, &entity_id),
         Commands::CaptureEvent {
             event_type,
             repo,

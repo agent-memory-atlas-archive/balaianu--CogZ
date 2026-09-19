@@ -65,7 +65,7 @@ pub fn run_search(
         } else {
             config.context.task_max_hops
         },
-        include_tests: false,
+        include_tests: true,
         silence_gate: true,
     };
 
@@ -121,11 +121,16 @@ pub fn run_search(
         };
 
         println!(
-            "  {}. [{}] {} (relevance: {})",
+            "  {}. [{}] {} (relevance: {}){}",
             i + 1,
             result.entity.r#type,
             title,
-            relevance
+            relevance,
+            if result.drift_count > 0 {
+                format!(" ⚠ drift:{}", result.drift_count)
+            } else {
+                String::new()
+            }
         );
 
         if !result.graph_path_description.is_empty() {
@@ -137,6 +142,11 @@ pub fn run_search(
             println!("     {}", preview);
         }
         println!();
+    }
+
+    let drifted = results.results.iter().filter(|r| r.drift_count > 0).count();
+    if drifted > 0 {
+        println!("  ⚠ {drifted} result(s) drifted — review, then `cogz verify <id>` to re-stamp");
     }
 
     Ok(())
@@ -267,11 +277,19 @@ pub fn run_context(
         };
 
         println!(
-            "## {}. [{}] {} (relevance: {})\n",
+            "## {}. [{}] {} (relevance: {}){}\n",
             i + 1,
             section.source,
             section.title,
-            relevance
+            relevance,
+            if section.drift_count > 0 {
+                format!(
+                    " ⚠ drift: {} ref(s) changed since verified",
+                    section.drift_count
+                )
+            } else {
+                String::new()
+            }
         );
 
         if section.graph_path.len() > 1 {
@@ -287,6 +305,13 @@ pub fn run_context(
         }
 
         println!("{}\n", section.content);
+    }
+
+    let drifted = pack.sections.iter().filter(|s| s.drift_count > 0).count();
+    if drifted > 0 {
+        println!(
+            "---\n⚠ {drifted} section(s) drifted — review, then `cogz verify <id>` to re-stamp"
+        );
     }
 
     Ok(())
