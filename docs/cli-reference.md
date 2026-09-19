@@ -238,6 +238,21 @@ cogz doctor [--repo <path>] [--prune-observations] [--confirm]
 
 Deliveries are recorded on every context pack (`session_start`, `prompt_submit`, `get_context`), every `search` call, and every targeted graph pull (`get_callers`, `get_impact`, `find_orphans`). Entities start `pending`; a tool touch marks them `hit`, and the next delivery boundary or `session_end` closes the rest as `miss`. Usage tables are disposable derived state — `cogz reset` + `cogz index` rebuilds cleanly without them.
 
+**Review queue** (schema v6+): printed whenever stale knowledge or drifted entities exist. `[stale:<reason>]` rows are orphaned or manually-staled entities the automatic passes could not resolve; `[drift:<n>]` rows are active entities with `n` references whose `verified_against` provenance diverged. Verify accurate entries (`cogz verify`), rewrite outdated ones (`update_knowledge`).
+
+## `cogz verify`
+
+Re-stamp a knowledge entity's `verified_against` provenance to the current hashes of its live references. Use after confirming the content is still accurate — clears drift rows and restores full retrieval ranking. Also reactivates `code_orphaned`-stale entities whose references now resolve.
+
+```
+cogz verify <entity-id> [--repo <path>]
+```
+
+**Flags:**
+- `--repo <path>` — repository root (default: `.`)
+
+Writes canonical frontmatter first, then re-syncs the DB. Fails on unknown IDs and non-knowledge entity types. Entities with no resolvable references cannot be verified.
+
 ## `cogz update`
 
 Self-update from GitHub releases.

@@ -68,6 +68,10 @@ When a source is unavailable (no model), its weight is redistributed to the rema
 
 `fts_title_weight` (default 5.0) biases the FTS stage itself: `bm25(entities_fts, title_weight, 1.0)` exploits the FTS table's separate `title`/`content` columns so exact-name hits outrank body-term matches without a second index.
 
+## Drift demotion
+
+Immediately after channel merge, fused scores are multiplied by `drift_penalty ^ drift_count` (`search.drift_penalty`, default 0.7). `drift_count` comes from `entity_drift` — knowledge whose `verified_against` provenance diverged from current code hashes stays retrievable but ranks below equally-relevant verified content. One batched lookup (`drift_counts`) covers all merged candidates; `1.0` disables. Each `SearchResult` carries `drift_count` so consumers can surface the marker.
+
 ## Post-merge ranking signals
 
 Two optional stages run between channel merge and the final top-N cut, in this order (see `src/search/rank.rs`):
@@ -81,7 +85,7 @@ The diversity-slot guarantee (`top_diversity_share`, described above) runs last,
 
 `min_relevance` (default: 0.05) drops merged and expanded results below the threshold; `filtered_count` in the response reports how many were removed. Note the decay interaction: any floor ≥ 0.09 makes all two-hop expansions unreachable (max expanded score is `seed × 0.3²`).
 
-`silence_threshold` (default: 0.02) is the silence gate: when *neither* channel's KNN batch shows a distinctive match (within-batch gradient below the threshold on both) **and** neither channel's top-3 absolute cosine reaches `silence_strength_floor` (default: 0.64), search returns empty instead of a confidently-ranked list of irrelevant entities. The strength escape matters: flat gradients also occur when a query's nearest neighbors are uniformly *decent* (no standout), which suppressed real queries entirely. 0.0 disables. Skipped in FTS-only mode. The `signals` field in the response exposes both channels' strength and gradient for recalibration.
+`silence_threshold` (default: 0.05) is the silence gate: when *neither* channel's KNN batch shows a distinctive match (within-batch gradient below the threshold on both) **and** neither channel's top-3 absolute cosine reaches `silence_strength_floor` (default: 0.64), search returns empty instead of a confidently-ranked list of irrelevant entities. The strength escape matters: flat gradients also occur when a query's nearest neighbors are uniformly *decent* (no standout), which suppressed real queries entirely. 0.0 disables. Skipped in FTS-only mode. The `signals` field in the response exposes both channels' strength and gradient for recalibration.
 
 The gate applies to agent-facing search only (`cogz search`, MCP `search`). Context-pack retrieval bypasses it (`silence_gate: false` internally) — a pack ships whatever clears the per-result relevance floor, and an empty retrieval naturally produces an orientation-only pack. Wholesale silencing is an honest answer to a direct query; in a pushed pack it would delete task context the agent never asked for.
 
@@ -135,7 +139,7 @@ Use `--code` for queries about code structure, function behavior, or implementat
 
 1. **Graph expansion dilutes precision.** Graph-expanded entities are technically related but may not contain the query keywords. The decayed relevance score, edge weighting, and `min_relevance` floor mitigate this but don't eliminate it.
 2. **Code/knowledge embedding mismatch.** When a code query is embedded with the knowledge model (or vice versa), the KNN search may miss relevant results. Using `--code` for code-focused queries helps.
-3. **Silence gate margin is thin.** The default `silence_threshold` (0.02) was calibrated on the CogZ self-corpus where negatives measured ≤0.015 and real queries ≥0.024. Other corpora or models may straddle it — check `signals` and retune if needed.
+3. **Silence gate margin is thin.** The default `silence_threshold` (0.05) was calibrated on the CogZ self-corpus and the telegram-bot benchmark corpus: negatives measured ≤0.039 max gradient; real queries escape via `silence_strength_floor` or a channel gradient ≥0.043. Other corpora or models may straddle it — check `signals` and retune if needed.
 
 ## See also
 

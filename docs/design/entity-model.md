@@ -81,12 +81,21 @@ pruned    → (terminal)
 | Status | Meaning |
 |---|---|
 | `active` | Live, in use. Default on creation. |
-| `stale` | Code it referenced has changed. Can be re-activated if the code reverts or the entity is updated. |
+| `stale` | Orphaned — the code it referenced is gone (deleted, renamed, or itself stale). Carries `stale_reason: code_orphaned` in frontmatter. Re-activates automatically when all references resolve active again (revert, rename re-link), or explicitly via `cogz verify`. Manually-flagged stale (no `stale_reason`) is never auto-reactivated. |
 | `rejected` | Manually rejected. Eligible for pruning. |
 | `superseded` | Replaced by another entity (merge). Has a `superseded_by` field. Eligible for pruning. |
 | `pruned` | Terminal. Content removed, embedding removed, FTS entry removed. Graph edges preserved. |
 
 Illegal transitions are rejected by `transition_status()` with an `IllegalTransition` error.
+
+### Drift vs stale
+
+`stale` is reserved for orphaned knowledge — entities whose anchors are dead. A *changed-but-live* reference produces **drift**, not a status change:
+
+- `verified_against` (frontmatter, `["<uuid>=<hash>", ...]`) records the code state the entity was authored or last verified against. Entries are added at creation, on reference-list updates, and by index-time backfill — never rewritten except by `cogz verify`.
+- The derived `entity_drift` table holds one row per diverging reference: `changed` (hash moved), `missing` (target stale/absent), `unverified` (no recorded baseline). Recomputed on every index, file-save, and background reindex — never written to canonical files.
+- Drifted entities stay `active` and retrievable, demoted by `search.drift_penalty` (default `0.7` per diverging ref) and annotated in packs/search results (`drift_count`). Invalidate ≠ delete.
+- Recovery: an exact hash revert drains drift automatically on the next index; `cogz verify <id>` (or `verify_knowledge` MCP) re-stamps provenance explicitly and clears drift rows. `cogz doctor` prints the review queue.
 
 ### Update policy
 

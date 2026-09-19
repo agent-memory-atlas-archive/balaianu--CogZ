@@ -31,7 +31,7 @@ source_balance_enabled = false
 merge_strategy = "detect"
 min_relevance = 0.05
 edge_weighted_expansion = true
-silence_threshold = 0.02
+silence_threshold = 0.05
 top_diversity_share = 0.3
 provenance_boost = 0.3
 fts_title_weight = 5.0
@@ -128,10 +128,11 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `calibration` | table | see code | `[search.calibration]` — `code`/`knowledge` sub-tables with `mid`/`width` for the `calibrated` strategy. Model-pair-specific. |
 | `min_relevance` | f64 | `0.05` | Drop results below this score; 0.0 disables. ≥0.09 makes all two-hop expansions unreachable. |
 | `provenance_boost` | f64 | `0.3` | Multiply direct scores by `1 + boost·ln(1 + curated in-degree)` — incoming `references`/`supports`/`contradicts`/`superseded_by`/`derived_from`/`promoted_from` edges as a quality prior. `auto_references` and structural edges excluded. 0.0 disables. |
+| `drift_penalty` | f64 | `0.7` | Score multiplier per drifted reference (`penalty^drift_count`). Knowledge whose `verified_against` provenance diverged stays retrievable but ranks below equally-relevant verified content. `1.0` disables demotion. |
 | `fts_title_weight` | f64 | `5.0` | FTS5 `bm25()` column weight for the title column (content stays 1.0). 1.0 = uniform ranking, values >1 favor title matches. |
 | `mmr_lambda` | f64 | `0.7` | MMR diversification: `λ·relevance − (1−λ)·max cosine to already-selected same-channel items`. Similarity never crosses channels (different embedding spaces). 0.0 disables; skipped in FTS-only mode. |
 | `edge_weighted_expansion` | bool | `true` | Traverse edges strongest-first and weight expansion scores by edge type (curated semantic > auto_references > structural). |
-| `silence_threshold` | f64 | `0.02` | Return empty when both channels' KNN gradients are below this AND both top-3 strengths are below `silence_strength_floor`. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
+| `silence_threshold` | f64 | `0.05` | Return empty when both channels' KNN gradients are below this AND both top-3 strengths are below `silence_strength_floor`. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
 | `silence_strength_floor` | f64 | `0.64` | Escape hatch on the silence gate: a channel whose top-3 absolute cosine reaches this floor prevents silencing even with flat gradients. Model-scale dependent — calibrated on bge-base/CodeRankEmbed. |
 | `prf_enabled` | bool | `true` | Pseudo-relevance feedback: mine informative terms from the top FTS hits, re-run FTS, and add novel hits as expansion results. The only vocabulary-mismatch recall path in FTS-only mode. |
 | `prf_feedback_docs` | usize | `5` | FTS hits mined for expansion terms. |

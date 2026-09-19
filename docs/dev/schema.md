@@ -139,6 +139,20 @@ One row per entity per delivery. `outcome` starts `pending`, becomes `hit` when 
 
 **Indexes:** `idx_usage_unique` (delivery_id, entity_id), `idx_usage_delivery`, `idx_usage_entity`, `idx_usage_outcome`.
 
+### `entity_drift`
+
+One row per knowledge reference whose recorded `verified_against` provenance diverges from the referenced entity's current state. Derived state — fully rebuilt by `recompute()` on every index path; never written to canonical files.
+
+| Column | Type | Notes |
+|---|---|---|
+| `entity_id` | TEXT NOT NULL | FK to `entities(id)` — the knowledge entity |
+| `code_id` | TEXT NOT NULL | Referenced entity that diverged |
+| `verified_hash` | TEXT | Hash recorded in `verified_against` (NULL when never stamped) |
+| `current_hash` | TEXT | Referenced entity's current content hash (NULL when absent) |
+| `cause` | TEXT NOT NULL | `changed`, `missing`, `unverified` |
+
+Primary key `(entity_id, code_id)`. **Index:** `idx_drift_entity` on `entity_id` — powers `drift_counts()` batch lookups during search.
+
 ## Migrations
 
 Migrations are forward-only and idempotent. On a fresh database, all migrations run in order. On an existing database, only new migrations run.
@@ -164,6 +178,10 @@ Adds `deliveries` (one row per context-pack or search-result delivery, with `clo
 ### v5 — Delivery tiers
 
 Adds `entity_usage.tier` (`baseline` | `full` | `pointer`, default `full`) recording which push tier delivered each entity — the measurement delivery-layer instrumentation reads. `deliveries.kind` also accepts `pull` (targeted graph-tool results). The migration guards the `ALTER TABLE` with a column-existence check — SQLite has no `ADD COLUMN IF NOT EXISTS`.
+
+### v6 — Knowledge drift
+
+Adds `entity_drift` — per-reference divergence between a knowledge entity's `verified_against` provenance (canonical frontmatter) and the referenced entity's current content hash. Recomputed by the post-index maintenance pass (`flag` → `backfill` → `recompute` → `heal`); `verified_against` itself lives in files, so the table is fully disposable.
 
 ## Version checking
 

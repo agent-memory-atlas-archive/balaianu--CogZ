@@ -6,7 +6,7 @@ CogZ continuously consolidates its memory: deduplicates entries, detects contrad
 
 | Phase | When | Triggered by |
 |---|---|---|
-| Dedup | On insert | Every `record_observation`, `create_rule`, `create_knowledge` call |
+| Dedup | On insert | Every `create_entity` call |
 | Contradiction | On insert | Every observation/rule insert (when NLI model available and `contradiction_check = true`) |
 | Promotion | Background | `cogz consolidate` CLI, `consolidate` MCP tool, or `session_end` hook |
 | Merge | Background | `cogz consolidate` CLI, `consolidate` MCP tool, or `session_end` hook |

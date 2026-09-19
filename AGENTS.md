@@ -314,7 +314,7 @@ CLI code uses `println!` for user-facing output.
 | `docs/getting-started.md` | Mental model and walkthrough |
 | `docs/configuration.md` | Full `config.toml` reference |
 | `docs/cli-reference.md` | Every command and flag |
-| `docs/integration/mcp-tools.md` | 17 MCP tool signatures and return shapes |
+| `docs/integration/mcp-tools.md` | 14 MCP tool signatures and return shapes |
 | `docs/integration/hooks.md` | Lifecycle events and output format |
 | `docs/integration/agent-setup.md` | Claude Code, Cursor, Devin, generic MCP setup |
 | `docs/design/architecture.md` | System overview, module map, data flow |

@@ -1,6 +1,6 @@
 # MCP Tools
 
-CogZ exposes 17 tools via the Model Context Protocol (MCP) over stdio. The server is stateless per the 2026-07-28 MCP spec (SEP-2577) — no Roots, no sessions, no cwd inference. Every tool call must include a `repo` parameter with the absolute path to the project root containing `.cogz/`.
+CogZ exposes 14 tools via the Model Context Protocol (MCP) over stdio. The server is stateless per the 2026-07-28 MCP spec (SEP-2577) — no Roots, no sessions, no cwd inference. Every tool call must include a `repo` parameter with the absolute path to the project root containing `.cogz/`.
 
 ## Server setup
 
@@ -31,52 +31,29 @@ Every tool call that returns entity *content* also records a *delivery* (`pack`,
 
 ## Write tools
 
-### `record_observation`
+### `create_entity`
 
-Record an observation about the codebase. Observations are raw, unvalidated experience — bugs found, decisions made, patterns noticed. They persist across sessions and can be promoted to rules through consolidation.
+Create a knowledge-layer entity. `entity_type` selects the lifecycle class — pick by what the entry *is*, not its topic:
 
-**Parameters:**
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `repo` | string | yes | Absolute path to project root |
-| `content` | string | yes | Observation content |
-| `title` | string | no | Short title. Auto-generated from content if omitted. |
-| `references` | array of strings | no | UUIDs this observation references |
-| `supporting_ids` | array of strings | no | UUIDs of observations this observation supports. Creates `supports` edges for promotion. |
-| `source` | string | no | Who or what produced this observation. Default: `"agent"`. |
-
-**Returns:** JSON with `id`, `title`, `status`, `duplicate_warning` (if a similar entity exists), `contradiction_flagged` (if NLI detected a contradiction).
-
-### `create_rule`
-
-Create a rule — a validated directive the agent should follow. Rules are git-tracked and shared.
+- **`observation`** — something that happened: a bug found, a surprising behavior, a decision noticed while working. Raw, append-only, unvalidated; consolidation promotes supported observations to rules.
+- **`rule`** — a verified directive agents must always follow: conventions, constraints, confirmed patterns. Pushed into every context pack; changed via supersede, not edits.
+- **`knowledge`** — a curated reference doc: architecture, gotchas, design decisions. The only type allowing in-place content edits (via `update_knowledge`).
 
 **Parameters:**
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `repo` | string | yes | Absolute path to project root |
-| `content` | string | yes | Rule content |
-| `title` | string | no | Short title. Auto-generated if omitted. |
-| `references` | array of strings | no | UUIDs this rule references |
-| `confidence` | float | no | Confidence score (0.0–1.0) |
+| `entity_type` | string | yes | `observation` \| `rule` \| `knowledge` |
+| `content` | string | yes | Entity body |
+| `title` | string | knowledge only | Short title. Auto-generated for observation/rule if omitted. |
+| `category` | string | knowledge only | Category (becomes a subdirectory under `knowledge/`) |
+| `tags` | array of strings | no | Tags for filtering (knowledge only) |
+| `references` | array of strings | no | UUIDs this entity references |
+| `supporting_ids` | array of strings | no | Observation only: UUIDs of observations this one supports. Creates `supports` edges for promotion. |
+| `source` | string | no | Observation only: who or what produced it. Default: `"agent"`. |
+| `confidence` | float | no | Rule only: confidence score (0.0–1.0) |
 
-**Returns:** JSON with `id`, `title`, `status`.
-
-### `create_knowledge`
-
-Create a knowledge entry — structured documentation about the codebase. Knowledge is human-readable, git-tracked, and meant to be read by both humans and agents.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `repo` | string | yes | Absolute path to project root |
-| `title` | string | yes | Knowledge title |
-| `content` | string | yes | Knowledge content |
-| `category` | string | yes | Category (becomes a subdirectory under `knowledge/`) |
-| `tags` | array of strings | no | Tags for filtering |
-| `references` | array of strings | no | UUIDs this knowledge references |
-
-**Returns:** JSON with `id`, `title`, `status`, `file_path`.
+**Returns:** JSON with `id`, `title`, `status`, `duplicate_warning` (if a similar entity exists), `contradiction_flagged` (if NLI detected a contradiction), `file_path` (knowledge only).
 
 ### `update_knowledge`
 
@@ -95,50 +72,38 @@ Update an existing knowledge entry's content. Knowledge is the only entity type 
 
 **Returns:** JSON with `id`, `title`, `status`, `file_path`.
 
+When `references` changes, newly added live references are stamped into `verified_against` provenance; existing provenance entries are preserved.
+
+### `verify_knowledge`
+
+Re-stamp a knowledge entry's `verified_against` provenance to the current hashes of its resolvable references — including stale knowledge-type targets (acknowledged lineage). Stale code targets cannot be stamped: the referenced code is gone, so the drift row stays `missing` until the reference is removed or the doc is updated. Use after reading drift-flagged knowledge and confirming it is still accurate — clears the drift penalty on retrieval. Do not use to mark content as reviewed without checking it; verification asserts correctness against current code.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `repo` | string | yes | Absolute path to project root |
+| `id` | string | yes | UUID of the knowledge entry to verify |
+
+**Returns:** JSON with `id`, `restamped` (number of references re-stamped), `reactivated` (whether a `code_orphaned` stale status was cleared).
+
 ## Query tools
 
-### `query_observations`
+### `query_entities`
 
-Query observations with optional filters. Returns matching observations sorted by recency.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `repo` | string | yes | Absolute path to project root |
-| `status` | string | no | Filter by status (default: `active`) |
-| `references` | string | no | Filter by reference (UUID or path) |
-| `limit` | integer | no | Max results |
-
-**Returns:** JSON array of observations with `id`, `title`, `content`, `status`, `created_at`, `references`.
-
-### `query_rules`
-
-Query rules with optional filters. Returns matching rules sorted by confidence then recency.
+Browse knowledge-layer entities of one type with optional filters. Use to enumerate what exists before writing (avoid duplicates) or to review a type — for ranked retrieval on a question use `search`; for code entities use `list_entities` or `search`.
 
 **Parameters:**
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `repo` | string | yes | Absolute path to project root |
-| `status` | string | no | Filter by status (default: `active`) |
-| `references` | string | no | Filter by reference (UUID or path) |
-| `limit` | integer | no | Max results |
+| `entity_type` | string | yes | `observation` \| `rule` \| `knowledge` |
+| `status` | string | no | Filter by status (default: `active`; `all` for every status) |
+| `references` | string | no | Observation/rule only: filter to entities referencing this target UUID or path |
+| `category` | string | no | Knowledge only: filter by category |
+| `tags` | array of strings | no | Knowledge only: filter by tags |
+| `limit` | integer | no | Max results (default 20) |
 
-**Returns:** JSON array of rules with `id`, `title`, `content`, `status`, `confidence`, `created_at`, `references`.
-
-### `query_knowledge`
-
-Query knowledge entries with optional filters.
-
-**Parameters:**
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `repo` | string | yes | Absolute path to project root |
-| `category` | string | no | Filter by category |
-| `tags` | array of strings | no | Filter by tags |
-| `status` | string | no | Filter by status (default: `active`) |
-| `limit` | integer | no | Max results |
-
-**Returns:** JSON array of knowledge entries with `id`, `title`, `content`, `category`, `tags`, `status`, `references`.
+**Returns:** JSON with `count` and a per-type array (`observations`, `rules`, or `knowledge`) — observations sorted by recency, rules by confidence then recency. Entries carry `id`, `title`, `content`, `status`, `created_at`, `references`, plus `confidence` (rules) or `category`/`tags` (knowledge).
 
 ### `list_entities`
 
@@ -172,7 +137,7 @@ Search across all entities using hybrid FTS5 + vector search with RRF fusion. Re
 
 **Returns:** JSON with `results` array and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`).
 
-Each result has `entity`, `relevance`, `kind` (`direct` or `expanded`), `graph_path`, and `graph_path_description`.
+Each result has `entity`, `relevance`, `kind` (`direct` or `expanded`), `graph_path`, `graph_path_description`, and `drift_count` — the number of the entity's references whose `verified_against` provenance diverged. `drift_count > 0` means the content may be outdated relative to current code; the score was already demoted by `search.drift_penalty`.
 
 Top-level fields: `filtered_count` (results removed by the relevance floor) and `signals` (`code_strength`, `knowledge_strength`, `code_gradient`, `knowledge_gradient` — per-channel KNN signals used for merge weighting and the silence gate; absent in `fts_only` mode). When the silence gate fires, `results` is empty and `filtered_count` reports the suppressed candidate count.
 
@@ -241,7 +206,7 @@ Code entities with no incoming structural dependency edges — dead-code candida
 
 ### `suggest_observations`
 
-Mine recent usage for observation candidates — the write-path counterpart to delivery tracking. Four signals: `uncharted_edit` (a pack where nothing was used, followed by file edits), `recurring_use` (an entity hit in multiple deliveries — promotion candidate), `hot_file` (a file saved repeatedly), `error_fix` (a tool error followed by a succeeding call on the same tool). Nothing is written: each suggestion carries `signal`, `evidence`, `suggested_title`, `suggested_content`, `suggested_refs` — confirm salient ones via `record_observation`.
+Mine recent usage for observation candidates — the write-path counterpart to delivery tracking. Four signals: `uncharted_edit` (a pack where nothing was used, followed by file edits), `recurring_use` (an entity hit in multiple deliveries — promotion candidate), `hot_file` (a file saved repeatedly), `error_fix` (a tool error followed by a succeeding call on the same tool). Nothing is written: each suggestion carries `signal`, `evidence`, `suggested_title`, `suggested_content`, `suggested_refs` — confirm salient ones via `create_entity`.
 
 **Parameters:**
 | Name | Type | Required | Description |
@@ -263,7 +228,7 @@ Get CogZ system status: database stats, model availability, entity counts by typ
 |---|---|---|---|
 | `repo` | string | yes | Absolute path to project root |
 
-**Returns:** JSON with `db_path`, `entity_counts` (by type), `stale_count`, `models` (`embedding_code`, `embedding_knowledge`, `nli` — each with `available` and `name`), `db_size_bytes`, `schema_version`.
+**Returns:** JSON with `db_path`, `entity_counts` (by type), `stale_count`, `drifted_count` (entities with at least one drifted reference), `models` (`embedding_code`, `embedding_knowledge`, `nli` — each with `available` and `name`), `db_size_bytes`, `schema_version`.
 
 ### `consolidate`
 
@@ -279,7 +244,7 @@ Trigger background consolidation: promote supported observations to rules, merge
 
 ### `capture_event`
 
-Capture a lifecycle event. Called by hook scripts. For `session_start` and `prompt_submit`, returns a context pack for injection and spawns a background reindex. For `file_save`, triggers a single-file code reindex and stale-knowledge flagging. For `session_end`, runs consolidation.
+Capture a lifecycle event. Called by hook scripts. For `session_start` and `prompt_submit`, returns a context pack for injection and spawns a background reindex. For `file_save`, triggers a single-file code reindex and stale-knowledge flagging, and returns a scoped pack of active rules referencing the saved file's entities when any exist. For `session_end`, runs consolidation.
 
 **Parameters:**
 | Name | Type | Required | Description |
@@ -291,7 +256,7 @@ Capture a lifecycle event. Called by hook scripts. For `session_start` and `prom
 | `tool_result` | string | no | Tool result summary (for `post_tool_use`) |
 | `file_path` | string | no | Saved file path, relative to repo root (for `file_save`) |
 
-**Returns:** JSON with `event_id`, and depending on event type: `context_pack` (for `session_start`/`prompt_submit`), `reindex_summary` (for `file_save`), `consolidation_summary` and `suggestion_count` (for `session_end` — the count of mined observation candidates available via `suggest_observations`).
+**Returns:** JSON with `event_id`, and depending on event type: `context_pack` (for `session_start`/`prompt_submit`, and for `file_save` when the saved file has governing rules — the scoped pack's `query` is the file path), `reindex_summary` (for `file_save`), `consolidation_summary` and `suggestion_count` (for `session_end` — the count of mined observation candidates available via `suggest_observations`).
 
 ## Error handling
 

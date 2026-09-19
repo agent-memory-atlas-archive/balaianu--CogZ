@@ -129,7 +129,7 @@ See [Hooks](hooks.md#full-hook-configuration) for the canonical JSON config. Dev
 
 Any MCP-compatible client can connect to CogZ. The server speaks MCP over stdio with protocol version negotiation handled by the `rmcp` SDK. No environment variables are required — the `repo` parameter on each tool call is the only configuration needed.
 
-For agents without hook support, the agent can call `get_context` (cold_start mode) at the start of a session and `record_observation` when it learns something. This gives most of the benefit of hooks without lifecycle integration.
+For agents without hook support, the agent can call `get_context` (cold_start mode) at the start of a session and `create_entity` (observation) when it learns something. This gives most of the benefit of hooks without lifecycle integration.
 
 ## Verifying the setup
 

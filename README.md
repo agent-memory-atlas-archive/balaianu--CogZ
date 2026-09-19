@@ -130,7 +130,7 @@ CogZ runs as a stateless MCP server over stdio. Every tool call specifies which 
 }
 ```
 
-The server exposes 17 tools: `record_observation`, `query_observations`, `create_rule`, `query_rules`, `create_knowledge`, `update_knowledge`, `query_knowledge`, `search`, `get_context`, `get_status`, `list_entities`, `consolidate`, `capture_event`, `get_callers`, `get_impact`, `find_orphans`, `suggest_observations`.
+The server exposes 14 tools: `create_entity`, `update_knowledge`, `verify_knowledge`, `query_entities`, `search`, `get_context`, `get_status`, `list_entities`, `consolidate`, `capture_event`, `get_callers`, `get_impact`, `find_orphans`, `suggest_observations`.
 
 See [MCP Tools](docs/integration/mcp-tools.md) for full parameter reference and example responses. See [Agent Setup](docs/integration/agent-setup.md) for configuration examples for Claude Code, Cursor, Devin, and other agents.
 

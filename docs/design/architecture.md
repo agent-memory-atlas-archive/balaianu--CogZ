@@ -121,9 +121,9 @@ src/
   mcp/                 MCP server
     server.rs          ServerHandler impl, repo/model caching
     repo_cache.rs      Repo cache: herd protection, LRU, staleness
-    tools.rs           Tool router (17 tools)
-    tools_write.rs     record_observation, create_rule, create_knowledge, update_knowledge
-    tools_query.rs     query_*, list_entities
+    tools.rs           Tool router (14 tools)
+    tools_write.rs     create_entity, update_knowledge, verify_knowledge
+    tools_query.rs     query_entities, list_entities
     tools_search.rs    search, get_context
     tools_graph.rs     get_callers, get_impact, find_orphans
     tools_mining.rs    suggest_observations
@@ -154,7 +154,7 @@ src/
 ### Write path (MCP tool → file → DB)
 
 ```
-Agent calls record_observation MCP tool
+Agent calls create_entity MCP tool
   → entity_helpers.rs: create_entity_file()
     → scan for secrets (reject if found)
     → write_entity_file_atomic() — writes Markdown file to .cogz/

@@ -137,9 +137,10 @@ cogz context --mode cold_start
 Via MCP (preferred for agents):
 ```json
 {
-  "tool": "record_observation",
+  "tool": "create_entity",
   "arguments": {
     "repo": "/home/user/my-project",
+    "entity_type": "observation",
     "content": "The auth middleware checks JWT expiry before hitting the route handler",
     "title": "Auth middleware JWT expiry check",
     "references": ["src/middleware/auth.rs"]

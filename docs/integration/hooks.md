@@ -8,7 +8,7 @@ When an agent fires a lifecycle event (session start, prompt submit, tool use, f
 
 1. Records the event in the database (audit trail).
 2. For `session_start` and `prompt_submit`: assembles a context pack and prints it to stdout for the agent to consume as injected context. Also spawns a background reindex process to catch changes from non-hook events (branch switches, pulls, merges, human edits in another terminal).
-3. For `file_save`: triggers a single-file code reindex (fast — no git diff) and flags stale knowledge if the saved file is a source file. Syncs `.cogz/` entity files if the saved file is under `.cogz/`.
+3. For `file_save`: triggers a single-file code reindex (fast — no git diff) and runs post-index maintenance (flags orphaned knowledge, backfills `verified_against` provenance, recomputes `entity_drift`, heals exact-revert staleness) if the saved file is a source file. Syncs `.cogz/` entity files if the saved file is under `.cogz/`. Also pushes edit-scoped context: active rules that reference entities on the saved path (via `references`/`auto_references` edges) are returned as a compact pack — silent when nothing governs the file.
 4. For `session_end`: closes any open usage deliveries (pending entities become misses) and runs consolidation (promotion + merge).
 
 ## The `--hook-json` flag
@@ -43,7 +43,7 @@ For hooks, speed matters more than ranking quality. The MCP server (persistent p
 | `prompt_submit` | User submits a prompt | Records event, resolves usage hits on still-open deliveries (prompt names a delivered entity's file path or title), then assembles task context pack, spawns background reindex (debounced 60s) | Context pack (query-scoped retrieval) |
 | `pre_tool_use` | Before a tool call | Records event only | None (audit trail) |
 | `post_tool_use` | After a tool call | Records event; marks usage hits on delivered entities (tool touched an entity's file, or output mentioned its id/title) | None |
-| `file_save` | A file is saved | Records event, marks usage hits on delivered entities in the saved file, triggers single-file code reindex if source file, flags stale knowledge, syncs `.cogz/` file if under `.cogz/` | Reindex summary |
+| `file_save` | A file is saved | Records event, marks usage hits on delivered entities in the saved file, triggers single-file code reindex if source file, runs post-index maintenance (stale flag + provenance backfill + drift recompute + heal), syncs `.cogz/` file if under `.cogz/`, pushes rules governing the saved file when they exist | Reindex summary + scoped rules (when present) |
 | `session_end` | Agent session ends | Records event, closes open usage deliveries, runs consolidation (promotion + merge), counts mined observation candidates | Consolidation summary + `suggestion_count` |
 | `stop` | Agent stops | Records event only | None |
 
@@ -137,7 +137,7 @@ This is the canonical hook config. Copy it into your agent's hook configuration 
 
 - **`session_start`** always spawns (primary recovery, fires once per session).
 - **`prompt_submit`** is debounced (60s window) to avoid redundant spawns when the user sends many messages in quick succession.
-- The background process syncs `.cogz/` entity files, runs git-diff-based code reindex, flags stale knowledge, and defers embedding to `embed-bg`. It runs detached — the hook returns immediately without waiting for it.
+- The background process syncs `.cogz/` entity files, runs git-diff-based code reindex, runs post-index maintenance (stale flag + provenance backfill + drift recompute + heal), and defers embedding to `embed-bg`. It runs detached — the hook returns immediately without waiting for it.
 - The debounce marker is a temp file keyed by the canonical repo path, so `.`, absolute paths, and symlinks to the same repo share one marker.
 
 **PostCompaction:** After context compaction, the agent loses its injected context. Re-inject by treating it as a session start:
