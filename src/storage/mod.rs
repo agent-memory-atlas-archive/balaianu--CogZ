@@ -12,6 +12,7 @@ pub mod events;
 pub mod graph;
 pub mod graph_queries;
 pub mod mining;
+pub mod mining_signals;
 pub mod query;
 pub mod schema;
 pub mod status;

@@ -173,20 +173,32 @@ pub async fn verify_knowledge(
     let cogz_dir = repo.cogz_dir.clone();
 
     let result = tokio::task::spawn_blocking(move || {
-        crate::index::drift::verify_entity(&storage, &cogz_dir, &params.id).map(
-            |(refs_stamped, reactivated)| {
+        let verify_result = crate::index::drift::verify_entity(&storage, &cogz_dir, &params.id)
+            .map(|(refs_stamped, reactivated)| {
                 json!({
                     "id": params.id,
                     "refs_stamped": refs_stamped,
                     "reactivated": reactivated,
                 })
-            },
-        )
+            })?;
+
+        // A verify call is itself a knowledge moment — the agent just
+        // confirmed something holds. If mining has other candidates
+        // queued, surface them here while the write path is warm.
+        let conn = storage.conn();
+        let fresh = crate::hooks::nudge::fresh_suggestions(&conn, "verify_knowledge");
+        let write_nudge = (!fresh.is_empty()).then(|| crate::hooks::nudge::format_json(&fresh));
+
+        Ok::<_, crate::index::drift::DriftError>((verify_result, write_nudge))
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
     .map_err(|e| mcp_internal_error("verify_knowledge", &e.to_string()))?;
 
+    let (mut result, write_nudge) = result;
+    if let Some(nudge) = write_nudge {
+        result["write_nudge"] = nudge;
+    }
     Ok(tool_success(result))
 }
 

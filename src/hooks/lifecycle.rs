@@ -101,10 +101,11 @@ pub struct LifecycleOutput {
     pub observation_id: Option<String>,
     /// Reindex summary if a file_save triggered code reindexing.
     pub reindex_summary: Option<ReindexSummary>,
-    /// Drift notice when a file_save invalidated knowledge entities —
-    /// the write-time half of the verify loop. Rendered for hook
-    /// injection alongside (or instead of) a context pack.
-    pub drift_notice: Option<String>,
+    /// Hook notices for agent injection — the drift notice when a
+    /// file_save invalidated knowledge entities (the write-time half
+    /// of the verify loop) and/or a write-back nudge when mining found
+    /// fresh candidates. Rendered alongside (or instead of) a pack.
+    pub notices: Option<String>,
     /// Consolidation dry-run summary if session_end triggered it.
     pub consolidation_summary: Option<ConsolidationSummary>,
     /// Mined observation candidates available at session_end — a nudge
@@ -164,7 +165,11 @@ pub fn handle_lifecycle_event(
             })
         }
         LifecycleEvent::FileSave => {
-            json!({ "file_path": input.file_path.unwrap_or("") })
+            // Store the repo-relative form alongside the raw path —
+            // mining matches it against entities.file_path and cannot
+            // derive it later (it has no cogz_dir).
+            let raw = input.file_path.unwrap_or("");
+            json!({ "file_path": raw, "file_path_rel": repo_relative_path(raw, cogz_dir) })
         }
         LifecycleEvent::SessionEnd => json!({}),
         LifecycleEvent::Stop => json!({}),
@@ -343,6 +348,46 @@ pub fn handle_lifecycle_event(
         None
     };
 
+    // Write-back nudge: mined candidates get pushed at the surfaces
+    // where a learning moment just happened — saves, searches, prompt
+    // boundaries, session edges. Fingerprint-deduped (once per
+    // candidate per day) so this stays a signal, not a drip-feed.
+    // The draft rides in the notice so create_entity is
+    // confirm-not-compose; nothing is auto-written.
+    let write_nudge = if matches!(
+        input.event,
+        LifecycleEvent::SessionStart
+            | LifecycleEvent::PromptSubmit
+            | LifecycleEvent::PostToolUse
+            | LifecycleEvent::FileSave
+            | LifecycleEvent::SessionEnd
+    ) {
+        let conn = storage.conn();
+        // Mining reads untrusted tool-output payloads — a panic there
+        // must not take the event's whole notice output down with it.
+        let fresh = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            crate::hooks::nudge::fresh_suggestions(&conn, input.event.as_str())
+        }))
+        .unwrap_or_else(|_| {
+            tracing::warn!("write nudge: mining panicked — skipped");
+            Vec::new()
+        });
+        if fresh.is_empty() {
+            None
+        } else {
+            Some(crate::hooks::nudge::format_markdown(&fresh))
+        }
+    } else {
+        None
+    };
+
+    let notices = [drift_notice, write_nudge]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join("\n\n");
+    let notices = (!notices.is_empty()).then_some(notices);
+
     // For session_end, run consolidation (promotion + merge) for real.
     // The configured thresholds are the safety mechanism — if they're
     // met, the system acts. This aligns with the first principle that
@@ -385,7 +430,7 @@ pub fn handle_lifecycle_event(
         context_pack,
         observation_id,
         reindex_summary,
-        drift_notice,
+        notices,
         consolidation_summary,
         suggestion_count,
     })
@@ -621,6 +666,22 @@ fn detect_touched_entities(
     }
 
     ids.into_iter().collect()
+}
+
+/// Repo-relative form of a hook-supplied save path, best-effort:
+/// absolute paths strip the canonical repo root, relative paths lose
+/// their `./` prefix. Stored on file_save events so mining can match
+/// `entities.file_path` without knowing `cogz_dir`.
+fn repo_relative_path(raw: &str, cogz_dir: &Path) -> String {
+    let path = Path::new(raw);
+    let repo_root = cogz_dir.parent().unwrap_or_else(|| Path::new("."));
+    let repo_abs = std::fs::canonicalize(repo_root).unwrap_or_else(|_| repo_root.to_path_buf());
+    for base in [repo_root, repo_abs.as_path()] {
+        if let Ok(rel) = path.strip_prefix(base) {
+            return rel.to_string_lossy().to_string();
+        }
+    }
+    raw.trim_start_matches("./").to_string()
 }
 
 /// Candidate `entities.file_path` forms for a hook-supplied path.

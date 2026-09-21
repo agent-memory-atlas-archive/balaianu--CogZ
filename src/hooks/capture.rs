@@ -35,7 +35,7 @@ pub struct CaptureResult {
     pub observation_id: Option<String>,
     pub context_pack: Option<crate::context::ContextPack>,
     pub reindex_summary: Option<crate::hooks::lifecycle::ReindexSummary>,
-    pub drift_notice: Option<String>,
+    pub notices: Option<String>,
     pub consolidation_summary: Option<crate::hooks::lifecycle::ConsolidationSummary>,
     pub suggestion_count: Option<usize>,
 }
@@ -100,7 +100,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
                 observation_id: None,
                 context_pack: None,
                 reindex_summary: None,
-                drift_notice: None,
+                notices: None,
                 consolidation_summary: None,
                 suggestion_count: None,
             });
@@ -124,7 +124,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
                 observation_id: None,
                 context_pack: None,
                 reindex_summary: None,
-                drift_notice: None,
+                notices: None,
                 consolidation_summary: None,
                 suggestion_count: None,
             });
@@ -215,13 +215,13 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
             &event,
             output.context_pack.as_ref(),
             file_path,
-            output.drift_notice.as_deref(),
+            output.notices.as_deref(),
         );
     } else {
         if let Some(ref pack) = output.context_pack {
             crate::hooks::format::print_context_pack(pack);
         }
-        if let Some(ref notice) = output.drift_notice {
+        if let Some(ref notice) = output.notices {
             println!("{notice}");
         }
     }
@@ -231,7 +231,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         observation_id: output.observation_id,
         context_pack: output.context_pack,
         reindex_summary: output.reindex_summary,
-        drift_notice: output.drift_notice,
+        notices: output.notices,
         consolidation_summary: output.consolidation_summary,
         suggestion_count: output.suggestion_count,
     })

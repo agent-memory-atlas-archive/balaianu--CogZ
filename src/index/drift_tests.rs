@@ -399,6 +399,81 @@ fn heal_only_recovers_orphaned_stale_with_live_refs() {
     assert_eq!(events.len(), 1);
 }
 
+/// Entity flagged `code_orphaned` through an `auto_references` edge
+/// with no declared frontmatter refs — the production false-positive
+/// where a junk auto-link left the doc permanently stale because heal
+/// only consulted declared refs.
+#[test]
+fn heal_considers_auto_reference_edges() {
+    let (_d, storage, cogz) = setup();
+    {
+        let conn = storage.conn();
+        insert_entity(
+            &conn,
+            &make_code("aaaa0000-0000-4000-8000-000000000021", "h1"),
+        )
+        .unwrap();
+        let mut dead = make_code("aaaa0000-0000-4000-8000-000000000022", "h2");
+        dead.status = "stale".to_string();
+        insert_entity(&conn, &dead).unwrap();
+    }
+
+    let auto_only = |id: &str, code_id: Option<&str>| -> EntityFile {
+        let title = format!("note-{id}");
+        let mut ef = EntityFile::new(&title, FileEntityType::Knowledge, "content");
+        ef.id = id.to_string();
+        ef.status = "active".to_string();
+        let path = ef.file_path(&cogz);
+        write_entity_file(&path, &ef).unwrap();
+        let conn = storage.conn();
+        let mut db = Entity::new(id, "knowledge", &title, "content");
+        db.file_path = Some(
+            path.strip_prefix(&cogz)
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
+        );
+        insert_entity(&conn, &db).unwrap();
+        if let Some(t) = code_id {
+            insert_edge(
+                &conn,
+                &Edge {
+                    source_id: id.to_string(),
+                    target_id: t.to_string(),
+                    edge_type: "auto_references".to_string(),
+                    weight: 1.0,
+                    created_at: chrono::Utc::now().to_rfc3339(),
+                },
+            )
+            .unwrap();
+        }
+        ef
+    };
+
+    // Live auto-ref → heals once the edge is considered.
+    let live = auto_only(K_LIVE, Some("aaaa0000-0000-4000-8000-000000000021"));
+    // Dead auto-ref → stays stale.
+    let deadf = auto_only(K_DEAD, Some("aaaa0000-0000-4000-8000-000000000022"));
+    // No anchors at all — the junk edge was cleaned on rebuild, so
+    // nothing substantiates the orphan flag → heals.
+    let bare = auto_only(K_ORPHAN, None);
+    mark_stale(&storage, &cogz, &live, Some(STALE_REASON_ORPHANED));
+    mark_stale(&storage, &cogz, &deadf, Some(STALE_REASON_ORPHANED));
+    mark_stale(&storage, &cogz, &bare, Some(STALE_REASON_ORPHANED));
+
+    assert_eq!(heal_stale_entities(&storage, &cogz), 2);
+
+    let conn = storage.conn();
+    for (id, expected) in [(K_LIVE, "active"), (K_DEAD, "stale"), (K_ORPHAN, "active")] {
+        let status: String = conn
+            .query_row("SELECT status FROM entities WHERE id=?1", [id], |r| {
+                r.get(0)
+            })
+            .unwrap();
+        assert_eq!(status, expected, "entity {id}");
+    }
+}
+
 #[test]
 fn verify_restamps_clears_drift_and_reactivates() {
     let (_d, storage, cogz) = setup();

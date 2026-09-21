@@ -28,13 +28,15 @@ pub fn sync_auto_links(storage: &storage::Storage) -> usize {
     let conn = storage.conn();
 
     // Build name → code entity ID map. Only include names that are
-    // unique across the codebase to avoid false positives.
+    // unique across the codebase to avoid false positives. Stale code
+    // entities (deleted functions/files) are excluded — a link to dead
+    // code is born orphaned and would instantly flag the knowledge.
     let code_types = ["function", "class", "file", "module"];
     let mut name_count: HashMap<String, usize> = HashMap::new();
     let mut name_to_id: HashMap<String, String> = HashMap::new();
 
     for entity_type in &code_types {
-        if let Ok(entities) = get_entities_by_type(&conn, entity_type, None, 100_000) {
+        if let Ok(entities) = get_entities_by_type(&conn, entity_type, Some("active"), 100_000) {
             for entity in entities {
                 if let Some(ref title) = entity.title {
                     *name_count.entry(title.clone()).or_default() += 1;
@@ -59,7 +61,7 @@ pub fn sync_auto_links(storage: &storage::Storage) -> usize {
 
     // Build file path → file entity ID map for path-based matching.
     let mut path_to_id: HashMap<String, String> = HashMap::new();
-    if let Ok(files) = get_entities_by_type(&conn, "file", None, 100_000) {
+    if let Ok(files) = get_entities_by_type(&conn, "file", Some("active"), 100_000) {
         for file in files {
             if let Some(ref fp) = file.file_path {
                 path_to_id.insert(fp.clone(), file.id.clone());
@@ -78,25 +80,30 @@ pub fn sync_auto_links(storage: &storage::Storage) -> usize {
     // code entity ID. Combine paths and names into one pattern set.
     let mut patterns: Vec<String> = Vec::new();
     let mut pattern_to_id: Vec<String> = Vec::new();
-    // Track which patterns are name-based (need word boundary check)
-    // vs path-based (already specific enough).
-    let mut pattern_is_name: Vec<bool> = Vec::new();
+    let mut pattern_kind: Vec<PatternKind> = Vec::new();
 
     for (path, id) in &path_to_id {
         patterns.push(path.clone());
         pattern_to_id.push(id.clone());
-        pattern_is_name.push(false);
+        pattern_kind.push(PatternKind::Path);
     }
     for (name, id) in &unique_names {
         // unique_names already filtered to count == 1 — the name
-        // appears exactly once in the codebase. A match in knowledge
-        // content is therefore almost certainly a reference to this
-        // entity. The word boundary check handles substring false
-        // positives (e.g. "fuse" inside "fused"). No stopword or
-        // min_len filter needed for unique names.
+        // appears exactly once in the codebase. Uniqueness alone is
+        // not enough for bare English words: a generic name that
+        // happens to be unique (`from`, `run`, `open`) still matches
+        // plain prose, and a dead junk link later flags the document
+        // as orphaned code it never referenced. Identifier-shaped
+        // names (snake_case, camelCase, dotted) are distinctive enough
+        // to link on word boundary alone; single-segment words must
+        // additionally sit in a code-shaped context.
         patterns.push(name.clone());
         pattern_to_id.push(id.clone());
-        pattern_is_name.push(true);
+        pattern_kind.push(if is_identifier_shaped(name) {
+            PatternKind::IdentifierName
+        } else {
+            PatternKind::BareWord
+        });
     }
 
     // LeftmostLongest ensures path patterns (e.g. "src/search/hybrid.rs")
@@ -124,18 +131,27 @@ pub fn sync_auto_links(storage: &storage::Storage) -> usize {
                 );
 
                 // Single pass over content for all patterns.
-                // For name-based patterns, verify word boundaries to
-                // avoid matching substrings (e.g. "model" inside
-                // "modeling"). Path-based patterns are specific enough
-                // to skip this check.
+                // Name matches verify word boundaries ("model" inside
+                // "modeling" is rejected); bare single-word names
+                // additionally need a code-shaped context so prose
+                // mentions don't mint junk edges. Path patterns are
+                // specific enough to skip both checks.
                 let mut matched_ids: Vec<String> = Vec::new();
                 for mat in ac.find_iter(&content) {
                     let pat_idx = mat.pattern();
-                    if pattern_is_name[pat_idx] {
-                        let start = mat.start();
-                        let end = mat.end();
-                        if !is_word_boundary(&content, start, end) {
-                            continue;
+                    match pattern_kind[pat_idx] {
+                        PatternKind::Path => {}
+                        PatternKind::IdentifierName => {
+                            if !is_word_boundary(&content, mat.start(), mat.end()) {
+                                continue;
+                            }
+                        }
+                        PatternKind::BareWord => {
+                            if !is_word_boundary(&content, mat.start(), mat.end())
+                                || !is_code_context(&content, mat.start(), mat.end())
+                            {
+                                continue;
+                            }
                         }
                     }
                     matched_ids.push(pattern_to_id[pat_idx].clone());
@@ -209,11 +225,56 @@ fn is_word_boundary(content: &str, start: usize, end: usize) -> bool {
     before_ok && after_ok
 }
 
+/// How much evidence a pattern match needs before it becomes an edge.
+#[derive(Clone, Copy, PartialEq)]
+enum PatternKind {
+    /// Full file path — already specific, no extra checks.
+    Path,
+    /// Multi-segment identifier (`build_sql_query`, `cli.rs`,
+    /// `hashMap`) — word boundary suffices.
+    IdentifierName,
+    /// Single-segment lowercase word (`from`, `run`, `open`) — needs a
+    /// code-shaped context or prose mentions mint junk edges.
+    BareWord,
+}
+
+/// Whether a unique code-entity name is distinctive enough to match
+/// bare prose: snake_case, dotted, or camelCase spellings are
+/// identifiers, not English vocabulary.
+fn is_identifier_shaped(name: &str) -> bool {
+    name.contains('_')
+        || name.contains('.')
+        || name
+            .chars()
+            .zip(name.chars().skip(1))
+            .any(|(a, b)| a.is_lowercase() && b.is_uppercase())
+}
+
 /// Check if a byte is a word character (alphanumeric or underscore).
 /// Rust identifiers use [a-zA-Z0-9_], so we treat all of these as
 /// word characters for boundary checking.
 fn is_word_char(b: u8) -> bool {
     b.is_ascii_alphanumeric() || b == b'_'
+}
+
+/// Whether a name match sits in a code-shaped context: inside a
+/// backtick span (inline code or fenced block — an odd count of '`'
+/// before the match), a call (`name(`), or path/member syntax
+/// (`::name`, `.name`). Documents that reference code spell it this
+/// way; bare prose mentions of unique-but-generic names (`from`,
+/// `both`, `table`) do not mint edges.
+fn is_code_context(content: &str, start: usize, end: usize) -> bool {
+    let bytes = content.as_bytes();
+    if end < bytes.len() && bytes[end] == b'(' {
+        return true;
+    }
+    if start >= 2 && bytes[start - 1] == b':' && bytes[start - 2] == b':' {
+        return true;
+    }
+    if start >= 1 && bytes[start - 1] == b'.' {
+        return true;
+    }
+    content[..start].bytes().filter(|b| *b == b'`').count() % 2 == 1
 }
 
 #[cfg(test)]
@@ -240,5 +301,37 @@ mod tests {
         assert!(!is_word_boundary("build_sql_query", 0, 9));
         // "build_sql" as standalone
         assert!(is_word_boundary("use build_sql here", 4, 13));
+    }
+
+    #[test]
+    fn code_context_accepts_code_spellings() {
+        for (content, name) in [
+            ("see `from` here", "from"),        // inline code span
+            ("call from(x)", "from"),           // call syntax
+            ("use a::from;", "from"),           // path-qualified
+            ("x.from()", "from"),               // member syntax
+            ("text\n```\nfrom\n```\n", "from"), // fenced block
+        ] {
+            let start = content.find(name).unwrap();
+            assert!(
+                is_code_context(content, start, start + name.len()),
+                "{content}"
+            );
+        }
+    }
+
+    #[test]
+    fn code_context_rejects_prose_mentions() {
+        for (content, name) in [
+            ("extracted from the event", "from"),
+            ("run at your own risk", "run"),
+            ("open the file first", "open"),
+        ] {
+            let start = content.find(name).unwrap();
+            assert!(
+                !is_code_context(content, start, start + name.len()),
+                "{content}"
+            );
+        }
     }
 }

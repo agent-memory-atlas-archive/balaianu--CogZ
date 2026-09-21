@@ -12,6 +12,7 @@ pub mod capture;
 pub mod format;
 pub mod handlers;
 pub mod lifecycle;
+pub mod nudge;
 pub mod reindex;
 
 pub use capture::{CaptureError, CaptureInput, CaptureResult, run_capture_event};

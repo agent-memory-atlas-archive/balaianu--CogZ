@@ -106,6 +106,23 @@ pub fn run_search(
         if let Err(e) = cogz::storage::usage::record_pointer_conversions(&conn, &result_ids) {
             eprintln!("usage tracking: pointer conversion failed: {e}");
         }
+
+        // Query telemetry — the MCP path logs the same event. CLI
+        // searches are the more common path in practice; without this
+        // the search_miss mining signal starves.
+        if let Err(e) = cogz::storage::events::record_event(
+            &conn,
+            cogz::storage::events::EventType::SearchPerformed,
+            None,
+            &serde_json::json!({
+                "query": query,
+                "returned": results.results.len(),
+                "filtered": results.filtered_count,
+                "code_search": code,
+            }),
+        ) {
+            eprintln!("search_performed event: {e}");
+        }
         results
     };
 
@@ -148,6 +165,8 @@ pub fn run_search(
     if drifted > 0 {
         println!("  ⚠ {drifted} result(s) drifted — review, then `cogz verify <id>` to re-stamp");
     }
+
+    print_write_nudge(&storage, "cli_search");
 
     Ok(())
 }
@@ -314,73 +333,27 @@ pub fn run_context(
         );
     }
 
+    print_write_nudge(&storage, "cli_context");
+
     Ok(())
 }
 
-/// Run the MCP server over stdio. The server starts with no
-/// pre-loaded repos. Every tool call must provide a `repo` parameter
-/// specifying the project root. The server opens and caches repos
-/// on demand.
-pub fn run_mcp_stdio() -> anyhow::Result<()> {
-    let models_dir = crate::cli_embed::models_dir();
-    let server = cogz::mcp::CogzServer::with_models_dir_only(&models_dir);
-
-    // tracing must go to stderr, not stdout — stdout is the MCP transport
-    tracing::info!("Starting CogZ MCP server over stdio");
-
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()?;
-    runtime.block_on(cogz::mcp::server::run_stdio(server))
-}
-
-/// Run `cogz capture-event` — capture a lifecycle event from hook
-/// scripts. For session_start and prompt_submit, prints a context
-/// pack to stdout for agent injection. For file_save, prints reindex
-/// summary to stderr. Status info goes to stderr so stdout stays
-/// clean for context pack injection.
-pub fn run_capture_event(input: &cogz::hooks::CaptureInput) -> anyhow::Result<()> {
-    let result = cogz::hooks::run_capture_event(input)?;
-
-    // In hook-json mode, stdout is reserved for the JSON response.
-    // Status info goes to stderr so it doesn't corrupt the JSON.
-    if !input.hook_json {
-        match result.event_id {
-            Some(id) => eprintln!("Event {} recorded (id: {})", input.event_str, id),
-            None => eprintln!(
-                "Event {} processed (record skipped: db busy)",
-                input.event_str
-            ),
-        }
+/// Append a write-back nudge to CLI output — measured usage says agents
+/// pull via `cogz search`/`cogz context`, not MCP, so the CLI is the
+/// surface nudges must reach. Best-effort: a nudge failure never fails
+/// the command.
+fn print_write_nudge(storage: &Storage, surface: &str) {
+    let conn = storage.conn();
+    // Mining reads untrusted tool-output payloads — a panic there must
+    // not turn a successful search into a failed command.
+    let fresh = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        cogz::hooks::nudge::fresh_suggestions(&conn, surface)
+    }))
+    .unwrap_or_else(|_| {
+        eprintln!("write nudge: mining panicked — skipped");
+        Vec::new()
+    });
+    if !fresh.is_empty() {
+        println!("\n{}", cogz::hooks::nudge::format_markdown(&fresh));
     }
-    if let Some(ref obs_id) = result.observation_id {
-        eprintln!("Observation recorded: {}", obs_id);
-    }
-    if let Some(ref summary) = result.reindex_summary {
-        if summary.reindexed {
-            eprintln!(
-                "Code reindex: {} created, {} updated, {} stale, {} knowledge flagged",
-                summary.created,
-                summary.updated,
-                summary.marked_stale,
-                summary.stale_knowledge_flagged
-            );
-        } else if summary.synced {
-            eprintln!(
-                "File sync: {} created, {} updated, {} stale, {} embedded",
-                summary.created, summary.updated, summary.marked_stale, summary.embedded
-            );
-        }
-    }
-    if let Some(ref summary) = result.consolidation_summary {
-        eprintln!(
-            "Consolidation: {} promoted, {} merged",
-            summary.promotions, summary.merges
-        );
-    }
-    if let Some(count) = result.suggestion_count {
-        eprintln!("Observations: {count} mined candidate(s) — run suggest_observations to review");
-    }
-
-    Ok(())
 }

@@ -701,29 +701,46 @@ pub fn heal_stale_entities(storage: &Storage, cogz_dir: &Path) -> usize {
             continue;
         }
 
-        // All current refs must resolve live, and there must be at
-        // least one — a knowledge entity whose last anchor died stays
-        // stale (vacuous truth would heal orphaned claims). Stale
-        // knowledge-type targets are navigational (the doc exists), not
-        // dead anchors — same semantics as `recompute`.
-        let (total, dead) = {
+        // All current anchors must resolve live. Flagging is edge-based
+        // — `auto_references` edges flag entities that declare no
+        // frontmatter refs at all — so the heal check must union
+        // declared refs with auto-link targets, else edge-flagged
+        // entities can never recover. An empty union heals the flag:
+        // once rebuilt links carry no dead anchor, nothing substantiates
+        // `code_orphaned` anymore. Stale knowledge-type targets are
+        // navigational (the doc exists), not dead anchors — same
+        // semantics as `recompute`.
+        let dead = {
             let conn = storage.conn();
-            let refs = entity_file.references.clone();
+            let mut refs = entity_file.references.clone();
+            let mut stmt = match conn.prepare(
+                "SELECT target_id FROM edges \
+                 WHERE source_id = ?1 AND edge_type = 'auto_references'",
+            ) {
+                Ok(s) => s,
+                Err(e) => {
+                    tracing::warn!("heal: auto_ref query failed for {entity_id}: {e}");
+                    continue;
+                }
+            };
+            let auto: Vec<String> = stmt
+                .query_map([entity_id], |r| r.get(0))
+                .map(|rows| rows.flatten().collect())
+                .unwrap_or_default();
+            refs.extend(auto);
+            refs.sort();
+            refs.dedup();
             let states = target_states_batch(&conn, &refs);
-            (
-                refs.len(),
-                refs.iter()
-                    .filter(|r| match states.get(*r) {
-                        Some(t) => {
-                            t.status != "active"
-                                && !KNOWLEDGE_TYPES.contains(&t.entity_type.as_str())
-                        }
-                        None => true,
-                    })
-                    .count(),
-            )
+            refs.iter()
+                .filter(|r| match states.get(*r) {
+                    Some(t) => {
+                        t.status != "active" && !KNOWLEDGE_TYPES.contains(&t.entity_type.as_str())
+                    }
+                    None => true,
+                })
+                .count()
         };
-        if total == 0 || dead > 0 {
+        if dead > 0 {
             continue;
         }
 

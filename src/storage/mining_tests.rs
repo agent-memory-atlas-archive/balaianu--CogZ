@@ -4,6 +4,7 @@ use super::*;
 use crate::storage::Storage;
 use crate::storage::crud::{Entity, insert_entity};
 use crate::storage::events::{EventType, record_event};
+use crate::storage::mining_signals::snippet;
 use crate::storage::usage::{
     DeliveryKind, DeliveryTier, close_open_deliveries, record_delivered, record_delivery,
 };
@@ -146,6 +147,102 @@ fn error_fix_signal() {
     let ef: Vec<_> = out.iter().filter(|s| s.signal == "error_fix").collect();
     assert_eq!(ef.len(), 1);
     assert_eq!(ef[0].suggested_title, "bash error and fix");
+}
+
+#[test]
+fn error_fix_dedup_anchors_on_tool_not_event() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    // Two distinct error→fix pairs on the same tool are one logical
+    // signal — a retry grind must share a fingerprint so it nudges once.
+    for (err, ok) in [("error: missing flag", "ok"), ("Traceback: boom", "done")] {
+        record_event(
+            &conn,
+            EventType::PostToolUse,
+            None,
+            &serde_json::json!({"tool_name": "bash", "tool_result": err}),
+        )
+        .unwrap();
+        record_event(
+            &conn,
+            EventType::PostToolUse,
+            None,
+            &serde_json::json!({"tool_name": "bash", "tool_result": ok}),
+        )
+        .unwrap();
+    }
+
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    let ef: Vec<_> = out.iter().filter(|s| s.signal == "error_fix").collect();
+    assert_eq!(ef.len(), 2);
+    assert_eq!(ef[0].fingerprint(), "error_fix:bash");
+    assert_eq!(ef[0].fingerprint(), ef[1].fingerprint());
+}
+
+#[test]
+fn error_fix_trusts_exit_code_over_output_keywords() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    // A failing then passing run — the passing output still contains
+    // 'failed' in its summary line, so keyword-only matching would
+    // never find the clean side of this pair.
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "exec", "tool_result": "Output...\n1 failed, 3 passed\n\nExit code: 1"}),
+    )
+    .unwrap();
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "exec", "tool_result": "Output...\n0 failed, 4 passed\n\nExit code: 0"}),
+    )
+    .unwrap();
+
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    let ef: Vec<_> = out.iter().filter(|s| s.signal == "error_fix").collect();
+    assert_eq!(ef.len(), 1);
+}
+
+#[test]
+fn error_fix_ignores_keywords_inside_file_contents() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    // A read result whose *body* mentions exceptions is not a tool
+    // failure — error text must lead the result to count.
+    let body = format!(
+        "<file-view path=\"/r/src/x.py\">\n{}\nraise FooException</file-view>",
+        "x".repeat(300)
+    );
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "read", "tool_result": body}),
+    )
+    .unwrap();
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "read", "tool_result": "<file-view>clean</file-view>"}),
+    )
+    .unwrap();
+
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    assert!(out.iter().all(|s| s.signal != "error_fix"));
+}
+
+#[test]
+fn snippet_truncates_on_char_boundary() {
+    // '✅' straddles the byte limit — naive &s[..max] panics, and this
+    // runs inside hook processes where the panic kills all notices.
+    let s = format!("{}✅ done", "x".repeat(118));
+    let out = snippet(&s, 120);
+    assert!(out.ends_with('…'));
+    assert!(out.len() <= 122);
 }
 
 #[test]

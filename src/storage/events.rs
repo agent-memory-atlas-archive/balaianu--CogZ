@@ -38,6 +38,14 @@ pub enum EventType {
     /// An orphaned-stale knowledge entity recovered automatically —
     /// all references resolve active again.
     StaleRecovered,
+    /// An MCP `search` ran — query text + result count, so misses are
+    /// minable (a silenced search is a knowledge gap the agent then
+    /// crossed by hand) and the query log doubles as telemetry.
+    SearchPerformed,
+    /// A write-back nudge was shown to the agent — the impression side
+    /// of the adoption funnel. Conversion is measured by comparing
+    /// these against `*_created` events in the same window.
+    WriteNudgeShown,
 }
 
 impl EventType {
@@ -64,6 +72,8 @@ impl EventType {
             Self::SuggestionsRequested => "suggestions_requested",
             Self::KnowledgeVerified => "knowledge_verified",
             Self::StaleRecovered => "stale_recovered",
+            Self::SearchPerformed => "search_performed",
+            Self::WriteNudgeShown => "write_nudge_shown",
         }
     }
 }

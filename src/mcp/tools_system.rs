@@ -128,6 +128,7 @@ pub async fn capture_event(
             crate::mcp::responses::context_response_ref(pack)
         }),
         "reindex_summary": result.reindex_summary,
+        "notices": result.notices,
         "consolidation_summary": result.consolidation_summary,
         "suggestion_count": result.suggestion_count,
     });

@@ -2,6 +2,7 @@
 
 mod cli;
 mod cli_embed;
+mod cli_events;
 mod commands;
 
 use std::path::PathBuf;
@@ -121,6 +122,23 @@ enum Commands {
         /// Override the token budget from config.
         #[arg(long)]
         max_tokens: Option<usize>,
+    },
+
+    /// List mined observation candidates — the review surface the
+    /// write-back nudges point at. Nothing is written; confirming a
+    /// candidate goes through `create_entity` or a manual file.
+    Suggest {
+        /// Repository root directory. Defaults to current directory.
+        #[arg(long, default_value = ".")]
+        repo: PathBuf,
+
+        /// How far back to mine events and usage, in days.
+        #[arg(long, default_value = "7")]
+        days: u32,
+
+        /// Max candidates to return.
+        #[arg(long, default_value = "10")]
+        limit: u32,
     },
 
     /// Run the MCP server over stdio (for AI agent integration).
@@ -350,7 +368,8 @@ fn main() -> anyhow::Result<()> {
             include_stale,
             max_tokens,
         } => cli::run_context(&mode, query.as_deref(), &repo, include_stale, max_tokens),
-        Commands::McpStdio => cli::run_mcp_stdio(),
+        Commands::Suggest { repo, days, limit } => cli_events::run_suggest(&repo, days, limit),
+        Commands::McpStdio => cli_events::run_mcp_stdio(),
         Commands::Consolidate { repo, dry_run } => commands::run_consolidate(&repo, dry_run),
         Commands::Verify { entity_id, repo } => commands::run_verify(&repo, &entity_id),
         Commands::CaptureEvent {
@@ -363,7 +382,7 @@ fn main() -> anyhow::Result<()> {
             file_path,
             hook_json,
             fts_only,
-        } => cli::run_capture_event(&cogz::hooks::CaptureInput {
+        } => cli_events::run_capture_event(&cogz::hooks::CaptureInput {
             repo: &repo,
             event_str: &event_type,
             prompt: prompt.as_deref(),

@@ -648,6 +648,7 @@ fn fire_file_save(
 /// Write a source file under the fixture repo root and save it once
 /// so the code index holds its entities. Returns the `file` entity id
 /// the reindex created for it.
+#[allow(clippy::too_many_arguments)]
 fn index_source_file(
     storage: &Arc<Storage>,
     config: &Config,
@@ -935,7 +936,7 @@ fn file_save_surfaces_knowledge_drifted_by_edit() {
     );
 
     let notice = output
-        .drift_notice
+        .notices
         .expect("save that invalidated knowledge should carry a drift notice");
     assert!(notice.contains("foo_work invariants"), "notice: {notice}");
     assert!(notice.contains("dddddddd-0000"), "notice: {notice}");
@@ -1005,9 +1006,9 @@ fn file_save_no_notice_when_nothing_drifted() {
         "src/foo.rs",
     );
     assert!(
-        output.drift_notice.is_none(),
+        output.notices.is_none(),
         "save unrelated to any knowledge should stay silent: {:?}",
-        output.drift_notice
+        output.notices
     );
 
     // An identical save — verified against the new hash — also stays
@@ -1038,5 +1039,10 @@ fn file_save_no_notice_when_nothing_drifted() {
         &code_mod,
         "src/foo.rs",
     );
-    assert!(output.drift_notice.is_none());
+    // No drift text — though the third save of foo.rs may legitimately
+    // produce a hot-file write nudge; that's the orthogonal half of
+    // `notices`, not what this test guards.
+    if let Some(n) = &output.notices {
+        assert!(!n.contains("drifted"), "unexpected drift notice: {n}");
+    }
 }

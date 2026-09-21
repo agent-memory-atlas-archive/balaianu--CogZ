@@ -94,13 +94,40 @@ pub async fn search(
         if let Err(e) = crate::storage::usage::record_pointer_conversions(&conn, &result_ids) {
             tracing::warn!("usage tracking: pointer conversion failed: {e}");
         }
-        Ok::<_, crate::search::SearchError>(results)
+
+        // Query telemetry — feeds the search_miss mining pass and
+        // usage analysis; queries were previously unlogged.
+        if let Err(e) = crate::storage::events::record_event(
+            &conn,
+            crate::storage::events::EventType::SearchPerformed,
+            None,
+            &serde_json::json!({
+                "query": params.query,
+                "returned": results.results.len(),
+                "filtered": results.filtered_count,
+                "code_search": use_code,
+            }),
+        ) {
+            tracing::warn!("search_performed event: {e}");
+        }
+
+        // Same push surface as the hooks: a fresh mining signal
+        // (including this search's own miss) rides the response.
+        let fresh = crate::hooks::nudge::fresh_suggestions(&conn, "search");
+        let write_nudge = (!fresh.is_empty()).then(|| crate::hooks::nudge::format_json(&fresh));
+
+        Ok::<_, crate::search::SearchError>((results, write_nudge))
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
     .map_err(|e| mcp_internal_error("search", &e.to_string()))?;
 
-    Ok(tool_success(search_response(results)))
+    let (results, write_nudge) = results;
+    let mut response = search_response(results);
+    if let Some(nudge) = write_nudge {
+        response["write_nudge"] = nudge;
+    }
+    Ok(tool_success(response))
 }
 
 pub async fn get_context(
@@ -169,11 +196,20 @@ pub async fn get_context(
             }
             Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
         }
-        Ok::<_, crate::context::AssembleError>(pack)
+
+        let fresh = crate::hooks::nudge::fresh_suggestions(&conn, "get_context");
+        let write_nudge = (!fresh.is_empty()).then(|| crate::hooks::nudge::format_json(&fresh));
+
+        Ok::<_, crate::context::AssembleError>((pack, write_nudge))
     })
     .await
     .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
     .map_err(|e| mcp_internal_error("context", &e.to_string()))?;
 
-    Ok(tool_success(context_response(pack)))
+    let (pack, write_nudge) = pack;
+    let mut response = context_response(pack);
+    if let Some(nudge) = write_nudge {
+        response["write_nudge"] = nudge;
+    }
+    Ok(tool_success(response))
 }
