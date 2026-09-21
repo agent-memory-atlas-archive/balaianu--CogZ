@@ -36,6 +36,7 @@ src/
   main.rs              CLI entry point (clap)
   cli.rs               CLI command dispatch
   cli_embed.rs         CLI embedding helpers
+  cli_events.rs        CLI event/mining surface (suggest, capture-event, mcp-stdio)
   net.rs               HTTP agents with bounded timeouts
   security/            Secret pattern scanning
   commands/            CLI command implementations
@@ -54,7 +55,8 @@ src/
     events.rs          Domain event recording
     graph.rs            Graph traversal (BFS expansion)
     graph_queries.rs   Targeted graph queries (callers, impact, orphans)
-    mining.rs          Write-path mining (observation candidates)
+    mining.rs          Write-path mining (orchestration, Suggestion type)
+    mining_signals.rs  The five mining passes (search_miss, uncharted, recurring, hot, error_fix)
     query.rs           Entity queries (by type, by reference)
     status.rs          Status state machine
     access.rs          Entity access tracking
@@ -118,6 +120,7 @@ src/
     sync/              Code entity DB sync
     auto_link.rs       Knowledge → code auto-linking
     stale_flagging.rs  Stale knowledge flagging on code changes
+    drift.rs           Drift tracking: flag, backfill, recompute, heal, verify_entity
   mcp/                 MCP server
     server.rs          ServerHandler impl, repo/model caching
     repo_cache.rs      Repo cache: herd protection, LRU, staleness
@@ -139,7 +142,9 @@ src/
   hooks/               Lifecycle event handlers
     lifecycle.rs       Event dispatch, context packs, delivery/hit tracking
     capture.rs         CLI capture-event handler
+    format.rs          Hook JSON output (additionalContext) and pack formatting
     handlers.rs        Event-specific handlers (file_save, session_end)
+    nudge.rs           Write-back nudges: freshness filter, impression dedup, markdown/JSON formatting
     reindex.rs         Background reindex spawn + debounce
   doctor/              Health checks
     checks.rs          Doctor report, all check implementations

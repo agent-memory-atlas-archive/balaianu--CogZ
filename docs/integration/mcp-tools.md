@@ -84,7 +84,7 @@ Re-stamp a knowledge entry's `verified_against` provenance to the current hashes
 | `repo` | string | yes | Absolute path to project root |
 | `id` | string | yes | UUID of the knowledge entry to verify |
 
-**Returns:** JSON with `id`, `restamped` (number of references re-stamped), `reactivated` (whether a `code_orphaned` stale status was cleared).
+**Returns:** JSON with `id`, `restamped` (number of references re-stamped), `reactivated` (whether a `code_orphaned` stale status was cleared), and optionally `write_nudge` (see below).
 
 ## Query tools
 
@@ -135,7 +135,7 @@ Search across all entities using hybrid FTS5 + vector search with RRF fusion. Re
 | `expand` | boolean | no | Enable graph expansion (default: `true`) |
 | `code_search` | boolean | no | Use code model for query embedding (for code-focused queries) |
 
-**Returns:** JSON with `results` array and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`).
+**Returns:** JSON with `results` array and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`), and optionally `write_nudge` (see below).
 
 Each result has `entity`, `relevance`, `kind` (`direct` or `expanded`), `graph_path`, `graph_path_description`, and `drift_count` — the number of the entity's references whose `verified_against` provenance diverged. `drift_count > 0` means the content may be outdated relative to current code; the score was already demoted by `search.drift_penalty`.
 
@@ -154,7 +154,7 @@ Assemble a context pack — a coherent, scoped, ranked collection of information
 | `include_stale` | boolean | no | Include stale entities (default: `false`) |
 | `max_tokens` | integer | no | Override token budget from config |
 
-**Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`, `tier`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`, `pointer_ids`, `signals` — per-channel `code_strength`/`knowledge_strength`/gradients when retrieval ran in hybrid mode).
+**Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`, `tier`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`, `pointer_ids`, `signals` — per-channel `code_strength`/`knowledge_strength`/gradients when retrieval ran in hybrid mode), and optionally `write_nudge` (see below).
 
 Tiered push (on by default via `context.tiered_push`): each section carries a `tier` — `baseline` (Tier 0: identity + top rules, always shipped in task/escalation packs), `full` (Tier 1: search content), or `pointer` (Tier 2: index entry — presence without depth). A trailing section with `source: "overflow_index"` lists entities that were retrieved but didn't fit the token budget as compact `type:title:id` pointers — pull them individually via `search` or a narrower `get_context` query; their ids also appear in `metadata.pointer_ids`.
 
@@ -256,7 +256,21 @@ Capture a lifecycle event. Called by hook scripts. For `session_start` and `prom
 | `tool_result` | string | no | Tool result summary (for `post_tool_use`) |
 | `file_path` | string | no | Saved file path, relative to repo root (for `file_save`) |
 
-**Returns:** JSON with `event_id`, and depending on event type: `context_pack` (for `session_start`/`prompt_submit`, and for `file_save` when the saved file has governing rules — the scoped pack's `query` is the file path), `reindex_summary` (for `file_save`), `consolidation_summary` and `suggestion_count` (for `session_end` — the count of mined observation candidates available via `suggest_observations`).
+**Returns:** JSON with `event_id`, and depending on event type: `context_pack` (for `session_start`/`prompt_submit`, and for `file_save` when the saved file has governing rules — the scoped pack's `query` is the file path), `reindex_summary` (for `file_save`), `consolidation_summary` and `suggestion_count` (for `session_end` — the count of mined observation candidates available via `suggest_observations`), and `notices` — a text block appended to the agent's context when present, carrying drift warnings and write-back nudges (the same content the hook output places in `additionalContext`).
+
+## Write-back nudges (`write_nudge`)
+
+`search`, `get_context`, and `verify_knowledge` responses may carry an optional `write_nudge` object when the mining pass finds a fresh observation candidate:
+
+```json
+"write_nudge": {
+  "candidates": 1,
+  "top": { "signal": "search_miss", "title": "...", "content": "...", "references": [] },
+  "action": "..."
+}
+```
+
+`top` is a drafted entity (signal, title, content, references) — the agent confirms it through `create_entity` or ignores it. Candidates are deduplicated by fingerprint (one impression per candidate per repo per 24h), so repeated calls do not re-nudge. The full candidate list is available via `suggest_observations` (or `cogz suggest` on the CLI).
 
 ## Error handling
 

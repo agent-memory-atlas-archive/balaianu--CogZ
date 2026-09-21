@@ -139,7 +139,7 @@ Use `--code` for queries about code structure, function behavior, or implementat
 
 1. **Graph expansion dilutes precision.** Graph-expanded entities are technically related but may not contain the query keywords. The decayed relevance score, edge weighting, and `min_relevance` floor mitigate this but don't eliminate it.
 2. **Code/knowledge embedding mismatch.** When a code query is embedded with the knowledge model (or vice versa), the KNN search may miss relevant results. Using `--code` for code-focused queries helps.
-3. **Silence gate margin is thin.** The default `silence_threshold` (0.05) was calibrated on the CogZ self-corpus and the telegram-bot benchmark corpus: negatives measured ≤0.039 max gradient; real queries escape via `silence_strength_floor` or a channel gradient ≥0.043. Other corpora or models may straddle it — check `signals` and retune if needed.
+3. **Silence gate margin is thin.** The default `silence_threshold` (0.05) was calibrated on the CogZ self-corpus plus a second real-world TypeScript project corpus: negatives measured ≤0.039 max gradient; real queries escape via `silence_strength_floor` or a channel gradient ≥0.043. Other corpora or models may straddle it — check `signals` and retune if needed.
 
 ## See also
 

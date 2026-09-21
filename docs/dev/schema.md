@@ -2,7 +2,7 @@
 
 CogZ uses SQLite with WAL mode. The schema is versioned via `PRAGMA user_version`. Migrations are forward-only and idempotent.
 
-**Current schema version:** 5
+**Current schema version:** 6
 
 ## Tables
 

@@ -39,12 +39,12 @@ For hooks, speed matters more than ranking quality. The MCP server (persistent p
 
 | Event | When | What CogZ does | Output |
 |---|---|---|---|
-| `session_start` | Agent session begins | Records event, assembles cold_start context pack, spawns background reindex | Context pack (recent rules + observations) |
-| `prompt_submit` | User submits a prompt | Records event, resolves usage hits on still-open deliveries (prompt names a delivered entity's file path or title), then assembles task context pack, spawns background reindex (debounced 60s) | Context pack (query-scoped retrieval) |
+| `session_start` | Agent session begins | Records event, assembles cold_start context pack, spawns background reindex | Context pack (recent rules + observations) + notices when present |
+| `prompt_submit` | User submits a prompt | Records event, resolves usage hits on still-open deliveries (prompt names a delivered entity's file path or title), then assembles task context pack, spawns background reindex (debounced 60s) | Context pack (query-scoped retrieval) + notices when present |
 | `pre_tool_use` | Before a tool call | Records event only | None (audit trail) |
-| `post_tool_use` | After a tool call | Records event; marks usage hits on delivered entities (tool touched an entity's file, or output mentioned its id/title) | None |
-| `file_save` | A file is saved | Records event, marks usage hits on delivered entities in the saved file, triggers single-file code reindex if source file, runs post-index maintenance (stale flag + provenance backfill + drift recompute + heal), syncs `.cogz/` file if under `.cogz/`, pushes rules governing the saved file when they exist | Reindex summary + scoped rules (when present) |
-| `session_end` | Agent session ends | Records event, closes open usage deliveries, runs consolidation (promotion + merge), counts mined observation candidates | Consolidation summary + `suggestion_count` |
+| `post_tool_use` | After a tool call | Records event; marks usage hits on delivered entities (tool touched an entity's file, or output mentioned its id/title); mines write-back candidates | Nudge text via `additionalContext` when a fresh candidate exists, else none |
+| `file_save` | A file is saved | Records event, marks usage hits on delivered entities in the saved file, triggers single-file code reindex if source file, runs post-index maintenance (stale flag + provenance backfill + drift recompute + heal), syncs `.cogz/` file if under `.cogz/`, pushes rules governing the saved file when they exist, mines write-back candidates | Reindex summary + scoped rules + notices (when present) |
+| `session_end` | Agent session ends | Records event, closes open usage deliveries, runs consolidation (promotion + merge), counts mined observation candidates | Consolidation summary + `suggestion_count` + notices (when present) |
 | `stop` | Agent stops | Records event only | None |
 
 ## CLI usage
@@ -127,7 +127,7 @@ This is the canonical hook config. Copy it into your agent's hook configuration 
 }
 ```
 
-**Timeouts:** `session_start` and `prompt_submit` need 15s — context assembly is hybrid when models are installed (model load + query embedding adds a few seconds; background reindex is detached and doesn't block). Record-only events keep `--fts-only` because they never assemble a pack. `file_save` needs 20s (single-file reindex). `session_end` needs 30s (consolidation). `stop` needs 5s (event recording only).
+**Timeouts:** `session_start` and `prompt_submit` need 15s — context assembly is hybrid when models are installed (model load + query embedding adds a few seconds; background reindex is detached and doesn't block). Record-only events keep `--fts-only` because they never assemble a pack. `post_tool_use` needs 10s (usage resolution + write-back mining). `file_save` needs 20s (single-file reindex). `session_end` needs 30s (consolidation). `stop` needs 5s (event recording only).
 
 **`--fts-only`:** forces lexical-only mode even when models are installed — useful for pack-producing events on constrained machines, at the cost of semantic retrieval in packs.
 
@@ -161,6 +161,15 @@ For `session_start` and `prompt_submit`, the context pack is printed as formatte
 - **Source priority** — rules > observations > knowledge > code
 - **Graph provenance** — for task/escalation mode, each section includes the graph path from the query match to this entity
 - **Token budget** — sections are sorted by priority then relevance, and truncated/dropped to fit the configured budget
+
+## Notices and write-back nudges
+
+Beyond context packs, events can append **notices** to the same `additionalContext` field:
+
+- **Drift notice** — when entities in the pack carry drift flags (references changed since verification), a compact warning listing them.
+- **Write-back nudge** — when the mining pass finds a fresh candidate (a search that missed, an error→fix pair, a hot file, a zero-hit delivery, recurring reliance on one entity), a short drafted observation is appended with title, content, and candidate references. Each candidate is shown at most once per 24h per repo (fingerprint dedup); the same set is reviewable later via `cogz suggest` or the `suggest_observations` MCP tool. Nothing is written automatically — confirming a candidate is the agent's `create_entity` call.
+
+`pre_tool_use` and `stop` never produce output. `post_tool_use` emits output only when a nudge exists — silence is the normal case.
 
 ## See also
 

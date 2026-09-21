@@ -168,6 +168,8 @@ Normal operation is automatic: hooks fire on lifecycle events, the agent drives 
 | `cogz context --mode <mode> [query]` | Assemble context pack |
 | `cogz status` | DB stats, entity counts, model status |
 | `cogz consolidate [--dry-run]` | Run promotion and merge |
+| `cogz suggest [--days N]` | List mined observation candidates |
+| `cogz verify <entity-id>` | Re-stamp a drifted entity's provenance |
 | `cogz capture-event <type>` | Capture lifecycle event from hooks |
 | `cogz models <download\|list\|clean>` | Model management |
 | `cogz doctor [--prune-observations]` | Health check, policy violations, usage metrics |
@@ -198,6 +200,18 @@ Works without ONNX Runtime or model downloads. All hooks, FTS search, context pa
 | CPU | any x86_64 or ARM64, 4+ cores speeds up batch embedding |
 
 Full functionality including vector search, semantic dedup, and NLI contradiction detection. Models auto-download on first use and auto-unload after 5 min idle (RAM drops back to ~11 MB). See [Evaluations](docs/evaluations/) for the full resource consumption profile.
+
+## Benchmarks
+
+CogZ ships a self-contained retrieval benchmark (`benchmark/`) run against this repository's own `.cogz` corpus and source code — 78 labeled queries scored for P@5, MRR, and recall@20:
+
+| Variant | MRR | Recall@20 |
+|---|---|---|
+| Hybrid (FTS + vector + graph) | 0.336 | 0.659 |
+| FTS-only (degraded mode) | 0.204 | 0.634 |
+| Hybrid, no graph expansion | 0.336 | 0.506 |
+
+The vector channel roughly doubles MRR over FTS alone; graph expansion adds +0.15 recall@20. Context packs reach 0.816 expected-entity recall at ~8K average tokens. Methodology, per-intent breakdowns, and the tuning sweep history are in [benchmark/README.md](benchmark/README.md).
 
 ## Architecture
 

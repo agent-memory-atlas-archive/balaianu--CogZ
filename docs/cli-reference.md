@@ -75,7 +75,7 @@ cogz embed-bg --db <path> --ids-file <path> --code-model <name> --dimension <n> 
 - `--code-model <name>` — code embedding model name
 - `--dimension <n>` — embedding dimension (must match the vec0 table)
 - `--idle-ttl <s>` — model idle TTL in seconds
-- `--min-free-mb <n>` — minimum free disk MB for model loading
+- `--min-free-mb <n>` — minimum free RAM (MB) required to load the model; degrades to FTS-only below it
 
 Reads entity IDs, loads the code model, embeds in batches of 32, stores vectors, and cleans up the ID file. Not intended for manual use — spawned automatically.
 
@@ -115,7 +115,7 @@ cogz context [--mode <mode>] [query] [--repo <path>] [--include-stale] [--max-to
 - `--include-stale` — include stale entities in the context pack
 - `--max-tokens <n>` — override the token budget from config
 
-**Output:** JSON context pack with sections (entity title + content), metadata (token count, search mode, dropped sources), and graph provenance.
+**Output:** formatted text pack — header (mode, query, search mode, section/token counts, dropped sections), then numbered sections with entity type, title, relevance, drift flags, graph provenance, and content. The `get_context` MCP tool returns the same pack as JSON. Ends with a write-back nudge footer when a fresh mined candidate exists.
 
 ## `cogz status`
 
@@ -127,6 +127,21 @@ cogz status [--repo <path>]
 
 **Flags:**
 - `--repo <path>` — repository root (default: `.`)
+
+## `cogz suggest`
+
+List mined observation candidates — the review surface write-back nudges point at. Mines recent events and usage for signals (searches that missed, error→fix pairs, hot files, zero-hit deliveries, recurring reliance) and prints a drafted title/content/references for each. Nothing is written; confirming a candidate is a `create_entity` MCP call or a manual `.cogz/observations/` file.
+
+```
+cogz suggest [--repo <path>] [--days <n>] [--limit <n>]
+```
+
+**Flags:**
+- `--repo <path>` — repository root (default: `.`)
+- `--days <n>` — how far back to mine, in days (default: `7`, capped at `90`)
+- `--limit <n>` — max candidates (default: `10`)
+
+The CLI twin of the `suggest_observations` MCP tool — same mining pass, same `suggestions_requested` audit event, text output instead of JSON.
 
 ## `cogz consolidate`
 
@@ -167,9 +182,9 @@ cogz capture-event <event_type> [--repo <path>] [--prompt <text>] [--prompt-file
 - `session_start` — records event, assembles cold_start context pack, prints to stdout, spawns background reindex
 - `prompt_submit` — records event, assembles task context pack using the prompt, prints to stdout, spawns background reindex (debounced 60s)
 - `pre_tool_use` — records event only (audit trail)
-- `post_tool_use` — records event only (audit trail)
-- `file_save` — records event, triggers single-file code reindex and stale-knowledge flagging if the file is a source file; syncs `.cogz/` file if under `.cogz/`
-- `session_end` — records event, runs consolidation (promotion + merge)
+- `post_tool_use` — records event, resolves usage hits on delivered entities; may emit a write-back nudge in hook output when a fresh mined candidate exists
+- `file_save` — records event, triggers single-file code reindex and stale-knowledge flagging if the file is a source file; syncs `.cogz/` file if under `.cogz/`; may emit nudges/drift notices in hook output
+- `session_end` — records event, runs consolidation (promotion + merge), counts mined candidates; may emit notices in hook output
 - `stop` — records event, no side effects
 
 See [Hooks](integration/hooks.md) for hook configuration examples.
@@ -251,7 +266,7 @@ cogz verify <entity-id> [--repo <path>]
 **Flags:**
 - `--repo <path>` — repository root (default: `.`)
 
-Writes canonical frontmatter first, then re-syncs the DB. Fails on unknown IDs and non-knowledge entity types. Entities with no resolvable references cannot be verified.
+Writes canonical frontmatter first, then re-syncs the DB. Fails on unknown IDs and entities with no backing file (code entities — they carry no `verified_against` frontmatter to re-stamp). Works on observations, rules, and knowledge.
 
 ## `cogz update`
 
