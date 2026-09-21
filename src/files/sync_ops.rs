@@ -31,6 +31,21 @@ pub(crate) fn sync_parsed_file(
     relative_path: &str,
     incremental: bool,
 ) -> Result<SyncAction, SyncError> {
+    // A pruned file is a tombstone — terminal status, empty title and
+    // body. Reject files that claim pruned while still carrying
+    // content: either a malformed tombstone or an attempt to mint a
+    // terminal record through the parse path.
+    if entity_file.status == "pruned"
+        && (!entity_file.body.trim().is_empty() || !entity_file.title.trim().is_empty())
+    {
+        return Err(SyncError::Storage(
+            storage::StorageError::IllegalTransition {
+                from: "new".to_string(),
+                to: "pruned".to_string(),
+            },
+        ));
+    }
+
     match storage::crud::get_entity(conn, &entity_file.id) {
         Ok(existing) => {
             if incremental && existing.content_hash.as_deref() == Some(hash) {

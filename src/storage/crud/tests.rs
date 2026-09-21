@@ -129,6 +129,70 @@ fn tombstone_entity_nonexistent_errors() {
 }
 
 #[test]
+fn tombstone_entity_scrubs_event_payloads() {
+    let conn = setup();
+    insert_entity(
+        &conn,
+        &Entity::new("uuid-1", "observation", "Title", "secret body"),
+    )
+    .unwrap();
+    update_status(&conn, "uuid-1", "rejected").unwrap();
+    events::record_event(
+        &conn,
+        events::EventType::ObservationEdited,
+        Some("uuid-1"),
+        &serde_json::json!({"old_content": "secret body"}),
+    )
+    .unwrap();
+    events::record_event(
+        &conn,
+        events::EventType::ObservationCreated,
+        Some("uuid-1"),
+        &serde_json::json!({"title": "Title"}),
+    )
+    .unwrap();
+
+    tombstone_entity(&conn, "uuid-1").unwrap();
+
+    let mut stmt = conn
+        .prepare("SELECT payload FROM events WHERE entity_id = 'uuid-1'")
+        .unwrap();
+    let payloads: Vec<String> = stmt
+        .query_map([], |r| r.get(0))
+        .unwrap()
+        .collect::<Result<_, _>>()
+        .unwrap();
+    assert!(payloads.len() >= 2);
+    for payload in &payloads {
+        assert!(
+            !payload.contains("secret body"),
+            "payload leaked: {payload}"
+        );
+        assert!(!payload.contains("\"Title\""), "payload leaked: {payload}");
+    }
+}
+
+#[test]
+fn delete_entity_cascade_scrubs_event_payloads() {
+    let conn = setup();
+    insert_entity(&conn, &Entity::new("a", "observation", "A", "secret body")).unwrap();
+    events::record_event(
+        &conn,
+        events::EventType::ObservationEdited,
+        Some("a"),
+        &serde_json::json!({"old_content": "secret body"}),
+    )
+    .unwrap();
+
+    delete_entity_cascade(&conn, "a").unwrap();
+
+    let payload: String = conn
+        .query_row("SELECT payload FROM events LIMIT 1", [], |r| r.get(0))
+        .unwrap();
+    assert!(!payload.contains("secret body"));
+}
+
+#[test]
 fn delete_entity_cascade_removes_edges_and_nullifies_events() {
     let conn = setup();
     insert_entity(&conn, &Entity::new("a", "observation", "A", "c")).unwrap();

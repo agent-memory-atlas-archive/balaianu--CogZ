@@ -102,9 +102,9 @@ pub fn delete_entity(conn: &Connection, id: &str) -> Result<(), StorageError> {
 /// removing it from search results).
 ///
 /// This is the only write operation that bypasses the file-first
-/// invariant — the canonical file has already been deleted by the
-/// caller (doctor pruning). The DB record is intentionally reduced to
-/// a minimal tombstone to preserve graph edges and event history.
+/// invariant — the caller (doctor pruning) has already emptied the
+/// canonical file. The DB record is intentionally reduced to a
+/// minimal tombstone to preserve graph edges and event history.
 pub fn tombstone_entity(conn: &Connection, id: &str) -> Result<(), StorageError> {
     tombstone_entity_with_timestamp(conn, id, &chrono::Utc::now().to_rfc3339())
 }
@@ -141,6 +141,15 @@ pub fn tombstone_entity_with_timestamp(
             to: "pruned".to_string(),
         });
     }
+    // Strip the entity's content from its event payloads — pruning
+    // hides the record, so its text must not survive inside the audit
+    // log. Event type and timestamp stay: the fact of the mutation is
+    // audit, the pre-image is content.
+    conn.execute(
+        "UPDATE events SET payload = json_remove(payload, '$.old_content', '$.new_content', '$.title') \
+         WHERE entity_id = ?1 AND json_valid(payload)",
+        params![id],
+    )?;
     Ok(())
 }
 
@@ -153,9 +162,13 @@ pub fn tombstone_entity_with_timestamp(
 /// DELETE trigger fires on entity deletion.
 pub fn delete_entity_cascade(conn: &Connection, id: &str) -> Result<(), StorageError> {
     crate::storage::edges::delete_edges_for_entity(conn, id)?;
-    // Nullify event references to avoid FK constraint violations.
+    // Nullify event references and strip entity content from payloads —
+    // a deleted entity's text must not outlive it inside the event log.
     conn.execute(
-        "UPDATE events SET entity_id = NULL WHERE entity_id = ?1",
+        "UPDATE events SET entity_id = NULL, \
+         payload = CASE WHEN json_valid(payload) THEN \
+         json_remove(payload, '$.old_content', '$.new_content', '$.title') ELSE payload END \
+         WHERE entity_id = ?1",
         params![id],
     )?;
     conn.execute("DELETE FROM entities WHERE id = ?1", params![id])?;
@@ -196,11 +209,16 @@ pub fn delete_entities_cascade_batch(
             edge_params.as_slice(),
         )?;
 
-        // Nullify event references.
+        // Nullify event references and strip entity content from payloads.
         let params: Vec<&dyn rusqlite::ToSql> =
             chunk.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
         conn.execute(
-            &format!("UPDATE events SET entity_id = NULL WHERE entity_id IN ({placeholders})"),
+            &format!(
+                "UPDATE events SET entity_id = NULL, \
+                 payload = CASE WHEN json_valid(payload) THEN \
+                 json_remove(payload, '$.old_content', '$.new_content', '$.title') ELSE payload END \
+                 WHERE entity_id IN ({placeholders})"
+            ),
             params.as_slice(),
         )?;
 

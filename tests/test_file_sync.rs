@@ -522,6 +522,43 @@ fn sync_reports_errors_for_bad_files() {
 }
 
 #[test]
+fn sync_rejects_pruned_file_with_content() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    // A tombstone file must have an empty title and body — a pruned
+    // file that still carries content is malformed and must not sync.
+    write_file(
+        dir.path(),
+        "observations/bad-tombstone.md",
+        "---\nid: a1b2c3d4-e5f6-4789-abcd-000000000099\ntitle: \"Should not survive\"\ntype: observation\nstatus: pruned\ncreated_at: 2026-08-27T14:30:00Z\nupdated_at: 2026-08-27T14:30:00Z\nreferences: []\n---\n\nbody content that should not survive",
+    );
+
+    let result = sync_all(&storage, dir.path());
+    assert_eq!(result.errors.len(), 1);
+    assert_eq!(result.created, 0);
+}
+
+#[test]
+fn sync_accepts_empty_tombstone_file() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    write_file(
+        dir.path(),
+        "observations/tombstone.md",
+        "---\nid: a1b2c3d4-e5f6-4789-abcd-000000000098\ntitle: \"\"\ntype: observation\nstatus: pruned\ncreated_at: 2026-08-27T14:30:00Z\nupdated_at: 2026-08-27T14:30:00Z\nreferences: []\n---\n\n",
+    );
+
+    let result = sync_all(&storage, dir.path());
+    assert_eq!(result.errors.len(), 0);
+    let conn = storage.conn();
+    let entity = storage::crud::get_entity(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000098").unwrap();
+    assert_eq!(entity.status, "pruned");
+    assert!(entity.content_hash.is_none());
+}
+
+#[test]
 fn sync_records_create_and_edit_events() {
     let storage = setup_storage();
     let dir = tempfile::tempdir().unwrap();
