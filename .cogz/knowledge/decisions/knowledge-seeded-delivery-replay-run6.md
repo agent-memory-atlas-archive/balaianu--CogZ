@@ -1,19 +1,19 @@
 ---
 id: db987e21-598b-47e0-a677-c72a334158eb
-title: "Knowledge-seeded delivery validated: seeded canonical knowledge in benchmark corpora (ab3 run6)"
+title: "Knowledge-seeded delivery validated: seeded canonical knowledge in benchmark corpora (replay run6)"
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-19T18:39:01.874764710+00:00"
+updated_at: "2026-09-21T19:22:53.632161517+00:00"
 references: ["c8d4e2b3-af5e-4b9c-9d6e-2f3e4b5c6d7e"]
 category: decisions
 tags: ["decision", "ab-eval", "knowledge-seeding", "drift", "provenance"]
-verified_against: ["c8d4e2b3-af5e-4b9c-9d6e-2f3e4b5c6d7e=57a8e25042fc209d8a24db595f49d2780b6cb6028d22d11a05d0d554a84a6002"]
+verified_against: ["c8d4e2b3-af5e-4b9c-9d6e-2f3e4b5c6d7e=c3106e261132a3f062fb46d48cc4182be29a6e4697fb35e576ea0dee6edf9456"]
 ---
 
-# Knowledge-seeded arm (k) — ab3 run6
+# Knowledge-seeded arm (k) — replay run6
 
-Follow-up to `hybrid-delivery-validated-ab3-run5`. Instead of relying only on
+Follow-up to `hybrid-delivery-validated-replay-run5`. Instead of relying only on
 code retrieval, each of the 14 worktrees was seeded with 12 canonical entities
 (7 knowledge, 3 rules, 2 observations) written by hand against real subsystem
 code — busy-prompt-queue, send-now race, /schedule flow, config discovery,

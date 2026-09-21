@@ -4,7 +4,7 @@ title: Declared references must be read from canonical files — materialized ed
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-19T18:44:24.266572437+00:00"
+updated_at: "2026-09-21T13:09:44.096392609+00:00"
 references: ["bc587df9-ed9b-5c9f-82db-698153296fbb", "0beb5d53-436a-5886-8a73-bd8f2bf6265b", "5dbbedce-8ac5-59a4-b83e-d4685d72a58f", "87603b8f-7700-5756-a43c-2565e658a854"]
 category: gotchas
 tags: ["drift", "edges", "foreign-key", "file-first", "sync-ordering"]

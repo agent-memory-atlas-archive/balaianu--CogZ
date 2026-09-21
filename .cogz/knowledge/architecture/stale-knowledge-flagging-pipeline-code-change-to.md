@@ -4,7 +4,7 @@ title: Stale-knowledge flagging pipeline — code change to frontmatter status
 type: knowledge
 status: active
 created_at: "2026-09-13T21:42:35.374039918+00:00"
-updated_at: "2026-09-19T18:44:22.361541598+00:00"
+updated_at: "2026-09-21T13:09:42.433594971+00:00"
 references: ["eeeb377b-1fab-5129-b252-f88d01e403c7", "8c379ddd-7139-527a-8c34-5ed0539742ca", "90ee1373-02db-5bd1-8fb4-90243806dbc7"]
 category: architecture
 tags: ["architecture", "stale-flagging", "lifecycle", "file-first"]

@@ -4,7 +4,7 @@ title: "Source-type balancing in hybrid search — proportions, normalization, q
 type: knowledge
 status: active
 created_at: "2026-09-13T21:43:07.489014965+00:00"
-updated_at: "2026-09-19T18:44:22.913745131+00:00"
+updated_at: "2026-09-21T13:09:42.893773650+00:00"
 references: ["94ab058f-a75a-508d-b763-1bc4ff58df41", "f13ff191-bfac-5eaa-bee1-bde497d80fe1"]
 category: architecture
 tags: ["architecture", "search", "rrf", "ranking"]

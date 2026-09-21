@@ -4,7 +4,7 @@ title: No direct DB writes outside the storage layer
 type: rule
 status: active
 created_at: "2026-08-28T19:33:00Z"
-updated_at: "2026-09-19T18:44:23.039241729+00:00"
+updated_at: "2026-09-21T13:09:43.002672346+00:00"
 references: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd"]
 confidence: 1
 validation_count: 2

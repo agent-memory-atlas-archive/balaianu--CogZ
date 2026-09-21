@@ -4,16 +4,16 @@ title: "Two-sided verify loop: drift cues on both read (delivery) and write (fil
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-19T18:44:24.483691520+00:00"
+updated_at: "2026-09-21T19:22:53.916592340+00:00"
 references: ["5fa33147-970e-5b48-96a5-a8daef233491", "16dc9fd4-72f1-563e-bea5-9cc6221592d0", "d7473108-0d5d-5f69-bc1a-b64c614136bd", "af3cbdc2-d293-5dc8-9926-176015a9a339", "db987e21-598b-47e0-a677-c72a334158eb"]
 category: decisions
 tags: ["drift", "verify", "hooks", "delivery", "ab-eval"]
-verified_against: ["16dc9fd4-72f1-563e-bea5-9cc6221592d0=58f15cb994de709cc070b951bacc8ca6a8be0caad3d1debbfc0e9f6bf650e1f1", "5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "af3cbdc2-d293-5dc8-9926-176015a9a339=18e73516edb3081ad185c1f820487827e03f3d021acb955e8638407005d403e2", "d7473108-0d5d-5f69-bc1a-b64c614136bd=8ebc8e7975fe58e2f5864daec76ccd9f8773bd3d8419d8ac6186db9f22b649f0", "db987e21-598b-47e0-a677-c72a334158eb=5cd21e9bcf311be5dfe09afcf60558111b37eb4659150e369abfe3ba67786a2b"]
+verified_against: ["16dc9fd4-72f1-563e-bea5-9cc6221592d0=58f15cb994de709cc070b951bacc8ca6a8be0caad3d1debbfc0e9f6bf650e1f1", "5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "af3cbdc2-d293-5dc8-9926-176015a9a339=18e73516edb3081ad185c1f820487827e03f3d021acb955e8638407005d403e2", "d7473108-0d5d-5f69-bc1a-b64c614136bd=8ebc8e7975fe58e2f5864daec76ccd9f8773bd3d8419d8ac6186db9f22b649f0", "db987e21-598b-47e0-a677-c72a334158eb=cdf5da853a212977354671d909ee04625281975ff38210f8e1fce096fa9dc64f"]
 ---
 
 # The verify cue fired on the wrong axis
 
-The ab3 k2 run measured the gap precisely: **50 entities drifted across the
+The replay k2 run measured the gap precisely: **50 entities drifted across the
 fleet, zero `verify_knowledge` calls — and zero drifted entities were ever
 delivered.** The read-side cue (drift footer on packs, `drift` block in MCP
 responses) only fires when a *delivered* entity is already drifted. But drift

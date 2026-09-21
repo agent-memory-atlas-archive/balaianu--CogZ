@@ -4,7 +4,7 @@ title: "File-entity qualified_name is the full repo-relative path, not the basen
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-19T18:44:24.375021716+00:00"
+updated_at: "2026-09-21T13:09:44.196669810+00:00"
 references: ["a0f5b27b-3ea4-5ef7-ba6f-69b7a9c08443"]
 category: gotchas
 tags: ["uuid5", "code-entities", "references", "seed-scripts"]
@@ -17,7 +17,7 @@ verified_against: ["a0f5b27b-3ea4-5ef7-ba6f-69b7a9c08443=ba15d63dddadb23d908c082
 For `file` entities the qualified_name is the **full repo-relative path**
 (`src/telegram_acp_bot/telegram/bot.py`), not the basename (`bot.py`).
 
-Burned the ab3 seed script: it generated file-reference UUIDs from basenames
+Burned the replay seed script: it generated file-reference UUIDs from basenames
 and produced `missing` drift rows on perfectly live file entities. Function
 entities use bare names, methods use `Class::method`, files use the path —
 three different qname shapes, all easy to guess wrong.

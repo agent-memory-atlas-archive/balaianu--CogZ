@@ -4,18 +4,18 @@ title: "Full-spectrum benchmark k3: verify cue adoption measured, retrieval/pack
 type: knowledge
 status: active
 created_at: "2026-09-19T21:00:00Z"
-updated_at: "2026-09-19T18:44:24.734169418+00:00"
+updated_at: "2026-09-21T19:22:52.888442535+00:00"
 references: ["e7c1a2b3-4d5e-4f6a-8b9c-0d1e2f3a4b5c", "f2a3b4c5-6d7e-4f8a-9b0c-1d2e3f4a5b6c", "5fa33147-970e-5b48-96a5-a8daef233491", "dabbf2a6-d29f-4772-a2df-6d264b4b5461"]
 category: decisions
 tags: ["ab-eval", "benchmark", "verify", "retrieval", "context-packs"]
-verified_against: ["5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "dabbf2a6-d29f-4772-a2df-6d264b4b5461=1d97ff2d94861df5b2a54502d28b15b1a857a99e2ab5bf0e148233d3c000eaf2", "e7c1a2b3-4d5e-4f6a-8b9c-0d1e2f3a4b5c=b8cbf505dba3a0c073fb82806a5acd82668d202b27e5275b30af881d26bc7783", "f2a3b4c5-6d7e-4f8a-9b0c-1d2e3f4a5b6c=3293a1f5d4228e3b87628cd199c0a0d4fd20ca7085ecd245e45bfc973c68eb8b"]
+verified_against: ["5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "dabbf2a6-d29f-4772-a2df-6d264b4b5461=be1e606b7569de03e4447e071beaef13d94a5cd145d10aca14fde3a18ace1488", "e7c1a2b3-4d5e-4f6a-8b9c-0d1e2f3a4b5c=9391864e03a9d8ad59b153b5bfa919559c07225dba195223022dba5cdddb0344", "f2a3b4c5-6d7e-4f8a-9b0c-1d2e3f4a5b6c=c6efeb27cc7705ce0a90cec6d535de3b8fffbaf8a1fa495e0b083fe48f141629"]
 ---
 
 # Full-spectrum benchmark (2026-09-19): what the current version can do
 
 Decision-quality run across retrieval, packs, degradation, telemetry, and
 agentic replay. Corpus: CogZ self-repo (1,933 entities) + 14 seeded
-telegram-acp-bot worktrees + 4-task k3 agent replay.
+target-repo worktrees + 4-task k3 agent replay.
 
 ## Retrieval (78-query queries_v2, self-repo)
 

@@ -4,7 +4,7 @@ title: reindex_single_file must relativize hook-supplied absolute paths — ghos
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-19T18:44:24.157969686+00:00"
+updated_at: "2026-09-21T13:09:43.987776354+00:00"
 references: ["aa751672-ca20-57c4-b509-08a29e3b40d4", "a0f5b27b-3ea4-5ef7-ba6f-69b7a9c08443", "ce88f80f-708c-508d-b671-f8a65b9bb9d4"]
 category: gotchas
 tags: ["indexing", "uuid5", "hooks", "ghost-entities", "path-normalization"]

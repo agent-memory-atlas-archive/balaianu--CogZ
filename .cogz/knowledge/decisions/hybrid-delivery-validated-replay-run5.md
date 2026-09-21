@@ -1,19 +1,19 @@
 ---
 id: c8d4e2b3-af5e-4b9c-9d6e-2f3e4b5c6d7e
-title: "Hybrid delivery validated: pack-gate removal + full semantic arm (ab3 run5)"
+title: "Hybrid delivery validated: pack-gate removal + full semantic arm (replay run5)"
 type: knowledge
 status: active
 created_at: "2026-09-18T00:00:00Z"
-updated_at: "2026-09-19T18:44:24.041164807+00:00"
+updated_at: "2026-09-21T19:22:53.281956736+00:00"
 references: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d"]
 category: decisions
 tags: ["decision", "ab-eval", "context-packs", "hybrid-search", "silence-gate", "delivery-model"]
-verified_against: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d=6b1608434c4fb661c3754e86e55f317b39038d9ab181b8bb00d4c0758f770d93"]
+verified_against: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d=0e9d5ea7d99fce4f117314f2ab8e9f3ef795cfb0d514f5fcb3c59b458a3d7863"]
 ---
 
 # Hybrid delivery validated — supersedes the pack-gate recommendation
 
-Follow-up to `ab3-layered-eval-findings-2026-09-17`. The earlier decision
+Follow-up to `agent-replay-layered-eval-findings-2026-09-17`. The earlier decision
 recommended gating Tier-1 task push on retrieval confidence. Calibration
 against the benchmark corpus proved that gate structurally wrong; it was
 removed and replaced by a clean split: packs ship retrieval output,

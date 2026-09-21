@@ -8,7 +8,7 @@ updated_at: "2026-09-22T00:00:00Z"
 references: []
 ---
 
-During ab3 run6, `~/.local/bin/cogz` was a weeks-old build expecting schema
+During replay run6, `~/.local/bin/cogz` was a weeks-old build expecting schema
 v5 while all worktree DBs were v6. Six of fourteen agents tried `cogz
 search`/`cogz context`, got `schema version mismatch: db has 6, binary
 expects 5`, and abandoned the tool. One agent responded by **deleting the

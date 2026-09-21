@@ -1,19 +1,19 @@
 ---
 id: f2a3b4c5-6d7e-4f8a-9b0c-1d2e3f4a5b6c
-title: "ab3 k2: write-back adoption cracked, verify loop confirmed broken, seeded knowledge shown steering wrong"
+title: "Replay k2: write-back adoption cracked, verify loop confirmed broken, seeded knowledge shown steering wrong"
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-19T18:44:24.608901971+00:00"
+updated_at: "2026-09-21T19:22:54.218083081+00:00"
 references: ["db987e21-598b-47e0-a677-c72a334158eb", "5fa33147-970e-5b48-96a5-a8daef233491"]
 category: decisions
 tags: ["ab-eval", "knowledge-seeding", "drift", "verify", "write-back"]
-verified_against: ["5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "db987e21-598b-47e0-a677-c72a334158eb=5cd21e9bcf311be5dfe09afcf60558111b37eb4659150e369abfe3ba67786a2b"]
+verified_against: ["5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "db987e21-598b-47e0-a677-c72a334158eb=cdf5da853a212977354671d909ee04625281975ff38210f8e1fce096fa9dc64f"]
 ---
 
 # k2 arm — same seed, new binary (14-tool MCP + drift cues + silence gate)
 
-Follow-up to `knowledge-seeded-delivery-ab3-run6`. Identical seed corpus
+Follow-up to `knowledge-seeded-delivery-replay-run6`. Identical seed corpus
 (12 entities/worktree, 50 resolved references) and task protocol; the only
 variables were the consolidated MCP surface, read-side verify cues, and the
 0.05 silence threshold.

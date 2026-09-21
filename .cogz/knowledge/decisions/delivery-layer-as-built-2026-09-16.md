@@ -4,7 +4,7 @@ title: "Delivery layer as built: what shipped vs the design"
 type: knowledge
 status: active
 created_at: "2026-09-16T14:30:00Z"
-updated_at: "2026-09-19T18:44:23.915961134+00:00"
+updated_at: "2026-09-21T14:03:25.125308383+00:00"
 references: ["7c3d9e21-4f2a-4b8c-9d5e-6f7a8b9c0d1e"]
 category: decisions
 tags: ["decision", "context-packs", "tiered-push", "mining", "backlog-13-42-43-44"]

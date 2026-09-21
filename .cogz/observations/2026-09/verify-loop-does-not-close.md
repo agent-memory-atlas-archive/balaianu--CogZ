@@ -9,7 +9,7 @@ references: ["00f608f0-2ce9-567d-afb3-f6418f62079e"]
 verified_against: ["00f608f0-2ce9-567d-afb3-f6418f62079e=fcd51723a581b3ae2777ac405474cc292ac374ffdc4c8deebda2923e22b7f830"]
 ---
 
-Across the ab3 k-arm, agents' edits produced 50 drifted knowledge entities
+Across the replay k-arm, agents' edits produced 50 drifted knowledge entities
 in 13 worktrees — and `verify_knowledge` was called **zero times**, despite
 drift markers (`⚠ drift: N ref(s) changed since verified`) appearing in
 packs and search results.

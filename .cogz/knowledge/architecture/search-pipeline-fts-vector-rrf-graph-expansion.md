@@ -4,7 +4,7 @@ title: "Search pipeline — FTS, vector, RRF, graph expansion"
 type: knowledge
 status: active
 created_at: "2026-08-28T19:22:00Z"
-updated_at: "2026-09-19T18:44:22.628627436+00:00"
+updated_at: "2026-09-21T13:09:42.668249796+00:00"
 references: ["a9d8f4cd-a22a-4e0c-a25a-418c92564dcd"]
 category: architecture
 tags: ["search", "fts5", "vector", "rrf", "graph-expansion"]
