@@ -107,6 +107,8 @@ def main():
     ap.add_argument("--no-expand", action="store_true")
     ap.add_argument("--code-search", action="store_true")
     ap.add_argument("--status", default=None, help='entity status filter passed to search, e.g. "all"')
+    ap.add_argument("--pack-tokens", type=int, default=None,
+                    help="max_tokens override for get_context calls (budget sweep)")
     args = ap.parse_args()
 
     repo = str(Path(args.repo).resolve())
@@ -159,6 +161,8 @@ def main():
                 t1 = time.monotonic()
                 try:
                     ctx_params = {"repo": repo, "query": q["query"], "mode": "task"}
+                    if args.pack_tokens:
+                        ctx_params["max_tokens"] = args.pack_tokens
                     if args.status:
                         ctx_params["include_stale"] = args.status == "all"
                     ctx = sess.tool_json("get_context", ctx_params)

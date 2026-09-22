@@ -13,8 +13,40 @@ Usage: python3 score.py raw.json queries.json [--floor 0.05] [--k 5]
 
 import argparse
 import json
+import random
 import sys
 from pathlib import Path
+
+
+def percentile(sorted_vals, p):
+    if not sorted_vals:
+        return None
+    i = min(len(sorted_vals) - 1, int(p / 100 * len(sorted_vals)))
+    return sorted_vals[i]
+
+
+def bootstrap_ci(vals, B=2000, seed=0):
+    """Deterministic bootstrap 95% CI for the mean of vals."""
+    vals = [v for v in vals if v is not None]
+    if len(vals) < 2:
+        return None
+    rng = random.Random(seed)
+    n = len(vals)
+    means = sorted(
+        sum(vals[rng.randrange(n)] for _ in range(n)) / n for _ in range(B)
+    )
+    return [round(percentile(means, 2.5), 3), round(percentile(means, 97.5), 3)]
+
+
+def latency_percentiles(rows):
+    vals = sorted(x["latency_ms"] for x in rows if x.get("latency_ms") is not None)
+    if not vals:
+        return None
+    return {
+        "p50_ms": percentile(vals, 50),
+        "p95_ms": percentile(vals, 95),
+        "p99_ms": percentile(vals, 99),
+    }
 
 
 def score_run(raw: dict, qset: dict, k: int, floor: float) -> dict:
@@ -153,9 +185,13 @@ def score_run(raw: dict, qset: dict, k: int, floor: float) -> dict:
         "rotted_expectations": sum(x.get("rotted", 0) for x in per_query),
         "overall": {
             "p_at_k": agg(overall_rows, "p_at_k"),
+            "p_at_k_ci95": bootstrap_ci([x.get("p_at_k") for x in overall_rows]),
             "mrr": agg(overall_rows, "mrr"),
+            "mrr_ci95": bootstrap_ci([x.get("mrr") for x in overall_rows]),
             "recall_at_20": agg(overall_rows, "recall_at_20"),
+            "recall_at_20_ci95": bootstrap_ci([x.get("recall_at_20") for x in overall_rows]),
             "avg_latency_ms": agg(overall_rows, "latency_ms"),
+            "latency": latency_percentiles(overall_rows),
         },
         "by_intent": by_intent,
         "per_query": per_query,
@@ -166,6 +202,7 @@ def score_run(raw: dict, qset: dict, k: int, floor: float) -> dict:
         out["pack"] = {
             "n": len(pack_rows),
             "recall": agg(pack_rows, "pack_recall"),
+            "recall_ci95": bootstrap_ci([x.get("pack_recall") for x in pack_rows]),
             "avg_sections": agg(pack_rows, "pack_sections"),
             "avg_tokens": agg(pack_rows, "pack_tokens"),
             "avg_dropped": agg(pack_rows, "pack_dropped"),
@@ -197,7 +234,13 @@ def main():
 
     o = report["overall"]
     print(f"\n=== CogZ benchmark — {report['total_queries']} queries ===")
-    print(f"overall: P@{report['k']}={o['p_at_k']}  MRR={o['mrr']}  R@20={o['recall_at_20']}  avg {o['avg_latency_ms']}ms")
+    print(f"overall: P@{report['k']}={o['p_at_k']} {o.get('p_at_k_ci95') or ''}  "
+          f"MRR={o['mrr']} {o.get('mrr_ci95') or ''}  "
+          f"R@20={o['recall_at_20']} {o.get('recall_at_20_ci95') or ''}  "
+          f"avg {o['avg_latency_ms']}ms")
+    if o.get("latency"):
+        lat = o["latency"]
+        print(f"latency: p50={lat['p50_ms']}ms  p95={lat['p95_ms']}ms  p99={lat['p99_ms']}ms")
     print(f"errors: {report['errors'] or 'none'}  rotted-expected: {report['rotted_expectations']}")
     print(f"{'intent':<10} {'n':>3} {'P@k':>6} {'MRR':>6} {'R@20':>6} {'exp/q':>6} {'ms':>7}")
     for intent, m in report["by_intent"].items():

@@ -1,0 +1,18 @@
+{
+  "campaign": "version-report-card",
+  "created": "2026-09-22",
+  "binary": {
+    "path": "target/release/cogz",
+    "sha256": "5f4bc3ba37bb71dcdff88bc42e1c91508db0183cfcfe5b9dd66ecd95db9e955b",
+    "version": "0.3.0",
+    "git_head": "ed78398f9e664bef3a5803ff9de746bf2c2ae41b",
+    "git_head_subject": "Close tombstone coherence and event-payload retention gaps",
+    "note": "~/.local/bin/cogz verified identical sha256 at campaign start"
+  },
+  "rules": [
+    "All benchmark invocations use the pinned binary path, never PATH lookup",
+    "No cogz rebuilds mid-campaign; if the binary changes, record a new manifest and flag prior results",
+    "Never `cogz reset` a benchmark corpus; snapshot cogz.db files instead",
+    "Max 2 concurrent embed-bg processes (memory-constrained host)"
+  ]
+}
