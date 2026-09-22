@@ -13,22 +13,26 @@
       "class": 69,
       "file": 55,
       "function": 463,
-      "module": 15
+      "knowledge": 8,
+      "module": 15,
+      "observation": 4,
+      "rule": 3
     },
     "entities_by_status": {
-      "active": 602
+      "active": 617
     },
     "edges_by_type": {
+      "auto_references": 4,
       "calls": 293,
       "contains": 532,
       "extends": 21,
       "imports": 88
     },
-    "edges": 934,
+    "edges": 938,
     "code_embeddings": 602,
-    "knowledge_embeddings": 0,
+    "knowledge_embeddings": 15,
     "drift_rows": 0,
-    "db_bytes": 5373952,
+    "db_bytes": 9175040,
     "code_entity_langs": {
       "python": 336,
       "go": 265,
@@ -47,25 +51,147 @@
     "entities_by_type": {
       "class": 18,
       "file": 45,
-      "function": 81
+      "function": 81,
+      "knowledge": 6,
+      "observation": 3,
+      "rule": 2
     },
     "entities_by_status": {
-      "active": 144
+      "active": 155
     },
     "edges_by_type": {
+      "auto_references": 11,
       "calls": 24,
       "contains": 99,
       "imports": 40
     },
-    "edges": 163,
+    "edges": 174,
     "code_embeddings": 144,
-    "knowledge_embeddings": 0,
+    "knowledge_embeddings": 11,
     "drift_rows": 0,
-    "db_bytes": 4083712,
+    "db_bytes": 7655424,
     "code_entity_langs": {
       "typescript": 70,
       "tsx": 28,
       "javascript": 46
+    }
+  },
+  "api_tool": {
+    "path": "/home/andy/cogz_bench/corpora/api_tool",
+    "source_files": 235,
+    "loc": 75715,
+    "src_langs": {
+      "python": 234,
+      "js": 1
+    },
+    "git_commits": 1223,
+    "entities_by_type": {
+      "class": 564,
+      "file": 234,
+      "function": 2008,
+      "knowledge": 8,
+      "observation": 4,
+      "rule": 3
+    },
+    "entities_by_status": {
+      "active": 2821
+    },
+    "edges_by_type": {
+      "auto_references": 10,
+      "calls": 210,
+      "contains": 2572,
+      "extends": 90,
+      "imports": 889
+    },
+    "edges": 3771,
+    "code_embeddings": 2806,
+    "knowledge_embeddings": 15,
+    "drift_rows": 0,
+    "db_bytes": 27312128,
+    "code_entity_langs": {
+      "python": 2806
+    }
+  },
+  "CogZ-py": {
+    "path": "/home/andy/cogz_bench/corpora/CogZ-py",
+    "source_files": 192,
+    "loc": 70863,
+    "src_langs": {
+      "python": 190,
+      "bash": 2
+    },
+    "git_commits": 452,
+    "entities_by_type": {
+      "class": 310,
+      "file": 192,
+      "function": 2095,
+      "knowledge": 178
+    },
+    "entities_by_status": {
+      "active": 2775
+    },
+    "edges_by_type": {
+      "auto_references": 11,
+      "calls": 566,
+      "contains": 2405,
+      "extends": 30,
+      "imports": 540
+    },
+    "edges": 3552,
+    "code_embeddings": 2597,
+    "knowledge_embeddings": 178,
+    "drift_rows": 0,
+    "db_bytes": 27615232,
+    "code_entity_langs": {
+      "python": 2595,
+      "bash": 2
+    }
+  },
+  "CogZ": {
+    "path": "/home/andy/dev/personal/CogZ",
+    "source_files": 184,
+    "loc": 47999,
+    "src_langs": {
+      "bash": 1,
+      "rust": 173,
+      "python": 10
+    },
+    "git_commits": 182,
+    "entities_by_type": {
+      "class": 209,
+      "file": 176,
+      "function": 1291,
+      "knowledge": 57,
+      "module": 187,
+      "observation": 65,
+      "rule": 15
+    },
+    "entities_by_status": {
+      "active": 1954,
+      "stale": 38,
+      "superseded": 8
+    },
+    "edges_by_type": {
+      "auto_references": 272,
+      "calls": 2105,
+      "contains": 1500,
+      "contradicts": 7,
+      "derived_from": 3,
+      "extends": 4,
+      "imports": 254,
+      "references": 80,
+      "superseded_by": 8,
+      "supports": 18
+    },
+    "edges": 4251,
+    "code_embeddings": 1863,
+    "knowledge_embeddings": 137,
+    "drift_rows": 0,
+    "db_bytes": 27496448,
+    "code_entity_langs": {
+      "python": 13,
+      "rust": 1849,
+      "bash": 1
     }
   }
 }
