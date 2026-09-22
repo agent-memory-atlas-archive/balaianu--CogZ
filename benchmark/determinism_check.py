@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
 """Determinism check: two benchmark runs must produce identical results
-modulo wall-clock fields (latency_ms). Any difference in result sets,
-ordering, relevance scores, or context sections is a correctness signal —
-packs/retrieval should be fully deterministic on an unchanged corpus.
+modulo wall-clock fields (latency_ms) and baseline-tier relevance, which
+is intentionally stateful (cold_start_score reads access_count — bumped
+on every delivery — and recency relative to wall-clock).
 
-Usage: determinism_check.py run_a.json run_b.json
+Any other difference in result sets, ordering, relevance scores, or
+context sections is a correctness signal.
+
+Protocol: get_context mutates the access counts that feed baseline rule
+selection, so packs are NOT idempotent across runs against a live DB.
+Restore an identical snapshot before each run:
+
+    cp .cogz/cogz.db /tmp/snap.db            # also -wal/-shm if present
+    run.py ... --out run_a.json
+    cp /tmp/snap.db .cogz/cogz.db            # restore identical state
+    run.py ... --out run_b.json
+    determinism_check.py run_a.json run_b.json
+
 Exit 0 = identical; exit 1 = differences found (printed).
 """
 
@@ -14,9 +26,22 @@ from pathlib import Path
 
 IGNORE = {"latency_ms"}
 
+# Baseline-tier section relevance is intentionally stateful:
+# cold_start_score = w·confidence + w·ln(access_count+1) + w·recency(now),
+# so it drifts with accumulated deliveries and wall-clock between runs.
+# Pack *composition* (ids, order, content) is the deterministic contract;
+# compare relevance only for non-baseline tiers.
+BASELINE_VOLATILE = {"relevance"}
+
 
 def strip_volatile(obj):
     if isinstance(obj, dict):
+        if obj.get("tier") == "baseline":
+            return {
+                k: strip_volatile(v)
+                for k, v in obj.items()
+                if k not in IGNORE and k not in BASELINE_VOLATILE
+            }
         return {k: strip_volatile(v) for k, v in obj.items() if k not in IGNORE}
     if isinstance(obj, list):
         return [strip_volatile(v) for v in obj]

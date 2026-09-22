@@ -3,11 +3,11 @@
   "created": "2026-09-22",
   "binary": {
     "path": "target/release/cogz",
-    "sha256": "5f4bc3ba37bb71dcdff88bc42e1c91508db0183cfcfe5b9dd66ecd95db9e955b",
+    "sha256": "1eb595361f0e17121b0451f44805095d5adbaa3034ccecbd3f8aba13f3945066",
     "version": "0.3.0",
-    "git_head": "ed78398f9e664bef3a5803ff9de746bf2c2ae41b",
-    "git_head_subject": "Close tombstone coherence and event-payload retention gaps",
-    "note": "~/.local/bin/cogz verified identical sha256 at campaign start"
+    "git_head": "889edec",
+    "git_head_subject": "Make search ranking and context assembly deterministic",
+    "note": "~/.local/bin/cogz identical via rename-replace. Supersedes sha 5f4bc3ba (pre-determinism-fix build)."
   },
   "rules": [
     "All benchmark invocations use the pinned binary path, never PATH lookup",

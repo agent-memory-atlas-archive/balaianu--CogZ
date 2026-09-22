@@ -171,6 +171,7 @@ def main():
                         "sections": [
                             {"entity_id": s.get("entity_id"), "source": s.get("source"),
                              "title": s.get("title"), "relevance": s.get("relevance"),
+                             "tier": s.get("tier"),
                              "drift_count": s.get("drift_count"),
                              "content": s.get("content"),
                              "graph_path": s.get("graph_path"),
