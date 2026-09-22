@@ -1,0 +1,71 @@
+{
+  "kinetik": {
+    "path": "/home/andy/cogz_bench/corpora/kinetik",
+    "source_files": 55,
+    "loc": 13636,
+    "src_langs": {
+      "js": 1,
+      "python": 39,
+      "go": 15
+    },
+    "git_commits": 30,
+    "entities_by_type": {
+      "class": 69,
+      "file": 55,
+      "function": 463,
+      "module": 15
+    },
+    "entities_by_status": {
+      "active": 602
+    },
+    "edges_by_type": {
+      "calls": 293,
+      "contains": 532,
+      "extends": 21,
+      "imports": 88
+    },
+    "edges": 934,
+    "code_embeddings": 602,
+    "knowledge_embeddings": 0,
+    "drift_rows": 0,
+    "db_bytes": 5373952,
+    "code_entity_langs": {
+      "python": 336,
+      "go": 265,
+      "javascript": 1
+    }
+  },
+  "kaos-website": {
+    "path": "/home/andy/cogz_bench/corpora/kaos-website",
+    "source_files": 37,
+    "loc": 4122,
+    "src_langs": {
+      "ts": 27,
+      "tsx": 10
+    },
+    "git_commits": 12,
+    "entities_by_type": {
+      "class": 18,
+      "file": 45,
+      "function": 81
+    },
+    "entities_by_status": {
+      "active": 144
+    },
+    "edges_by_type": {
+      "calls": 24,
+      "contains": 99,
+      "imports": 40
+    },
+    "edges": 163,
+    "code_embeddings": 144,
+    "knowledge_embeddings": 0,
+    "drift_rows": 0,
+    "db_bytes": 4083712,
+    "code_entity_langs": {
+      "typescript": 70,
+      "tsx": 28,
+      "javascript": 46
+    }
+  }
+}

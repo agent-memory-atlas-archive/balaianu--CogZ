@@ -1,0 +1,516 @@
+{
+ "version": "commit-gt-v1",
+ "corpus": "/home/andy/dev/personal/CogZ",
+ "queries": [
+  {
+   "id": "cb2a66b33",
+   "intent": "commit",
+   "query": "Repair tombstone reference edges on rebuild",
+   "expected_entity_ids": [
+    "bc587df9-ed9b-5c9f-82db-698153296fbb"
+   ],
+   "expected_titles": [
+    "declared_references"
+   ],
+   "notes": "commit b2a66b33bf, 2 files"
+  },
+  {
+   "id": "c2936aae2",
+   "intent": "commit",
+   "query": "Capture section tier in runs and scope determinism check to state",
+   "expected_entity_ids": [
+    "cf271415-fa4b-5024-b0d6-066fc7adc85a"
+   ],
+   "expected_titles": [
+    "main"
+   ],
+   "notes": "commit 2936aae29a, 3 files"
+  },
+  {
+   "id": "c889edec4",
+   "intent": "commit",
+   "query": "Make search ranking and context assembly deterministic",
+   "expected_entity_ids": [
+    "23f81679-8621-5cd4-86a1-5b1db3ecb88a",
+    "4cb8667a-372a-5dd6-a81f-64e1620a9326",
+    "5d7b7853-74ca-5672-8631-3c175be343d1",
+    "5df73879-7358-5521-98e6-81bcc5057fe9",
+    "6c13bd51-5ca8-532a-8828-20c95debe650",
+    "728d20a4-7583-5d62-b11d-4e845efc7fe6",
+    "793f6448-0e2e-5da3-83d2-e7a560d240fd",
+    "8c72865d-d9d4-5b26-bd82-d08c80710959",
+    "94ab058f-a75a-508d-b763-1bc4ff58df41",
+    "ca22c3e3-6f07-5183-b36e-c2c63b5f318d"
+   ],
+   "expected_titles": [
+    "apply_post_merge",
+    "assemble_context",
+    "baseline_rules",
+    "cold_start_sections",
+    "expand_with_paths",
+    "expansion_terms",
+    "fuse",
+    "graph_retrieve",
+    "search",
+    "sort_by_priority"
+   ],
+   "notes": "commit 889edec4cc, 10 files"
+  },
+  {
+   "id": "c7621eace",
+   "intent": "commit",
+   "query": "Add pack-budget flag, bootstrap CIs, and latency percentiles to benchmark harness",
+   "expected_entity_ids": [
+    "267e5632-0e10-560b-a813-e488219aba2c",
+    "83a14ead-7494-59a4-9979-4c5d0b7ed680",
+    "cf271415-fa4b-5024-b0d6-066fc7adc85a"
+   ],
+   "expected_titles": [
+    "main",
+    "score_run"
+   ],
+   "notes": "commit 7621eace62, 3 files"
+  },
+  {
+   "id": "ced78398f",
+   "intent": "commit",
+   "query": "Close tombstone coherence and event-payload retention gaps",
+   "expected_entity_ids": [
+    "15aded32-75d0-5df6-94e7-9f93fce3c8f2",
+    "1b3494fd-2c1e-569f-829e-e71065c53968",
+    "26efad76-1a31-5a7f-ad48-9690f625c53b",
+    "33569af0-31f3-5af2-ae4a-f80cae835d90",
+    "3f4253ad-4b90-5735-9000-3cbfd8ab25e4",
+    "58e51672-aa39-5b79-b89e-ef6706e759cd",
+    "5b97ee43-797b-5982-ba28-b805090ff9db",
+    "7ea28444-0a55-5f57-9c0e-967584826903",
+    "8cea6536-11f8-5c22-9cd0-cbac2507e110",
+    "dbd7178a-f9be-520f-9a3d-821eb8bec443",
+    "e6f4a724-732f-57ed-91e4-31d99b901f96",
+    "f3b0faf3-09b9-5fe6-a442-943fa4225e08"
+   ],
+   "expected_titles": [
+    "count_entities_by_type",
+    "delete_entities_cascade_batch",
+    "delete_entity_cascade",
+    "delete_entity_cascade_removes_edges_and_nullifies_events",
+    "delete_entity_cascade_scrubs_event_payloads",
+    "entity_type_roundtrip",
+    "sync_accepts_empty_tombstone_file",
+    "sync_parsed_file",
+    "sync_records_create_and_edit_events",
+    "sync_rejects_pruned_file_with_content",
+    "tombstone_entity_scrubs_event_payloads",
+    "tombstone_entity_with_timestamp"
+   ],
+   "notes": "commit ed78398f9e, 4 files"
+  },
+  {
+   "id": "c83db0140",
+   "intent": "commit",
+   "query": "Expand benchmark harness: v2 query set, pack metrics, k3 results",
+   "expected_entity_ids": [
+    "5c8d770f-58eb-5a66-b05c-e572cc36a5e7",
+    "cf271415-fa4b-5024-b0d6-066fc7adc85a"
+   ],
+   "expected_titles": [
+    "collect_corpus_ids",
+    "main"
+   ],
+   "notes": "commit 83db0140c6, 6 files"
+  },
+  {
+   "id": "c1967e086",
+   "intent": "commit",
+   "query": "Sweep stale reindex debounce markers from temp dir",
+   "expected_entity_ids": [
+    "7c2c6d15-b1e3-586a-a134-cfce93d15560",
+    "9400c656-a55b-5a0b-bbc8-438696f36572"
+   ],
+   "expected_titles": [
+    "sweep_stale_debounce_files",
+    "touch_debounce_file"
+   ],
+   "notes": "commit 1967e08625, 1 files"
+  },
+  {
+   "id": "c7a57828b",
+   "intent": "commit",
+   "query": "Bound subprocess waits in tests and CI job runtime",
+   "expected_entity_ids": [
+    "341ee764-1ffb-5869-9309-9394c1738ba7",
+    "51eee4f0-6f84-5303-b09f-6b82ad524ace",
+    "6fbe63f6-0d65-5bdc-a22e-b332c265a410",
+    "75dafd32-0044-5346-b878-e2dfd2ee06cb",
+    "8dfd3140-687e-5294-b7fd-57c7aec27275"
+   ],
+   "expected_titles": [
+    "impl TempRepo",
+    "mcp_stdio_search_fts_only",
+    "new",
+    "run_cogz",
+    "run_cogz_env"
+   ],
+   "notes": "commit 7a57828b4b, 2 files"
+  },
+  {
+   "id": "c7fcffe59",
+   "intent": "commit",
+   "query": "Fix config default drift: route Default impls through default_* fns",
+   "expected_entity_ids": [
+    "17568a4e-58a4-53e0-a20f-f20ed306cad1",
+    "d7c08ac2-cf7c-5a63-8abb-0d1b8a4e2f3d",
+    "e62a4db1-9b86-5594-9d45-12eba72186e0",
+    "ef01d4fa-763e-5139-ab7f-d13ad83dc534",
+    "fabaf563-6e4d-50a6-8c39-65ff1bc57764"
+   ],
+   "expected_titles": [
+    "ContextConfig",
+    "default",
+    "default_for",
+    "impl Config",
+    "impl Default for ContextConfig"
+   ],
+   "notes": "commit 7fcffe596c, 1 files"
+  },
+  {
+   "id": "c60e252f0",
+   "intent": "commit",
+   "query": "Remove dead code paths found in post-commit audit",
+   "expected_entity_ids": [
+    "6ce04c9a-3167-5ed1-98db-26aae39d0b04",
+    "7cffa77d-0fc1-5276-895c-96729fbdc6b8",
+    "ce7cb06a-26c7-53cb-bfdb-d53478e0b610"
+   ],
+   "expected_titles": [
+    "StorageError",
+    "impl DeliveryKind",
+    "record_pointer_conversions"
+   ],
+   "notes": "commit 60e252f0db, 4 files"
+  },
+  {
+   "id": "ce41f06c9",
+   "intent": "commit",
+   "query": "Improve pack assembly: dedup, tail compression, overflow index",
+   "expected_entity_ids": [
+    "265067c2-f93e-51d3-b11d-b963a516ff9d",
+    "4cb8667a-372a-5dd6-a81f-64e1620a9326",
+    "5861434d-b5a0-5654-bc38-f3d38c9f56ed",
+    "5e8e889b-0cf6-50d1-8e18-a09d49ee7c95",
+    "62e87c8f-c0c0-57c7-8d74-b541889a9fcd",
+    "6e48732c-f3e2-5f05-a44d-de105d9cd6f2",
+    "6f8275ef-9cb2-5982-91ff-f0b8e6153aaa",
+    "76a14f0b-e6dc-5bd3-b402-fa8c0939ad05",
+    "831bf98f-bace-59e3-bac0-82318d7ccc30",
+    "98ddc766-5875-5976-a618-96bfc6fccea2",
+    "ac58bcd1-727f-567e-97ed-5c29ff3b4cab",
+    "cf271415-fa4b-5024-b0d6-066fc7adc85a",
+    "e4a14661-28bf-5132-a725-0744a9c32f40",
+    "e523f655-bd9c-516e-99b7-cf756afed81f"
+   ],
+   "expected_titles": [
+    "assemble_context",
+    "cold_start_respects_config_limits",
+    "compress_tail",
+    "dropped_sources_are_listed",
+    "fit_budget",
+    "include_stale_includes_stale_entities",
+    "is_dup_of",
+    "jaccard",
+    "line_set",
+    "main",
+    "partition_dups",
+    "relaxed_excerpt_lines",
+    "task_mode_includes_graph_paths",
+    "token_budget_is_respected"
+   ],
+   "notes": "commit e41f06c92a, 5 files"
+  },
+  {
+   "id": "c043021a8",
+   "intent": "commit",
+   "query": "Fix index exit deadlock: scope conn guard before update_baseline",
+   "expected_entity_ids": [
+    "95663f30-f013-5db1-9bcf-fccf0d387e1c"
+   ],
+   "expected_titles": [
+    "run_index"
+   ],
+   "notes": "commit 043021a88b, 1 files"
+  },
+  {
+   "id": "c0b28e111",
+   "intent": "commit",
+   "query": "Default rerank_enabled to false \u2014 no measured gain on the v2 corpus",
+   "expected_entity_ids": [
+    "007f4699-b488-5601-b6f9-66294c8218f7",
+    "fabaf563-6e4d-50a6-8c39-65ff1bc57764"
+   ],
+   "expected_titles": [
+    "ContextConfig",
+    "SearchConfig"
+   ],
+   "notes": "commit 0b28e111d2, 3 files"
+  },
+  {
+   "id": "c86e70363",
+   "intent": "commit",
+   "query": "Spend pack budget headroom growing code sections; add pack-level metrics",
+   "expected_entity_ids": [
+    "265067c2-f93e-51d3-b11d-b963a516ff9d",
+    "267e5632-0e10-560b-a813-e488219aba2c",
+    "2baf593f-bf7a-503c-b494-f84590544d50",
+    "3d77795d-bc62-55cb-bf55-edb316e41521",
+    "4cb8667a-372a-5dd6-a81f-64e1620a9326",
+    "6f8275ef-9cb2-5982-91ff-f0b8e6153aaa",
+    "76a14f0b-e6dc-5bd3-b402-fa8c0939ad05",
+    "83a14ead-7494-59a4-9979-4c5d0b7ed680",
+    "98ddc766-5875-5976-a618-96bfc6fccea2",
+    "cf271415-fa4b-5024-b0d6-066fc7adc85a"
+   ],
+   "expected_titles": [
+    "assemble_context",
+    "compress_tail",
+    "fit_budget",
+    "jaccard",
+    "line_set",
+    "main",
+    "score_run",
+    "task_pack_baseline_survives_tight_budget",
+    "task_pack_includes_tier0_baseline"
+   ],
+   "notes": "commit 86e7036348, 8 files"
+  },
+  {
+   "id": "c72678b97",
+   "intent": "commit",
+   "query": "Surface remaining silent failure paths and fix small correctness issues",
+   "expected_entity_ids": [
+    "047656c5-e449-58d7-b951-3b948a609cd9",
+    "6c13bd51-5ca8-532a-8828-20c95debe650",
+    "824cd680-d240-5c71-a14d-7884d349ed37",
+    "8c379ddd-7139-527a-8c34-5ed0539742ca",
+    "9c4b7b0e-651a-5cc8-9ef8-ae2791239229",
+    "a2679ef4-9e28-5615-b294-18c9b848f610",
+    "b6906dbb-f674-58c3-aa63-f99b89b428a0",
+    "bb94b41a-18d3-5a80-a5e0-a024f14a437c",
+    "cbfb76f0-1cf9-5705-9cdd-6f4d03b82440",
+    "cc7e17c2-8fe5-5bed-971c-5f4bc57f4227",
+    "e3660a94-7a89-543c-a445-7dcc8347c35c"
+   ],
+   "expected_titles": [
+    "check_duplicate",
+    "convert_entities",
+    "expand_with_paths",
+    "impl Storage",
+    "mark_stale_code_entities",
+    "mark_stale_for_deleted_files",
+    "mark_stale_for_removed_entities",
+    "migrate_v3",
+    "open",
+    "resolve_file_path",
+    "scan_entity_files"
+   ],
+   "notes": "commit 72678b97b5, 9 files"
+  },
+  {
+   "id": "c2e0b8b3a",
+   "intent": "commit",
+   "query": "Bound all network calls with connect and stall timeouts",
+   "expected_entity_ids": [
+    "24415719-529d-5fe7-9014-1fa1d649f807",
+    "50362381-7da8-564d-acc8-fc88130ab3ba",
+    "8ef4f289-c09c-5469-940a-6f376f379994",
+    "c7ba4ef5-15f9-59ad-8ce6-b91e44b991d0",
+    "d519442d-db65-54c1-9961-2f95e04166bf",
+    "ded8e1b1-4f97-5070-a1db-91386df1b743",
+    "f1386d1b-d195-5050-95d4-1d4814c57f1d"
+   ],
+   "expected_titles": [
+    "api_agent",
+    "check_latest_version",
+    "download_agent",
+    "download_file",
+    "download_model",
+    "download_ort",
+    "run_update"
+   ],
+   "notes": "commit 2e0b8b3a6b, 8 files"
+  },
+  {
+   "id": "cdc8ffbed",
+   "intent": "commit",
+   "query": "Replace embed session unwraps with reload-then-fail on unload race",
+   "expected_entity_ids": [
+    "6bf45e3d-29fb-54c4-913f-c5af53dc174a",
+    "da9e369b-3804-50e6-85e5-7dbbb6fc2757",
+    "f2bba004-4f98-561c-b934-7113508f2e4f"
+   ],
+   "expected_titles": [
+    "classify",
+    "embed_chunk",
+    "impl NliModel for OnnxNliModel"
+   ],
+   "notes": "commit dc8ffbedab, 2 files"
+  },
+  {
+   "id": "c85130a9e",
+   "intent": "commit",
+   "query": "Remove autocommit fallback that could destroy auto-link edges",
+   "expected_entity_ids": [
+    "b72ed261-3ac1-59ec-b084-a46caaea2a99"
+   ],
+   "expected_titles": [
+    "sync_auto_links"
+   ],
+   "notes": "commit 85130a9ef0, 1 files"
+  },
+  {
+   "id": "cc97a642e",
+   "intent": "commit",
+   "query": "Wrap sync_single_file DB operations in a transaction",
+   "expected_entity_ids": [
+    "90ee1373-02db-5bd1-8fb4-90243806dbc7"
+   ],
+   "expected_titles": [
+    "sync_single_file"
+   ],
+   "notes": "commit c97a642edb, 1 files"
+  },
+  {
+   "id": "c3333e354",
+   "intent": "commit",
+   "query": "Fix debounce race and path canonicalization",
+   "expected_entity_ids": [
+    "9400c656-a55b-5a0b-bbc8-438696f36572",
+    "de749d09-5b42-5122-aaf4-4e6cdfe5485c"
+   ],
+   "expected_titles": [
+    "spawn_reindex_bg",
+    "touch_debounce_file"
+   ],
+   "notes": "commit 3333e35420, 1 files"
+  },
+  {
+   "id": "c8ccb962d",
+   "intent": "commit",
+   "query": "Add busy_timeout pragma and fix reindex spawn ordering",
+   "expected_entity_ids": [
+    "047656c5-e449-58d7-b951-3b948a609cd9",
+    "2f2833b0-4956-5683-8c29-b5b06ede478c",
+    "bb94b41a-18d3-5a80-a5e0-a024f14a437c"
+   ],
+   "expected_titles": [
+    "handle_lifecycle_event",
+    "impl Storage",
+    "open"
+   ],
+   "notes": "commit 8ccb962d99, 2 files"
+  },
+  {
+   "id": "c111d85ea",
+   "intent": "commit",
+   "query": "Deduplicate background embed spawning, fix stale doc references",
+   "expected_entity_ids": [
+    "27d02160-8659-5285-8502-4df96c70537a",
+    "336a3fc8-fb0d-5602-8a8e-382f53e12ab9",
+    "8fe66776-ff46-553e-8949-0173f1b50219",
+    "f0e2cac7-70e9-5b10-9aaf-f7ce2124b71e"
+   ],
+   "expected_titles": [
+    "embed_synced",
+    "impl CogzServer",
+    "run_reindex_bg",
+    "spawn_code_embed_background"
+   ],
+   "notes": "commit 111d85eae1, 4 files"
+  },
+  {
+   "id": "cace7c26f",
+   "intent": "commit",
+   "query": "Code review fixes: sync .cogz/ files in reindex-bg, remove dead code, fix doc comments",
+   "expected_entity_ids": [
+    "0a9ccfe3-9663-581f-bb1a-80023d724d4b",
+    "336a3fc8-fb0d-5602-8a8e-382f53e12ab9",
+    "ea117172-5c75-5bd3-b623-55af8dd80c93"
+   ],
+   "expected_titles": [
+    "Commands",
+    "head_sha",
+    "run_reindex_bg"
+   ],
+   "notes": "commit ace7c26f0c, 6 files"
+  },
+  {
+   "id": "c371880b9",
+   "intent": "commit",
+   "query": "Add background reindex for session_start and prompt_submit hooks",
+   "expected_entity_ids": [
+    "2f2833b0-4956-5683-8c29-b5b06ede478c",
+    "336a3fc8-fb0d-5602-8a8e-382f53e12ab9",
+    "7c2c6d15-b1e3-586a-a134-cfce93d15560",
+    "934d311b-fe1b-54f1-986e-49bf7fdd386a",
+    "9400c656-a55b-5a0b-bbc8-438696f36572",
+    "c775d0be-2b92-51cf-94f5-eafefd08d452",
+    "cb0b9126-8e41-5278-a5e0-ca97070c4e7a",
+    "de749d09-5b42-5122-aaf4-4e6cdfe5485c",
+    "ea117172-5c75-5bd3-b623-55af8dd80c93"
+   ],
+   "expected_titles": [
+    "Commands",
+    "handle_lifecycle_event",
+    "is_debounced",
+    "main",
+    "run_consolidate",
+    "run_reindex_bg",
+    "spawn_reindex_bg",
+    "sweep_stale_debounce_files",
+    "touch_debounce_file"
+   ],
+   "notes": "commit 371880b9ae, 6 files"
+  },
+  {
+   "id": "c0207bab1",
+   "intent": "commit",
+   "query": "Refactor index module: separate detection, parsing, baseline, and processing",
+   "expected_entity_ids": [
+    "0a9ccfe3-9663-581f-bb1a-80023d724d4b",
+    "1a27422e-fcda-5694-a7ea-77b529542021",
+    "1f5726d8-b4e5-5ec0-b591-c0b19e37550a",
+    "20986fe2-7a13-5c35-bd72-4470339c9ad1",
+    "2d3481ed-7ec5-5984-953b-0b42cedb9e50",
+    "75a4aeb2-73d5-5e4d-8fc3-7b737db12b0c",
+    "79d05b45-9227-5892-8b97-7a0633c16524",
+    "8a81a962-c4a5-51dd-99ab-96f94f1e9d3a",
+    "95663f30-f013-5db1-9bcf-fccf0d387e1c",
+    "9acc599d-3f41-5f45-84d0-ed8d6928d668",
+    "aa751672-ca20-57c4-b509-08a29e3b40d4",
+    "ab3d55c4-6158-530a-910f-9c8fc8fc65f0",
+    "be6f440d-d441-54ae-a061-141bd1bedcee",
+    "d240bb79-320f-5332-8247-fec36a0f3b20",
+    "d9a05874-6f68-5705-841e-18305c903d30",
+    "f1310cfb-9c2b-5600-a739-399b4141c313"
+   ],
+   "expected_titles": [
+    "ParsedFiles",
+    "ReindexResult",
+    "count_code_entities",
+    "detect_changed_files",
+    "embed_synced_entities",
+    "handle_source_file_save",
+    "head_sha",
+    "index_code",
+    "parse_source_files",
+    "read_baseline",
+    "reindex_code",
+    "reindex_files",
+    "reindex_single_file",
+    "run_index",
+    "should_update_baseline",
+    "update_baseline"
+   ],
+   "notes": "commit 0207bab1ae, 7 files"
+  }
+ ]
+}
