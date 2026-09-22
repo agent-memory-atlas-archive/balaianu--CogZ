@@ -32,7 +32,7 @@ merge_strategy = "detect"
 min_relevance = 0.05
 edge_weighted_expansion = true
 silence_threshold = 0.05
-top_diversity_share = 0.3
+top_diversity_share = 0.2
 provenance_boost = 0.3
 fts_title_weight = 5.0
 mmr_lambda = 0.7
@@ -124,7 +124,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `min_source_proportion` | f64 | `0.2` | Floor for each source type's proportion in balanced fusion. Ensures neither code nor knowledge is completely suppressed. |
 | `source_balance_enabled` | bool | `false` | Legacy alias for `merge_strategy = "detect"`. |
 | `merge_strategy` | string | `"detect"` | Channel merge: `detect` (intent-proportioned shares), `fixed` (0.5/0.5), `strength` (absolute cosine — biases toward knowledge), `gradient` (within-batch spread — suppresses code), `calibrated` (detect shares × logistic-calibrated strength; best MRR, weaker graph recall). |
-| `top_diversity_share` | f64 | `0.3` | A channel earning at least this merge-weight share is guaranteed a slot in the top-5 window. 0.0 disables. |
+| `top_diversity_share` | f64 | `0.2` | A channel earning at least this merge-weight share is guaranteed a slot in the top-5 window. 0.0 disables. Keep ≤ `min_source_proportion` — a threshold above the `detect` floor never fires for the floored (suppressed) channel. |
 | `calibration` | table | see code | `[search.calibration]` — `code`/`knowledge` sub-tables with `mid`/`width` for the `calibrated` strategy. Model-pair-specific. |
 | `min_relevance` | f64 | `0.05` | Drop results below this score; 0.0 disables. ≥0.09 makes all two-hop expansions unreachable. |
 | `provenance_boost` | f64 | `0.3` | Multiply direct scores by `1 + boost·ln(1 + curated in-degree)` — incoming `references`/`supports`/`contradicts`/`superseded_by`/`derived_from`/`promoted_from` edges as a quality prior. `auto_references` and structural edges excluded. 0.0 disables. |

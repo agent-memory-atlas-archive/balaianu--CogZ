@@ -142,7 +142,10 @@ pub struct SearchConfig {
     /// merge weight is at least this value, its best result is
     /// promoted into the top-5 window if ranking pushed it out.
     /// Recovers mixed-intent coverage that channel concentration
-    /// loses. 0.0 disables.
+    /// loses. 0.0 disables. Must be ≤ `min_source_proportion` under
+    /// the `detect` strategy — a threshold above the proportion floor
+    /// never fires for the floored channel, which is exactly the
+    /// suppressed-minority case the slot exists to rescue.
     #[serde(default = "default_top_diversity_share")]
     pub top_diversity_share: f64,
     /// Per-channel logistic calibration for `merge_strategy =
@@ -263,7 +266,7 @@ fn default_silence_threshold() -> f64 {
 }
 
 fn default_top_diversity_share() -> f64 {
-    0.3
+    0.2
 }
 
 fn default_provenance_boost() -> f64 {
