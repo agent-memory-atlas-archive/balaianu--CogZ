@@ -1,18 +1,21 @@
 {
-  "campaign": "version-report-card",
-  "created": "2026-09-22",
-  "binary": {
-    "path": "target/release/cogz",
-    "sha256": "1eb595361f0e17121b0451f44805095d5adbaa3034ccecbd3f8aba13f3945066",
-    "version": "0.3.0",
-    "git_head": "889edec",
-    "git_head_subject": "Make search ranking and context assembly deterministic",
-    "note": "~/.local/bin/cogz identical via rename-replace. Supersedes sha 5f4bc3ba (pre-determinism-fix build)."
-  },
-  "rules": [
-    "All benchmark invocations use the pinned binary path, never PATH lookup",
-    "No cogz rebuilds mid-campaign; if the binary changes, record a new manifest and flag prior results",
-    "Never `cogz reset` a benchmark corpus; snapshot cogz.db files instead",
-    "Max 2 concurrent embed-bg processes (memory-constrained host)"
-  ]
+ "campaign": "version-report-card",
+ "created": "2026-09-22",
+ "binary": {
+  "path": "target/release/cogz",
+  "sha256": "1eb595361f0e17121b0451f44805095d5adbaa3034ccecbd3f8aba13f3945066",
+  "version": "0.3.0",
+  "git_head": "889edec",
+  "git_head_subject": "Make search ranking and context assembly deterministic",
+  "note": "~/.local/bin/cogz identical via rename-replace. Supersedes sha 5f4bc3ba (pre-determinism-fix build)."
+ },
+ "rules": [
+  "All benchmark invocations use the pinned binary path, never PATH lookup",
+  "No cogz rebuilds mid-campaign; if the binary changes, record a new manifest and flag prior results",
+  "Never `cogz reset` a benchmark corpus; snapshot cogz.db files instead",
+  "Max 2 concurrent embed-bg processes (memory-constrained host)"
+ ],
+ "notes": [
+  "Snapshot restore protocol: never cp a snapshot over a live DB file. On 2026-09-22 a plain cp restore over .cogz/cogz.db with open WAL connections corrupted the DB (malformed image). Correct procedure: copy snapshot to a new name, rm -f the -wal/-shm files, then mv (atomic rename) into place. Capturing a snapshot via plain cp is safe (yields last-checkpoint state)."
+ ]
 }
