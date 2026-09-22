@@ -502,6 +502,7 @@ pub fn search(
         code_prop,
         knowledge_prop,
         params.limit as usize,
+        params.window_quota,
     )?;
 
     // 9. Select top results

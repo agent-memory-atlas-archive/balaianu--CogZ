@@ -64,7 +64,7 @@ When a source is unavailable (no model), its weight is redistributed to the rema
 
 `source_balance_enabled = true` is a legacy alias for `detect`.
 
-`top_diversity_share` (default: 0.3) is a slot guarantee layered on top: a channel earning at least that share of the merge weight gets its best result promoted into the top-5 window if ranking pushed it out. It recovers mixed-intent coverage that channel concentration loses, at no cost to the ordering above the window.
+`top_diversity_share` (default: 0.2) gates two guarantees layered on top. A channel earning at least that share of the merge weight gets its best result promoted into the top-5 window if ranking pushed it out, plus a proportional window quota: `floor(share × limit)` positions inside the top-`limit` window, filled from the bottom so the majority's head ordering is untouched. Together they recover mixed-intent coverage that channel concentration loses — the weighted merge compresses the minority channel into `[0, share]`, so its members beyond the first can fall off the cut entirely even when they beat the relevance floor. Keep `top_diversity_share` ≤ `min_source_proportion`: a threshold above the `detect` floor never fires for the floored (suppressed) channel. The quota is skipped for internal deep fetches (context-pack assembly consumes beyond the window and seeds expansion from window membership, where reordering only adds churn).
 
 `fts_title_weight` (default 5.0) biases the FTS stage itself: `bm25(entities_fts, title_weight, 1.0)` exploits the FTS table's separate `title`/`content` columns so exact-name hits outrank body-term matches without a second index.
 
@@ -79,7 +79,7 @@ Two optional stages run between channel merge and the final top-N cut, in this o
 1. **Provenance prior** (`provenance_boost`, default 0.3): `score ×= 1 + boost·ln(1 + curated_in_degree)` where the in-degree counts only incoming *curated* edge types (`references`, `supports`, `contradicts`, `superseded_by`, `derived_from`, `promoted_from`) — `auto_references` and structural edges are excluded because generated links carry no human judgment. One batched `GROUP BY target_id` query via `curated_in_degree_batch` in `src/storage/edges.rs`. Benchmark: graph R@20 0.72→1.0, MRR +26%.
 2. **MMR diversification** (`mmr_lambda`, default 0.7): greedy rerank by `λ·relevance − (1−λ)·max cosine to already-selected` items. Similarity is computed only between same-channel candidates — code and knowledge embeddings live in different spaces, and a cross-channel pair is never a duplicate. Embeddings are fetched in two batched queries (`get_code_embeddings_batch`, `get_knowledge_embeddings_batch`); entities without embeddings get penalty 0. Skipped in FTS-only mode.
 
-The diversity-slot guarantee (`top_diversity_share`, described above) runs last, on the post-MMR ordering.
+The diversity-slot guarantee and window quota (`top_diversity_share`, described above) run last, on the post-MMR ordering.
 
 ## Relevance floor and silence gate
 

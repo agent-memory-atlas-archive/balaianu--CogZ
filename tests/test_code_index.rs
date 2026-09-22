@@ -359,6 +359,7 @@ fn build_sql_query(table: &str) -> String {
         max_hops: 0,
         include_tests: false,
         silence_gate: true,
+        window_quota: true,
     };
     let config = cogz::config::SearchConfig {
         fts_weight: 0.3,

@@ -67,6 +67,7 @@ pub fn run_search(
         },
         include_tests: true,
         silence_gate: true,
+        window_quota: true,
     };
 
     let results = {

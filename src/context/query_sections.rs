@@ -53,6 +53,12 @@ pub(super) fn query_sections(
         // "task phrased differently than identifiers" from "no match"
         // on code corpora.
         silence_gate: false,
+        // The quota's job is rescuing entities from the caller-visible
+        // cut; the pack consumes every returned result and seeds graph
+        // expansion from window membership, so reordering here only
+        // perturbs expansion neighborhoods (measured: pack recall
+        // 0.9 → 0.7 on api_tool seeded queries).
+        window_quota: false,
     };
 
     let embeddings = QueryEmbeddings {

@@ -93,6 +93,85 @@ fn diversity_slot_noop_when_channel_present_or_disabled() {
     assert_eq!(fused[4].0, "c4");
 }
 
+// ─── apply_window_quota ─────────────────────────────────────────
+
+fn coded_window(n_code: usize, n_kn: usize) -> Vec<(String, f64, Chan)> {
+    // `n_code` code entries filling the top of the list, then the
+    // knowledge tail — the shape weighted-score merge produces.
+    let mut v: Vec<(String, f64, Chan)> = (0..n_code)
+        .map(|i| (format!("c{i}"), 1.0 - i as f64 * 0.01, Chan::Code))
+        .collect();
+    v.extend((0..n_kn).map(|i| (format!("k{i}"), 0.2 - i as f64 * 0.01, Chan::Knowledge)));
+    v
+}
+
+#[test]
+fn window_quota_fills_minority_to_share_proportion() {
+    // knowledge share 0.2 × limit 20 → 4 slots guaranteed.
+    let mut fused = coded_window(30, 6);
+    apply_window_quota(&mut fused, 0.8, 0.2, 0.2, 20);
+    let kn_in_window = fused[..20]
+        .iter()
+        .filter(|(_, _, c)| *c == Chan::Knowledge)
+        .count();
+    assert_eq!(kn_in_window, 4);
+    // Bottom-fill: quota members occupy the tail of the window in
+    // channel order; majority head order is untouched.
+    assert_eq!(fused[0].0, "c0");
+    assert_eq!(fused[15].0, "c15");
+    assert_eq!(fused[16].0, "k0");
+    assert_eq!(fused[19].0, "k3");
+    // Displaced majority members stay in the list, just past the cut.
+    assert_eq!(fused[20].0, "c16");
+    let kn_ids: Vec<&str> = fused[..20]
+        .iter()
+        .filter(|(_, _, c)| *c == Chan::Knowledge)
+        .map(|(id, _, _)| id.as_str())
+        .collect();
+    assert_eq!(kn_ids, ["k0", "k1", "k2", "k3"]);
+}
+
+#[test]
+fn window_quota_noop_when_quota_already_met_or_disabled() {
+    let fused = coded_window(16, 8);
+    // Manually interleave so knowledge already holds its 4 slots:
+    // 12 code + 4 knowledge + remaining code/knowledge tail.
+    let mut mixed: Vec<(String, f64, Chan)> = fused[..12].to_vec();
+    mixed.extend(fused[16..20].iter().cloned());
+    mixed.extend(fused[12..16].iter().cloned());
+    mixed.extend(fused[20..].iter().cloned());
+    let before: Vec<String> = mixed.iter().map(|(id, _, _)| id.clone()).collect();
+    apply_window_quota(&mut mixed, 0.8, 0.2, 0.2, 20);
+    let after: Vec<String> = mixed.iter().map(|(id, _, _)| id.clone()).collect();
+    assert_eq!(before, after);
+
+    // Disabled: min_share 0 → no reordering.
+    let mut fused = coded_window(30, 6);
+    apply_window_quota(&mut fused, 0.8, 0.2, 0.0, 20);
+    assert_eq!(fused[19].0, "c19");
+}
+
+#[test]
+fn window_quota_caps_at_available_members() {
+    // Only 2 knowledge entities exist — quota 4 fills what's there.
+    let mut fused = coded_window(30, 2);
+    apply_window_quota(&mut fused, 0.8, 0.2, 0.2, 20);
+    let kn_in_window = fused[..20]
+        .iter()
+        .filter(|(_, _, c)| *c == Chan::Knowledge)
+        .count();
+    assert_eq!(kn_in_window, 2);
+}
+
+#[test]
+fn window_quota_skips_channel_below_min_share() {
+    // knowledge share 0.15 < min_share 0.2 → earns nothing.
+    let mut fused = coded_window(30, 6);
+    apply_window_quota(&mut fused, 0.85, 0.15, 0.2, 20);
+    assert_eq!(fused[19].0, "c19");
+    assert_eq!(fused[30].0, "k0");
+}
+
 // ─── logistic ────────────────────────────────────────────────────
 
 #[test]

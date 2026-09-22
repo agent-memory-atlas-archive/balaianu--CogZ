@@ -123,6 +123,13 @@ pub struct SearchParams {
     /// queries (an honest empty answer); false for context-pack
     /// assembly, which ships whatever the relevance floor lets through.
     pub silence_gate: bool,
+    /// Whether the proportional window quota may reorder the result
+    /// tail to guarantee channel representation at the cut. The quota
+    /// exists to rescue entities from truncation; deep internal fetches
+    /// (context-pack assembly consumes beyond the window and seeds
+    /// graph expansion from window membership) disable it to avoid
+    /// churning the expansion seed set.
+    pub window_quota: bool,
 }
 
 impl Default for SearchParams {
@@ -135,6 +142,7 @@ impl Default for SearchParams {
             max_hops: 2,
             include_tests: false,
             silence_gate: true,
+            window_quota: true,
         }
     }
 }

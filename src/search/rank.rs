@@ -156,6 +156,7 @@ pub fn resolve_channel_weights(
 /// Run the post-merge ranking stages in order: provenance prior →
 /// MMR diversification → minority-channel slot guarantee. Each stage
 /// is independently disabled by its config knob.
+#[allow(clippy::too_many_arguments)]
 pub fn apply_post_merge(
     conn: &Connection,
     fused: Vec<(String, f64, Chan)>,
@@ -164,6 +165,7 @@ pub fn apply_post_merge(
     code_prop: f64,
     knowledge_prop: f64,
     top_n: usize,
+    window_quota: bool,
 ) -> Result<Vec<(String, f64, Chan)>, StorageError> {
     let mut fused = fused;
 
@@ -223,6 +225,23 @@ pub fn apply_post_merge(
         config.top_diversity_share,
         top_n,
     );
+
+    // Proportional window quota: weighted-score merge compresses
+    // the minority channel into [0, share], so most of its members
+    // fall off the top-`limit` cut entirely even when they beat the
+    // relevance floor. Guarantee each qualifying channel
+    // `floor(share × limit)` positions inside the window, filled
+    // from the bottom — majority ordering above is untouched, only
+    // the window's tail composition changes.
+    if window_quota {
+        apply_window_quota(
+            &mut fused,
+            code_prop,
+            knowledge_prop,
+            config.top_diversity_share,
+            top_n,
+        );
+    }
 
     Ok(fused)
 }
@@ -304,6 +323,72 @@ pub fn apply_diversity_slots(
         if let Some(pos) = fused.iter().position(|(_, _, c)| *c == chan) {
             let item = fused.remove(pos);
             fused.insert(window - 1, item);
+        }
+    }
+}
+
+/// Guarantee each channel earning at least `min_share` of the merge
+/// weight proportional presence in the result window: at least
+/// `floor(share × limit)` of its entries inside the top `limit`.
+/// Reorders only — the channel's deficit is filled by moving its
+/// next-best members into the lowest window positions, so the
+/// displaced entries are always the majority channel's weakest
+/// survivors. Floor keeps the two quotas from over-summing the
+/// window. `min_share` of 0 disables.
+pub fn apply_window_quota(
+    fused: &mut Vec<(String, f64, Chan)>,
+    code_weight: f64,
+    knowledge_weight: f64,
+    min_share: f64,
+    limit: usize,
+) {
+    if min_share <= 0.0 || fused.len() <= limit {
+        return;
+    }
+    let total = code_weight + knowledge_weight;
+    if total <= 0.0 {
+        return;
+    }
+    let share_of = |c: Chan| match c {
+        Chan::Code => code_weight / total,
+        Chan::Knowledge => knowledge_weight / total,
+    };
+    for chan in [Chan::Code, Chan::Knowledge] {
+        let share = share_of(chan);
+        if share < min_share {
+            continue;
+        }
+        // floor: quotas can never over-sum the window
+        // (floor(a) + floor(b) ≤ a + b = limit).
+        let quota = (share * limit as f64).floor() as usize;
+        let present = fused
+            .iter()
+            .take(limit)
+            .filter(|(_, _, c)| *c == chan)
+            .count();
+        let needed = quota.saturating_sub(present);
+        if needed == 0 {
+            continue;
+        }
+        // Promote the channel's best members beyond the window as a
+        // contiguous tail block — inserting one at a time at the same
+        // index would push each prior promotion back out of the window.
+        let positions: Vec<usize> = fused
+            .iter()
+            .enumerate()
+            .skip(limit)
+            .filter(|(_, (_, _, c))| *c == chan)
+            .map(|(i, _)| i)
+            .take(needed)
+            .collect();
+        let mut promoted = Vec::with_capacity(positions.len());
+        for &pos in positions.iter().rev() {
+            promoted.push(fused.remove(pos));
+        }
+        promoted.reverse();
+        let n = promoted.len();
+        for (k, item) in promoted.into_iter().enumerate() {
+            fused.insert(limit - n + k, item);
         }
     }
 }

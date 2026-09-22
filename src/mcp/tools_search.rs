@@ -51,6 +51,7 @@ pub async fn search(
             max_hops: if expand { task_max_hops } else { 0 },
             include_tests: true,
             silence_gate: true,
+            window_quota: true,
         };
         let results = search_entities(
             &conn,
