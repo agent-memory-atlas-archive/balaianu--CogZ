@@ -1,0 +1,70 @@
+{
+ "version": "seeded-v1",
+ "corpus": "kaos-website",
+ "queries": [
+  {
+   "id": "sk01",
+   "intent": "knowledge",
+   "query": "which parts of the page render statically versus client-side",
+   "expected_entity_ids": [
+    "bc5ece62-4855-4d76-8a0b-3a04fdc8fffe"
+   ]
+  },
+  {
+   "id": "sk02",
+   "intent": "knowledge",
+   "query": "where is the site deployed and how is it served",
+   "expected_entity_ids": [
+    "eb0dfdfe-e187-44b3-b601-14bca9841b44"
+   ]
+  },
+  {
+   "id": "sk03",
+   "intent": "knowledge",
+   "query": "how does the dashboard read on-chain data",
+   "expected_entity_ids": [
+    "c2b76171-67e1-499f-a22f-18a279e7f37a"
+   ]
+  },
+  {
+   "id": "sk04",
+   "intent": "knowledge",
+   "query": "where is trigger metadata defined",
+   "expected_entity_ids": [
+    "638e18f6-59ff-4767-aa8f-d5677d9100e8"
+   ]
+  },
+  {
+   "id": "sk05",
+   "intent": "knowledge",
+   "query": "what must be updated after the contract deploys",
+   "expected_entity_ids": [
+    "0467a406-b26e-4b88-a0f2-73f4d70ebc39"
+   ]
+  },
+  {
+   "id": "sk06",
+   "intent": "knowledge",
+   "query": "which files hold contract config and ABIs",
+   "expected_entity_ids": [
+    "1507a221-fb95-4c3a-83dd-0caee0d6fed0"
+   ]
+  },
+  {
+   "id": "sk07",
+   "intent": "knowledge",
+   "query": "how often is historical leaderboard data indexed",
+   "expected_entity_ids": [
+    "759a52f3-e18c-48c8-9d59-7b3427f52c64"
+   ]
+  },
+  {
+   "id": "sk08",
+   "intent": "knowledge",
+   "query": "what npm commands build and deploy the site",
+   "expected_entity_ids": [
+    "d69b6f0c-d978-4182-9726-21af35dbdf14"
+   ]
+  }
+ ]
+}
