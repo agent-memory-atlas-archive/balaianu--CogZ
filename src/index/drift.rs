@@ -184,10 +184,15 @@ fn ref_targets_batch(
 fn declared_references(storage: &Storage, cogz_dir: &Path) -> HashMap<String, Vec<String>> {
     let files: Vec<(String, String)> = {
         let conn = storage.conn();
+        // Pruned tombstones still declare references in frontmatter;
+        // including them lets repair_reference_edges re-materialize
+        // their edges after a rebuild. Drift and backfill never act on
+        // them — both iterate knowledge_entities (active/stale only).
         let placeholders = KNOWLEDGE_TYPES.map(|_| "?").join(",");
         let sql = format!(
             "SELECT id, file_path FROM entities \
-             WHERE type IN ({placeholders}) AND status IN ('active','stale') \
+             WHERE type IN ({placeholders}) \
+             AND status IN ('active','stale','pruned') \
              AND file_path IS NOT NULL"
         );
         let params: Vec<&dyn rusqlite::ToSql> = KNOWLEDGE_TYPES
@@ -223,7 +228,8 @@ fn declared_references(storage: &Storage, cogz_dir: &Path) -> HashMap<String, Ve
         let placeholders = KNOWLEDGE_TYPES.map(|_| "?").join(",");
         let sql = format!(
             "SELECT id FROM entities \
-             WHERE type IN ({placeholders}) AND status IN ('active','stale')"
+             WHERE type IN ({placeholders}) \
+             AND status IN ('active','stale','pruned')"
         );
         let params: Vec<&dyn rusqlite::ToSql> = KNOWLEDGE_TYPES
             .iter()
