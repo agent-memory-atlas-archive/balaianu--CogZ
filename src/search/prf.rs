@@ -93,7 +93,11 @@ pub fn expansion_terms(feedback: &[Entity], query: &str, max_terms: usize) -> Ve
                 && df.get(t).copied().unwrap_or(0) >= 2
         })
         .collect();
-    terms.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    terms.sort_by(|a, b| {
+        b.1.partial_cmp(&a.1)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| a.0.cmp(&b.0))
+    });
     terms.truncate(max_terms);
     terms.into_iter().map(|(t, _)| t).collect()
 }

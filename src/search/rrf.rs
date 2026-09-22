@@ -29,7 +29,14 @@ pub fn fuse(ranked_lists: &[(&[String], f64)], k: u32) -> Vec<(String, f64)> {
     }
 
     let mut results: Vec<(String, f64)> = scores.into_iter().collect();
-    results.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+    // Total order: score desc, then id asc. HashMap iteration order is
+    // arbitrary, so exact-score ties must not leak map order into the
+    // ranked list — downstream RRF positions feed positional scoring.
+    results.sort_by(|a, b| {
+        b.1.partial_cmp(&a.1)
+            .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| a.0.cmp(&b.0))
+    });
     results
 }
 
@@ -118,5 +125,21 @@ mod tests {
         for i in 1..fused.len() {
             assert!(fused[i - 1].1 >= fused[i].1);
         }
+    }
+
+    #[test]
+    fn fuse_ties_resolve_by_id_ascending() {
+        // Eight entities tied on identical fused scores must order by
+        // id — HashMap iteration order must not leak into the ranked
+        // list (nondeterminism regression: seeds/caps downstream of
+        // this ordering changed run-to-run before the tiebreak).
+        let lists: Vec<Vec<String>> = ["h", "g", "f", "e", "d", "c", "b", "a"]
+            .iter()
+            .map(|s| vec![s.to_string()])
+            .collect();
+        let refs: Vec<(&[String], f64)> = lists.iter().map(|l| (l.as_slice(), 1.0)).collect();
+        let fused = fuse(&refs, 60);
+        let ids: Vec<&str> = fused.iter().map(|(id, _)| id.as_str()).collect();
+        assert_eq!(ids, vec!["a", "b", "c", "d", "e", "f", "g", "h"]);
     }
 }

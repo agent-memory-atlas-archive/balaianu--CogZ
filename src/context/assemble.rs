@@ -220,6 +220,7 @@ pub fn assemble_context(
             b.relevance
                 .partial_cmp(&a.relevance)
                 .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| a.entity_id.cmp(&b.entity_id))
         });
         let mut index: Vec<String> = Vec::new();
         let mut pointer_ids: Vec<String> = Vec::new();

@@ -266,7 +266,14 @@ pub fn search(
             min_sim,
         );
         let mut seeds: Vec<(String, f64)> = seed_weight.into_iter().collect();
-        seeds.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        // Total order required: truncate() drops the tail of a tie
+        // block, so tied seeds must resolve by id — otherwise the seed
+        // set (and everything downstream of it) is nondeterministic.
+        seeds.sort_by(|a, b| {
+            b.1.partial_cmp(&a.1)
+                .unwrap_or(std::cmp::Ordering::Equal)
+                .then_with(|| a.0.cmp(&b.0))
+        });
         seeds.truncate(config.graph_max_seeds * 3);
 
         // Only the direct window is excluded from graph candidacy —
@@ -680,6 +687,7 @@ pub fn search(
                 b.relevance
                     .partial_cmp(&a.relevance)
                     .unwrap_or(std::cmp::Ordering::Equal)
+                    .then_with(|| a.entity.id.cmp(&b.entity.id))
             });
             expanded_results.truncate(max_expansions);
         }

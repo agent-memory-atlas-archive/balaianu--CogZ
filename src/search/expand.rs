@@ -120,6 +120,12 @@ pub fn expand_with_paths(
             edge_weight(&b.2)
                 .partial_cmp(&edge_weight(&a.2))
                 .unwrap_or(std::cmp::Ordering::Equal)
+                // The edge query has no ORDER BY — SQL row order is
+                // unspecified, so equal-weight edges need a total order
+                // or first-discovery claims become nondeterministic.
+                .then_with(|| a.0.cmp(&b.0))
+                .then_with(|| a.1.cmp(&b.1))
+                .then_with(|| a.2.cmp(&b.2))
         });
 
         let frontier_set: HashSet<&String> = frontier.iter().collect();

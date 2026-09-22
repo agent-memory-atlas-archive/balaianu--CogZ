@@ -101,6 +101,7 @@ pub fn graph_retrieve(
         b.score
             .partial_cmp(&a.score)
             .unwrap_or(std::cmp::Ordering::Equal)
+            .then_with(|| a.entity_id.cmp(&b.entity_id))
     });
     // Score floor: a candidate needs at least one strong path or
     // several weak ones. Single 2-hop paths and weakest-seed

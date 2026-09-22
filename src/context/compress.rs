@@ -54,6 +54,7 @@ pub fn sort_by_priority(sections: &mut [ContextSection], mode: ContextMode) {
                     .partial_cmp(&a.relevance)
                     .unwrap_or(std::cmp::Ordering::Equal)
                     .then_with(|| source_priority(&a.source).cmp(&source_priority(&b.source)))
+                    .then_with(|| a.entity_id.cmp(&b.entity_id))
             });
         }
         ContextMode::ColdStart => {
@@ -65,6 +66,7 @@ pub fn sort_by_priority(sections: &mut [ContextSection], mode: ContextMode) {
                             .partial_cmp(&a.relevance)
                             .unwrap_or(std::cmp::Ordering::Equal)
                     })
+                    .then_with(|| a.entity_id.cmp(&b.entity_id))
             });
         }
     }
