@@ -242,7 +242,7 @@ def main():
         lat = o["latency"]
         print(f"latency: p50={lat['p50_ms']}ms  p95={lat['p95_ms']}ms  p99={lat['p99_ms']}ms")
     print(f"errors: {report['errors'] or 'none'}  rotted-expected: {report['rotted_expectations']}")
-    print(f"{'intent':<10} {'n':>3} {'P@k':>6} {'MRR':>6} {'R@20':>6} {'exp/q':>6} {'ms':>7}")
+    print(f"{'intent':<10} {'n':>3} {'P@k':>6} {'MRR':>6} {'R@20':>6} {'xpd/q':>6} {'ms':>7}")
     for intent, m in report["by_intent"].items():
         extra = f"  neg_ok={m['negative_ok_rate']}" if intent == "negative" else ""
         print(f"{intent:<10} {m['n']:>3} {str(m['p_at_k']):>6} {str(m['mrr']):>6} {str(m['recall_at_20']):>6} {m['avg_expanded']:>6} {str(m['avg_latency_ms']):>7}{extra}")
