@@ -1,0 +1,181 @@
+{
+ "version": "seeded-v1",
+ "corpus": "CogZ-py",
+ "queries": [
+  {
+   "id": "sk00",
+   "intent": "knowledge",
+   "query": "how is the storage layer organized",
+   "expected_entity_ids": [
+    "0861ccb5-bcce-481e-8294-af27f9cae982",
+    "57eacc93-360e-4d34-998b-4b264eb193f7"
+   ],
+   "expected_titles": [
+    "storage layer design"
+   ]
+  },
+  {
+   "id": "sk01",
+   "intent": "knowledge",
+   "query": "what embedding models are used and why",
+   "expected_entity_ids": [
+    "d00c6864-4435-422e-8124-d61cfff3e8ce",
+    "088eef5a-5e94-4de6-9ed2-fe37a6968f3a"
+   ],
+   "expected_titles": [
+    "embedding strategy"
+   ]
+  },
+  {
+   "id": "sk02",
+   "intent": "knowledge",
+   "query": "how are context packs assembled",
+   "expected_entity_ids": [
+    "4fbb3b4e-ac7c-4c07-a7d4-d4f05215ab6b",
+    "100c2a00-fafe-4d08-92b6-fe3062e68295"
+   ],
+   "expected_titles": [
+    "context assembly"
+   ]
+  },
+  {
+   "id": "sk03",
+   "intent": "knowledge",
+   "query": "how does hybrid search work",
+   "expected_entity_ids": [
+    "62660f83-2f49-4c35-9dcb-4a622a550aee",
+    "f71012e9-3c1d-4085-b886-7d4178927bc2"
+   ],
+   "expected_titles": [
+    "search architecture"
+   ]
+  },
+  {
+   "id": "sk04",
+   "intent": "knowledge",
+   "query": "how does the entity graph engine work",
+   "expected_entity_ids": [
+    "3220e930-4bab-4255-8e00-bf4936f60e56",
+    "71094340-047b-4e7f-8218-16fe737beea6"
+   ],
+   "expected_titles": [
+    "graph engine design"
+   ]
+  },
+  {
+   "id": "sk05",
+   "intent": "knowledge",
+   "query": "how does knowledge consolidation work",
+   "expected_entity_ids": [
+    "c60c509c-ce88-4d56-b23d-1bcb73e83a82",
+    "22b113ec-e823-4bc3-9ce8-8ab997c8d77a"
+   ],
+   "expected_titles": [
+    "consolidation pipeline"
+   ]
+  },
+  {
+   "id": "sk06",
+   "intent": "knowledge",
+   "query": "how do lifecycle hooks capture events",
+   "expected_entity_ids": [
+    "c9eb84cf-aebf-42f3-a4e7-81cafc999ccb"
+   ],
+   "expected_titles": [
+    "hook system"
+   ]
+  },
+  {
+   "id": "sk07",
+   "intent": "knowledge",
+   "query": "what operating modes exist",
+   "expected_entity_ids": [
+    "c91cb85d-e35b-4205-8b44-380b6369b991"
+   ],
+   "expected_titles": [
+    "operating modes"
+   ]
+  },
+  {
+   "id": "sk08",
+   "intent": "knowledge",
+   "query": "when are models loaded into memory",
+   "expected_entity_ids": [
+    "c251d550-719c-44ca-8e67-6f7615ce3f46"
+   ],
+   "expected_titles": [
+    "lazy model loading"
+   ]
+  },
+  {
+   "id": "sk09",
+   "intent": "knowledge",
+   "query": "how does taxonomy filtering scope searches",
+   "expected_entity_ids": [
+    "be1e1a55-5dbe-4a0a-b1dc-a53a9c98a96c",
+    "b59d47be-1c8b-4d73-8e9c-6493db78d4be"
+   ],
+   "expected_titles": [
+    "taxonomy is hard filter"
+   ]
+  },
+  {
+   "id": "sk10",
+   "intent": "knowledge",
+   "query": "does retrieval use an LLM",
+   "expected_entity_ids": [
+    "6a78211b-b467-4d62-a092-a91bd110f145",
+    "97da64ba-beae-4179-8217-e96c418c33a2"
+   ],
+   "expected_titles": [
+    "no llm in retrieval pipeline"
+   ]
+  },
+  {
+   "id": "sk11",
+   "intent": "knowledge",
+   "query": "how is hardware capability detected",
+   "expected_entity_ids": [
+    "2e306619-a10a-4f1e-b435-36308e5f5869",
+    "9ef0cc80-84dd-4ac0-9cc9-fa395275018c"
+   ],
+   "expected_titles": [
+    "hardware detection"
+   ]
+  },
+  {
+   "id": "sk12",
+   "intent": "knowledge",
+   "query": "what is the overall architecture",
+   "expected_entity_ids": [
+    "cc43bfc8-e733-46ad-8084-45fcb35a0245",
+    "e561891e-0b6a-437e-bcbf-f601eff3e9d7"
+   ],
+   "expected_titles": [
+    "cogz architecture overview"
+   ]
+  },
+  {
+   "id": "sk13",
+   "intent": "knowledge",
+   "query": "summarize the system architecture",
+   "expected_entity_ids": [
+    "29a7bb4e-8be8-4ed5-b07a-25eec4eed220"
+   ],
+   "expected_titles": [
+    "Architecture Summary: CogZ"
+   ]
+  },
+  {
+   "id": "sk14",
+   "intent": "knowledge",
+   "query": "are there circular dependencies between modules",
+   "expected_entity_ids": [
+    "95fa7fa1-fa35-444f-8d8f-1c78fd26e782"
+   ],
+   "expected_titles": [
+    "circular dependency benchmarks src cogz"
+   ]
+  }
+ ]
+}
