@@ -103,47 +103,52 @@ def extra(x):
 '''
 
 KNOWLEDGE = """---
-id: k1111111-1111-4111-8111-111111111111
+id: 11111111-1111-4111-8111-111111111111
 type: knowledge
 title: Fixture architecture note
 created_at: 2026-01-01T00:00:00Z
+updated_at: 2026-01-01T00:00:00Z
 ---
 The fixture splits parsing from rendering; parse() owns tokenization.
 """
 
 KNOWLEDGE_EDITED = """---
-id: k1111111-1111-4111-8111-111111111111
+id: 11111111-1111-4111-8111-111111111111
 type: knowledge
 title: Fixture architecture note
 created_at: 2026-01-01T00:00:00Z
+updated_at: 2026-01-01T00:00:00Z
 ---
 The fixture splits parsing from rendering; parse() owns tokenization
 and now lowercases input.
 """
 
 KNOWLEDGE_NEW = """---
-id: k2222222-2222-4222-8222-222222222222
+id: 22222222-2222-4222-8222-222222222222
 type: knowledge
 title: Added knowledge after baseline
 created_at: 2026-01-02T00:00:00Z
+updated_at: 2026-01-02T00:00:00Z
 ---
 extra() composes parse and render for string coercion.
 """
 
 RULE = """---
-id: r1111111-1111-4111-8111-111111111111
+id: 31111111-1111-4111-8111-111111111111
 type: rule
 title: Fixture rule — keep functions pure
 created_at: 2026-01-01T00:00:00Z
+updated_at: 2026-01-01T00:00:00Z
 ---
 All fixture functions must be pure; no globals, no IO in lib.
 """
 
 OBSERVATION = """---
-id: o1111111-1111-4111-8111-111111111111
+id: 41111111-1111-4111-8111-111111111111
 type: observation
 title: helper() is the hot leaf
 created_at: 2026-01-01T00:00:00Z
+updated_at: 2026-01-01T00:00:00Z
 ---
 helper() is called by compute() and dominates runtime in profiles.
 """
