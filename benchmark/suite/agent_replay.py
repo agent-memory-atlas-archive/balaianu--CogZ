@@ -114,25 +114,46 @@ def candidates(repo: Path, spec: dict, since: int = 600) -> list[dict]:
     return out
 
 
+REPLAY_TMP = Path.home() / "cogz_bench" / "replay_tmp"
+# shared target dir keeps Rust incremental artifacts off tmpfs
+CARGO_TARGET = Path.home() / ".cache" / "cogz-replay-target"
+
+
 def setup_worktree(repo: Path, sha: str, task: dict) -> Path:
-    wt = Path(tempfile.mkdtemp(prefix=f"cogz_replay_{sha[:8]}_"))
-    git(repo, "worktree", "add", "--detach", str(wt), f"{sha}^")
-    # bring in the test payload only (from the fix commit, or from the
-    # paired test commit for split fix:/test: histories)
+    """Export the parent tree with no upstream history.
+
+    A git worktree shares the repo's full history — the agent can just
+    `git show <fix-sha>` and copy the answer. Export via git archive and
+    init a fresh repo so history starts empty.
+    """
+    REPLAY_TMP.mkdir(parents=True, exist_ok=True)
+    wt = Path(tempfile.mkdtemp(prefix=f"cogz_replay_{sha[:8]}_",
+                               dir=REPLAY_TMP))
+    arc = subprocess.run(["git", "-C", str(repo), "archive", f"{sha}^"],
+                         capture_output=True)
+    subprocess.run(["tar", "-x"], input=arc.stdout, cwd=wt, check=True)
+    # apply the test payload (fix commit's test files, or paired test
+    # commit's) without revealing it in history
     src_sha = task.get("test_sha") or sha
-    git(wt, "checkout", src_sha, "--", *task["test_files"])
+    show = git(repo, "show", "--format=", "--unified=3", src_sha, "--",
+               *task["test_files"]).stdout
+    subprocess.run(["git", "apply", "--whitespace=nowarn"],
+                   input=show, text=True, cwd=wt, check=True)
+    subprocess.run(["git", "init", "-q"], cwd=wt, check=True)
+    subprocess.run(["git", "add", "-A"], cwd=wt, check=True)
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t",
+                    "commit", "-qm", "baseline"], cwd=wt, check=True)
     return wt
 
 
-def cogzify(wt: Path, seed_root: Path, cogz: str) -> None:
-    """Fresh .cogz in the worktree: suite seeds + index at parent sha."""
-    subprocess.run([cogz, "init", "--repo", str(wt)],
-                   capture_output=True, check=True)
+def cogzify(wt: Path, corpus_root: Path, cogz: str) -> None:
+    """Carry the corpus's .cogz into the worktree, then reindex so the
+    code index matches the parent-sha tree (only changed files re-parse).
+    """
     import shutil
-    for f in seed_root.rglob("*.md"):
-        dest = wt / ".cogz" / f.relative_to(seed_root)
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(f, dest)
+    shutil.copytree(corpus_root / ".cogz", wt / ".cogz", symlinks=True)
+    # fresh git history → reindex diff can't resolve the manifest sha;
+    # full index reuses embeddings via content-hash for unchanged files
     subprocess.run([cogz, "index", "--repo", str(wt)],
                    capture_output=True, check=True)
 
@@ -160,28 +181,33 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
         for f in task["test_files"]}))
     cmd = spec["cmd"].format(files=files, funcs=funcs, stems=stems)
     if arm == "cogz":
-        cogzify(wt, SUITE / "seeds" / corpus, cogz)
+        cogzify(wt, repo, cogz)
         pre = ("This repo is indexed with CogZ (see `.cogz/`). Before "
                "reading code, run `cogz search` and `cogz get-context` "
                "to retrieve relevant knowledge and code entities.\n\n")
     else:
         pre = ""
-    prompt = (f"{pre}Repository: {wt} (checked out just before a fix).\n"
+    prompt = (f"{pre}Repository: {wt}\n"
               f"Task: {task['subject']}\n\n{task['body'][:1500]}\n\n"
               f"Make the minimal source changes so that `cd {wt} && {cmd}` "
               f"passes. Do not modify test files.")
     res = agent_run(wt, prompt)
     diff = git(wt, "diff", "--stat", check=False).stdout.strip()
-    t = subprocess.run(cmd, shell=True, cwd=wt, capture_output=True,
-                       text=True, timeout=900)
+    env = {**__import__("os").environ,
+           "CARGO_TARGET_DIR": str(CARGO_TARGET)}
+    t = subprocess.run(cmd, shell=True, cwd=wt, env=env,
+                       capture_output=True, text=True, timeout=900)
     record = {"corpus": corpus, "arm": arm, "sha": task["sha"],
               "subject": task["subject"], "test_cmd": cmd,
               "test_rc": t.returncode, "passed": t.returncode == 0,
               "agent": res, "diff_stat": diff,
+              "used_cogz": bool(re.search(r"cogz (search|get-context)",
+                                          res["tail"] + res["err"])),
               "test_tail": t.stdout[-1200:] + t.stderr[-1200:]}
     (outdir / f"{task['sha'][:8]}_{arm}.json").write_text(
         json.dumps(record, indent=1))
-    git(repo, "worktree", "remove", "--force", str(wt), check=False)
+    import shutil
+    shutil.rmtree(wt, ignore_errors=True)
     return record
 
 
