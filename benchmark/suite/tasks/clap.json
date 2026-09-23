@@ -1,0 +1,54 @@
+[
+ {
+  "sha": "144e5cb46d946f97e51b7122eadd3134ee127bef",
+  "test_sha": "806d98164ce4ec62aa97c771006d782090a08520",
+  "subject": "fix(parser): Allow --help to propagate up through subcommands with ignore_erros",
+  "body": "fix(parser): Allow --help to propagate up through subcommands with ignore_erros\n\nFixes #6275",
+  "test_files": [
+   "tests/builder/help.rs"
+  ],
+  "src_files": [
+   "clap_builder/src/parser/parser.rs"
+  ],
+  "test_funcs": []
+ },
+ {
+  "sha": "3604b13117cbb652c10bb44b228b300d543dcc80",
+  "test_sha": "d11a611d1b6c1d3f2e35cd6588c004c811befad0",
+  "subject": "fix(parser): Honor positional value_terminator",
+  "body": "fix(parser): Honor positional value_terminator\n\nThe value terminator should be able to consume --\neven when it is the first argument, instead of forcing\ntrailing values.\n\nFixes #5040",
+  "test_files": [
+   "tests/builder/groups.rs"
+  ],
+  "src_files": [
+   "clap_builder/src/parser/parser.rs"
+  ],
+  "test_funcs": []
+ },
+ {
+  "sha": "24dfa0d5f9af0373d08bc2db05064990ae9a47d9",
+  "test_sha": "c9898d0fece98d8520d3dd954cf457b685b3308f",
+  "subject": "fix(clap_mangen): Take into consideration display_order",
+  "body": "fix(clap_mangen): Take into consideration display_order\n\nIn #3362 we have an issue where when we configure an arg via\n.display_order(int), and then generate a manpage,\nthe synposis and options will render the order the args were\nprovided to the App rather than the order they were configured\n\ne.g\n\nCommand::new(name)\narg(Arg::new(\"few\").short('b').display_order(2))\narg(Arg::new(\"bar\").short('a').display_order(1))\n\nwill show\n\n...\nSYNOPSIS\n    <name> [-b] [-a] ...\n\n...\nOPTIONS\n    -b\n    -a\n\ninstead of\n\n...\nSYNOPSIS\n    <name> [-a] [-b] ...\n\n...\nOPTIONS\n    -a\n    -b\n\nand so on. This fix adds sorting in the synopsis and\noptions functions responsible for generating the\ncorresponding synopsis and options sections of the manpage.\n\nCo-authored-by: ericgumba <ericgumba@gmail.com>",
+  "test_files": [
+   "tests/builder/help.rs"
+  ],
+  "src_files": [
+   "clap_mangen/src/render.rs"
+  ],
+  "test_funcs": []
+ },
+ {
+  "sha": "5335f54d73eef9276c13313661fcfffb720c87cf",
+  "test_sha": "f89b9b8d1b818a2eb3863745be48725ace2d8f12",
+  "subject": "feat: Add Command::mut_subcommands",
+  "body": "feat: Add Command::mut_subcommands",
+  "test_files": [
+   "tests/derive/author_version_about.rs"
+  ],
+  "src_files": [
+   "clap_builder/src/builder/command.rs"
+  ],
+  "test_funcs": []
+ }
+]

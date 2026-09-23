@@ -191,6 +191,13 @@ def cogzify(wt: Path, corpus_root: Path, cogz: str) -> int:
     """
     import shutil
     shutil.copytree(corpus_root / ".cogz", wt / ".cogz", symlinks=True)
+    # zero access tracking so post-run counts reflect only the agent's
+    # session — the copied DB carries the corpus's own access history
+    import sqlite3
+    conn = sqlite3.connect(wt / ".cogz" / "cogz.db")
+    conn.execute("DELETE FROM entity_access")
+    conn.commit()
+    conn.close()
     # fresh git history → reindex diff can't resolve the manifest sha;
     # full index reuses embeddings via content-hash for unchanged files
     subprocess.run([cogz, "index", "--repo", str(wt)],
@@ -287,7 +294,7 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
         if db.exists():
             q = subprocess.run(
                 ["sqlite3", str(db),
-                 "SELECT count(*) FROM entities WHERE access_count > 0"],
+                 "SELECT count(*) FROM entity_access WHERE access_count > 0"],
                 capture_output=True, text=True, timeout=30)
             try:
                 record["cogz_entities_accessed"] = int(q.stdout.strip())

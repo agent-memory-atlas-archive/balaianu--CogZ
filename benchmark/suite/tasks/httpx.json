@@ -1,0 +1,64 @@
+[
+ {
+  "sha": "47f4a96ffaaaa07dca1614409549b5d7a6e7af49",
+  "subject": "Handle empty zstd responses (#3412)",
+  "body": "Handle empty zstd responses (#3412)",
+  "test_files": [
+   "tests/test_decoders.py"
+  ],
+  "src_files": [
+   "README.md",
+   "httpx/__version__.py",
+   "httpx/_decoders.py"
+  ],
+  "test_funcs": [
+   "test_zstd_empty",
+   "test_zstd_truncated"
+  ]
+ },
+ {
+  "sha": "49d74a2e7f773f88a84dd4af900d7a8543636ae2",
+  "subject": "Clarified error when header value is None (#3312)",
+  "body": "Clarified error when header value is None (#3312)\n\nCo-authored-by: Zanie Blue <contact@zanie.dev>",
+  "test_files": [
+   "tests/client/test_headers.py"
+  ],
+  "src_files": [
+   "httpx/_utils.py"
+  ],
+  "test_funcs": [
+   "test_header_with_incorrect_value"
+  ]
+ },
+ {
+  "sha": "99cba6ac642b12f0331d069ae324402c54c4c600",
+  "subject": "Fix RFC 2069 mode digest authentication (#3045)",
+  "body": "Fix RFC 2069 mode digest authentication (#3045)\n\n* Fix RFC 2069 mode digest authentication\n\n* Update CHANGELOG.md",
+  "test_files": [
+   "tests/test_auth.py"
+  ],
+  "src_files": [
+   "httpx/_auth.py"
+  ],
+  "test_funcs": [
+   "test_digest_auth_rfc_2069",
+   "test_digest_auth_rfc_7616_md5",
+   "test_digest_auth_rfc_7616_sha_256"
+  ]
+ },
+ {
+  "sha": "1e110964736a95d822144390b99d7ecf17fca527",
+  "subject": "Fixed `iter_text` adding an empty string (#2998)",
+  "body": "Fixed `iter_text` adding an empty string (#2998)",
+  "test_files": [
+   "tests/test_decoders.py"
+  ],
+  "src_files": [
+   "httpx/_decoders.py",
+   "httpx/_models.py"
+  ],
+  "test_funcs": [
+   "test_streaming_text_decoder"
+  ]
+ }
+]

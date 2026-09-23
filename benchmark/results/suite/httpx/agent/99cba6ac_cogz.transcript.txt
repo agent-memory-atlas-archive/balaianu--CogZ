@@ -1,12 +1,19 @@
-I'll start by exploring the repo state and the digest auth code.Now let me read the digest auth implementation.I can see the bug. In `_build_auth_header`, when `qop is None` (RFC 2069 mode), `digest_data` includes `HA1`, and then `HA1` is prepended *again* in the `response` computation — producing `MD5(HA1:HA1:nonce:HA2)` instead of `MD5(HA1:nonce:HA2)`.
+I'll start by exploring the repo and using CogZ to find relevant context.Let me read the auth code and the RFC 2069 test.The test `test_digest_auth_rfc_2069` fails — the response digest is wrong. Looking at `_build_auth_header`:
 
-Let me verify against the test's expected value and check the test file + changelog.Bug confirmed: the `qop is None` branch produces `MD5(HA1:HA1:nonce:HA2)` instead of `MD5(HA1:nonce:HA2)`. Let me check the full test to see all expectations.The test only requires the correct `response=` digest. The fix: drop the duplicated `HA1` from `digest_data` in the `qop is None` branch (it's already prepended when computing `response`). I'll also add the CHANGELOG entry, matching the upstream commit.Now run the target test suite plus lint/typecheck per project rules.Ruff isn't installed in this env (tooling drift — not something to fix). Let me run the broader auth tests to be safe.All green. Final diff review:Fixed. The bug was in `DigestAuth._build_auth_header`: for RFC 2069 mode (server challenge without `qop`), `HA1` was included in `digest_data` *and* prepended again when computing the response, producing `MD5(HA1:HA1:nonce:HA2)` instead of `MD5(HA1:nonce:HA2)`. The `qop` branch was already correct.
+- When `qop` is present: `digest_data = [nonce, nc, cnonce, qop, HA2]`, then response = `digest(HA1 : key_digest)` → `digest(HA1:nonce:nc:cnonce:qop:HA2)` ✓ correct.
+- When `qop` is None (RFC 2069): `digest_data = [HA1, nonce, HA2]`, then response = `digest(HA1 : HA1:nonce:HA2)` — HA1 is included **twice**. Per RFC 2069 it should be `digest(HA1:nonce:HA2)`.
 
-Changes:
-- `httpx/_auth.py:283` — `digest_data = [challenge.nonce, HA2]` in the `qop is None` branch
-- `CHANGELOG.md` — Unreleased → Fixed entry referencing #3045
+Let me verify the expected hash:Confirmed — `HA1` is double-counted in the RFC 2069 (no-qop) path. Fixing it:Tests pass. Since this is a user-facing fix, I'll add a CHANGELOG entry per the project convention.Now running the project's verification per the repo rules (`scripts/check` + relevant tests).`ruff` isn't installed in this environment, so `scripts/check` can't run — but the change is a one-line fix with no style impact. All auth tests pass.
 
-Verification:
-- `pytest tests/test_auth.py` — 8 passed (incl. `test_digest_auth_rfc_2069`, which now produces the RFC errata-corrected `response="1949323746fe6a43ef61f9606e7febea"`)
-- `pytest tests/client/test_auth.py` — 80 passed, 1 skipped (pre-existing py-version skip)
-- `./scripts/check` — couldn't run: `ruff` isn't installed in this environment. The change is a single list-element removal, so lint/typecheck risk is nil.
+## Summary
+
+**Bug:** In `DigestAuth._build_auth_header`, when the server challenge has no `qop` (RFC 2069 mode), `digest_data` included `HA1` — but `HA1` is also prepended when computing `key_digest`, so the response was `digest(HA1:HA1:nonce:HA2)` instead of RFC 2069's `digest(HA1:nonce:HA2)`.
+
+**Fix:** Removed the duplicated `HA1` from the `qop is None` branch. [_auth.py:281-286](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_99cba6ac_t0bb55ub/httpx/_auth.py)
+
+Also added a CHANGELOG entry under Unreleased → Fixed (#3045), matching the upstream commit.
+
+**Verification:**
+- `tests/test_auth.py` — 8 passed (was failing on `test_digest_auth_rfc_2069`)
+- `tests/client/test_auth.py` — 80 passed, 1 skipped
+- Verified the digest by hand: `MD5(HA1:nonce:HA2)` = `1949323746fe6a43ef61f9606e7febea`, matching the RFC 2069 errata-corrected expected value.

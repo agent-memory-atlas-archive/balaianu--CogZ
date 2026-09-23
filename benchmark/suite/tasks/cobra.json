@@ -1,0 +1,64 @@
+[
+ {
+  "sha": "746ef07158728502482cea9f880a6f4b21ef29a9",
+  "subject": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
+  "body": "fix: prevent completions from mutating os.Args via append side effect (#2356)\n\nFixes #2257\n\nWhen getCompletions() checks for interspersed flags, it calls\nappend(finalArgs, \"--\") to temporarily add a \"--\" sentinel. However,\nfinalArgs is a sub-slice of the original args (ultimately derived from\nos.Args[1:] or SetArgs), and if the sub-slice has spare capacity in its\nbacking array, append writes \"--\" into the shared array, corrupting\nthe caller's data.\n\nThis is particularly visible when TraverseChildren is enabled: the\nTraverse method returns sub-slices that share the original backing\narray. A user's ValidArgsFunction inspecting os.Args would then see\n\"--\" where a real argument should be.\n\nCopy trimmedArgs at the top of getCompletions to prevent any future\nappend from accidentally mutating the caller's backing array.\n\nCo-authored-by: Claude Opus 4.6 <noreply@anthropic.com>",
+  "test_files": [
+   "completions_test.go"
+  ],
+  "src_files": [
+   "completions.go"
+  ],
+  "test_funcs": [
+   "TestCompletionDoesNotMutateOsArgs"
+  ]
+ },
+ {
+  "sha": "24ada7fe71e3a3a8741dd52e0a7fc3b97450535a",
+  "subject": "Remove the default \"completion\" cmd if it is alone (#1559)",
+  "body": "Remove the default \"completion\" cmd if it is alone (#1559)\n\nWhen a program has no sub-commands, its root command can accept\narguments.  If we add the default \"completion\" command to such programs\nthey will now have a sub-command and will no longer accept arguments.\n\nWhat we do instead for this special case, is only add the \"completion\"\ncommand if it is being called, or if it is being completed itself.\n\nWe want to have the \"completion\" command for such programs because it\nwill allow the completion of flags and of arguments (if provided\nby the program).\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "test_files": [
+   "completions_test.go"
+  ],
+  "src_files": [
+   "command.go",
+   "completions.go",
+   "site/content/completions/_index.md"
+  ],
+  "test_funcs": [
+   "TestInitDefaultCompletionCmd"
+  ]
+ },
+ {
+  "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+  "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+  "body": "fix: don't remove flag value that matches subcommand name (#1781)\n\nWhen the command searches args to find the arg matching a\nparticular subcommand name, it needs to ignore flag values,\nas it is possible that the value for a flag might match\nthe name of the sub command.\n\nThis change improves argsMinusFirstX() to ignore flag values\nwhen it searches for the X to exclude from the result.",
+  "test_files": [
+   "command_test.go"
+  ],
+  "src_files": [
+   "command.go"
+  ],
+  "test_funcs": [
+   "TestFind"
+  ]
+ },
+ {
+  "sha": "10cf7be9972ee5b5994cf760ecba642309ac8685",
+  "subject": "Check for group presence after full initialization (#1839)",
+  "body": "Check for group presence after full initialization (#1839)\n\nFixes #1831\n\nBy moving the check for help group existence to \"ExecuteC()\" we no\nlonger need groups to be added before AddCommand() is called.  This\nprovides more flexibility to developers and works better with the use\nof \"init()\" for command creation.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "test_files": [
+   "command_test.go"
+  ],
+  "src_files": [
+   "command.go",
+   "user_guide.md"
+  ],
+  "test_funcs": [
+   "TestWrongGroupFirstLevel",
+   "TestWrongGroupForCompletion",
+   "TestWrongGroupForHelp",
+   "TestWrongGroupNestedLevel"
+  ]
+ }
+]

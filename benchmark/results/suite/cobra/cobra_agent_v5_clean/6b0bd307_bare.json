@@ -1,0 +1,18 @@
+{
+ "corpus": "cobra",
+ "arm": "bare",
+ "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+ "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+ "test_cmd": "go test ./... -run 'TestFind' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 259.1,
+  "tail": "This is the cobra repo. Let me look at the relevant code and tests.Now let me see `stripFlags` and the flag helpers it uses, plus check `mergePersistentFlags`.The fix: `argsMinusFirstX` scans `innerArgs` for the subcommand name without knowing which args are flag values, so a flag value like `-f child` can be wrongly removed. I'll rework it to mirror `stripFlags`' flag-aware scan, making it a `*Command` method so it can resolve flags \u2014 matching the upstream approach.I typo'd the helper name \u2014 fix it and update the caller in `innerfind`.TestFind passes. Running the full suite to make sure the `Find` change didn't break anything else.Done. `go test ./... -run 'TestFind' -count=1` passes, and the full suite is green.\n\nThe change in [command.go](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_6b0bd307_r1isfxh_/command.go):\n\n- `argsMinusFirstX` is now a `*Command` method that mirrors `stripFlags`' parsing logic: it walks `args` by index, stops at `--`, and skips the argument following a flag that requires a value (`-f value`, `--flag value`), so a flag value that happens to equal the subcommand name is never the element removed.\n- `innerfind` calls `c.argsMinusFirstX(innerArgs, nextSubCmd)` so the current command's flags (including merged persistent flags) are used to identify flag values.\n\nFor example, `Find([\"-f\", \"child\", \"child\"])` now correctly removes the second `child` (the actual subcommand arg) instead of the first (the value of `-f`), returning `[\"-f\", \"child\"]`.\n",
+  "err": ""
+ },
+ "diff_stat": "command.go | 38 ++++++++++++++++++++++++++++++++------\n 1 file changed, 32 insertions(+), 6 deletions(-)",
+ "used_cogz": false,
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.009s\nok  \tgithub.com/spf13/cobra/doc\t0.009s [no tests to run]\n"
+}

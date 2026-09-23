@@ -83,14 +83,33 @@ campaign's sweep finding on external code.
 - drift precision: 1.000 P / 1.000 R.
 - consolidation suite: pass.
 
-## Version delta (local corpora re-run under current binary)
+## Version delta (same corpora, same queries — report-card binary vs current)
 
-| corpus | seeded R@20 before | after |
-|---|---|---|
-| kaos-website | (pre-slot baseline) | **1.000** (pack 1.0) |
-| api_tool | 0.7 | 0.8 (quota run) |
-| CogZ-py | 0.6 | 0.77 (quota run) |
-| CogZ self | 0.681 | 0.723 (quota run) |
+Seeded-knowledge retrieval (score.py on identical GT files):
+
+| corpus | n | R@20 old | R@20 now | P@5 old | P@5 now |
+|---|---|---|---|---|---|
+| kaos-website | 8 | 1.00 | 1.00 | .20 | .20 |
+| kinetik | 10 | .95 | .95 | .12 | .20 |
+| api_tool | 10 | .60 | .80 | .06 | .12 |
+| CogZ-py | 15 | .60 | .83 | .05 | .20 |
+
+Commit-GT retrieval:
+
+| corpus | n | R@20 old | R@20 now | P@5 old | P@5 now |
+|---|---|---|---|---|---|
+| kinetik | 15 | .433 | .562 | .133 | .173 |
+| kaos-website | 7 | .571 | .743 | .143 | .143 |
+| api_tool | 60 | .432 | .412 | .087 | .063 |
+| CogZ-py | 60 | .382 | .353 | .080 | .077 |
+
+Read: the knowledge-delivery work (window quota + diversity slots)
+produced a large, consistent gain where it was needed — seeded R@20
++0.20/+0.23 on the two ~2800-entity corpora, P@5 roughly doubled on
+every corpus that wasn't already saturated. Commit-GT is mixed:
+kinetik and kaos improved +0.13/+0.17, api_tool and CogZ-py slipped
+−0.02/−0.03 (within noise at these n; the vocabulary-gap finding is
+unchanged). Small corpora were already at ceiling.
 
 ## Agent replay (fail-to-pass on real fix commits)
 
@@ -116,6 +135,18 @@ closed during harness development:
    quarantined to `agent_v4_idxleak/`; harness now purges entities
    whose file is absent or whose title no longer appears in it
    (`purge_stale_code_entities`, 113–223 orphans per clap worktree).
+   **#63 is fixed in product (5adf3e1)**: `sync_code_entities` now
+   runs the per-file removed-definition sweep the incremental path
+   always had; e2e verified (pin-sha DB → parent tree → 155 stale vs
+   44 pre-fix; orphan not retrievable). Purge stays as a second line.
+5. **package-registry sources** — found in v6: the cogz-arm agent on
+   clap 3604b131 ignored the no-outside-files rule and read the
+   *published* `clap_builder-4.6.0/4.6.6` sources in
+   `~/.cargo/registry`, porting the upstream fix verbatim — which
+   still failed, because the published code had drifted from the
+   parent-era fix commit. Applies to any benchmark corpus that ships
+   itself as a package; bare arm never touched it (0 mentions).
+   Mitigation would need filesystem sandboxing, not instructions.
 
 Final harness: `git archive` of parent tree + `git init` baseline,
 sanitized prompts, no-lookup/no-outside-files instruction, corpus
@@ -126,53 +157,66 @@ cogz arm: `.cogz` (files+db) copied into worktree, `cogz index` at
 parent-sha content + purge; prompt instructs `cogz
 search`/`get-context` use.
 
-### Results — 24 runs, identical outcomes
+### Results — v5 (pre-product-fix clean run) and v6 (post-#63-fix rerun)
 
-| task | bare | cogz | bare wall | cogz wall |
-|---|---|---|---|---|
-| cobra 746ef071 os.Args mutation | pass | pass | 74s | 139s |
-| cobra 24ada7fe default completion cmd | pass | pass | 703s | 1735s |
-| cobra 6b0bd307 flag value vs subcommand | pass | pass | 259s | 193s |
-| cobra 10cf7be9 group presence check | pass | pass | 164s | 240s |
-| httpx 47f4a96f empty zstd | pass | pass | 62s | 73s |
-| httpx 49d74a2e header None error | pass | pass | 88s | 109s |
-| httpx 99cba6ac RFC 2069 digest | pass | pass | 93s | 128s |
-| httpx 1e110964 iter_text empty str | pass | pass | 100s | 501s |
-| clap 144e5cb4 --help propagation | **fail** | **fail** | 998s | 893s |
-| clap 3604b131 value_terminator | **timeout** | **fail** | 1800s | 942s |
-| clap 24dfa0d5 mangen display_order | pass | pass | 396s | 808s |
-| clap 5335f54d mut_subcommands | pass | pass | 1284s | 1118s |
+The v6 rerun repeated all 24 cells under the orphan-fixed binary
+(`cogz index` itself now marks removed definitions stale; the harness
+purge still deletes them outright — both mechanisms agreed on the
+orphan set, 174/178/207 purged on cobra, 1–45 on httpx, 113–223 on
+clap). Access tracking is zeroed at `cogzify` time so
+`cogz_entities_accessed` counts only the agent's session (cobra/httpx
+predate that fix and show corpus carryover instead).
 
-- **Outcome lift: none.** Both arms pass 10/12 — the same ten. The
-  two parser tasks defeat both. (The one earlier divergence —
-  3604b131 cogz "pass" — was the index leak, reproducible only while
-  the fix's own entities were readable.)
-- **Wall-clock: cogz arm is slower on 7/8 easy tasks** (median
-  +~45s; 24ada7fe +1032s, 1e110964 +401s, 24dfa0d5 +412s) and modestly
-  faster on the two hard fails. Consistent with extra exploration
-  steps and the mandatory-search preamble; on clap the cogzify index
-  pass also delays agent start by minutes.
-- **Adoption is narrated, not invisible**: transcripts show cogz-arm
-  agents querying on hard/unclear tasks ("Let me check CogZ's indexed
-  observations for this commit", direct SQLite pokes at the DB) and
-  skipping it entirely on easy ones (746ef071: zero cogz in a 1.6KB
-  transcript). On every pass the knowledge layer contributed
-  metadata-level grounding ("the upstream fix touched `_decoders.py`
-  and `_models.py`") — never the fix itself. Post-purge, nothing in
-  the index could hand over the answer; agents derived it from code.
-- **Parametric recall caveat**: one agent identified the task as a
-  real upstream cobra commit and tried to recall the patch from
-  memory ("upstream cobra PR #xxxx moved the check to `ExecuteC`").
-  Tasks drawn from famous OSS history are partially solvable by
-  recall, not just reasoning — this inflates absolute pass rates on
-  both arms symmetrically. The bare-vs-cogz comparison stands; the
-  absolute numbers shouldn't be read as "agent solves arbitrary bugs".
+| task | v5 bare | v5 cogz | v6 bare | v6 cogz | v6 walls (b/c) |
+|---|---|---|---|---|---|
+| cobra 746ef071 os.Args mutation | pass | pass | pass | pass | 134s / 76s |
+| cobra 24ada7fe default completion cmd | pass | pass | pass | pass | 524s / 619s |
+| cobra 6b0bd307 flag value vs subcommand | pass | pass | pass | pass | 149s / 100s |
+| cobra 10cf7be9 group presence check | pass | pass | pass | pass | 136s / 235s |
+| httpx 47f4a96f empty zstd | pass | pass | pass | pass | 70s / 135s |
+| httpx 49d74a2e header None error | pass | pass | pass | pass | 73s / 98s |
+| httpx 99cba6ac RFC 2069 digest | pass | pass | pass | pass | 76s / 74s |
+| httpx 1e110964 iter_text empty str | pass | pass | pass | pass | 46s / 625s |
+| clap 144e5cb4 --help propagation | fail | fail | fail | fail | 402s / 322s |
+| clap 3604b131 value_terminator | timeout | fail | **pass** | **fail** | 1693s / 492s |
+| clap 24dfa0d5 mangen display_order | pass | pass | pass | pass | 440s / 558s |
+| clap 5335f54d mut_subcommands | pass | pass | pass | pass | 662s / 505s |
 
-Bottom line: at n=12 real fixes, CogZ availability changed **what the
-agent did** (queried, read observations, sometimes poked the DB
-directly) but not **whether it succeeded**. The binding constraint
-remains outcome-level knowledge content — metadata-level observations
-ground the search but don't carry the fix.
+Totals: v5 bare 10/12, cogz 10/12 — v6 **bare 11/12, cogz 10/12**.
+
+- **Outcome lift: still none — and one cell flipped the other way.**
+  3604b131 is a borderline task at the 1800s cap: bare timed out in
+  v5, passed in v6 (1693s). The cogz arm failed both times — in v6 it
+  finished fast and *wrong*: it found the upstream fix via the cargo
+  registry (vector 5), ported a version that had drifted from the
+  parent-era commit, and shipped with one test red, rationalizing the
+  failure as a stale assertion. Bare ground through the actual code
+  and got all 908 tests green.
+- **Same-task variance is the dominant noise source at n=12.** One
+  task sitting at the timeout boundary swung the bare total by one;
+  treat per-arm totals ±1 as noise.
+- **Adoption (v6, deterministic signal):** `entity_access` counts
+  post-run — clap cogz arms touched 64–120 entities each (agents used
+  CogZ on all four clap tasks, the hard ones hardest). Narration
+  confirms: on 3604b131 the agent wrote "CogZ knows about this
+  specific commit — the observation references commit `3604b13117`"
+  — the seeded observation gave real metadata grounding (the fix
+  exists, where it touched) but not the diff, which CogZ does not
+  store by design.
+- **Wall-clock**: cogz arm slower on most easy tasks (mandatory-search
+  preamble + cogzify index time), faster on some fails (shorter wrong
+  path) — same shape as v5.
+- **Parametric recall caveat** (unchanged): agents recognize famous
+  upstream commits and try recall; inflates absolute pass rates
+  symmetrically on both arms.
+
+Bottom line: two clean campaigns, 48 runs total. CogZ availability
+reliably changes agent *behavior* (queries on hard tasks, real
+metadata grounding — the observation layer correctly identified the
+relevant fix commit) but does not change *outcomes* at this n — and
+can no more rescue a wrong-path agent than the leak could rescue it
+before. The constraint remains knowledge content: observations say
+*that* a fix exists and *what* it touched, not *what it changed*.
 
 ## Environment notes
 

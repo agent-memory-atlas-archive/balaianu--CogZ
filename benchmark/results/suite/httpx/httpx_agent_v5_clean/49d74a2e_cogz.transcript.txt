@@ -1,0 +1,5 @@
+I'll start by looking at the failing test and the relevant code.The test expects a `TypeError` with message "Header value must be str or bytes, not <class 'NoneType'>". Let me look at the current implementation.The test expects a `TypeError` from `normalize_header_value` when the value isn't `str` or `bytes`. I'll add that check.The test now passes. Let me run a quick sanity check on related tests to make sure nothing broke.Done. The fix adds a type check in `normalize_header_value` so non-str/bytes header values raise a clear `TypeError` instead of an `AttributeError` from calling `.encode()` on `None`. [_utils.py:47-55](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_49d74a2e__a4ml999/httpx/_utils.py)
+
+`tests/client/test_headers.py` passes (12 tests), and the related header/utils test files still pass (74 tests).
+
+(Skipping the CogZ observation suggestion — the fix is a direct implementation of the expected error message in the test, nothing non-obvious worth recording.)
