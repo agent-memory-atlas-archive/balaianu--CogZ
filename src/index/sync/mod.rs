@@ -168,7 +168,8 @@ fn normalize_content(content: &str, language: &str) -> String {
 /// `source_files` is a list of (relative_path, source_code, language)
 /// tuples. The function parses each file, extracts entities, and
 /// syncs them to the DB. Entities whose source file is no longer in
-/// the list are marked stale.
+/// the list, or whose definition no longer appears in its file, are
+/// marked stale.
 ///
 /// File reads and parsing happen without holding the storage mutex;
 /// DB operations acquire it in a second phase.
@@ -192,6 +193,14 @@ pub fn sync_code_entities(
     // failed to read are not deleted — their entities must not be
     // marked stale just because of an I/O error.
     result.marked_stale = mark_stale_code_entities(&conn, &file_to_entity_ids, failed_paths);
+
+    // Per-file sweep: entities whose definitions vanished inside a
+    // file that still exists (renamed or removed functions, classes,
+    // methods). Without this a full index leaves ghost entities for
+    // deleted code — stale bodies retrievable by search.
+    let (removed_count, removed_ids) = mark_stale_for_removed_entities(&conn, &file_to_entity_ids);
+    result.marked_stale += removed_count;
+    result.removed_entity_ids = removed_ids;
 
     // Record last code index timestamp.
     let now = chrono::Utc::now().to_rfc3339();

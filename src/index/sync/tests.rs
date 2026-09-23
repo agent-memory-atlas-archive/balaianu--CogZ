@@ -286,6 +286,55 @@ fn incremental_sync_marks_renamed_entities_stale() {
 }
 
 #[test]
+fn full_sync_marks_removed_entities_stale() {
+    let storage = Storage::open_memory().unwrap();
+
+    // V1: file defines `old_fn` and `keeper`
+    let code_v1 = "fn old_fn() {}\nfn keeper() {}\n";
+    let files_v1 = vec![(
+        std::path::PathBuf::from("src/test.rs"),
+        code_v1.to_string(),
+        Language::Rust,
+    )];
+    let entities_v1 = parse_files(&files_v1);
+    sync_code_entities(&storage, &entities_v1, &Default::default());
+
+    // V2 via the FULL sync path (index_code) — `old_fn` deleted,
+    // `keeper` unchanged. The file itself still exists.
+    let code_v2 = "fn keeper() {}\n";
+    let files_v2 = vec![(
+        std::path::PathBuf::from("src/test.rs"),
+        code_v2.to_string(),
+        Language::Rust,
+    )];
+    let entities_v2 = parse_files(&files_v2);
+    let result = sync_code_entities(&storage, &entities_v2, &Default::default());
+
+    let conn = storage.conn();
+    let status = |id: &str| -> String {
+        conn.query_row(
+            "SELECT status FROM entities WHERE id = ?1",
+            rusqlite::params![id],
+            |r| r.get(0),
+        )
+        .unwrap()
+    };
+    let old_fn_id = code_entity_uuid("src/test.rs", "function", "old_fn");
+    let keeper_id = code_entity_uuid("src/test.rs", "function", "keeper");
+
+    assert_eq!(
+        status(&old_fn_id),
+        "stale",
+        "deleted-in-file entity must be marked stale on a full index"
+    );
+    assert_eq!(status(&keeper_id), "active");
+    assert!(
+        result.removed_entity_ids.contains(&old_fn_id),
+        "removed_entity_ids should contain the deleted entity's ID"
+    );
+}
+
+#[test]
 fn normalized_hash_ignores_comment_changes() {
     let storage = Storage::open_memory().unwrap();
 
