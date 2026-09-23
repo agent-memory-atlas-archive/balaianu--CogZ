@@ -73,8 +73,10 @@ def main() -> None:
 
         seed_dir = SUITE / "seeds" / c["name"]
         if seed_dir.is_dir():
+            # seeds/<corpus>/ mirrors .cogz/ layout: knowledge/, rules/,
+            # observations/ each land at their own root.
             for f in seed_dir.rglob("*.md"):
-                dest = cogz_dir / "knowledge" / f.relative_to(seed_dir)
+                dest = cogz_dir / f.relative_to(seed_dir)
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(f, dest)
 
