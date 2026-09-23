@@ -218,6 +218,44 @@ can no more rescue a wrong-path agent than the leak could rescue it
 before. The constraint remains knowledge content: observations say
 *that* a fix exists and *what* it touched, not *what it changed*.
 
+### Self-corpus arm (v7): CogZ on CogZ, real accumulated knowledge
+
+Same harness on CogZ itself — the corpus whose `.cogz` is *tracked*
+and carries months of genuine development knowledge (66 observations,
+15 rules, 58 knowledge files written during real work — not mined
+seeds). Worktrees get parent-state `.cogz` files (tracked = free
+temporal consistency); pin `cogz.db` is copied for embedding reuse
+and the purge drops post-parent entities; bare arms have `.cogz`
+stripped. 5 real fix commits, 10 runs, zero neighbor-repo accesses
+in any transcript (the live repo was the standing neighbor risk).
+
+| task | bare | cogz | bare wall | cogz wall | entities accessed |
+|---|---|---|---|---|---|
+| 5adf3e1f removed-def stale sweep | pass | pass | 436s | 530s | 50 |
+| ed78398f tombstone/event-payload | pass | pass | 800s | **680s** | 60 |
+| 86d675b1 content-hash normalize | pass | pass | 718s | **665s** | 30 |
+| 42fbf044 edge sync data loss | pass | pass | 844s | **780s** | 17 |
+| 2022d66d stale edge accumulation | pass | pass | 267s | 388s | 16 |
+
+- **Outcomes: 5/5 vs 5/5** — all fixes tractable (they're agent-shaped
+  fixes to begin with); no hard-fail cell like clap's parser tasks.
+- **Adoption is now universal**: every cogz-arm run touched 16–60
+  entities. Contrast external corpora, where easy tasks saw zero
+  usage — knowledge about *your own* codebase is worth querying.
+- **Wall-clock: the sign flips.** On the three larger tasks the cogz
+  arm finished faster (−53s to −120s); on the two smallest it's
+  slower (+94s/+121s — pure preamble overhead). Mean: bare 613s vs
+  cogz 609s — vs v6 external corpora where cogz was ~25% slower on
+  passes. Directionally consistent with the adoption-over-time
+  hypothesis: real accumulated knowledge is denser than mined seeds,
+  so retrieval pays for itself sooner. n=5 — directional, not proof.
+- **On 5adf3e1f** the DB contained the observation documenting that
+  exact bug (written during the earlier campaign); the agent queried
+  CogZ, diagnosed `sync_code_entities` correctly, and produced the
+  same minimal fix as the real commit — knowledge-assisted by design,
+  and still slower than bare's direct read (the observation told it
+  *where*, not *what*).
+
 ## Environment notes
 
 - /tmp is a 3.7GB tmpfs; Rust target dirs must live elsewhere.

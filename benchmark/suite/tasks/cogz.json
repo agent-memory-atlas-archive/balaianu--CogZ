@@ -1,0 +1,100 @@
+[
+ {
+  "sha": "5adf3e1f60dbf2a90a8984650c075ddcd87c815d",
+  "subject": "Mark stale code entities for definitions removed inside a file",
+  "body": "Mark stale code entities for definitions removed inside a file\n\nThe incremental reindex path already swept per-file removed\ndefinitions via mark_stale_for_removed_entities, but the full-index\npath only marked whole-file deletions \u2014 entities for functions or\ntypes removed inside a still-existing file stayed 'active' with stale\ncontent, retrievable by search. Found via benchmark replay: a copied\npin-sha DB leaked the withheld fix's entities after reindex.\n\nsync_code_entities now runs the same per-file sweep after the\nfile-level pass; removed ids flow to removed_entity_ids for knowledge\nflagging.",
+  "test_files": [
+   "src/index/sync/tests.rs"
+  ],
+  "src_files": [
+   "src/index/sync/mod.rs"
+  ],
+  "test_funcs": [
+   "full_sync_marks_removed_entities_stale"
+  ]
+ },
+ {
+  "sha": "ed78398f9e664bef3a5803ff9de746bf2c2ae41b",
+  "subject": "Close tombstone coherence and event-payload retention gaps",
+  "body": "Close tombstone coherence and event-payload retention gaps\n\nExternal review (agent-memory-atlas, 6d664c8) prompted two fixes:\n\n- Reject status: pruned files that still carry title or body \u2014 a\n  tombstone is terminal and content-free; a contentful one is either\n  malformed or an attempt to mint a terminal record through the parse\n  path. Legitimate tombstone files (empty title+body) still sync.\n- Strip old_content/new_content/title keys from an entity's event\n  payloads at tombstone time and on cascade delete \u2014 pruning hides\n  the record, so its text must not survive inside the audit log.\n  Event type and timestamp are preserved.",
+  "test_files": [
+   "src/storage/crud/tests.rs"
+  ],
+  "src_files": [
+   "src/files/sync_ops.rs",
+   "src/storage/crud_batch.rs",
+   "tests/test_file_sync.rs"
+  ],
+  "test_funcs": [
+   "delete_entity_cascade_scrubs_event_payloads",
+   "tombstone_entity_scrubs_event_payloads"
+  ]
+ },
+ {
+  "sha": "86d675b17e9bc63ec86c5ff64976e8ac01472dfb",
+  "subject": "Normalize content hash to skip cosmetic code changes",
+  "body": "Normalize content hash to skip cosmetic code changes\n\nThe content hash for code entities now strips comments and normalizes\nwhitespace before hashing. This prevents cosmetic changes (comment\nedits, formatting tweaks) from triggering stale-knowledge flagging.\n\nPreviously, adding a comment to a function would change its content\nhash, causing it to be added to changed_code_ids, which triggered\nflag_stale_knowledge on any knowledge referencing that function \u2014\neven though the code logic was unchanged.\n\nThe normalizer is language-aware: // and /* */ for C-like languages\n(rust, go, javascript, typescript, tsx), # for python and bash.\nString literals are preserved to avoid stripping comment-like text\ninside strings.\n\nExisting stale entities were reprocessed: all frontmatter status\nfields reset to active, DB rebuilt from scratch with normalized\nhashes. 0 stale entities after rebuild.",
+  "test_files": [
+   "src/index/sync/tests.rs"
+  ],
+  "src_files": [
+   "src/index/sync/mod.rs"
+  ],
+  "test_funcs": [
+   "normalize_content_preserves_strings_with_hashes",
+   "normalize_content_preserves_strings_with_slashes",
+   "normalize_content_strips_block_comments",
+   "normalize_content_strips_hash_comments",
+   "normalize_content_strips_line_comments",
+   "normalized_hash_detects_semantic_changes",
+   "normalized_hash_ignores_comment_changes",
+   "normalized_hash_ignores_whitespace_changes"
+  ]
+ },
+ {
+  "sha": "42fbf04490ca8b0a70dc4e23c5c1b4f8ec4e66f7",
+  "subject": "Fix incremental edge sync data loss + sync docs to Phase 10 state",
+  "body": "Fix incremental edge sync data loss + sync docs to Phase 10 state\n\nIncremental reindex was destroying structural edges from unchanged\nfiles. sync_code_edges (full-scan function) was called with only\nchanged files, deleting all structural edges then reinserting only\nfrom the changed subset. Fix: new sync_code_edges_incremental in\nsrc/index/code_graph/incremental.rs builds name-to-UUID map from all\nDB entities, deletes only edges sourced from changed-file entities,\npreserves edges from unchanged files. Regression test in\nsrc/storage/edges/tests.rs.\n\nDocumentation audit: architecture.md, testing-strategy.md, and\nimplementation-plan.md updated to reflect actual Phase 10 state \u2014\nconsolidate/ no longer marked \"not yet implemented\", tool count\ncorrected to 12, CLI commands split into current vs planned, meta\ntable added to schema, consolidate tests unmarked from \"planned\",\nPhase 10 incremental edge sync documented. hf-hub replaces reqwest\nas planned model download dependency with .incomplete cleanup\nstrategy adapted from Mnemos fix.",
+  "test_files": [
+   "src/storage/edges/tests.rs"
+  ],
+  "src_files": [
+   "AGENTS.md",
+   "src/index/code_graph/incremental.rs",
+   "src/index/code_graph/mod.rs",
+   "src/index/mod.rs",
+   "src/storage/edges.rs"
+  ],
+  "test_funcs": [
+   "delete_structural_edges_by_sources_targets_only_changed",
+   "edge",
+   "edge_type_between_incoming",
+   "edge_type_between_none",
+   "edge_type_between_outgoing",
+   "get_edges_from_and_to",
+   "insert_and_count_edges",
+   "neighbors_batch_empty_frontier",
+   "neighbors_batch_multi_node",
+   "neighbors_batch_returns_both_directions",
+   "remove_edge",
+   "setup"
+  ]
+ },
+ {
+  "sha": "2022d66d80c6f3b591ef2e8db9c5bc761a043dda",
+  "subject": "Phase 8 audit pass 3: fix stale edge accumulation + file-backed entity query",
+  "body": "Phase 8 audit pass 3: fix stale edge accumulation + file-backed entity query\n\nTwo bugs found during triple-audit of Phase 8 code indexing:\n\n1. mark_deleted_as_stale (files/sync.rs): used `file_path IS NOT NULL`\n   to find file-backed entities, but code entities also have file_path\n   set. This caused 654 code entities to be spuriously marked stale\n   during file sync. Fixed: filter by type IN ('observation','rule',\n   'knowledge') instead.\n\n2. sync_code_edges (index/code_graph/mod.rs): only inserted edges,\n   never deleted old ones. When source code changed (function no\n   longer calls X), the stale calls/imports/extends edge persisted.\n   Each reindex accumulated duplicate edges. Fixed: delete all\n   structural edges (calls, imports, extends) before re-inserting\n   from fresh AST pass. References edges are preserved.\n\nAdded delete_edges_by_type to storage/edges.rs.\nAdded 2 tests: reindex_removes_stale_calls_edges,\nreindex_preserves_references_edges.\n\nDocs updated: architecture.md (module map, schema comments),\ntesting-strategy.md (phase-tagged test tables), implementation-plan.md\n(edge count note).\n\n281 tests pass, clippy clean, fmt clean.",
+  "test_files": [
+   "src/index/code_graph/tests.rs"
+  ],
+  "src_files": [
+   "src/files/sync.rs",
+   "src/index/code_graph/mod.rs",
+   "src/storage/edges.rs"
+  ],
+  "test_funcs": [
+   "reindex_preserves_references_edges",
+   "reindex_removes_stale_calls_edges"
+  ]
+ }
+]

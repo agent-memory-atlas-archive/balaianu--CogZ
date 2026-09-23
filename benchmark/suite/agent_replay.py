@@ -41,6 +41,14 @@ TEST_SPEC = {
         "func_re": re.compile(r"^\+.*fn (\w+)", re.M),
         "cmd": "cargo test -p clap --test {stems}",
     },
+    "cogz": {
+        # unit tests live in src/**/tests.rs and *_tests.rs modules
+        "test_re": re.compile(r"(^|/)tests\.rs$|_tests\.rs$"),
+        "func_re": re.compile(r"^\+\s*fn (\w+)", re.M),
+        "func_sep": " ",
+        # libtest accepts multiple filters (OR'd) after `--`
+        "cmd": "cargo test -- {funcs}",
+    },
 }
 
 
@@ -188,9 +196,19 @@ def purge_stale_code_entities(wt: Path) -> int:
 def cogzify(wt: Path, corpus_root: Path, cogz: str) -> int:
     """Carry the corpus's .cogz into the worktree, then reindex so the
     code index matches the parent-sha tree (only changed files re-parse).
+
+    When the worktree already has a tracked `.cogz` (CogZ dogfoods —
+    knowledge files are committed), keep the parent-state files and
+    copy only the pin DB for embedding reuse; the purge then drops
+    post-parent knowledge entities whose files don't exist here.
     """
     import shutil
-    shutil.copytree(corpus_root / ".cogz", wt / ".cogz", symlinks=True)
+    if (wt / ".cogz").exists():
+        shutil.copy2(corpus_root / ".cogz" / "cogz.db",
+                     wt / ".cogz" / "cogz.db")
+    else:
+        shutil.copytree(corpus_root / ".cogz", wt / ".cogz",
+                        symlinks=True)
     # zero access tracking so post-run counts reflect only the agent's
     # session — the copied DB carries the corpus's own access history
     import sqlite3
@@ -227,7 +245,7 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
     wt = setup_worktree(repo, task["sha"], task)
     spec = TEST_SPEC[corpus]
     files = " ".join(task["test_files"])
-    funcs = "|".join(task["test_funcs"])
+    funcs = spec.get("func_sep", "|").join(task["test_funcs"])
     # test target = file stem, or the group dir for nested suites
     # (clap's tests/builder/*.rs run via `cargo test --test builder`)
     stems = " ".join(sorted({
@@ -241,6 +259,10 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
                "reading code, run `cogz search` and `cogz get-context` "
                "to retrieve relevant knowledge and code entities.\n\n")
     else:
+        # tracked .cogz (CogZ dogfoods) would leak knowledge to the
+        # bare arm — strip it
+        import shutil
+        shutil.rmtree(wt / ".cogz", ignore_errors=True)
         pre = ""
     def sanitize(text: str) -> str:
         # strip upstream references that let an agent fetch the real fix
