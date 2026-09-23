@@ -187,11 +187,35 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
                "to retrieve relevant knowledge and code entities.\n\n")
     else:
         pre = ""
-    prompt = (f"{pre}Repository: {wt}\n"
-              f"Task: {task['subject']}\n\n{task['body'][:1500]}\n\n"
+    def sanitize(text: str) -> str:
+        # strip upstream references that let an agent fetch the real fix
+        text = re.sub(r"\(#\d+\)", "", text)
+        text = re.sub(r"(?i)(fix(e[sd])?|close[sd]?|resolve[sd]?|see)\s+"
+                      r"(#\d+|https?://\S+)", "", text)
+        text = re.sub(r"https?://\S+", "", text)
+        return text.strip()
+
+    prompt = (f"{pre}Repository: {wt} — a private codebase with no "
+              f"upstream. Do not consult external sources, GitHub, or "
+              f"the web; work only from the code and tests here. Do not "
+              f"read or search files outside {wt} — no other copy of "
+              f"this project exists on this machine.\n"
+              f"Task: {sanitize(task['subject'])}\n\n"
+              f"{sanitize(task['body'])[:1500]}\n\n"
               f"Make the minimal source changes so that `cd {wt} && {cmd}` "
               f"passes. Do not modify test files.")
-    res = agent_run(wt, prompt)
+    # hide the corpus's real history for the agent's lifetime — the
+    # upstream fix commit is reachable in <repo>/.git and agents WILL
+    # go looking for it
+    gitdir = repo / ".git"
+    hidden = repo / ".git_replay_off"
+    if gitdir.exists():
+        gitdir.rename(hidden)
+    try:
+        res = agent_run(wt, prompt)
+    finally:
+        if hidden.exists():
+            hidden.rename(gitdir)
     diff = git(wt, "diff", "--stat", check=False).stdout.strip()
     env = {**__import__("os").environ,
            "CARGO_TARGET_DIR": str(CARGO_TARGET)}

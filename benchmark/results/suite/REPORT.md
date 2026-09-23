@@ -63,8 +63,20 @@ at minimum a reporting wart worth a backlog item.
 
 ## Determinism & invariants
 
-- clap seeded run twice back-to-back: byte-identical result sets
-  (DETERMINISTIC).
+- Seeded run twice back-to-back on all three corpora: byte-identical
+  result sets (DETERMINISTIC ×3).
+
+## Pack budget sweep (avg knowledge sections per pack)
+
+| corpus | 8192 | 4096 | 2048 | 1024 |
+|---|---|---|---|---|
+| cobra | 4.6 | 4.6 | 2.4 | 1.6 |
+| httpx | 3.0 | 3.0 | 0.2 | 0.0 |
+| clap | 2.2 | 2.2 | 0.4 | 0.0 |
+
+Knowledge delivery has a hard budget cliff between 4k and 2k tokens —
+below ~2k the pack is code-only for the larger corpora. Replicates the
+campaign's sweep finding on external code.
 - reindex ≡ rebuild: EQUIVALENT (14 entities/16 edges; embedding
   cosine min 0.9669 — batch-composition noise, known item 57).
 - tombstones: OK.
@@ -82,21 +94,29 @@ at minimum a reporting wart worth a backlog item.
 
 ## Agent replay (fail-to-pass on real fix commits)
 
-Bare arm (`devin -p`, no cogz): worktree at parent sha + test-file
-diff applied; agent must make new tests pass.
+`devin -p` headless, `--permission-mode dangerous`, sanitized task
+text (PR/issue refs stripped), corpus `.git` hidden during the run,
+fresh-init worktree — three contamination vectors were found and
+closed during harness development:
 
-| corpus | tasks | bare pass |
-|---|---|---|
-| cobra | 4 | 4/4 |
-| httpx | 4 | 4/4 (incl. straggler) |
-| clap | 4 | 2/4 |
+1. **shared worktree history** — agent ran `git show <fix-sha>` and
+   copied the upstream diff verbatim (runs quarantined to
+   `agent_contaminated/`).
+2. **upstream web lookup** — agent searched the PR number from the
+   commit message and fetched the patch (quarantined to
+   `agent_v2_lookup/`).
+3. **filesystem neighbors** — agent found the benchmark corpus's own
+   clone with full history via filesystem search (v3 →
+   `agent_v3_fsleak/`).
 
-clap failures are real: both are subtle `parser.rs` fixes where a
-bare agent produced an insufficient patch. First clap attempt was
-polluted by /tmp tmpfs quota — fixed by moving worktrees to real disk
-and a shared CARGO_TARGET_DIR.
+Current harness: `git archive` of parent tree + `git init` baseline,
+sanitized prompts, explicit no-lookup/no-outside-files instruction,
+corpus `.git` renamed away during each agent run.
 
-cogz arm: pending (running).
+cogz arm: `.cogz` (files+db) copied into worktree, `cogz index` at
+parent-sha content; prompt instructs `cogz search`/`get-context` use.
+
+Results: pending (v4 running).
 
 ## Environment notes
 
