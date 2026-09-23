@@ -7,7 +7,7 @@ created_at: "2026-09-22T00:00:00Z"
 updated_at: "2026-09-22T00:00:00Z"
 references: []
 source: agent
-superseded_by: ["b7bb12d4-b70c-4b30-9b21-e667f000b5c3"]
+superseded_by: ["bfcc7754-c1b3-4f91-b790-f9c19d6896bc"]
 ---
 
 Flags() on root are not inherited; only PersistentFlags() propagate down the tree.

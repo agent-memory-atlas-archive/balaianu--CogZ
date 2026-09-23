@@ -7,7 +7,7 @@ created_at: "2026-09-22T00:00:00Z"
 updated_at: "2026-09-22T00:00:00Z"
 references: []
 source: agent
-superseded_by: ["dcb5b84a-3423-41e5-a146-cc12739b8f30"]
+superseded_by: ["8f05c692-3d8a-4b44-8490-20a3265dd6a9"]
 ---
 
 Requests without an explicit timeout raise TimeoutException after 5s of inactivity.

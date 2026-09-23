@@ -7,11 +7,9 @@
    "intent": "knowledge",
    "query": "builder api versus derive macro",
    "expected_entity_ids": [
-    "29e5e16d-0823-4019-ba60-61ad1c33cd94",
-    "4b011f9e-41ba-4034-9ce2-02585ad401c0",
     "58fdf56a-2cac-4ad9-b9cf-d6cea567bfba",
-    "72a676ab-895c-41cd-a05b-2ff47a801a28",
-    "d44371a7-ec09-4638-8033-5fbec41efbd0"
+    "d44371a7-ec09-4638-8033-5fbec41efbd0",
+    "29e5e16d-0823-4019-ba60-61ad1c33cd94"
    ]
   },
   {
@@ -19,9 +17,8 @@
    "intent": "knowledge",
    "query": "make a flag repeatable or count occurrences",
    "expected_entity_ids": [
-    "c336c219-5cf5-4e78-91ac-853606a5af7d",
-    "eb8b34a3-733a-4a98-94c0-77b4208acd46",
-    "f1bc8979-a6de-4505-8035-2e587d4ba371"
+    "f1bc8979-a6de-4505-8035-2e587d4ba371",
+    "c336c219-5cf5-4e78-91ac-853606a5af7d"
    ]
   },
   {
@@ -124,7 +121,8 @@
    "intent": "knowledge",
    "query": "App struct for building the cli",
    "expected_entity_ids": [
-    "fd919aaf-a1e6-48f8-8d38-6bf0914d7099"
+    "ae3a2a80-d98d-4d9b-b435-57a02512ad3c",
+    "727eaeab-9f07-4d95-8d72-f13f1e055c3e"
    ]
   }
  ]

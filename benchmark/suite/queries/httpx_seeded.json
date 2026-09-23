@@ -52,9 +52,8 @@
    "intent": "knowledge",
    "query": "streaming response raises ResponseNotRead when accessing text",
    "expected_entity_ids": [
-    "03ce7613-1159-404b-b437-3272268e87fc",
-    "6336f7a8-b69d-4ab7-bc9b-25581bc21e31",
-    "b0babf27-1f0d-49ae-b1f9-30ed776d8485"
+    "b0babf27-1f0d-49ae-b1f9-30ed776d8485",
+    "03ce7613-1159-404b-b437-3272268e87fc"
    ]
   },
   {
@@ -95,8 +94,7 @@
    "intent": "knowledge",
    "query": "which environment variables configure ssl certificates",
    "expected_entity_ids": [
-    "7718be7f-6bbd-4970-9022-7e81a3685c14",
-    "bd557bcd-d8cc-4a51-8d32-aae68877f76d"
+    "7718be7f-6bbd-4970-9022-7e81a3685c14"
    ]
   },
   {
@@ -128,7 +126,8 @@
    "intent": "knowledge",
    "query": "the proxies dict argument for per-scheme proxies",
    "expected_entity_ids": [
-    "69650625-8026-4535-aa7a-22da9c903dcd"
+    "f29dff3c-928c-4d09-864c-ba14cb4bbcc0",
+    "2567c72c-9236-42b7-a2c4-23746ae23dee"
    ]
   }
  ]

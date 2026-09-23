@@ -7,7 +7,7 @@ created_at: "2026-09-22T00:00:00Z"
 updated_at: "2026-09-22T00:00:00Z"
 references: []
 source: agent
-superseded_by: ["f1296ce7-73d6-4de4-b6ca-003e0f5f4eb2"]
+superseded_by: ["29e5e16d-0823-4019-ba60-61ad1c33cd94"]
 ---
 
 Both surfaces produce the same Command/Arg graph — #[arg(long)] == Arg::new(..).long(true).

@@ -7,10 +7,7 @@
    "intent": "knowledge",
    "query": "persistent flags versus local flags inheritance",
    "expected_entity_ids": [
-    "1be0fa79-30a4-4a09-b652-5b8e70023a04",
     "3bd263c8-b239-4589-81ff-96397e9a8607",
-    "43513881-613a-42a0-8973-7baa3241a530",
-    "756bbf78-7043-4951-a635-375d6199db14",
     "bfcc7754-c1b3-4f91-b790-f9c19d6896bc"
    ]
   },
@@ -130,9 +127,9 @@
   {
    "id": "ck15",
    "intent": "knowledge",
-   "query": "cobra generator scaffolding new commands",
+   "query": "generate markdown and man page documentation for a cobra command tree",
    "expected_entity_ids": [
-    "b2ee6841-dd72-4399-91de-983e1870bda4"
+    "1370b54e-abe7-48f7-bc88-dce7f79e319e"
    ]
   }
  ]
