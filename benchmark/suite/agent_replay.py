@@ -146,7 +146,46 @@ def setup_worktree(repo: Path, sha: str, task: dict) -> Path:
     return wt
 
 
-def cogzify(wt: Path, corpus_root: Path, cogz: str) -> None:
+def purge_stale_code_entities(wt: Path) -> int:
+    """Drop code entities whose definitions no longer exist in the tree.
+
+    `cogz index` refreshes content for modified functions but does not
+    remove entities for definitions deleted inside a still-existing
+    file — copied from the pin-sha DB, they would leak the upstream
+    fix's code to the agent. FTS rows are removed by trigger; orphaned
+    embedding rows never join back to entities.
+    """
+    import sqlite3
+    # named-definition types only — impl-block titles ("impl X<..> for Y")
+    # never literally appear in source and file/module entities have no
+    # definable name in the body
+    code_types = ("function", "method", "struct", "enum", "trait",
+                  "const", "type", "macro", "interface")
+    conn = sqlite3.connect(wt / ".cogz" / "cogz.db")
+    dead = []
+    for eid, fp, title, typ in conn.execute(
+            "SELECT id, file_path, title, type FROM entities"
+            " WHERE file_path IS NOT NULL"):
+        p = wt / fp
+        if not p.exists():
+            # knowledge-layer entities store paths relative to .cogz/
+            if (wt / ".cogz" / fp).exists():
+                continue
+            dead.append(eid)
+        elif typ in code_types and title:
+            try:
+                if title not in p.read_text(errors="replace"):
+                    dead.append(eid)
+            except OSError:
+                dead.append(eid)
+    conn.executemany("DELETE FROM entities WHERE id = ?",
+                     [(i,) for i in dead])
+    conn.commit()
+    conn.close()
+    return len(dead)
+
+
+def cogzify(wt: Path, corpus_root: Path, cogz: str) -> int:
     """Carry the corpus's .cogz into the worktree, then reindex so the
     code index matches the parent-sha tree (only changed files re-parse).
     """
@@ -156,16 +195,24 @@ def cogzify(wt: Path, corpus_root: Path, cogz: str) -> None:
     # full index reuses embeddings via content-hash for unchanged files
     subprocess.run([cogz, "index", "--repo", str(wt)],
                    capture_output=True, check=True)
+    return purge_stale_code_entities(wt)
 
 
 def agent_run(wt: Path, prompt: str, timeout: int = 1800) -> dict:
     t0 = time.time()
-    r = subprocess.run(
-        ["devin", "-p", prompt, "--respect-workspace-trust", "false",
-         "--permission-mode", "dangerous"],
-        cwd=wt, capture_output=True, text=True, timeout=timeout)
-    return {"rc": r.returncode, "wall_s": round(time.time() - t0, 1),
-            "tail": r.stdout[-3000:], "err": r.stderr[-1500:]}
+    try:
+        r = subprocess.run(
+            ["devin", "-p", prompt, "--respect-workspace-trust", "false",
+             "--permission-mode", "dangerous"],
+            cwd=wt, capture_output=True, text=True, timeout=timeout)
+        return {"rc": r.returncode, "wall_s": round(time.time() - t0, 1),
+                "out": r.stdout, "err": r.stderr}
+    except subprocess.TimeoutExpired as e:
+        out = e.stdout or ""
+        if isinstance(out, bytes):
+            out = out.decode("utf-8", "replace")
+        return {"rc": -9, "wall_s": round(time.time() - t0, 1),
+                "out": out, "err": "TIMEOUT", "timeout": True}
 
 
 def run_task(repo: Path, corpus: str, task: dict, arm: str,
@@ -180,8 +227,9 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
         Path(f).parent.name if len(Path(f).parts) > 2 else Path(f).stem
         for f in task["test_files"]}))
     cmd = spec["cmd"].format(files=files, funcs=funcs, stems=stems)
+    purged = 0
     if arm == "cogz":
-        cogzify(wt, repo, cogz)
+        purged = cogzify(wt, repo, cogz)
         pre = ("This repo is indexed with CogZ (see `.cogz/`). Before "
                "reading code, run `cogz search` and `cogz get-context` "
                "to retrieve relevant knowledge and code entities.\n\n")
@@ -221,13 +269,30 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
            "CARGO_TARGET_DIR": str(CARGO_TARGET)}
     t = subprocess.run(cmd, shell=True, cwd=wt, env=env,
                        capture_output=True, text=True, timeout=900)
+    full = res.pop("out", "") or ""
+    (outdir / f"{task['sha'][:8]}_{arm}.transcript.txt").write_text(full)
     record = {"corpus": corpus, "arm": arm, "sha": task["sha"],
               "subject": task["subject"], "test_cmd": cmd,
               "test_rc": t.returncode, "passed": t.returncode == 0,
-              "agent": res, "diff_stat": diff,
-              "used_cogz": bool(re.search(r"cogz (search|get-context)",
-                                          res["tail"] + res["err"])),
+              "agent": {**res, "tail": full[-20000:]},
+              "diff_stat": diff,
+              "used_cogz": bool(re.search(
+                  r"(?i)cogz\s+(search|get-context|status|query)",
+                  full + res["err"])),
+              "purged_entities": purged,
               "test_tail": t.stdout[-1200:] + t.stderr[-1200:]}
+    if arm == "cogz":
+        # get_context bumps access_count — deterministic usage signal
+        db = wt / ".cogz" / "cogz.db"
+        if db.exists():
+            q = subprocess.run(
+                ["sqlite3", str(db),
+                 "SELECT count(*) FROM entities WHERE access_count > 0"],
+                capture_output=True, text=True, timeout=30)
+            try:
+                record["cogz_entities_accessed"] = int(q.stdout.strip())
+            except ValueError:
+                pass
     (outdir / f"{task['sha'][:8]}_{arm}.json").write_text(
         json.dumps(record, indent=1))
     import shutil

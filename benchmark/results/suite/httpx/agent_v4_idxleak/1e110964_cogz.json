@@ -1,0 +1,18 @@
+{
+ "corpus": "httpx",
+ "arm": "cogz",
+ "sha": "1e110964736a95d822144390b99d7ecf17fca527",
+ "subject": "Fixed `iter_text` adding an empty string (#2998)",
+ "test_cmd": "python3 -m pytest tests/test_decoders.py -x -q --no-header",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 177.9,
+  "tail": "The test failure shows `iter_text` yields a trailing `''`. Let me check CogZ context as instructed, then look at the test.The bug is in `TextChunker.decode` \u2014 when `chunk_size is None` it returns `[content]` unconditionally, so `chunker.decode(\"\")` after `decoder.flush()` yields a spurious `''`. `ByteChunker` already guards with `[content] if content else []`.Tests pass. Let me run the broader response/model tests to make sure the chunker change didn't break anything else (it also affects `aiter_text`, `iter_lines`, etc.).Done. `tests/test_decoders.py` passes (35/35), plus `tests/models/test_responses.py` (106/106) as a regression check.\n\n**Root cause:** `TextChunker.decode` in `httpx/_decoders.py` returned `[content]` unconditionally when `chunk_size is None`. At the end of `iter_text`/`aiter_text`, `decoder.flush()` produces `\"\"`, and `chunker.decode(\"\")` emitted a spurious empty string chunk. `ByteChunker.decode` already guards against this with `[content] if content else []`.\n\n**Fix:** [_decoders.py:213-215](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_1e110964_ate8njry/httpx/_decoders.py) \u2014 one-line change mirroring `ByteChunker`. Since `iter_text` and `aiter_text` share `TextChunker`, both sync and async paths are covered; it also stops empty chunks mid-stream from split multi-byte characters.\n",
+  "err": ""
+ },
+ "diff_stat": "httpx/_decoders.py | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)",
+ "used_cogz": false,
+ "test_tail": "...................................                                      [100%]\n35 passed in 0.26s\n"
+}

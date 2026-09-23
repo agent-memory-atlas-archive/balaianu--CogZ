@@ -1,0 +1,18 @@
+{
+ "corpus": "cobra",
+ "arm": "bare",
+ "sha": "746ef07158728502482cea9f880a6f4b21ef29a9",
+ "subject": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
+ "test_cmd": "go test ./... -run 'TestCompletionDoesNotMutateOsArgs' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 74.1,
+  "tail": "The bug is at line 369: `append(finalArgs, \"--\")` can write into the caller's backing array. The task says to copy `trimmedArgs` at the top of `getCompletions`. Let me check the Go toolchain and whether `slices` is used in this codebase.Go 1.27 toolchain but the module targets go 1.15, so no `slices`/generics. I'll copy `trimmedArgs` with a plain append-to-empty-slice at the top of `getCompletions`, as the task describes \u2014 that breaks sharing with the caller's backing array (e.g. `os.Args[1:]`).Target test passes. Running the full suite to confirm nothing regressed.Done. Full suite passes.\n\n**Fix:** `getCompletions` now copies `trimmedArgs` instead of sub-slicing the caller's `args`:\n\n```go\ntrimmedArgs := append([]string{}, args[:len(args)-1]...)\n```\n\nat [completions.go:316-322](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_746ef071_q1pic8ua/completions.go). Since `Traverse`/`Find` return sub-slices of `trimmedArgs`, the later `append(finalArgs, \"--\")` at line 371 now writes into the copy's backing array rather than `os.Args`'s.\n",
+  "err": ""
+ },
+ "diff_stat": "completions.go | 4 +++-\n 1 file changed, 3 insertions(+), 1 deletion(-)",
+ "used_cogz": false,
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.007s\nok  \tgithub.com/spf13/cobra/doc\t0.006s [no tests to run]\n"
+}

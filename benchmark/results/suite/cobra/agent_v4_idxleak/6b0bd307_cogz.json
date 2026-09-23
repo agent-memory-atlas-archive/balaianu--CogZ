@@ -1,0 +1,18 @@
+{
+ "corpus": "cobra",
+ "arm": "cogz",
+ "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+ "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+ "test_cmd": "go test ./... -run 'TestFind' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 148.2,
+  "tail": "I'll start by looking at the actual state of the code in this repo.This is the buggy version \u2014 a free function that matches the first arg equal to `x` without skipping flag values. Let me check the surrounding helpers.Now let me check the `TestFind` tests to see what behavior is expected.The bug is clear: `argsMinusFirstX` is a free function that removes the first arg matching `x`, even when that arg is the value of a preceding flag (e.g. `-f child` where `child` is the flag's value, not the subcommand). The test expects flag-aware skipping, using the same helpers `stripFlags` already uses (`hasNoOptDefVal`, `shortHasNoOptDefVal`).\n\nI'll convert it to a `*Command` method (it needs `c.Flags()` after `mergePersistentFlags`) and skip flag values while scanning.Now run the target test and check for other callers.`TestFind` passes. Let me run the full suite to check for regressions since `Find` is on the hot path for every execution.Done. All tests pass.\n\nThe fix in [command.go:656-691](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_6b0bd307_wzyx_zxg/command.go):\n\n- `argsMinusFirstX` was a free function that removed the first arg equal to `x`, so in `root -f child child` it stripped the flag's *value* (`child`) instead of the subcommand name.\n- It's now a `*Command` method that calls `mergePersistentFlags()` and scans args the same way `stripFlags` does: a `--flag` or `-f` without `=` and without a `NoOptDefVal` consumes the next arg as its value, so that arg is skipped when searching for `x`. `--` terminates flag scanning.\n- The call site in `innerfind` now uses `c.argsMinusFirstX(innerArgs, nextSubCmd)` so the flag set of the command whose args are being scanned is used.\n\n`go test ./... -run 'TestFind' -count=1` passes, and the full suite (`go test ./...`) is green \u2014 no other callers needed updating.\n",
+  "err": ""
+ },
+ "diff_stat": "command.go | 39 +++++++++++++++++++++++++++++++--------\n 1 file changed, 31 insertions(+), 8 deletions(-)",
+ "used_cogz": false,
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.007s\nok  \tgithub.com/spf13/cobra/doc\t0.005s [no tests to run]\n"
+}
