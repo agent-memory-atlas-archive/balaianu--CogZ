@@ -18,7 +18,8 @@ from pathlib import Path
 SUITE = Path(__file__).parent
 BENCH = SUITE.parent
 COGZ = BENCH.parent / "target/release/cogz"
-PHASES = ("corpus", "seeded", "commit", "negatives", "packs", "sweep")
+PHASES = ("corpus", "seeded", "commit", "negatives", "packs", "sweep",
+          "determinism")
 
 
 def run(cmd: list[str], out: Path | None = None) -> None:
@@ -84,6 +85,17 @@ def main() -> None:
             run(["python3", str(BENCH / "pack_metrics.py"), "--repo", str(repo),
                  "--pack-tokens", str(budget),
                  "--out", str(outdir / f"pack_sweep_{budget}.json")])
+
+    if "determinism" not in skip:
+        q = SUITE / "queries" / f"{args.corpus}_seeded.json"
+        if q.exists():
+            for tag in ("det_a", "det_b"):
+                run(["python3", str(BENCH / "run.py"), "--repo", str(repo),
+                     "--queries", str(q), "--out", str(outdir / f"{tag}.json"),
+                     "--cogz", args.cogz])
+            run(["python3", str(BENCH / "determinism_check.py"),
+                 str(outdir / "det_a.json"), str(outdir / "det_b.json")],
+                outdir / "determinism.txt")
 
     print(f"{args.corpus}: battery complete -> {outdir}")
 

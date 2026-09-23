@@ -193,5 +193,122 @@
       "rust": 1849,
       "bash": 1
     }
+  },
+  "cobra": {
+    "path": "/home/andy/cogz_bench/corpora/cobra",
+    "source_files": 36,
+    "loc": 16765,
+    "src_langs": {
+      "go": 36
+    },
+    "git_commits": 1106,
+    "entities_by_type": {
+      "class": 17,
+      "file": 36,
+      "function": 595,
+      "knowledge": 23,
+      "module": 36,
+      "observation": 49,
+      "rule": 12
+    },
+    "entities_by_status": {
+      "active": 759,
+      "rejected": 2,
+      "stale": 5,
+      "superseded": 2
+    },
+    "edges_by_type": {
+      "auto_references": 106,
+      "calls": 589,
+      "contains": 612,
+      "extends": 25
+    },
+    "edges": 1332,
+    "code_embeddings": 684,
+    "knowledge_embeddings": 84,
+    "drift_rows": 0,
+    "db_bytes": 8986624,
+    "code_entity_langs": {
+      "go": 684
+    }
+  },
+  "httpx": {
+    "path": "/home/andy/cogz_bench/corpora/httpx",
+    "source_files": 60,
+    "loc": 17753,
+    "src_langs": {
+      "python": 60
+    },
+    "git_commits": 1523,
+    "entities_by_type": {
+      "class": 95,
+      "file": 60,
+      "function": 810,
+      "knowledge": 25,
+      "observation": 49,
+      "rule": 12
+    },
+    "entities_by_status": {
+      "active": 1042,
+      "rejected": 2,
+      "stale": 5,
+      "superseded": 2
+    },
+    "edges_by_type": {
+      "auto_references": 130,
+      "calls": 97,
+      "contains": 905,
+      "extends": 56,
+      "imports": 130
+    },
+    "edges": 1318,
+    "code_embeddings": 965,
+    "knowledge_embeddings": 86,
+    "drift_rows": 0,
+    "db_bytes": 9609216,
+    "code_entity_langs": {
+      "python": 965
+    }
+  },
+  "clap": {
+    "path": "/home/andy/cogz_bench/corpora/clap",
+    "source_files": 338,
+    "loc": 84711,
+    "src_langs": {
+      "rust": 337,
+      "python": 1
+    },
+    "git_commits": 9217,
+    "entities_by_type": {
+      "class": 804,
+      "file": 353,
+      "function": 3267,
+      "knowledge": 22,
+      "module": 157,
+      "observation": 49,
+      "rule": 12
+    },
+    "entities_by_status": {
+      "active": 4655,
+      "rejected": 2,
+      "stale": 5,
+      "superseded": 2
+    },
+    "edges_by_type": {
+      "auto_references": 121,
+      "calls": 1749,
+      "contains": 4071,
+      "extends": 37,
+      "imports": 323
+    },
+    "edges": 6301,
+    "code_embeddings": 4581,
+    "knowledge_embeddings": 83,
+    "drift_rows": 0,
+    "db_bytes": 31801344,
+    "code_entity_langs": {
+      "rust": 4549,
+      "bash": 32
+    }
   }
 }
