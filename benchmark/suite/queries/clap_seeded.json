@@ -1,0 +1,131 @@
+{
+ "version": "seeded-gt-v1",
+ "corpus": "clap",
+ "queries": [
+  {
+   "id": "lk01",
+   "intent": "knowledge",
+   "query": "builder api versus derive macro",
+   "expected_entity_ids": [
+    "29e5e16d-0823-4019-ba60-61ad1c33cd94",
+    "4b011f9e-41ba-4034-9ce2-02585ad401c0",
+    "58fdf56a-2cac-4ad9-b9cf-d6cea567bfba",
+    "72a676ab-895c-41cd-a05b-2ff47a801a28",
+    "d44371a7-ec09-4638-8033-5fbec41efbd0"
+   ]
+  },
+  {
+   "id": "lk02",
+   "intent": "knowledge",
+   "query": "make a flag repeatable or count occurrences",
+   "expected_entity_ids": [
+    "c336c219-5cf5-4e78-91ac-853606a5af7d",
+    "eb8b34a3-733a-4a98-94c0-77b4208acd46",
+    "f1bc8979-a6de-4505-8035-2e587d4ba371"
+   ]
+  },
+  {
+   "id": "lk03",
+   "intent": "knowledge",
+   "query": "mutually exclusive or required arg groups",
+   "expected_entity_ids": [
+    "490ed79b-4ca4-48b9-9737-56b781ba0473"
+   ]
+  },
+  {
+   "id": "lk04",
+   "intent": "knowledge",
+   "query": "custom value parser for typed arguments",
+   "expected_entity_ids": [
+    "7d858e72-1073-4b13-b409-c93a4c093177"
+   ]
+  },
+  {
+   "id": "lk05",
+   "intent": "knowledge",
+   "query": "capture unknown subcommands for a plugin cli",
+   "expected_entity_ids": [
+    "7412b8c6-898d-4bf8-9467-d76ff53907ed"
+   ]
+  },
+  {
+   "id": "lk06",
+   "intent": "knowledge",
+   "query": "when does clap panic vs exit gracefully",
+   "expected_entity_ids": [
+    "66babb49-e879-4928-a0f9-394601f76004",
+    "977218db-a2c1-427c-b563-30b6286aaa72",
+    "acd1065b-b769-47bd-9f93-d31925b1b076",
+    "cbf1b2e9-9e13-4ee6-adf1-f40f52b2312c"
+   ]
+  },
+  {
+   "id": "lk07",
+   "intent": "knowledge",
+   "query": "help flag bypasses required arg validation",
+   "expected_entity_ids": [
+    "0e378618-7ffa-4779-95f3-214958144f5b"
+   ]
+  },
+  {
+   "id": "lk08",
+   "intent": "knowledge",
+   "query": "defer enum subcommand initialization in derive",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "lk09",
+   "intent": "knowledge",
+   "query": "escape values in zsh completion",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "lk10",
+   "intent": "knowledge",
+   "query": "deprecate an api behind a feature flag",
+   "expected_entity_ids": [
+    "391445e7-aab2-494f-b25f-3d89838eff51"
+   ]
+  },
+  {
+   "id": "lk11",
+   "intent": "knowledge",
+   "query": "develop a new feature behind unstable flag",
+   "expected_entity_ids": [
+    "3ee4fc41-4984-4783-a0e7-54b3f02e39ee"
+   ]
+  },
+  {
+   "id": "lk12",
+   "intent": "knowledge",
+   "query": "how is the workspace organized",
+   "expected_entity_ids": [
+    "da5fe68a-1967-407b-96ee-ee985e28a636"
+   ]
+  },
+  {
+   "id": "lk13",
+   "intent": "knowledge",
+   "query": "tokenize argv before parsing",
+   "expected_entity_ids": [
+    "8c536f37-d2da-423f-8034-f9cde54b3736"
+   ]
+  },
+  {
+   "id": "lk14",
+   "intent": "knowledge",
+   "query": "verify changes before submitting",
+   "expected_entity_ids": [
+    "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+   ]
+  },
+  {
+   "id": "lk15",
+   "intent": "knowledge",
+   "query": "App struct for building the cli",
+   "expected_entity_ids": [
+    "fd919aaf-a1e6-48f8-8d38-6bf0914d7099"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,36 @@
+{
+ "version": "neg-v1",
+ "corpus": "cobra",
+ "queries": [
+  {
+   "id": "cn01",
+   "intent": "negative",
+   "query": "grpc server command scaffolding",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn02",
+   "intent": "negative",
+   "query": "yaml config file parsing for flags",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn03",
+   "intent": "negative",
+   "query": "interactive prompt input collection",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn04",
+   "intent": "negative",
+   "query": "quantum entanglement routing protocol",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn05",
+   "intent": "negative",
+   "query": "blockchain wallet address validation",
+   "expected_entity_ids": []
+  }
+ ]
+}

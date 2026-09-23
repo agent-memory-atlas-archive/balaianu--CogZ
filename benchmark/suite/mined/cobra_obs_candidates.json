@@ -1,0 +1,688 @@
+[
+ {
+  "sha": "746ef07158728502482cea9f880a6f4b21ef29a9",
+  "subject": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
+  "body": "Fixes #2257\n\nWhen getCompletions() checks for interspersed flags, it calls\nappend(finalArgs, \"--\") to temporarily add a \"--\" sentinel. However,\nfinalArgs is a sub-slice of the original args (ultimately derived from\nos.Args[1:] or SetArgs), and if the sub-slice has spare capacity in its\nbacking array, append writes \"--\" into the shared array, corrupting\nthe caller's data.\n\nThis is particularly visible when TraverseChildren is enabled: the\nTraverse method returns sub-slices that share the original backing\narray. A user's ValidArgsFunction inspecting os.Args would then see\n\"--\" where a real argument should be.\n\nCopy trimmedArgs at the top of getCompletions to prevent any future\nappend from accidentally mutating the caller's backing array.\n\nCo-authored-by: Claude Opus 4.6 <noreply@anthropic.co",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "61968e893eee2f27696c2fbc8e34fa5c4afaf7c4",
+  "subject": "fix: quote args in fish shell completion (#2285)",
+  "body": "* fix: quote args in fish shell completion\n\nThe arguments used for dynamic completions in fish were missing quotes.\nThis resulted in an error when one of the arguments had a `*` in it\nwhose expansion matched no file. Once the completion got triggered, fish\nerrored with the message `No matches for wildcard [...]`. Don't quote\nthe first argument as that is the name of the binary.\n\n* Protect against arguments that start with --\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>\n\n---------\n\nCo-authored-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "fish_completions.go"
+  ]
+ },
+ {
+  "sha": "10d4b48a79be3d4e89e6c45cb59f4d32a3d2ae19",
+  "subject": "perf: Loop over the bash variable directly instead of starting subprocesses. (#2333)",
+  "body": "Today, the loop is printing the completions one value per line and then\nreading one line to a variable. We can just skip the whole IO rigamarole\nby looping over the completions directly.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "fc81d2003469e2a5c440306d04a6d82a54065979",
+  "subject": "refactor: change minUsagePadding from var to const (#2325)",
+  "body": "",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "117698a604b65e80a1ad5b76df67b604bcd992e0",
+  "subject": "refactor: replace several vars with consts (#2328)",
+  "body": "",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "4af7b64d31989e78e86d65304f693a6d9c77c932",
+  "subject": "refactor: apply golangci-lint autofixes, work around false positives",
+  "body": "",
+  "files": [
+   "completions.go",
+   "doc/man_docs.go",
+   "doc/md_docs.go",
+   "doc/rest_docs.go",
+   "doc/yaml_docs.go"
+  ]
+ },
+ {
+  "sha": "a97f9fd47b290016526c8af2dac0531fea5cd773",
+  "subject": "fix CompletionFunc implementation (#2234)",
+  "body": "The new type CompletionFunc could lead to a regression.\nThis commit make the new `CompletionFunc` type a type alias instead,\nin case projects using Cobra have created their own similar type.\n\nThis commit also adds a test to ensure that the completion function\nremains backwards-compatible.\n\nSigned-off-by: ccoVeille <3875889+ccoVeille@users.noreply.github.com>",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "24ada7fe71e3a3a8741dd52e0a7fc3b97450535a",
+  "subject": "Remove the default \"completion\" cmd if it is alone (#1559)",
+  "body": "When a program has no sub-commands, its root command can accept\narguments.  If we add the default \"completion\" command to such programs\nthey will now have a sub-command and will no longer accept arguments.\n\nWhat we do instead for this special case, is only add the \"completion\"\ncommand if it is being called, or if it is being completed itself.\n\nWe want to have the \"completion\" command for such programs because it\nwill allow the completion of flags and of arguments (if provided\nby the program).\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "8cb30f9ca53a004a6fe88c5cfcc79ac7b24fc638",
+  "subject": "feat: add CompletionWithDesc helper (#2231)",
+  "body": "The code has also been refactored to use a type alias for completion and a completion helper\n\nUsing a type alias is a non-breaking change and it makes the code more readable and easier to understand.\n\nSigned-off-by: ccoVeille <3875889+ccoVeille@users.noreply.github.com>\nCo-authored-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "active_help.go",
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "ab5cadcc1bbe224b329726fc5f8b99d6f93e9805",
+  "subject": "Allow to reset the templates to the default (#2229)",
+  "body": "Follow-up to #1956.\n\nThis commit allows a program to reset any of the tree templates to their\ndefault behaviour, as it was possible to do before the change of #1956.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "4ba5566f5704a9c0d205e1ef3efc4896156d33fa",
+  "subject": "fix(bash): nounset unbound file filter variable on empty extension (#2228)",
+  "body": "Happens at least if a flag is marked as filename, with \"\" given as\nextensions.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "41b26ec8bb59dfba580f722201bf371c4f5703dd",
+  "subject": "Print ActiveHelp for bash along other completions (#2076)",
+  "body": "In the bash shell we used to print ActiveHelp messages on every\ntab-press. In the example below, notice the \"Command help\" line which is\nActiveHelp:\n\nbash-5.1$ tanzu context u[tab]\nCommand help: Configure and manage contexts for the Tanzu CLI\n\nbash-5.1$ tanzu context u[tab]\nCommand help: Configure and manage contexts for the Tanzu CLI\n\nbash-5.1$ tanzu context u\nunset  (Unset the active context so that it is not used by default.)\nuse    (Set the context to be used by default)\nbash-5.1$ tanzu context u\n\nAbove, on the first [tab] press, only the ActiveHelp is printed.\nOn the second [tab] press, the ActiveHelp is printed again, followed\nby a re-print of the command-line, followed by the completions choices.\n\nThe separation between ActiveHelp and completion choices makes the\nActiveHelp harder t",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "611e16c322e3b0413a9ba4e489fcd98ef904e406",
+  "subject": "Allow linker to perform deadcode elimination for program using Cobra (#1956)",
+  "body": "* Restructure code to let linker perform deadcode elimination step\n\nCobra, in its default configuration, will execute a template to generate\nhelp, usage and version outputs. Text/template execution calls MethodByName\nand MethodByName disables dead code elimination in the Go linker, therefore\nall programs that make use of cobra will be linked with dead code\nelimination disabled, even if they end up replacing the default usage, help\nand version formatters with a custom function and no actual text/template\nevaluations are ever made at runtime.\n\nDead code elimination in the linker helps reduce disk space and memory\nutilization of programs. For example, for the simple example program used by\nTestDeadcodeElimination 40% of the final executable size is dead code. For a\nmore realistic example, 12%",
+  "files": [
+   "cobra.go",
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "09d5664f34e3f7571560e48ccb74c8904b671e87",
+  "subject": "Add similar whitespace escape logic to bash v2 completions than in other completions (#1743)",
+  "body": "Signed-off-by: Toni Kangas <toni.kangas@upcloud.com>\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>\nCo-authored-by: Marc Khouzam <marc.khouzam@gmail.com>\nCo-authored-by: Jeffrey Faer <jeffrey.faer@gmail.com>",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "6c3c1163c6df19860515103199e880122ba49e80",
+  "subject": "feat: add CompletionFunc type to help with completions (#2220)",
+  "body": "Also document that NoFilesCompletion and FixedCompletion can be used with RegisterFlagCompletionFunc.",
+  "files": [
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "0745e5576205cd05fada5bb2e01500d97e1a04be",
+  "subject": "completion: improve detection for flags that accept multiple values (#2210)",
+  "body": "The completion code attempts to detect whether a flag can be specified\nmore than once, and therefore should provide completion even if already\nset.\n\nCurrently, this code depends on conventions used in the pflag package,\nwhich uses an \"Array\" or \"Slice\" suffix or for some types a \"stringTo\"\nprefix.\n\nCobra allows custom value types to be used, which may not use the same\nconvention for naming, and therefore currently aren't detected to allow\nmultiple values.\n\nThe pflag module defines a [SliceValue] interface, which is implemented\nby the Slice and Array value types it provides (unfortunately, it's not\ncurrently implemented by the \"stringTo\" values).\n\nThis patch adds a reduced interface based on the [SliceValue] interface\nmentioned above to allow detecting Value-types that accept multiple value",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "d1e9d85fcf592461f3bc2f4b6d5e140c4c0aabf8",
+  "subject": "Make detection for test-binary more universal (#2173)",
+  "body": "When running tests in verbose mode (or other options), tests involving\nCobra may fail if the test does not explicitly set Command.args to an\nempty slice; in this case, Cobra defaults to using `os.Args`, which\nwill contain arguments passed to the test (such as `-v` (verbose)).\n\nCommits e5762054c9a6429fa7c234897707d and 1ef0913976db2004980575ed815c3\nimplemented a workaround for this when running (unit) tests for Cobra\nitself, but this check is specifig to Cobra (checking for `cobra.test`),\nand don't work on Windows (which will have a `.exe` extension),\n\nThis patch implements a more universal check, so that users of Cobra\nas a module also benefit from this workaround.\n\ngo1.21 and up provides a `testing.Testing()` utility ([1]); as the Cobra\nmodule still supports Go1.16 and up, an alternative ",
+  "files": [
+   "command.go",
+   "command_go120.go",
+   "command_go121.go"
+  ]
+ },
+ {
+  "sha": "5a138f143f25d616c6c195356a6560ed4fbbfdd4",
+  "subject": "Make Powershell completion script work in constrained mode (#2196)",
+  "body": "Creating CompletionResult objects is not allowed in Powershell constrained mode, so return results as strings if constrained mode is enabled\n\nStore results as PsCustomObjects instead of hashtables. This prevents Sort-Object from trying to convert the hashtable to a object, which is blocked in constrained mode.\nPsCustomObjects are created using New-Object to work around https://github.com/PowerShell/PowerShell/issues/20767",
+  "files": [
+   "powershell_completions.go"
+  ]
+ },
+ {
+  "sha": "5bef9d8d87ad1a1c73e74361bad9e38b3469a58e",
+  "subject": "Fix --version help and output for plugins (#2180)",
+  "body": "* Fix --version help with CommandDisplayNameAnnotation\n\nWhen setting Command.Version, a --version option is added. The help\nmessage for the --version command did not consider the command display\nname:\n\n    Flags:\n      -h, --help      help for kubectl plugin\n      -v, --version   version for kubectl-plugin\n\nWith this change the help test is consistent with other flags:\n\n    Flags:\n      -h, --help      help for kubectl plugin\n      -v, --version   version for kubectl plugin\n\n* Make command DisplayName() public\n\nThis allows using the display name in templates or other code that want\nto use the same value.\n\n* Use display name in version template\n\nThe version template used `{{.Name}}` but for plugins you want to use\n`{{.DisplayName}}` to be consistent with other help output.\n\nWith this change",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "756ba6dad61458cbbf7abecfc502d230574c57d2",
+  "subject": "fix(completions): Complete map flags multiple times (#2174)",
+  "body": "",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "371ae25d2c82e519feb48c82d142e6a696fd06dd",
+  "subject": "Fix deprecation comment for Command.SetOutput (#2172)",
+  "body": "Deprecation comments should be at the start of a paragraph [1], and because\nof that have a whitespace above them [2];\n\n> To signal that an identifier should not be used, add a paragraph to its\n> doc comment that begins with Deprecated: followed by some information\n> about the deprecation (...)\n\nWith the whitespace missing, some tools, including pkg.go.dev [3] don't\ndetect it to be deprecated.\n\n[1]: https://go.dev/wiki/Deprecated\n[2]: https://go.dev/doc/comment#paragraphs\n[3]: https://pkg.go.dev/github.com/spf13/cobra@v1.8.1#Command.SetOutput\n\nSigned-off-by: Sebastiaan van Stijn <github@gone.nl>",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "e94f6d0dd9a5e5738dca6bce03c4b1207ffbc0ec",
+  "subject": "Address golangci-lint deprecation warnings, enable some more linters (#2152)",
+  "body": "* Address golangci-lint linter deprecation warnings\n\n1.59.0 outputs:\n\nWARN [lintersdb] The name \"gas\" is deprecated. The linter has been renamed to: gosec.\nWARN [lintersdb] The linter named \"megacheck\" is deprecated. It has been split into: gosimple, staticcheck, unused.\n\n* Enable some more linters, address finding",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "8003b74a10ef0d0d84fe3c408d3939d86fdeb210",
+  "subject": "Remove fully inactivated linters (#2148)",
+  "body": "* Remove fully inactivated linters\n\nCurrently golangci-lint fails with these errors:\n\nERRO [linters_context] golint: This linter is fully inactivated: it will not produce any reports.\nERRO [linters_context] interfacer: This linter is fully inactivated: it will not produce any reports.\nERRO [linters_context] maligned: This linter is fully inactivated: it will not produce any reports.\n\nI could not find any docs explaining what \"fully inactivated\" mean, but\nbased this PR[1] it seems that these linters do nothing now. Removing\nthe linters fixes this issue without changing linting, as they did not\nproduce any report.\n\nLooking in the linters docs[2] I did not find a replacement for\n\"interfacer\" and \"malinged\" linters. \"stylecheck\" seems to be a\nreplacement for \"golint\", but we need to fix the co",
+  "files": [
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "5c2c1d627d35a00153764a3d37400efc66eaca1c",
+  "subject": "Consistent annotation names (#2140)",
+  "body": "Add `Annotation` suffix to the private annotations to allow nicer code\nusing the constants.\n\nFor example one can use the current annotation names as a temporary\nvariable instead of unclear shortcut. Instead of this:\n\n    rag := flagsFromAnnotation(c, f, requiredAsGroup)\n    me := flagsFromAnnotation(c, f, mutuallyExclusive)\n    or := flagsFromAnnotation(c, f, oneRequired)\n\nWe can use now:\n\n    requiredAsGrop := flagsFromAnnotation(c, f, requiredAsGroupAnnotation)\n    mutuallyExclusive := flagsFromAnnotation(c, f, mutuallyExclusiveAnnotation)\n    oneRequired := flagsFromAnnotation(c, f, oneRequiredAnnotation)\n\nExample taken from #2105.",
+  "files": [
+   "flag_groups.go"
+  ]
+ },
+ {
+  "sha": "a73b9c391a9489d20f5ee1480e75d3b99fc8c7e2",
+  "subject": "Fix help text for runnable plugin command",
+  "body": "When creating a plugin without sub commands, the help text included the\ncommand name (kubectl-plugin) instead of the display name (kubectl plugin):\n\n    Usage:\n      kubectl-plugin [flags]\n\nThe issue is that the usage line for this case does not use the\ncommand path but the raw `Use` string, and this case was not tested.\n\nAdd a test for this case and fix UsageLine() to replace the command name\nwith the display name.\n\nTested using https://github.com/nirs/kubernetes/tree/sample-cli-plugin-help",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "df547f5fc6ee86071f73c36c16afd885bb4e3f28",
+  "subject": "Fix help text for plugins",
+  "body": "When using `CommandDisplayNameAnnotation` we want to use it instead of\nthe command name in `--help` message or in the default help command.\n\nWith current code we get the wrong text in the --help usage text:\n\n    Flags:\n      -h, --help   help for kubectl-plugin\n\nAnd in the long description of the default help command:\n\n    $ kubectl cobraplugin help -h\n    Help provides help for any command in the application.\n    Simply type kubectl-plugin help [path to command] for full details.\n\nThe issue was hidden since the test checked only the Usage line.\n\nFixed by extracting a displayName() function and use it when creating\nFlagSet and when formatting the default help flag usage and the help\ncommand long description.\n\nEnhance the TestPlugin to check all the lines including the command\nname.",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "e63925d3216142ba2c8d7641d729c6c15f4433e7",
+  "subject": "Add env variable to suppress completion descriptions on create (#1938)",
+  "body": "COBRA_COMPLETION_DESCRIPTIONS=0 \nor \n<PROGRAM>_COMPLETION_DESCRIPTIONS=0\ncan now be used to disable shell completion descriptions.",
+  "files": [
+   "active_help.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "3d8ac432bdad89db04ab0890754b2444d7b4e1cf",
+  "subject": "Micro-optimizations (#1957)",
+  "body": "* Avoid redundant string splits\n\nThere likely isn't actually more than once to split in the source\nstrings in these cases, but avoid doing so anyway as we're only\ninterested in the first.\n\n* Avoid redundant completion output target evaluations\n\nThe target is not to be changed while outputting completions, so resolve\nit only once.\n\n* Avoid redundant active help enablement evaluations\n\nThe enablement state is not to be changed during completion output, so\nevaluate it only once.\n\n* Preallocate some slices and maps with known size\n\n* Avoid some unnecessary looping\n\n* Use strings.Builder to construct suggestions",
+  "files": [
+   "args.go",
+   "bash_completions.go",
+   "cobra.go",
+   "command.go",
+   "completions.go",
+   "flag_groups.go"
+  ]
+ },
+ {
+  "sha": "a0a6ae020bb3899ff0276067863e50523f897370",
+  "subject": "Improve API to get flag completion function (#2063)",
+  "body": "The new API is simpler and matches the `c.RegisterFlagCompletionFunc()`\nAPI.  By removing the global function `GetFlagCompletion()` we are more\nfuture proof if we ever move from a global map of flag completion\nfunctions to something associated with the command.\n\nThe commit also makes this API work with persistent flags by using\n`c.Flag(flagName)` instead of `c.Flags().Lookup(flagName)`.\n\nThe commit also adds unit tests.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "890302a35f578311404a462b3cdd404f34db3720",
+  "subject": "Support usage as plugin for tools like kubectl (#2018)",
+  "body": "In this case the executable is `kubectl-plugin`, but we run it as:\n\n    kubectl plugin\n\nAnd the help text should reflect the actual usage of the command.\n\nTo create a plugin, add the cobra.CommandDisplayNameAnnotation:\n\n    rootCmd := &cobra.Command{\n        Use: \"plugin\",\n        Annotations: map[string]string{\n            cobra.CommandDisplayNameAnnotation: \"kubectl plugin\",\n        }\n    }\n\nInternally this change modifies CommandPath() for the root command to\nreturn the command display name instead of the command name. This is\nused for error messages, help text generation, and completions.\n\nCommandPath() is expected to have spaces and code using it already\nhandle spaces (e.g replacing with _), so hopefully this does not break\nanything.\n\nFixes: #2017\n\nSigned-off-by: Nir Soffer <nsoffer@r",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "22953d88453ec9343b4a78b9d67400a3326f3138",
+  "subject": "Replace all non-alphanumerics in active help env var program prefix (#1940)",
+  "body": "* Replace all non-alphanumerics in active help env var program prefix\n\nThere are other characters besides the dash that are fine in program\nnames, but are problematic in environment variable names. These include\n(but are not limited to) period, space, and non-ASCII letters.\n\n* Another change in docs to mention non-ASCII-alphanumeric instead of just dash",
+  "files": [
+   "active_help.go"
+  ]
+ },
+ {
+  "sha": "b711e8760b73c6aa1b4aa1bef3a26da5926f175d",
+  "subject": "Don't complete --help flag when flag parsing disabled (#2061)",
+  "body": "Fixes #2060\n\nWhen a command sets `DisableFlagParsing = true` it requests the\nresponsibility of doing all the flag parsing. Therefore even the\n`--help/-f/--version/-v` flags should not be automatically completed\nby Cobra in such a case.\n\nWithout this change the `--help/-h/--version/-v` flags can end up being\ncompleted twice for plugins: one time from cobra and one time from the\nplugin (which has set `DisableFlagParsing = true`).\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "8b1eba47616566fc4d258a93da48d5d8741865f0",
+  "subject": "Fix linter errors (#2052)",
+  "body": "When using golangci-lint v1.55.0 some new errors were being reported.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "command.go",
+   "doc/md_docs.go"
+  ]
+ },
+ {
+  "sha": "4cafa37bc4bb85633b4245aa118280fe5a9edcd5",
+  "subject": "Allow running persistent run hooks of all parents (#2044)",
+  "body": "Currently, only one of the persistent pre-runs and post-runs is executed.\nIt is always the first one found in the parents chain, starting at this command.\nExpected behavior is to execute all parents' persistent pre-runs and post-runs.\n\nDependent projects implemented various workarounds for this:\n- manually building persistent hook chains (in every hook).\n- applying some kind of monkey-patching on top of Cobra.\n\nThis change eliminates the necessity for such workarounds\nby allowing to set a global variable EnableTraverseRunHooks.\n\nTickets:\n- https://github.com/spf13/cobra/issues/216\n- https://github.com/spf13/cobra/issues/252\n\nSigned-off-by: Volodymyr Khoroz <volodymyr.khoroz@foundries.io>",
+  "files": [
+   "cobra.go",
+   "command.go"
+  ]
+ },
+ {
+  "sha": "bd4d1655f6655f690f45d281fe698dacb9c7d750",
+  "subject": "feat: add getters for flag completions (#1943)",
+  "body": "",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "fdee73b4a0d0be3e233b968ab038866b7cd99772",
+  "subject": "powershell: escape variable with curly brackets (#1960)",
+  "body": "This fixes an issue with program names that include a dot, in our case\n`podman.exe`. This was caused by the change in commit 6ba7ebbc.\n\nFixes #1853\n\nSigned-off-by: Paul Holzinger <pholzing@redhat.com>",
+  "files": [
+   "powershell_completions.go"
+  ]
+ },
+ {
+  "sha": "2246fa82e91dda4486b9466fab691b41b516f747",
+  "subject": "Fix grammar: 'allows to' (#1978)",
+  "body": "The use in generated bash completion files is getting flagged by\nLintian (the Debian package linting tool).\n\nSigned-off-by: Taavi V\u00e4\u00e4n\u00e4nen <hi@taavi.wtf>",
+  "files": [
+   "bash_completions.go",
+   "bash_completionsV2.go",
+   "cobra.go"
+  ]
+ },
+ {
+  "sha": "284f4101043c4b1faebde411caec35a7b6e36494",
+  "subject": "Fix typo in fish completions (#1945)",
+  "body": "",
+  "files": [
+   "fish_completions.go"
+  ]
+ },
+ {
+  "sha": "45360a55ccccf909b35f4290242bfb8a6bfbef66",
+  "subject": "Allow sourcing zsh completion script (#1917)",
+  "body": "Although it is not the recommended approach, sourcing a completion\nscript is the simplest way to get people to try using shell completion.\nNot allowing it for zsh has turned out to complicate shell completion\nadoption.  Further, many tools modify the zsh script to allow sourcing.\n\nThis commit allows sourcing of the zsh completion script.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "completions.go",
+   "zsh_completions.go"
+  ]
+ },
+ {
+  "sha": "567ea8ebc9b4385ae671486415cd203fc2a3bab9",
+  "subject": "Add support for PowerShell 7.2+ (#1916)",
+  "body": "PowerShell 7.2 has changed the way arguments are passed to executables.\nThis was originally an experimental feature in 7.2, but as of 7.3 it is\nbuilt-in. A simple \"\" is now sufficient for passing empty arguments, no\nback-tick escaping is required.\n\nFixes #1849\n\nSigned-off-by: Old\u0159ich Jedli\u010dka <oldium.pro@gmail.com>\nCo-authored-by: Old\u0159ich Jedli\u010dka <oldrich.jedlicka@rohlik.cz>",
+  "files": [
+   "powershell_completions.go"
+  ]
+ },
+ {
+  "sha": "3daa4b9c36617509a756832a3d0ee2b6f4b8c129",
+  "subject": "Add keeporder to shell completion (#1903)",
+  "body": "This allows programs to request the shell to maintain the order of completions that was returned by the program",
+  "files": [
+   "bash_completionsV2.go",
+   "completions.go",
+   "fish_completions.go",
+   "powershell_completions.go",
+   "zsh_completions.go"
+  ]
+ },
+ {
+  "sha": "b4f979ae352828a0153281b590771ce9588d67f8",
+  "subject": "completions: do not detect arguments with dash as 2nd char as flag (#1817)",
+  "body": "Fixes #1816\n\nPreviously, arguments with a dash as the second character (e.g., 1-ff00:0:1)\nwere detected as a flag by mistake. This resulted in auto completion misbehaving\nif such an argument was last in the argument list during invocation.",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "bf11ab6321f2831be5390fdd71ab0bb2edbd9ed5",
+  "subject": "fix: func name in doc strings (#1885)",
+  "body": "Corrected the function name at the start of doc strings, as per the convention\noutlined in official go documentation: https://go.dev/blog/godoc",
+  "files": [
+   "args.go",
+   "bash_completions.go",
+   "command.go",
+   "completions.go",
+   "doc/rest_docs.go"
+  ]
+ },
+ {
+  "sha": "f25a3c6e0b4220c616a3b342b57b055c1256d318",
+  "subject": "fix: conflict import name with variable (#1879)",
+  "body": "`template` is an import in `cobra.go` file and also used as a variable\nname, which masks the library in the scope of that function.",
+  "files": [
+   "cobra.go"
+  ]
+ },
+ {
+  "sha": "c6b99719235fcb18d950f972f27d95fdb0347f02",
+  "subject": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
+  "body": "Fixes #1847",
+  "files": [
+   "powershell_completions.go"
+  ]
+ },
+ {
+  "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+  "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+  "body": "When the command searches args to find the arg matching a\nparticular subcommand name, it needs to ignore flag values,\nas it is possible that the value for a flag might match\nthe name of the sub command.\n\nThis change improves argsMinusFirstX() to ignore flag values\nwhen it searches for the X to exclude from the result.",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "10cf7be9972ee5b5994cf760ecba642309ac8685",
+  "subject": "Check for group presence after full initialization (#1839)",
+  "body": "Fixes #1831\n\nBy moving the check for help group existence to \"ExecuteC()\" we no\nlonger need groups to be added before AddCommand() is called.  This\nprovides more flexibility to developers and works better with the use\nof \"init()\" for command creation.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "860791844ed3a2e544a9b9bbbcb14144a948ad20",
+  "subject": "feat: make InitDefaultCompletionCmd public (#1467)",
+  "body": "* feat: make InitDefaultCompletionCmd public\n\n* PR comments\n\n* Update man_docs_test.go\n\n* Update README.md",
+  "files": [
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "2169adb5749372c64cdd303864ae8a444da6350f",
+  "subject": "Add groups for commands in help (#1003)",
+  "body": "* Add tests for grouping commands\n* Adds Additional Command section in help\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>\nCo-authored-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "212ea4078323771dc49b6f25a41d84efbaac3a4c",
+  "subject": "Include --help and --version flag in completion (#1813)",
+  "body": "Fixes #1786\n\nThe --help, -h, --version and -v flags are normally added when the\n`execute()` function is called on a command.  When doing completion\nwe don't call `execute()` so we need to add these flags explicitly to\nthe command being completed.\n\nAlso, we disable all further completions if the 'help' or 'version'\nflags are present on the command-line.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "command.go",
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "d4040ad8dbc351b7eb88b2ffcff6f3642bce8ce1",
+  "subject": "Allow user to add completion for powershell alias (#1621)",
+  "body": "When a user has an alias in powershell, she will need to register that\nalias for completion.  To make that possible, we store the completion\nlogic into a scriptblock variable which can easily be accessed by the\nuser to register aliases.\n\nFor example, if the user defines an alias for `helm`:\n   PS> sal h helm\nshe will need to register the alias like so:\n   PS> Register-ArgumentCompleter -CommandName 'h' -ScriptBlock $__helmCompleterBlock\n\nSigned-off-by: Marc Khouzam <marc.khouzam@montreal.ca>",
+  "files": [
+   "powershell_completions.go"
+  ]
+ },
+ {
+  "sha": "93d1913fb03362f97e95aeacc7d1541764cafc2f",
+  "subject": "Add OnFinalize method (#1788)",
+  "body": "This method is the OnInitialize counterpart. Like OnInitialize which allows\nloading the configuration before each command is executed, OnFinalize allows\nsaving the configuration after each command has been executed.",
+  "files": [
+   "cobra.go",
+   "command.go"
+  ]
+ },
+ {
+  "sha": "d689184a421607457a18131e0a2b602fec22e3b4",
+  "subject": "Support for case-insensitive command names (#1802)",
+  "body": "Add a global `EnableCaseInsensitive` variable to allow\ncase-insensitive command names.\n\nThe variable supports commands names and aliases globally.\n\nResolves #1382",
+  "files": [
+   "cobra.go",
+   "command.go"
+  ]
+ },
+ {
+  "sha": "70e53f62be77e03f376be845efacbd99c00024ca",
+  "subject": "Deprecate ExactValidArgs() and test combinations of args validators (#1643)",
+  "body": "* deprecate ExactValidArgs in favour of MatchAll(OnlyValidArgs, ...)\n* test combinations of args validators\n* adjust docs",
+  "files": [
+   "args.go"
+  ]
+ },
+ {
+  "sha": "22b617914c8890ba20db7ceafcdc2ef4ca4817d3",
+  "subject": "fix: show flags that shadow parent persistent flag in child help (#1776)",
+  "body": "This fixes a bug where a child flag that shadows (has the same\nname as) a parent persistent flag would not be shown in the\nchild command's help output and the parent flag would be shown\ninstead under the global flags section.\n\nThis change makes the help output consistent with the\nobserved behavior during execution, where the child flag is\nthe one that is actually used.",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "dbf85f6104904d539cabceebec234e817fa0df0c",
+  "subject": "Update gopkg.in/yaml.v2 to gopkg.in/yaml.v3 (#1766)",
+  "body": "API v3 was released in 2019 [1]. Update from the v2 API, no changes to\nthe packages's use needed and no breaking changes expected.\n\n[1] https://ubuntu.com/blog/api-v3-of-the-yaml-package-for-go-is-available",
+  "files": [
+   "doc/yaml_docs.go"
+  ]
+ },
+ {
+  "sha": "f911c0b89c6e0c41b6ad218c9235d8706c36a1b2",
+  "subject": "fix(bash-v2): activeHelp length check syntax (#1762)",
+  "body": "```shell\n$ set -u\n$ foo=()\n$ echo ${#foo}\nbash: foo: unbound variable\necho ${#foo[*]}\n0\n```\nThe above shows that an empty array needs the suffix `[*]` when checking its length, or else it is considered unbound.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "7790bf97fd40e285913066cf65387ad281cd6c2e",
+  "subject": "fix: correct command path in see_also for YAML doc (#1771)",
+  "body": "The `see_also` section for child commands would include only the name of\nthe commands. This adds the whole path, similar to how it's done for the\nother documentation formats.",
+  "files": [
+   "doc/yaml_docs.go"
+  ]
+ },
+ {
+  "sha": "5f2ec3c897155c3346e77430932e3966e5cfa648",
+  "subject": "Update shell completion to respect flag groups (#1659)",
+  "body": "Signed-off-by: Marc Khouzam <marc.khouzam@montreal.ca>\n\nCo-authored-by: Marc Khouzam <marc.khouzam@montreal.ca>",
+  "files": [
+   "completions.go",
+   "flag_groups.go"
+  ]
+ },
+ {
+  "sha": "b9ca5949e2f58373e8e4c3823c213401f7d9d0e3",
+  "subject": "use errors.Is() to check for errors (#1730)",
+  "body": "Since go 1.13 you can wrap errors. This make it no longer possible to\ncompare with `==`, instead you have to compare with `errors.Is()`.\n\nI noticed this problem because -h was no longer working after I stared\nwrapping the errors in my custom FlagErrorFunc function.\nNote that this is only a problem when a custom help flag is defined.\n\nSigned-off-by: Paul Holzinger <pholzing@redhat.com>",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "7c9831d376a6c048ae9f95b435cdde9dc14358a0",
+  "subject": "Fix handling of descriptions for bash v3 (#1735)",
+  "body": "Fixes #1734\n\nTab characters that introduce completion descriptions weren't properly\nbeing handled with bash v3.  This change fixes that.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@gmail.com>",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "37d481d4d40a07b1a8f2f6c345124540e870c85c",
+  "subject": "fix: Don't complete _command on zsh (#1690)",
+  "body": "Previously the generated zsh completion script started with the line\n\n    #compdef _<command> <command>\n\nwhere <command> is the command that the zsh completion script is\ngenerated for.\n\nThis enabled completions for both <command> and _<command>, but\n_<command> is the completion function itself and should not be\ncompleted. Furthermore, attempting to autocomplete _<command> (e.g.\ntyping \"_<command><Space><Tab>\" in a zsh shell) causes zsh to hang.\n\nThis commit fixes the #compdef line to only complete <command>, not\n_<command>.\n\nCo-authored-by: Arvid Norlander <VorpalBlade@users.noreply.github.com>",
+  "files": [
+   "zsh_completions.go"
+  ]
+ },
+ {
+  "sha": "5b11656e45a6a6579298a3b28c71f456ff196ad6",
+  "subject": "perf(bash-v2): read directly to COMPREPLY on descriptionless short circuit (#1700)",
+  "body": "Not that it'd really matter that much performancewise given the level we\nare at for this case, but this change makes the short circuit roughly\ntwice as fast on my box as it was for the 1000 rounds done in\nmarckhouzam/cobra-completion-testing.\n\nPerhaps more importantly, this makes the code arguably slightly cleaner.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "e1ded5cd9480aa9921a8cb0f646b6b569ac1b9d8",
+  "subject": "fix(bash-v2): skip empty completions when filtering descriptions (#1691)",
+  "body": "`read` gives a last null value following a trailing newline.\n\nRegression from fb8031162c2ffab270774f13c6904bb04cbba5a7.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "9e88759b19cd358e9af6f0d778b9a23990cf7f51",
+  "subject": "perf(bash-v2): speed up filtering menu-complete descriptions (#1692)",
+  "body": "Similarly as fb8031162c2ffab270774f13c6904bb04cbba5a7 (+ the empty entry\nfix) did for the \"regular\", non-menu completion cases.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "fb8031162c2ffab270774f13c6904bb04cbba5a7",
+  "subject": "perf(bash-v2): speed up filtering entries with descriptions (#1689)",
+  "body": "Use simple prefix match instead of single word `compgen -W` command\nsubstitution for each candidate match.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "95d7df18589543fc4a0c62a4734349811a2ddcec",
+  "subject": "perf(bash-v2): short-circuit descriptionless candidate lists (#1686)",
+  "body": "If the list of candidates has no descriptions, short circuit all the\ndescription processing logic, basically just do a `compgen -W` for the\nwhole list and be done with it.\n\nWe could conceivably do some optimizations like this and more when\ngenerating the completions with `--no-descriptions` in Go code, by\nomitting some parts we know won't be needed, or doing some things\ndifferently. But doing it this way in bash, the improvements are\navailable also to completions generated with descriptions enabled when\nthey are invoked for completion cases that produce no\ndescriptions. The result after this for descriptionless entries seems\nfast enough so it seems there's no immediate need to look into doing\nthat.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "09d6ba690f83d8efe2d5eca1e74897e123075d2a",
+  "subject": "perf(bash-v2): standard completion optimizations (#1683)",
+  "body": "Refactor to remove two loops over the entire list of candidates.\n\nFormat descriptions only for completions that are actually going to be\ndisplayed, instead of for all candidates.\n\nFormat descriptions inline in completions array, removing need for a\ncommand substitution/subshell and a printf escape per displayed\ncompletion.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "2722a75ba3dcf846d3b14f62a2c69a5478f7feb3",
+  "subject": "perf(bash-v2): use backslash escape string expansion for tab (#1682)",
+  "body": "Using a command substitution, i.e. a subshell, with `printf` is\nexpensive for this purpose. For example `__*_format_comp_descriptions`\nis run once for each completion candidate; the expense adds up and\nshows when there are a lot of them.",
+  "files": [
+   "bash_completionsV2.go"
+  ]
+ },
+ {
+  "sha": "68b6b24f0c9926a779f7113d1040396a30fdedaf",
+  "subject": "Add ability to mark flags as required or exclusive as a group (#1654)",
+  "body": "This change adds two features for dealing with flags:\n - requiring flags be provided as a group (or not at all)\n - requiring flags be mutually exclusive of each other\n\nBy utilizing the flag annotations we can mark which flag groups\na flag is a part of and during the parsing process we track which\nones we have seen or not.\n\nA flag may be a part of multiple groups. The list of flags and the\ntype of group (required together or exclusive) make it a unique group.\n\nSigned-off-by: John Schnake <jschnake@vmware.com>",
+  "files": [
+   "command.go",
+   "flag_groups.go"
+  ]
+ },
+ {
+  "sha": "bf6cb5804d7a45faacd0abfc99145c42696ec818",
+  "subject": "Wrap printf tab with quotes (#1665)",
+  "body": "Without this, slightly older versions of zsh fail to correctly parse the output of the __complete\ncommand. Tested that with zsh 5.0.2 and zsh 5.8. Since this is just correctly quoting the output of\na command, it shouldn't cause any compatibility issues.",
+  "files": [
+   "zsh_completions.go"
+  ]
+ },
+ {
+  "sha": "3a1795bc253b686e565770630a78baee3e7ae7f4",
+  "subject": "Fix Command.Context comment (#1639)",
+  "body": "",
+  "files": [
+   "command.go"
+  ]
+ },
+ {
+  "sha": "5d066b77b522ad02084723a79b618243cd6f47e3",
+  "subject": "Introduce FixedCompletions (#1574)",
+  "body": "Example usage:\n\n    choices := []string{\"choice1\", \"choice2\", \"choice3\"}\n    cmd.RegisterFlagCompletionFunc(cobra.FixedCompletions(choices, ShellCompDirectiveNoFileComp))",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "8cc7be21194f770e16afd51c2b0eec11b97bcd2d",
+  "subject": "feat: Add how to load completions in your current zsh session (#1608)",
+  "body": "",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "81d27c8f8d2ec777e696a9bc06980264ea3bca00",
+  "subject": "fix some typos (#1625)",
+  "body": "* fix some typos\n\nSigned-off-by: cuishuang <imcusg@gmail.com>",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "5b2b9e9f61d36ccb66167301f76a2292c3729855",
+  "subject": "Removes viper dependency by removing cobra/ CLI tool (#1604)",
+  "body": "The cobra bootstrapping CLI tool has moved to\nhttps://github.com/spf13/cobra-cli\n\nSigned-off-by: John McBride <jmcbride@vmware.com>",
+  "files": [
+   "cobra/cmd/add.go",
+   "cobra/cmd/helpers.go",
+   "cobra/cmd/init.go",
+   "cobra/cmd/license_agpl.go",
+   "cobra/cmd/license_apache_2.go",
+   "cobra/cmd/license_bsd_clause_2.go",
+   "cobra/cmd/license_bsd_clause_3.go",
+   "cobra/cmd/license_gpl_2.go"
+  ]
+ },
+ {
+  "sha": "9054739e08187aab9294b7a773d54c92fabc23d3",
+  "subject": "Remove __complete cmd for program without subcmds (#1563)",
+  "body": "Fixes #1562\n\nPrograms that don't have sub-commands can accept any number of args.\nHowever, when doing shell completion for such programs, within the\n__complete code this very __complete command makes it that the program\nsuddenly has a sub-command, and the call to Find() -> legacyArgs() will\nthen return an error if there are more than one argument on the\ncommand-line being completed.\n\nTo avoid this, we first remove the __complete command in such a case so\nas to get back to having no sub-commands.\n\nSigned-off-by: Marc Khouzam <marc.khouzam@montreal.ca>",
+  "files": [
+   "completions.go"
+  ]
+ },
+ {
+  "sha": "1854bb5c96beeb559b85af56b09ea50a463280a0",
+  "subject": "Fix some typos (mostly found by codespell) (#1514)",
+  "body": "Signed-off-by: Stefan Weil <sw@weilnetz.de>",
+  "files": [
+   "powershell_completions.go"
+  ]
+ },
+ {
+  "sha": "1beb476da9b46aef65cc176d683f4278cb944085",
+  "subject": "fix: Duplicate error message from cobra init boilerplates (#1463)",
+  "body": "",
+  "files": [
+   "cobra/tpl/main.go"
+  ]
+ },
+ {
+  "sha": "25bab5a3982e8b0c301a9d63b2999bbd34d360c6",
+  "subject": "Fix invalid shell completion when used with ~/.cobra.yaml (#1510)",
+  "body": "`cobra completion` outputs invalid output \"Using config file:\" at the\ntop of the completion script. when ~/.cobra.yaml exists.",
+  "files": [
+   "cobra/cmd/root.go"
+  ]
+ }
+]

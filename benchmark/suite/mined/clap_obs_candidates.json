@@ -1,0 +1,676 @@
+[
+ {
+  "sha": "a1b6be720e59248d8b783c1dfce76a355e170dd7",
+  "subject": "fix(clap_complete): Fix value escape in zsh completion",
+  "body": "Currently, if there's no help set in the possible values, the value\nisn't escaped. This patch fixes the issue by adding the necessary\nescape_value.",
+  "files": [
+   "clap_complete/src/aot/shells/zsh.rs"
+  ]
+ },
+ {
+  "sha": "78d70f3c68b9f99dcdd1b28b846a8e824ea7d497",
+  "subject": "feat(derive): Defer enum subcommand initialization",
+  "body": "Add an explicit boolean defer attribute on Parser and Subcommand enums.\nKeep variant metadata eager while delaying argument augmentation until\nits subcommand is built. Default to eager in v4 and deferred under\nunstable-v5, with an explicit opt-out.\n\nDocument the enum-only scope, including delayed Args metadata and the\nindependent settings of flattened and nested enums. Reject unsupported\nattribute locations and preserve raw defer(callback) syntax.\n\nPart of #4959",
+  "files": [
+   "clap_derive/src/attr.rs",
+   "clap_derive/src/derives/subcommand.rs",
+   "clap_derive/src/item.rs",
+   "src/_derive/mod.rs"
+  ]
+ },
+ {
+  "sha": "247198320f143d55a0dee25cd43dc8b826d836f8",
+  "subject": "refactor(derive): Unify subcommand variant construction",
+  "body": "Apply variant metadata around a common augmentation block for named,\nunit, and newtype variants.",
+  "files": [
+   "clap_derive/src/derives/subcommand.rs"
+  ]
+ },
+ {
+  "sha": "8cf344b7072b1fa70f901f25f81d1dbd22313710",
+  "subject": "refactor(derive): Extract top-level command methods",
+  "body": "Apply initial and final command methods in the callers of both argument\nand subcommand augmentation, keeping field construction separate.",
+  "files": [
+   "clap_derive/src/derives/args.rs",
+   "clap_derive/src/derives/subcommand.rs"
+  ]
+ },
+ {
+  "sha": "9a0248c837b8c042985417fd442b353397603a1f",
+  "subject": "fix(complete): Make it easier to debug",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "07c6fd2d7cef1601d0308d51dff9d695ff790bbc",
+  "subject": "fix(mangen): Hide hidden positionals from the SYNOPSIS",
+  "body": "Co-authored-by: Cursor <cursoragent@cursor.com>",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "dee8b8e4f07c092472d3f9131d34dd6f54ef60ea",
+  "subject": "fix(clap_complete_nushell): Set argument type to `directory` for `ValueHint::DirPath`",
+  "body": "",
+  "files": [
+   "clap_complete_nushell/src/lib.rs"
+  ]
+ },
+ {
+  "sha": "ecee8a4f862b1b97ce2c7db5bf806cfe394a55f6",
+  "subject": "fix(complete): Name the function after fn_name",
+  "body": "`fn_name` already holds the bin name with hyphens replaced, and the\ndispatch loop has been keyed on it all along. The function definition\nand the `complete -F` references were the two places still using the\nraw bin name, which is what POSIX-mode bash refuses to load.\n\nThe command being completed is still the real bin name. Only the\nfunction identifier changes.",
+  "files": [
+   "clap_complete/src/aot/shells/bash.rs"
+  ]
+ },
+ {
+  "sha": "eb39a0eb5f6a214f197e82781edfd7c186ca505c",
+  "subject": "fix(mangen): Render the synopsis from override_usage",
+  "body": "The SYNOPSIS was always derived from the argument list, which collapses a\ncommand documenting several invocation forms into a single line. A\ncommand that declared them through `Command::override_usage` ended up\nwith a manual page whose synopsis contradicted the rest of the text: the\n`ln` utility of uutils/coreutils, for instance, listed one form while its\nafter-help referred to the 1st through 4th forms.\n\nRender the synopsis from `Command::override_usage` when it is set, one\nline per form, and keep deriving it from the arguments otherwise.\n\nFixes uutils/coreutils#12366 and #6466",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "1ab0dbd20bd1a646cb21d6feedfb14cb8a812bcf",
+  "subject": "feat(builder): Expose Command::get_overridden_usage",
+  "body": "The usage set with `Command::override_usage` was readable only from\nwithin the crate. Other consumers of the builder, such as `clap_mangen`,\nneed it to document the invocation forms a command declares.",
+  "files": [
+   "clap_builder/src/builder/command.rs",
+   "clap_builder/src/output/usage.rs"
+  ]
+ },
+ {
+  "sha": "801277e030c146e90090e9e69478eac4bc5ce4d2",
+  "subject": "fix(clap_mangen): Render required ArgGroups",
+  "body": "",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "14d47fb7e555e7d17d8f5aba0358fc034a150c46",
+  "subject": "refactor(builder): Rename internal blacklist field to conflicts",
+  "body": "`Arg::blacklist` holds the ids an argument conflicts with. `conflicts`\nnames that directly, matches the public `conflicts_with` API it backs,\nand sits alongside the existing `overrides`, `groups`, and `requires`\nfields.\n\nThe field is `pub(crate)`, so this is not a public API change. The only\nexternally visible effect is the `Arg` `Debug` output, where the field\nprints as `conflicts` instead of `blacklist`.",
+  "files": [
+   "clap_builder/src/builder/arg.rs",
+   "clap_builder/src/builder/command.rs",
+   "clap_builder/src/builder/debug_asserts.rs",
+   "clap_builder/src/parser/validator.rs"
+  ]
+ },
+ {
+  "sha": "1ca55413c8e79c3b437054c0d9dc7e4691bd3e71",
+  "subject": "fix(help): Bracket values past the minimum",
+  "body": "An option declared with a value-count range, like `num_args(1..=2)` with\ntwo value names, rendered as\n\n    --example <FOO> <BAR>\n\nwhile the parser accepts `--example FOO`, so the help contradicted what\nthe parser would take. Render the value names past the minimum as\noptional instead\n\n    --example <FOO> [BAR]\n\nAn option whose value is optional as a whole is bracketed by\n`stylize_arg_suffix`, so its names stay unbracketed to avoid `[[name]]`.\n\nFixes #4847",
+  "files": [
+   "clap_builder/src/builder/arg.rs"
+  ]
+ },
+ {
+  "sha": "2550f328b0c4d23c38cdb553c39042f544c07c47",
+  "subject": "feat(complete): Expose possible value completers",
+  "body": "Inspired by #6452",
+  "files": [
+   "clap_complete/src/engine/complete.rs",
+   "clap_complete/src/engine/custom.rs",
+   "clap_complete/src/engine/mod.rs"
+  ]
+ },
+ {
+  "sha": "9048857bc4b46ce588e9a238f6a548c93104392b",
+  "subject": "refactor(complete): Pull out possible values candidate conversion",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "0607d6600133d505c10c7197956217bc54eb1558",
+  "subject": "refactor(complete): Remove unused allocation",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "943de7350014a880ca787ddca5675ec4fed3dde1",
+  "subject": "refactor(complete): Move related functions next to each other",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "81b86a9fc3d3e2773873e4175ac26c8611fd29b5",
+  "subject": "refactor(complete): Generalize value candidate handling",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs",
+   "clap_complete/src/engine/custom.rs"
+  ]
+ },
+ {
+  "sha": "ae09202eebb45d2ddca9b280dd91d50d810afc79",
+  "subject": "refactor(complete): Remove extra allocation",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "f181417013e35092a1f097ce44d9c6144acdc40a",
+  "subject": "fix: Require literal attribute values",
+  "body": "",
+  "files": [
+   "clap_derive/src/attr.rs"
+  ]
+ },
+ {
+  "sha": "7dd8df1b46027c31ed50733a0a35f548eadc031a",
+  "subject": "fix(clap_complete_nushell): Disable gen last-args",
+  "body": "Closes #5592",
+  "files": [
+   "clap_complete_nushell/src/lib.rs"
+  ]
+ },
+ {
+  "sha": "8a93d4be29cae11594af8017e48e2a3e2761ee23",
+  "subject": "feat: Display word alias as singular when unique",
+  "body": "",
+  "files": [
+   "clap_builder/src/output/help_template.rs"
+  ]
+ },
+ {
+  "sha": "b793fd602ab5a841bc0202ede426633dab0e4d4c",
+  "subject": "fix: correct typos in comments",
+  "body": "- \"Get's\" -> \"Gets\" in zsh completion shell\n- \"incase\" -> \"in case\" in command builder\n- \"pre-pending\" -> \"prepending\" in completion candidate docs",
+  "files": [
+   "clap_builder/src/builder/command.rs",
+   "clap_complete/src/aot/shells/zsh.rs",
+   "clap_complete/src/engine/candidate.rs"
+  ]
+ },
+ {
+  "sha": "5967c17393a09f90112cdc5b2c20a1383f0bd8e4",
+  "subject": "refactor(complete): Move shell detection to Shells",
+  "body": "Also adds tests for powershell variants.",
+  "files": [
+   "clap_complete/src/env/mod.rs"
+  ]
+ },
+ {
+  "sha": "594602bb29f374e49da5029df63e5c740c723ad0",
+  "subject": "fix(complete): Detect pwsh for PowerShell",
+  "body": "Fixes #6408",
+  "files": [
+   "clap_complete/src/aot/shells/shell.rs",
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "f90a96636ad3b62c17790a97c1192a525b7db286",
+  "subject": "fix(complete): Use spaces for indentation in fish",
+  "body": "For this switch from explicit control characters (\\t and \\n) to implicit\nones to avoid that all 4 spaces for one indentation level needs to be\nescaped. The zsh.rs uses the same approach for its string.",
+  "files": [
+   "clap_complete/src/aot/shells/fish.rs"
+  ]
+ },
+ {
+  "sha": "dd4997ba2d5eecf789936f46f2ccb52126e128bf",
+  "subject": "fix(complete): Don't glob-expand bash positionals",
+  "body": "For a positional arg with no possible_values, the bash generator wrote\nits Display placeholder (e.g. `[ARG]`) as a literal completion word.\nBash then glob-expands the unquoted brackets in\n`COMPREPLY=($(compgen -W \"${opts}\" -- \"${cur}\"))`, matching\nfilenames in the cwd instead of offering the placeholder as text.\n\nPositionals without possible values now contribute no completion word\nand fall through to the existing -o default file-completion fallback,\nmatching how the zsh generator already behaves for the same case.\n\nFixes #6407",
+  "files": [
+   "clap_complete/src/aot/shells/bash.rs"
+  ]
+ },
+ {
+  "sha": "49a05cdc99c2151cdd48d5ec4c974151d21c026e",
+  "subject": "fix(complete): Two-pass quote fish env-completer",
+  "body": "Fish parses `--arguments` once at the outer level, then again when\n`(...)` is evaluated. Top-level single-quote is enough for the bin\narg; the completer path inside `(...)` needs the second-pass escape\nor backslashes and $ get unquoted before the completer runs.\n\nAdds `fish_quote` (top-level) and `fish_quote_for_eval`\n(second-pass: \\\\, \\$, \\') and routes the registration through them.",
+  "files": [
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "74c6666698e90ff0141eb50dd169915f59fa7bcf",
+  "subject": "fix(complete): Keep zsh candidate order",
+  "body": "",
+  "files": [
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "ac0d148f7e21068fd1f544230456f30c95311f78",
+  "subject": "feat(complete): Index-aware ValueCompleter",
+  "body": "Add `ValueCompleter::complete_at(arg_index, current)` and a\nmatching `ArgValueCompleter::complete_at` shim. The default\ntrait impl delegates to `complete`, so existing implementors are\nunaffected. The dynamic engine now threads each value's position\nwithin an argument's `num_args` range into the completer, so a\nmulti-value argument can return different candidates per slot\n(for example, a remote name first and a branch name second for\n`--set-upstream <REMOTE> <BRANCH>`).\n\n`arg_index` counts shell arguments and is unaffected by\n`value_delimiter`.\n\nCloses #6284",
+  "files": [
+   "clap_complete/src/engine/complete.rs",
+   "clap_complete/src/engine/custom.rs"
+  ]
+ },
+ {
+  "sha": "34ef8a02f7890f1c5c3c10ed1381b4569af87136",
+  "subject": "fix(derive): Track Cargo env vars for incremental rebuilds",
+  "body": "clap_derive reads CARGO_PKG_NAME, CARGO_PKG_AUTHORS, CARGO_PKG_VERSION,\nand CARGO_PKG_DESCRIPTION via std::env::var() during macro expansion.\nSince proc_macro::tracked_env::var is still unstable, rustc never learns\nabout these reads, so Cargo does not rebuild when the values change in\nCargo.toml.\n\nFix by injecting a no-op env! call alongside each baked-in value in the\ngenerated code.  rustc tracks these at compile time and reports them to\nCargo, which then triggers a rebuild on change.\n\nThe tracking is emitted only when the env var was actually accessed and\nreturned a non-empty value (CARGO_PKG_NAME) or is embedded directly in\nthe method argument block (CARGO_PKG_AUTHORS, CARGO_PKG_VERSION,\nCARGO_PKG_DESCRIPTION via Method::from_env).\n\nFixes #6333\n\nMade-with: Cursor",
+  "files": [
+   "clap_derive/src/derives/parser.rs",
+   "clap_derive/src/item.rs"
+  ]
+ },
+ {
+  "sha": "7ffe7399ff032cc247eb0449cf8fcdfbfe55a4ec",
+  "subject": "fix(complete): Do not suggest options after \"--\"",
+  "body": "This fixes a surprising behaviour I experienced with the new dynamic\ncompletions for just:\n\n    $ _CLAP_COMPLETE_INDEX=2 JUST_COMPLETE=bash just -- just -- ''\n    check\n    clean\n    \u2026\n\nbut with an extra argument, long options start to appear again:\n\n    $ _CLAP_COMPLETE_INDEX=3 JUST_COMPLETE=bash just -- just -- test ''\n    check\n    clean\n    \u2026\n    --alias-style\n    --allow-missing\n    \u2026\n\nRelated: 8aaf704f5679 (\"fix(complete): Do not suggest options after \"--\"\")\nRelated: 2e13847533d4 (\"fix(complete): Missing options in multi-val arg\")",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "acbb8225054e0a498f6941f278ad0095a893efe8",
+  "subject": "fix(complete): Reduce risk of conflict with actual subcommands",
+  "body": "Fixes #6339",
+  "files": [
+   "clap_complete/src/aot/shells/bash.rs",
+   "clap_complete/src/aot/shells/zsh.rs"
+  ]
+ },
+ {
+  "sha": "a49fadbf4acf1853f52ae43a445c8f3c81096b01",
+  "subject": "refactor(complete): Pull out subcommand separator",
+  "body": "",
+  "files": [
+   "clap_complete/src/aot/shells/bash.rs",
+   "clap_complete/src/aot/shells/zsh.rs"
+  ]
+ },
+ {
+  "sha": "dd1fcd3d4be0fcc2d3eede07df4d9ec25663241c",
+  "subject": "fix(man)!: Put env support behind the env feature",
+  "body": "",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "420669948a1f637e0ee707d907053beb104bfc3d",
+  "subject": "fix(builder): Quote empty default values",
+  "body": "",
+  "files": [
+   "clap_builder/src/util/escape.rs"
+  ]
+ },
+ {
+  "sha": "eb16ae4d25bf3a7300b4a51bf953bf0d6e6fa62c",
+  "subject": "refactor(builder): Consolidate escaping with Escape",
+  "body": "",
+  "files": [
+   "clap_builder/src/builder/possible_value.rs",
+   "clap_builder/src/error/format.rs",
+   "clap_builder/src/output/help_template.rs",
+   "clap_builder/src/util/escape.rs",
+   "clap_builder/src/util/mod.rs"
+  ]
+ },
+ {
+  "sha": "144e5cb46d946f97e51b7122eadd3134ee127bef",
+  "subject": "fix(parser): Allow --help to propagate up through subcommands with ignore_erros",
+  "body": "Fixes #6275",
+  "files": [
+   "clap_builder/src/parser/parser.rs"
+  ]
+ },
+ {
+  "sha": "3ef966045274335cc44a9b8571b5a47965d2b4e4",
+  "subject": "fix(docs): Typo in `ValueHint` docs \"anther\" -> \"another\"",
+  "body": "",
+  "files": [
+   "clap_builder/src/builder/value_hint.rs"
+  ]
+ },
+ {
+  "sha": "af904ae2d76234593c81029df9fc3017e4520790",
+  "subject": "fix(parser): Resolve regression with value_terminator/last",
+  "body": "",
+  "files": [
+   "clap_builder/src/parser/parser.rs"
+  ]
+ },
+ {
+  "sha": "578cd43a88f0009a53ff729cb78163ed30156e93",
+  "subject": "fix(parser): Don't report conflicting arguments in usage",
+  "body": "Fixes #6236",
+  "files": [
+   "clap_builder/src/parser/validator.rs",
+   "clap_builder/src/util/flat_set.rs"
+  ]
+ },
+ {
+  "sha": "3604b13117cbb652c10bb44b228b300d543dcc80",
+  "subject": "fix(parser): Honor positional value_terminator",
+  "body": "The value terminator should be able to consume --\neven when it is the first argument, instead of forcing\ntrailing values.\n\nFixes #5040",
+  "files": [
+   "clap_builder/src/parser/parser.rs"
+  ]
+ },
+ {
+  "sha": "0e6ba89ff2da16d0cd300944e6739f5aaa1c1abf",
+  "subject": "fix(derive): Improve invalid attribute errors",
+  "body": "",
+  "files": [
+   "clap_derive/src/item.rs"
+  ]
+ },
+ {
+  "sha": "03e3fd51e601d4bec6a486f1e2c08764e32a993a",
+  "subject": "fix(derive): Improve invalid variant errors",
+  "body": "",
+  "files": [
+   "clap_derive/src/derives/args.rs",
+   "clap_derive/src/derives/subcommand.rs"
+  ]
+ },
+ {
+  "sha": "bd005654a129184e22c4b240c9e27280786341ad",
+  "subject": "fix(derive): Improve attribute/category mismatch errors",
+  "body": "",
+  "files": [
+   "clap_derive/src/derives/args.rs",
+   "clap_derive/src/derives/subcommand.rs",
+   "clap_derive/src/derives/value_enum.rs"
+  ]
+ },
+ {
+  "sha": "8fc3eb001eaccfe31698c820139af5d1062a3825",
+  "subject": "fix(derive): Improve duplicate external_subcommand error",
+  "body": "",
+  "files": [
+   "clap_derive/src/derives/subcommand.rs"
+  ]
+ },
+ {
+  "sha": "ce7dcce91bbecd3aa96d99734c4a4e97648a7a71",
+  "subject": "fix(derive): Improve invalid external_subcommand type error",
+  "body": "",
+  "files": [
+   "clap_derive/src/derives/subcommand.rs"
+  ]
+ },
+ {
+  "sha": "3a980a8360e1b456d8bd1058e30f489df8937bc6",
+  "subject": "fix(derive): Improve invalid subcommand type error",
+  "body": "",
+  "files": [
+   "clap_derive/src/derives/args.rs"
+  ]
+ },
+ {
+  "sha": "81dea3b679c6c7a19833424525940942155e3882",
+  "subject": "fix: Use longer lifetime in clap_lex ParsedArg",
+  "body": "",
+  "files": [
+   "clap_lex/src/lib.rs"
+  ]
+ },
+ {
+  "sha": "76a016a0836351d9faef9c6329c1be70fd40f88a",
+  "subject": "refactor(man): Allow possible values to output Roff",
+  "body": "",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "9db823423389d7b487f7864eef2c2da59a8a35a8",
+  "subject": "refactor(man): Avoid to_string",
+  "body": "",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "475cac90d878ce6beab0878fa6c00d783ce8874e",
+  "subject": "fix(man): Always show possible values as a list",
+  "body": "",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "6c2cff66a11136915a6242b997ba9616622c3c2f",
+  "subject": "fix: Allow optional value arguments for Zsh shell completion",
+  "body": "When dealing with an argument that can optionally take a value, the\nshell completion file generated for Zsh doesn't actually specify any\nvalue being allowed (because that string gets repeated 0 times when\ngenerating the completion script, which results in not actually being\nwritten to the completion script). This results in completion being\npartially broken if that option gets specified with a value.\n\nFix this by having a special case for 0 arguments, where a `:` gets\nprepended to the value completion. This tells zsh that specifying a\nvalue is optional here.\n\nSigned-off-by: Saikrishna Arcot <saiarcot895@gmail.com>",
+  "files": [
+   "clap_complete/src/aot/shells/zsh.rs"
+  ]
+ },
+ {
+  "sha": "a062eaf7f5c7b4a510ebc02f991efc1ea0f4e754",
+  "subject": "fix: Default vals on new line if possible values",
+  "body": "",
+  "files": [
+   "clap_builder/src/output/help_template.rs"
+  ]
+ },
+ {
+  "sha": "5571b83c8a322ee2cf4342402d930cf2806fa2f1",
+  "subject": "fix(complete): Trailing space after zsh directory completions",
+  "body": "zsh dynamic completions would add a trailing space after all\ncompletions, including directories. This prevented natural path\ncompletion. Users had to delete the trailing space before continuing to\ntype or tab-complete within the directory.\n\nThe fix is for the dynamic completion script to separate completions\ninto directories and non-directories, and providing the directory\ncompletions to zsh with a different _describe invocation.\n\nFor directories:\n1. Strip the trailing slash from the completion value\n2. Let zsh add it back as a suffix using `_describe -S '/'`\n3. Also provide `-r '/'` to make the slash auto-removable when typing '/'\n\nThis makes dynamic path completions reasonably emulate zsh-native file\ncompletions.\n\nThis matches the behavior already implemented for bash completions which\nu",
+  "files": [
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "c3b440570e1d7b4ec2838270fc63f156ecb1a5fa",
+  "subject": "fix(complete): Follow symlinks in path completion",
+  "body": "On Unix, `DirEntry::metadata()` is equivalent to `symlink_metadata()`,\nwhich returns metadata about the symlink itself rather than the target.\nThis caused symlinks to directories to be incorrectly classified as\nnon-directories, preventing them from appearing in path completions.\n\nUse `Path::is_dir()` instead, which follows symlinks to check if the\ntarget is a directory.\n\nFixes #6201",
+  "files": [
+   "clap_complete/src/engine/custom.rs"
+  ]
+ },
+ {
+  "sha": "2280d4808b1e5718f869d8da6540a34d228bc3c5",
+  "subject": "fix: fix path quoting with dynamic env completer",
+  "body": "Fixes: #6196",
+  "files": [
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "d4951455bfad78527ef27226db0358c2f2458f68",
+  "subject": "clap_complete: add unit test for fish env completer",
+  "body": "Related to: https://github.com/clap-rs/clap/issues/6196\n\nThis PR adds a unit test showing the current behavior of the the Fish\nshell env completer, that quotes paths incorrectly when there are spaces\nin the path. The issue should be demonstrated in this PR, and a\nfollow-up PR could have a fix for the issue.",
+  "files": [
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "c2ced1aed1f30d468dfaa6ddbd53403fc667450b",
+  "subject": "feat: Add default_values_if and default_values_ifs to match default_values",
+  "body": "",
+  "files": [
+   "clap_builder/src/builder/arg.rs",
+   "clap_builder/src/parser/parser.rs"
+  ]
+ },
+ {
+  "sha": "1823cef9d6ebf89c5076f23db63350fcc2f78473",
+  "subject": "fix(parser): Don't panic when subcommands conflict with groups",
+  "body": "Mentioned in #6182",
+  "files": [
+   "clap_builder/src/parser/parser.rs"
+  ]
+ },
+ {
+  "sha": "83cbb5bf65f800ac98da12834dcd4dd08a42d635",
+  "subject": "fix(complete): Nushell order positional arguments",
+  "body": "",
+  "files": [
+   "clap_complete_nushell/src/lib.rs"
+  ]
+ },
+ {
+  "sha": "009bba44ec3d182028ec3a72f5b6f3e507827768",
+  "subject": "fix(clap_complete): Improve powershell registration",
+  "body": "",
+  "files": [
+   "clap_complete/src/env/shells.rs"
+  ]
+ },
+ {
+  "sha": "126440ca846613671e1dac98198b2ceb17dab2b0",
+  "subject": "fix(help): Correctly calculate padding for short-only args",
+  "body": "This manifests in two ways\n- If a value is taken, we double the padding\n- If `ArgAction::Count` is used, we don't account for `...` and crash\n\nFixes #6164",
+  "files": [
+   "clap_builder/src/output/help_template.rs"
+  ]
+ },
+ {
+  "sha": "24dfa0d5f9af0373d08bc2db05064990ae9a47d9",
+  "subject": "fix(clap_mangen): Take into consideration display_order",
+  "body": "In #3362 we have an issue where when we configure an arg via\n.display_order(int), and then generate a manpage,\nthe synposis and options will render the order the args were\nprovided to the App rather than the order they were configured\n\ne.g\n\nCommand::new(name)\narg(Arg::new(\"few\").short('b').display_order(2))\narg(Arg::new(\"bar\").short('a').display_order(1))\n\nwill show\n\n...\nSYNOPSIS\n    <name> [-b] [-a] ...\n\n...\nOPTIONS\n    -b\n    -a\n\ninstead of\n\n...\nSYNOPSIS\n    <name> [-a] [-b] ...\n\n...\nOPTIONS\n    -a\n    -b\n\nand so on. This fix adds sorting in the synopsis and\noptions functions responsible for generating the\ncorresponding synopsis and options sections of the manpage.\n\nCo-authored-by: ericgumba <ericgumba@gmail.com>",
+  "files": [
+   "clap_mangen/src/render.rs"
+  ]
+ },
+ {
+  "sha": "55fafb4cec8fbf53aff1257924c5eabc8e3283a8",
+  "subject": "feat(api): impl From<Cow<'static, str>> for Id,OsStr, Str",
+  "body": "",
+  "files": [
+   "clap_builder/src/builder/os_str.rs",
+   "clap_builder/src/builder/str.rs",
+   "clap_builder/src/builder/styled_str.rs",
+   "clap_builder/src/util/id.rs"
+  ]
+ },
+ {
+  "sha": "dd17a418a9e6665c98ff6e0ba2a039fd1921988e",
+  "subject": "fix(help): Correctly calculate wrap points with ANSI escape codes",
+  "body": "We mixed up whether `i` represented the absolute position or our\nincremental position.\n\nFixes #6147",
+  "files": [
+   "clap_builder/src/builder/styled_str.rs",
+   "clap_builder/src/output/textwrap/mod.rs",
+   "clap_builder/src/output/textwrap/wrap_algorithms.rs"
+  ]
+ },
+ {
+  "sha": "93e3559b1e4c8c81377f3598f7249b7708f4c379",
+  "subject": "refactor(help): Clarify that we're carrying over indentation",
+  "body": "",
+  "files": [
+   "clap_builder/src/output/textwrap/wrap_algorithms.rs"
+  ]
+ },
+ {
+  "sha": "b1c46e633c04f5cb0d819b15f25c1fde1a6e42c4",
+  "subject": "refactor(help): Clarify var name",
+  "body": "",
+  "files": [
+   "clap_builder/src/output/textwrap/wrap_algorithms.rs"
+  ]
+ },
+ {
+  "sha": "8aaf704f5679e2329a2f8048ff3cfad40696fde7",
+  "subject": "fix(complete): Do not suggest options after \"--\"",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/complete.rs"
+  ]
+ },
+ {
+  "sha": "b043ed30454812445b69d2c01f5c899c3b6ce6be",
+  "subject": "refactor(cookbook): Prep for splitting typed-derive",
+  "body": "",
+  "files": [
+   "examples/typed-derive/main.rs",
+   "src/_cookbook/typed_derive.rs"
+  ]
+ },
+ {
+  "sha": "395d657999cc90cc44ad0aa5822d0e1587be9664",
+  "subject": "feat: provide empty implementations for Args and Subcommand",
+  "body": "",
+  "files": [
+   "clap_builder/src/derive.rs"
+  ]
+ },
+ {
+  "sha": "92fd6e71c2c8164539e45a1f619fccdfd8d2fa47",
+  "subject": "fix(derive): Match rustc's error style",
+  "body": "This was missed in #4602",
+  "files": [
+   "clap_derive/src/derives/args.rs",
+   "clap_derive/src/derives/subcommand.rs"
+  ]
+ },
+ {
+  "sha": "2b0a847feed0cc47ac0e258065e5130533a94284",
+  "subject": "feat: mark `StyledStr::push_str` functions public",
+  "body": "So that `ErrorFormatter`\u00a0trait available outside of clap crate.",
+  "files": [
+   "clap_builder/src/builder/styled_str.rs"
+  ]
+ },
+ {
+  "sha": "a8b8289fc492025cbb9065f70317c4fea69a125f",
+  "subject": "fix(derive): Use full doc comment for PossibleValue",
+  "body": "",
+  "files": [
+   "clap_derive/src/item.rs"
+  ]
+ },
+ {
+  "sha": "9d7f2128f77023941b53b7cfc311120a2ead75a2",
+  "subject": "fix(complete): Hide dot files on dynamic completer",
+  "body": "",
+  "files": [
+   "clap_complete/src/engine/custom.rs"
+  ]
+ },
+ {
+  "sha": "5335f54d73eef9276c13313661fcfffb720c87cf",
+  "subject": "feat: Add Command::mut_subcommands",
+  "body": "",
+  "files": [
+   "clap_builder/src/builder/command.rs"
+  ]
+ },
+ {
+  "sha": "60184fb76a3d88277f89430402d01a121feb858c",
+  "subject": "feat(complete): Expand ~ in native completions",
+  "body": "This is part of #6069",
+  "files": [
+   "clap_complete/src/engine/custom.rs"
+  ]
+ },
+ {
+  "sha": "e5eb6c9d84efac5d660322e92dbbc0158266602d",
+  "subject": "fix(help): Integrate 'Possible Values:' into 'Arg::help'",
+  "body": "This makes the formatting off as highlighted in #6056",
+  "files": [
+   "clap_builder/src/output/help_template.rs"
+  ]
+ },
+ {
+  "sha": "594a771030e43df8c806ea1a029862339739a0f3",
+  "subject": "refactor(help): Make empty tracking more consistent",
+  "body": "",
+  "files": [
+   "clap_builder/src/output/help_template.rs"
+  ]
+ },
+ {
+  "sha": "883b9f97c0c758afdaeb620e98ec61d3ab8dd2d3",
+  "subject": "refactor(help): Visually group logic",
+  "body": "",
+  "files": [
+   "clap_builder/src/output/help_template.rs"
+  ]
+ }
+]

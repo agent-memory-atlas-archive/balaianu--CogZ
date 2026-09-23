@@ -1,0 +1,727 @@
+[
+ {
+  "sha": "ae1b9f66238f75ced3ced5e4485408435de10768",
+  "subject": "Expose `FunctionAuth` in `__all__` (#3699)",
+  "body": "Co-authored-by: Kar Petrosyan <92274156+karpetrosyan@users.noreply.github.com>\nCo-authored-by: Kar Petrosyan <kar.petrosyanpy@gmail.com>",
+  "files": [
+   "httpx/__init__.py",
+   "httpx/_auth.py"
+  ]
+ },
+ {
+  "sha": "4189b7f051c6c51ce74c3bee1a5f269f9c50c6b2",
+  "subject": "fix typo (#3519)",
+  "body": "",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "89599a9541af14bcf906fc4ed58ccbdf403802ba",
+  "subject": "Fix `verify=False`, `cert=...` case. (#3442)",
+  "body": "",
+  "files": [
+   "httpx/_config.py"
+  ]
+ },
+ {
+  "sha": "a33c87852b8a0dddc65e5f739af1e0a6fca4b91f",
+  "subject": "Fix `extensions` type annotation. (#3380)",
+  "body": "",
+  "files": [
+   "httpx/_models.py",
+   "httpx/_types.py"
+  ]
+ },
+ {
+  "sha": "8e36f2bc685dfbe43cd7503bc1c422a6ed6e05a5",
+  "subject": "Introduce new `SSLContext` API & escalate deprecations. (#3319)",
+  "body": "Co-authored-by: Kar Petrosyan <92274156+karpetrosyan@users.noreply.github.com>\nCo-authored-by: T-256 <132141463+T-256@users.noreply.github.com>\nCo-authored-by: Hugo van Kemenade <1324225+hugovk@users.noreply.github.com>",
+  "files": [
+   "httpx/__init__.py",
+   "httpx/__version__.py",
+   "httpx/_api.py",
+   "httpx/_client.py",
+   "httpx/_compat.py",
+   "httpx/_config.py",
+   "httpx/_content.py",
+   "httpx/_decoders.py"
+  ]
+ },
+ {
+  "sha": "392dbe45f086d0877bd288c5d68abf860653b680",
+  "subject": "Add support for zstd decoding (#3139)",
+  "body": "This adds support for zstd decoding using the python package zstandard.\nThis is similar to how it is implemented in urllib3. I also chose the\noptional installation option httpx[zstd] to mimic the same option in\nurllib3.\n\nzstd decoding is similar to brotli, but in benchmarks it is supposed to\nbe even faster. The zstd compression is described in RFC 8878.\n\nSee https://github.com/encode/httpx/discussions/1986\n\nCo-authored-by: Kamil Monicz <kamil@monicz.dev>",
+  "files": [
+   "httpx/_compat.py",
+   "httpx/_decoders.py",
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "6d852d319acd5d97caf14037dff15ede04b37542",
+  "subject": "Fix client.send() timeout new Request instance (#3116)",
+  "body": "",
+  "files": [
+   "httpx/_client.py"
+  ]
+ },
+ {
+  "sha": "4de13707ee0fbc6e3ea5b30c90cf64aae0af7fb2",
+  "subject": "Use more permissible types in ASGIApp  (#3109)",
+  "body": "* Use the type.MutableMapping instead of Dict\n\nMutableMapping is a slightly more permissible type (allowing the previous Dict type) but matches up to Starlettes tpyes\n\n* Update CHANGELOG.md\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_transports/asgi.py"
+  ]
+ },
+ {
+  "sha": "87713d2172053c4ad05efacf3ab7e0a5c15616fc",
+  "subject": "Define and expose the API from the same place (#3106)",
+  "body": "* Tidy up imports\n\n* Update tests/test_exported_members.py\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/__init__.py",
+   "httpx/_api.py",
+   "httpx/_auth.py",
+   "httpx/_client.py",
+   "httpx/_config.py",
+   "httpx/_content.py",
+   "httpx/_exceptions.py",
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "326b9431c761e1ef1e00b9f760d1f654c8db48c6",
+  "subject": "Version 0.27.0 (#3095)",
+  "body": "* Version 0.27.0\n\n* Update CHANGELOG.md (#3097)\n\nwrong year I think? I'm new to github so idk if I'm doing this right\n\nCo-authored-by: ReadyRainFor <119354484+ReadyRainFor@users.noreply.github.com>\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n---------\n\nCo-authored-by: Rain <119354484+Rainkenstein@users.noreply.github.com>\nCo-authored-by: ReadyRainFor <119354484+ReadyRainFor@users.noreply.github.com>",
+  "files": [
+   "httpx/__version__.py"
+  ]
+ },
+ {
+  "sha": "cabd1c095e52e2f67ab63ec17941d3a539d7c877",
+  "subject": "Deprecate `app=...` in favor of explicit `WSGITransport`/`ASGITransport`. (#3050)",
+  "body": "* Deprecate app=... in favour of explicit WSGITransport/ASGITransport\n\n* Linting\n\n* Linting\n\n* Update WSGITransport and ASGITransport docs\n\n* Deprecate app\n\n* Drop deprecation tests\n\n* Add CHANGELOG\n\n* Deprecate 'app=...' shortcut, rather than removing it.\n\n* Update CHANGELOG\n\n* Fix test_asgi.test_deprecated_shortcut",
+  "files": [
+   "httpx/_client.py"
+  ]
+ },
+ {
+  "sha": "99cba6ac642b12f0331d069ae324402c54c4c600",
+  "subject": "Fix RFC 2069 mode digest authentication (#3045)",
+  "body": "* Fix RFC 2069 mode digest authentication\n\n* Update CHANGELOG.md",
+  "files": [
+   "httpx/_auth.py"
+  ]
+ },
+ {
+  "sha": "c6907c22034e2739c4c1af89908e3c9f90602788",
+  "subject": "Remove unused type: ignore (#3038)",
+  "body": "* Remove unused type: ignore\n\n* Bump mypy version\n\n* Revert \"Bump mypy version\"\n\nThis reverts commit 55b44b5d2f6f6b6417c197c653a43e3db3bf8804.\n\n* Bump mypy\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_config.py",
+   "httpx/_multipart.py"
+  ]
+ },
+ {
+  "sha": "a11fc3849b94157274c98d99501acad05cbfb221",
+  "subject": "Cleanup URL percent-encoding behavior. (#2990)",
+  "body": "* Replace path_query_fragment encoding tests\n\n* Remove replaced test cases\n\n* Fix test case to use correct hex sequence for 'abc'\n\n* Fix 'quote' behaviour so we don't double-escape.\n\n* Add '/' to safe chars in query strings\n\n* Update docstring\n\n* Linting\n\n* Update outdated comment.\n\n* Revert unrelated change\n\n---------\n\nCo-authored-by: Kar Petrosyan <92274156+karpetrosyan@users.noreply.github.com>",
+  "files": [
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "3b9060ee1121b48669e0b30045c9344065f4f2ae",
+  "subject": "Fix environment proxies (#2741)",
+  "body": "* Add red test\n\n* Make the test pass\n\n* Lint\n\n* chanelog\n\n---------\n\nCo-authored-by: Karen Petrosyan <92274156+karosis88@users.noreply.github.com>\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "2318fd822cdb16435ccb5cabcba16c0b7969c1e4",
+  "subject": "Enabling `ruff` C416 (#3001)",
+  "body": "* Enabled C416 in ruff\n\n* Ran ruff on all files\n\n* Ran ruff format\n\n* Update pyproject.toml\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_content.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "1e110964736a95d822144390b99d7ecf17fca527",
+  "subject": "Fixed `iter_text` adding an empty string (#2998)",
+  "body": "",
+  "files": [
+   "httpx/_decoders.py",
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "f8981f3d124f9b8db9073fd5c8afa11acb55a738",
+  "subject": "Add the 'proxy' parameter and deprecate 'proxies'. (#2879)",
+  "body": "* Add the proxy parameter and deprecate proxies\n\n* Make the Client.proxy and HTTPTransport.proxy types the same\n\n* Update httpx/_transports/default.py\n\nCo-authored-by: T-256 <132141463+T-256@users.noreply.github.com>\n\n* Update httpx/_transports/default.py\n\nCo-authored-by: T-256 <132141463+T-256@users.noreply.github.com>\n\n* Drop unneeded noqa\n\n* Changelog\n\n* update documentation\n\n* Allow None in mounts\n\n* typos\n\n* Update httpx/_types.py\n\n* Changes proxies to proxy in CLI app\n\n* Add proxy to request function\n\n* Update CHANGELOG.md\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\n\n* Update docs/troubleshooting.md\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\n\n* Update docs/troubleshooting.md\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\n\n* Lint\n\n---------\n\nCo-authored-by: Tom C",
+  "files": [
+   "httpx/_api.py",
+   "httpx/_client.py",
+   "httpx/_main.py",
+   "httpx/_transports/default.py",
+   "httpx/_types.py"
+  ]
+ },
+ {
+  "sha": "b471f01d668b9ef730e8843531b07b1c21b74c47",
+  "subject": "Allow URLs where username or password contains unescaped '@'. (#2986)",
+  "body": "* Add test cases for userinfo in URL\n\n* Resolve failing test cases\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md",
+  "files": [
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "fd60b1815cf92354d097ac46aea63ebc0f34fd21",
+  "subject": "Ruff linter: Use the default line-length (#2922)",
+  "body": "Co-authored-by: Tester <Tester@test.com>\nCo-authored-by: Kar Petrosyan <92274156+karpetrosyan@users.noreply.github.com>",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_decoders.py",
+   "httpx/_exceptions.py",
+   "httpx/_main.py",
+   "httpx/_models.py",
+   "httpx/_multipart.py",
+   "httpx/_transports/default.py",
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "87f39f12c9ecdd0ebcd8d017235698e72567e9c7",
+  "subject": "add missing type hints to __init__(...) (#2938)",
+  "body": "* add missing type hints to __init__\n\nhttps://peps.python.org/pep-0484/\n\n* add info to changelog\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n---------\n\nCo-authored-by: Kar Petrosyan <92274156+karpetrosyan@users.noreply.github.com>\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_auth.py",
+   "httpx/_client.py",
+   "httpx/_config.py",
+   "httpx/_content.py",
+   "httpx/_decoders.py",
+   "httpx/_models.py",
+   "httpx/_transports/default.py"
+  ]
+ },
+ {
+  "sha": "9751f76186c1c89d71baa571ebd4a5b6be76d117",
+  "subject": "Drop unneccessary `binascii` import (#2909)",
+  "body": "* Drop unneccessary binascii import\n\n* Update httpx/_multipart.py\n\nCo-authored-by: T-256 <132141463+T-256@users.noreply.github.com>\n\n* boundary is 'bytes' not 'str'\n\n---------\n\nCo-authored-by: T-256 <132141463+T-256@users.noreply.github.com>",
+  "files": [
+   "httpx/_multipart.py"
+  ]
+ },
+ {
+  "sha": "31a7bb381ac9f5d99e3e2dc68ffaff4b5d23faca",
+  "subject": "Delete js folder and remove extra_javascript (#2899)",
+  "body": "* Delete js folder and remove extra_javascript\n\n* Update mkdocs.yml\n\n---------\n\nCo-authored-by: Kar Petrosyan <92274156+karpetrosyan@users.noreply.github.com>",
+  "files": [
+   "docs/js/chat.js",
+   "docs/js/sidecar-1.5.0.js"
+  ]
+ },
+ {
+  "sha": "e63b6594f2863b7c8274eb0991ebc6cad63661f7",
+  "subject": "Fix encode host (#2886)",
+  "body": "* Fix requiring dot literal rather than any character in IPv4\n\n* Add check to prevent future errors",
+  "files": [
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "7c9db49f0c6c454fa6d0d7bdbd0d71c0a0cbacfd",
+  "subject": "Add support for Python 3.12 (#2854)",
+  "body": "* Add support for Python 3.12\n\n* Bump GitHub Actions\n\n* Remove redundant version checks\n\n* Add CHANGELOG entry",
+  "files": [
+   "httpx/_compat.py",
+   "httpx/_config.py"
+  ]
+ },
+ {
+  "sha": "59df8190a4c72c58238dda315ad446f1c132dcdc",
+  "subject": "Raise ValueError on `Response.encoding` being set after `Response.text` has been accessed (#2852)",
+  "body": "* Raise ValueError on change encoding\n\n* Always raise ValueError for simplicity\n\n* update CHANGELOG.md",
+  "files": [
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "88e84314378b31336027363af862619c519a4a3a",
+  "subject": "Add cookies to the retried request when performing digest authentication. (#2846)",
+  "body": "* Add cookies from the response to the retried request\n\n* Conditionally add cookies from the response\n\n* Fix failing auth module tests\n\n* Fix linting error\n\n* Add tests to check set cookies from server",
+  "files": [
+   "httpx/_auth.py"
+  ]
+ },
+ {
+  "sha": "c3585a5ccfa57bec653f3846b8625a27d11dcd5e",
+  "subject": "Version 0.25.0 (#2801)",
+  "body": "* bump\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\nCo-authored-by: Kar Petrosyan <92274156+karosis88@users.noreply.github.com>\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n---------\n\nCo-authored-by: Kar Petrosyan <92274156+karosis88@users.noreply.github.com>\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/__version__.py"
+  ]
+ },
+ {
+  "sha": "adbcd0e0e7fcb174ce60772c7d6104b8b9d329ca",
+  "subject": "Change extensions type (#2803)",
+  "body": "* Change extensions type\n\n* Update changelog\n\n* install httpcore from the git\n\n* Revert \"install httpcore from the git\"\n\nThis reverts commit 1813c6aff178cce3b63d7458ec9a8337542de9dd.\n\n* bump httpcore version\n\n* fix requirements\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_types.py"
+  ]
+ },
+ {
+  "sha": "e874351f04471029b2c5dcb2d0b50baccc7b9bc0",
+  "subject": "Update _models.py (#2840)",
+  "body": "To remove the unknown dict type info\n\n(variable) extensions: ResponseExtensions | dict[Unknown, Unknown]\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "9415af643f23600403740baad0a466edc5cdbec1",
+  "subject": "Make `raise_for_status` chainable (#2776)",
+  "body": "* merge upstream\n\n* lint\n\n* Update test_async_client.py\n\n* update docs\n\n* add example\n\n* Update docs/quickstart.md\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\n\n* Update CHANGELOG.md\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\n\n* Update docs/quickstart.md\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "920333ea98118e9cf617f246905d7b202510941c",
+  "subject": "Always encode forward slashes as `%2F` in query parameters (#2723)",
+  "body": "* Always encode forward slashes as `%2F` in query parameters\n\n* Revert inclusion of \"%\"\n\nThis is expected to fail tests due to double escaping\n\n* Update `urlencode`\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "301b8fb03a81447c5b5ab1ca991202e10826fbda",
+  "subject": "Fix URLPattern examples (#2740)",
+  "body": "Co-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "733595037ac26d272f74ee6d702150b017913d11",
+  "subject": "Add `socket_options` argument to `httpx.HTTPTransport` class (#2716)",
+  "body": "* Add `socket_options` argument to `httpx.HTTPTransport` and `httpx.AsyncHTTPTransport` classes\n\n* Update changelog\n\n* Fix changelog format\n\n* Set httpcore's minimum version to 0.17.2\n\n* Remove SOCKET_OPTIONS import",
+  "files": [
+   "httpx/_transports/default.py"
+  ]
+ },
+ {
+  "sha": "a682f6f1c7f1c5e10c66ae5bef139aea37ef0c4e",
+  "subject": "Fix exception suppression in asgi transport (#2669)",
+  "body": "",
+  "files": [
+   "httpx/_transports/asgi.py"
+  ]
+ },
+ {
+  "sha": "ee432c0d3098375df258b6d5844e7569080b2369",
+  "subject": "Fix for gen-delims escaping behaviour in path/query/fragment (#2701)",
+  "body": "",
+  "files": [
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "32e25497a36e6222cc64a758c98275b450dac28d",
+  "subject": "Fix ruff error and script (#2680)",
+  "body": "",
+  "files": [
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "472597fb6b63fc112f2e6ab52bab871a10b08929",
+  "subject": "More robust check for upload files in binary mode (#2630)",
+  "body": "* Fix check for binary mode\n\n* Change order of type checks\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_multipart.py"
+  ]
+ },
+ {
+  "sha": "9ae170a936df39f42a6ddf8eb2c27026e20bea7e",
+  "subject": "Fix optional percent encoding behaviour. (#2671)",
+  "body": "* Tests for failing optional percent encoding\n\n* Linting\n\n* Fix for optional percent escaping",
+  "files": [
+   "httpx/_urlparse.py"
+  ]
+ },
+ {
+  "sha": "15d09a3bbc20372cd87e48f17f7c9381c8220a0f",
+  "subject": "fix: NO_PROXY should support IPv4, IPv6 and localhost (#2659)",
+  "body": "* fix: NO_PROXY supports IPv4, IPv6 and localhost\n\n* add more tests for test_get_environment_proxies\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "c1cc6b2462e95b84315c67bd5aefb33df73d06c4",
+  "subject": "Fixes #2666: None is the default value of file for httpx.NetRCAuth (#2667)",
+  "body": "",
+  "files": [
+   "httpx/_auth.py"
+  ]
+ },
+ {
+  "sha": "f1157dbc4102ac8e227a0a0bb12a877f592eff58",
+  "subject": "Use standard logging style (#2547)",
+  "body": "* Use standard logging style\n\n* Add docs for logging\n\n* Drop out-of-date HTTPX_LOG_LEVEL variable docs",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_config.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "85c5898d8e48011ab7b660fe8aac58910e45c84b",
+  "subject": "Change LineDecoder to match stdlib splitlines, resulting in significant speed up (#2423)",
+  "body": "* Replace quadratic algo in LineDecoder\n\nLeading to enormous speedups when doing things such as\nResponse(...).iter_lines() as described on issue #2422\n\n* Update httpx/_decoders.py\n\n* Update _decoders.py\n\nHandle text ending in `\\r` more gracefully.\nReturn as much content as possible.\n\n* Update test_decoders.py\n\n* Update _decoders.py\n\n* Update _decoders.py\n\n* Update _decoders.py\n\n* Update httpx/_decoders.py\n\nCo-authored-by: cdeler <serj.krotov@gmail.com>\n\n* Update _decoders.py\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\nCo-authored-by: cdeler <serj.krotov@gmail.com>",
+  "files": [
+   "httpx/_decoders.py"
+  ]
+ },
+ {
+  "sha": "f0fd91925bc8663b4ec3635c302aa07fe5f8e72e",
+  "subject": "fix type annotation for MockTransport (#2581)",
+  "body": "* fix type annotation for MockTransport\n\n* add type ignore\n\n* better type checks\n\n* better type checks\n\n* add pragma\n\n---------\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_transports/mock.py"
+  ]
+ },
+ {
+  "sha": "59914c7690573d5f9b17bce4172405294cb08278",
+  "subject": "Add `NetRCAuth()` class. (#2535)",
+  "body": "* NetRCAuth class\n\n* Add docs for httpx.NetRCAuth()\n\n* Drop failing cross-domain test for NetRCAuth()\n\n* Update tests\n\n* Update httpx/_auth.py\n\n* Add tests for netrc file with no password",
+  "files": [
+   "httpx/__init__.py",
+   "httpx/_auth.py",
+   "httpx/_client.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "57daabf673705954afa94686c0002801c93d31f3",
+  "subject": "Drop `rfc3986` requirement. (#2252)",
+  "body": "* Drop RawURL\n\n* First pass at adding urlparse\n\n* Update urlparse\n\n* Add urlparse\n\n* Add urlparse\n\n* Unicode non-printables can be valid in IDNA hostnames\n\n* Update _urlparse.py docstring\n\n* Linting\n\n* Trim away ununsed codepaths\n\n* Tweaks for path validation depending on scheme and authority presence\n\n* Minor cleanups\n\n* Minor cleanups\n\n* full_path -> raw_path, forr internal consistency\n\n* Linting fixes\n\n* Drop rfc3986 dependency\n\n* Add test for #1833\n\n* Linting\n\n* Drop 'rfc3986' dependancy from README and docs homepage\n\nCo-authored-by: Thomas Grainger <tagrain@gmail.com>",
+  "files": [
+   "httpx/_urlparse.py",
+   "httpx/_urls.py"
+  ]
+ },
+ {
+  "sha": "4cbf13ece2e584b45b935df0a0c670e1863c4569",
+  "subject": "Raise `TypeError` on invalid query params. (#2523)",
+  "body": "* Raise TypeError on invalid query params\n\n* Fix TypeError\n\n* Update tests/models/test_queryparams.py\n\nCo-authored-by: Michael Adkins <contact@zanie.dev>\n\n* Linting\n\n* Fix exception check\n\nCo-authored-by: Michael Adkins <contact@zanie.dev>",
+  "files": [
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "40a0da093b423ca37feee2b85df7c3f0ce3cc96c",
+  "subject": "Add back in URL.raw with NamedTuple (#2481)",
+  "body": "* add back in URL.raw with NamedTuple\n\n* Update _urls.py\n\n* Update _urls.py\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_types.py",
+   "httpx/_urls.py"
+  ]
+ },
+ {
+  "sha": "57aa5b08a48c82a6e1a1500e131d94a31128b6f9",
+  "subject": "Enable no_implicit_reexport (#2475)",
+  "body": "- Add explicit exports for names imported from `_compat`\n- Correct imports of `URL` (from `._urls`, not via `._models`)\n- Correct import of the uvicorn `Server` class\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_compat.py",
+   "httpx/_config.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "1ff67ea47cd436fd2a835d00bcc830310ff9a0cd",
+  "subject": "Typing: use wsgiref.types to validate types and fix issues uncovered (#2467)",
+  "body": "* Typing: use wsgiref.types to validate types and fix issues uncovered\n\n- start_response() must return a write(bytes) function, even though this\n  is now deprecated. It's fine to be a no-op here.\n- sys.exc_info() can return (None, None, None), so make sure to handle that case.\n\n* remove typing_extensions\n\nCo-authored-by: Martijn Pieters <mj@zopatista.com>",
+  "files": [
+   "httpx/_transports/wsgi.py"
+  ]
+ },
+ {
+  "sha": "8327e1345476ca38bd058545585d14890823aeb8",
+  "subject": "reuse the digest auth state to avoid unnecessary requests (#2463)",
+  "body": "* reuse the digest auth challenge to avoid sending twice as many requests\n\n* fix for digest testcase\n\n* ran testing/linting scripts\n\n* codereview changes, removed tomchristie username from all authentication tests\n\nCo-authored-by: Philipp Reitter <p.reitter@accessio.at>\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_auth.py"
+  ]
+ },
+ {
+  "sha": "1b4e7fbb4825aefa0bce9565af94499bc3ae8c76",
+  "subject": "Typing: always fill in generic type parameters (#2468)",
+  "body": "* Typing: always fill in generic type parameters\n\nBeing explicit about the parameters helps find bugs and makes the library\neasier to use for users.\n\n- Tell mypy to disallow generics without parameter values\n- Give all generic types parameters values\n\n* fix things that aren't coming in from other commits\n\n* lint\n\nCo-authored-by: Martijn Pieters <mj@zopatista.com>\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_auth.py",
+   "httpx/_main.py",
+   "httpx/_models.py",
+   "httpx/_transports/asgi.py",
+   "httpx/_transports/mock.py",
+   "httpx/_transports/wsgi.py",
+   "httpx/_urls.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "75a13a15aa8fea10367b791747a89463a978fa3e",
+  "subject": "Remove typeshed iscoroutine workaround (#2466)",
+  "body": "This was resolved in typeshed and newer mypy versions have inherited the fix.\n\nCo-authored-by: Martijn Pieters <mj@zopatista.com>",
+  "files": [
+   "httpx/_compat.py",
+   "httpx/_transports/mock.py"
+  ]
+ },
+ {
+  "sha": "1ba3e2ad4c08772d1a826a192410fa0f1e61f171",
+  "subject": "Switch `extensions` from `Dict` to `Mapping`. (#2465)",
+  "body": "* Ignore Mapping -> Dict type error\n\n* Fix type of ResponseExtension\n\n* Switch extensions from Dict to Mapping",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_types.py"
+  ]
+ },
+ {
+  "sha": "f11eff45b7d53a6bbd17d453380b1e0ebf494102",
+  "subject": "Version 0.23.1 (#2442)",
+  "body": "* Version 0.23.1\n\n* Update dependencies\n\n* Update CHANGELOG\n\n* Update CHANGELOG.md\n\nCo-authored-by: Marcelo Trylesinski <marcelotryle@gmail.com>\n\n* Update CHANGELOG.md\n\nCo-authored-by: Marcelo Trylesinski <marcelotryle@gmail.com>",
+  "files": [
+   "httpx/__version__.py",
+   "setup.py"
+  ]
+ },
+ {
+  "sha": "71ee50b27770b461a5d2aaba9fca1fbc261bede1",
+  "subject": "Add parameters to generics in `_client.py` (#2266)",
+  "body": "Co-authored-by: Tom Christie <tom@tomchristie.com>\nCo-authored-by: Adrian Garcia Badaracco <1755071+adriangb@users.noreply.github.com>",
+  "files": [
+   "httpx/_client.py"
+  ]
+ },
+ {
+  "sha": "d5900cd40ec85e47800e21e77bc684b9f65325ed",
+  "subject": "Fix empty query params (#2354)",
+  "body": "Co-authored-by: Marcelo Trylesinski <marcelotryle@gmail.com>",
+  "files": [
+   "httpx/_urls.py"
+  ]
+ },
+ {
+  "sha": "ccd98b1a6de221fa4b497de7f7bdf89b1347024d",
+  "subject": "Relax `HeaderTypes` type alias definition (#2317)",
+  "body": "* Relax `HeaderTypes` type alias definition\n\nThis replaces `Dict[..., ...]` with `Mapping[..., ...]` in the union definition for `HeaderTypes`. Closes #2314.\n\n* Update _models.py\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_models.py",
+   "httpx/_types.py"
+  ]
+ },
+ {
+  "sha": "5b06aea1d64f0815af6fe71da3ac725bed3ec09f",
+  "subject": "Update _client.py (#2247)",
+  "body": "Update the type annotation for the default_encoding parameter of AsyncClient's initializer to accept a callable of the form (bytes) -> str.",
+  "files": [
+   "httpx/_client.py"
+  ]
+ },
+ {
+  "sha": "89cdd903b2f339c6ae319773c31b8c9352bd9cd8",
+  "subject": "Version 0.23.0 (#2214)",
+  "body": "* Version 0.23.0\n\n* Update changelog\n\n* Update httpcore dependancy\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md\n\n* Update CHANGELOG.md",
+  "files": [
+   "httpx/__version__.py"
+  ]
+ },
+ {
+  "sha": "1c33a2854e5d18955c8766c5c01e6229716b5b7a",
+  "subject": "Make charset auto-detection optional. (#2165)",
+  "body": "* Add Response(..., default_encoding=...)\n\n* Add tests for Response(..., default_encoding=...)\n\n* Add Client(..., default_encoding=...)\n\n* Switch default encoding to 'utf-8' instead of 'autodetect'\n\n* Make charset_normalizer an optional dependancy, not a mandatory one.\n\n* Documentation\n\n* Use callable for default_encoding\n\n* Update tests for new charset autodetection API\n\n* Update docs for new charset autodetection API\n\n* Update requirements\n\n* Drop charset_normalizer from requirements",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_models.py",
+   "setup.py"
+  ]
+ },
+ {
+  "sha": "14a1704be507cf435fa84da75c249c2ecd1c3981",
+  "subject": "Switch to explicit `typing.Optional` throughout (#2096)",
+  "body": "* Fix issue with Mypy `--strict` and `AsyncExitStack`\n\n* Enable `no_implicit_optional` in Mypy\n\n* Ignore internal type errors\n\n* Bump `httpcore`\n\n* Remove unneeded type: ignore comments\n\nCo-authored-by: Florimond Manca <florimond.manca@protonmail.com>\nCo-authored-by: Michael Oliver <michael@michaeloliver.dev>",
+  "files": [
+   "httpx/_api.py",
+   "httpx/_client.py",
+   "httpx/_config.py",
+   "httpx/_content.py",
+   "httpx/_decoders.py",
+   "httpx/_exceptions.py",
+   "httpx/_models.py",
+   "httpx/_multipart.py"
+  ]
+ },
+ {
+  "sha": "3350d7e6831e2d942f68653b2f58cfa5ecb0bacd",
+  "subject": "Close responses when on cancellations occur during reading. (#2156)",
+  "body": "* Test case for clean stream closing on cancellations\n\n* Test case for clean stream closing on cancellations\n\n* Linting on tests\n\n* responses should close on any BaseException",
+  "files": [
+   "httpx/_client.py"
+  ]
+ },
+ {
+  "sha": "67c297069f3d6b034069882428e4c1dd303d693c",
+  "subject": "Drop EOL Python 3.6 (#2097)",
+  "body": "Co-authored-by: Florimond Manca <florimond.manca@protonmail.com>\nCo-authored-by: Tom Christie <tom@tomchristie.com>\nCo-authored-by: Marcelo Trylesinski <marcelotryle@gmail.com>",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_compat.py",
+   "setup.py"
+  ]
+ },
+ {
+  "sha": "c82885ac04f7c3439dfdd4d26614913bf09389c9",
+  "subject": "Fix cli docs --proxies #2124 (#2125)",
+  "body": "",
+  "files": [
+   "httpx/_main.py"
+  ]
+ },
+ {
+  "sha": "a4161062501a32ce258e9f990737d494bfe419aa",
+  "subject": "Refactor `httpx/_utils.py` (#1943)",
+  "body": "* Removes unnecessary call to keys() when iterating over a dictionary\n\n* Simplify conditionals into a form like a switch statement\n\n* Merge else clause's nested if statement into elif\n\n* Update httpx/_utils.py\n\n* Update httpx/_utils.py\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "4401d55ecf0d95be237098b6c73c45420d54d499",
+  "subject": "Preserve Authorization header on HTTPS redirect (#1850) (#2074)",
+  "body": "* Preserve Authorization header on HTTPS redirect (#1850)\n\n* Update httpx/_client.py\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "4f8068a7ade1f4d10403e325ed2354109df1724f",
+  "subject": "update docstring/docs for transport using request/response models (#2070)",
+  "body": "* update docstring/docs for transport based on pull #1840\n\n* Update httpx/_transports/base.py\n\n* lint'd\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_transports/base.py"
+  ]
+ },
+ {
+  "sha": "2814fd379c4738d402e57f9560194b42adee8ebf",
+  "subject": "Fix console markup escaping issue (#1866)",
+  "body": "* fix for markup escaping in progress\n\n* whitespace\n\n* restore new line\n\n* Update _main.py\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>\nCo-authored-by: Marcelo Trylesinski <marcelotryle@gmail.com>",
+  "files": [
+   "httpx/_main.py"
+  ]
+ },
+ {
+  "sha": "2146c75f4eccbcfbb5fe649a4a2cccdaec6ed8ad",
+  "subject": "Allow rich-11 (#2057)",
+  "body": "Relax the version bind on rich to allow v11.  There are no test\nregressions with the new version, and CLI seems to work correctly.",
+  "files": [
+   "setup.py"
+  ]
+ },
+ {
+  "sha": "321d4aa5097fe7f24cdfed7191c44de589294780",
+  "subject": "Fix Headers.update to correctly handle repeated headers (#2038)",
+  "body": "",
+  "files": [
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "0f1ff50a1e88ddee0c7ffe4ef1c04f0dc30cc6ab",
+  "subject": "Allow custom headers in multipart/form-data requests (#1936)",
+  "body": "* feat: allow passing multipart headers\n\n* Add test for including content-type in headers\n\n* lint\n\n* override content_type with headers\n\n* compare tuples based on length\n\n* incorporate suggestion\n\n* remove .title() on headers",
+  "files": [
+   "httpx/_multipart.py",
+   "httpx/_types.py"
+  ]
+ },
+ {
+  "sha": "b7dc0c3df68279ce89f016a69a41b27a2346d54d",
+  "subject": "Fix for stream uploads that subclass SyncByteStream/AsyncByteStream (#2016)",
+  "body": "",
+  "files": [
+   "httpx/_content.py"
+  ]
+ },
+ {
+  "sha": "406700317bfd83a65d78094e4ce8e9261c284399",
+  "subject": "HTTP/2 support for tunnelled proxy cases. (#2009)",
+  "body": "* Cap upload chunk sizes\n\n* Use '.read' for file streaming, where possible\n\n* Direct iteration should not apply chunk sizes\n\n* HTTP/2 support for proxies",
+  "files": [
+   "httpx/_transports/default.py"
+  ]
+ },
+ {
+  "sha": "82ba15b52189eacec74f2ec7dbd81f3c70a69261",
+  "subject": "Fix typos (#1968)",
+  "body": "",
+  "files": [
+   "httpx/_client.py",
+   "httpx/_content.py",
+   "httpx/_models.py",
+   "httpx/_transports/base.py",
+   "httpx/_transports/default.py",
+   "httpx/_types.py",
+   "httpx/_utils.py"
+  ]
+ },
+ {
+  "sha": "efc841a9e8e709f5cc40257927dd7461dc832330",
+  "subject": "Fix typo on _merge_url (#1949)",
+  "body": "seperator -> separator",
+  "files": [
+   "httpx/_client.py"
+  ]
+ },
+ {
+  "sha": "6f5865f8605b2cf15872388c3d9bc3623bbf265e",
+  "subject": "Read upload files using `read(CHUNK_SIZE)` rather than `iter()`. (#1948)",
+  "body": "* Cap upload chunk sizes\n\n* Use '.read' for file streaming, where possible\n\n* Direct iteration should not apply chunk sizes",
+  "files": [
+   "httpx/_content.py",
+   "httpx/_multipart.py"
+  ]
+ },
+ {
+  "sha": "4882e980494aa72032bef773eb15462af25dcd9a",
+  "subject": "Fix response.url annotation (#1940)",
+  "body": "",
+  "files": [
+   "httpx/_models.py"
+  ]
+ },
+ {
+  "sha": "61188feeaec598116996ddffa801a104363be924",
+  "subject": "Version 0.21 (#1935)",
+  "body": "* Integrate with httpcore 0.14\n\n* Fix pool timeout test\n\n* Add request extensions to API\n\n* Add certificate and connection info to client, using 'trace' extension\n\n* Fix test_pool_timeout flakiness",
+  "files": [
+   "httpx/__version__.py",
+   "httpx/_client.py",
+   "httpx/_main.py",
+   "httpx/_transports/default.py",
+   "setup.py"
+  ]
+ },
+ {
+  "sha": "62b1666dc6c6b012b258574c4239b8ff8f481619",
+  "subject": "doc: Update comments about file types in _types.py (#1898)",
+  "body": "* doc: Update comments about file types in _types.py\n\nhttps://github.com/encode/httpx/discussions/1897\n\n* Update httpx/_types.py\n\nCo-authored-by: Tom Christie <tom@tomchristie.com>",
+  "files": [
+   "httpx/_types.py"
+  ]
+ }
+]

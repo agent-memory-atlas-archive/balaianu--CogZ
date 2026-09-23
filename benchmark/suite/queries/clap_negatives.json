@@ -1,0 +1,36 @@
+{
+ "version": "neg-v1",
+ "corpus": "clap",
+ "queries": [
+  {
+   "id": "ln01",
+   "intent": "negative",
+   "query": "parse TOML config file into arguments",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "ln02",
+   "intent": "negative",
+   "query": "async runtime command execution",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "ln03",
+   "intent": "negative",
+   "query": "windows registry key reading",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "ln04",
+   "intent": "negative",
+   "query": "quantum entanglement routing protocol",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "ln05",
+   "intent": "negative",
+   "query": "dns resolver cache invalidation",
+   "expected_entity_ids": []
+  }
+ ]
+}

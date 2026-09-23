@@ -1,0 +1,135 @@
+{
+ "version": "seeded-gt-v1",
+ "corpus": "httpx",
+ "queries": [
+  {
+   "id": "hk01",
+   "intent": "knowledge",
+   "query": "how do timeouts work and what are the different timeout phases",
+   "expected_entity_ids": [
+    "6adc7533-ee7e-4831-b2e0-f0652ff9e6c3",
+    "6bd4b3fe-b46c-4762-87f5-32135de6a963",
+    "96e21085-8a19-4125-926f-367ea8babdf1"
+   ]
+  },
+  {
+   "id": "hk02",
+   "intent": "knowledge",
+   "query": "route different URL schemes through different proxy servers",
+   "expected_entity_ids": [
+    "2567c72c-9236-42b7-a2c4-23746ae23dee",
+    "96e57f2c-4e8b-4241-8639-ec3c4dac0775",
+    "a323b447-6810-4be1-a85e-82a754f12e1d",
+    "f29dff3c-928c-4d09-864c-ba14cb4bbcc0"
+   ]
+  },
+  {
+   "id": "hk03",
+   "intent": "knowledge",
+   "query": "test a flask app in process without a real socket",
+   "expected_entity_ids": [
+    "98c25da6-9726-4aef-995b-5c5c20a05041"
+   ]
+  },
+  {
+   "id": "hk04",
+   "intent": "knowledge",
+   "query": "connect over a unix domain socket to the docker api",
+   "expected_entity_ids": [
+    "dbe38e41-7d8f-4771-86e0-402375bc92d2"
+   ]
+  },
+  {
+   "id": "hk05",
+   "intent": "knowledge",
+   "query": "why didn't my retry setting retry a failed request",
+   "expected_entity_ids": [
+    "a97d2be1-f08f-4fdd-954b-a0051766e59f"
+   ]
+  },
+  {
+   "id": "hk06",
+   "intent": "knowledge",
+   "query": "streaming response raises ResponseNotRead when accessing text",
+   "expected_entity_ids": [
+    "03ce7613-1159-404b-b437-3272268e87fc",
+    "6336f7a8-b69d-4ab7-bc9b-25581bc21e31",
+    "b0babf27-1f0d-49ae-b1f9-30ed776d8485"
+   ]
+  },
+  {
+   "id": "hk07",
+   "intent": "knowledge",
+   "query": "how does digest authentication work",
+   "expected_entity_ids": [
+    "2e62524a-6041-4d70-98db-ab8bf1d82f18"
+   ]
+  },
+  {
+   "id": "hk08",
+   "intent": "knowledge",
+   "query": "reuse connections and cookies across requests",
+   "expected_entity_ids": [
+    "87b67156-3138-4ac1-b2e7-0b33691b336c",
+    "8f05c692-3d8a-4b44-8490-20a3265dd6a9"
+   ]
+  },
+  {
+   "id": "hk09",
+   "intent": "knowledge",
+   "query": "write a custom transport",
+   "expected_entity_ids": [
+    "5d354324-e410-404a-aadc-61dc1af64d6a"
+   ]
+  },
+  {
+   "id": "hk10",
+   "intent": "knowledge",
+   "query": "enable http2",
+   "expected_entity_ids": [
+    "1db3948c-0ea5-4320-8cf6-c52d64b1e1ed"
+   ]
+  },
+  {
+   "id": "hk11",
+   "intent": "knowledge",
+   "query": "which environment variables configure ssl certificates",
+   "expected_entity_ids": [
+    "7718be7f-6bbd-4970-9022-7e81a3685c14",
+    "bd557bcd-d8cc-4a51-8d32-aae68877f76d"
+   ]
+  },
+  {
+   "id": "hk12",
+   "intent": "knowledge",
+   "query": "run code on every request and response",
+   "expected_entity_ids": [
+    "0b6603da-8f3a-47f6-a6cd-dc0e3803c4c2"
+   ]
+  },
+  {
+   "id": "hk13",
+   "intent": "knowledge",
+   "query": "where does the top level api create its client",
+   "expected_entity_ids": [
+    "23bb8dce-7964-4606-b7fd-f813458d5898"
+   ]
+  },
+  {
+   "id": "hk14",
+   "intent": "knowledge",
+   "query": "what runs before committing a change",
+   "expected_entity_ids": [
+    "f1321786-beb6-4979-8d95-4502ee49f398"
+   ]
+  },
+  {
+   "id": "hk15",
+   "intent": "knowledge",
+   "query": "the proxies dict argument for per-scheme proxies",
+   "expected_entity_ids": [
+    "69650625-8026-4535-aa7a-22da9c903dcd"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,985 @@
+{
+ "version": "commit-gt-v1",
+ "corpus": "/home/andy/cogz_bench/corpora/clap",
+ "queries": [
+  {
+   "id": "ca1b6be72",
+   "intent": "commit",
+   "query": "fix(clap_complete): Fix value escape in zsh completion",
+   "expected_entity_ids": [
+    "899ff18f-c5ac-5504-a754-0bbffae14d94"
+   ],
+   "expected_titles": [
+    "value_completion"
+   ],
+   "notes": "commit a1b6be720e, 2 files"
+  },
+  {
+   "id": "cface9e81",
+   "intent": "commit",
+   "query": "test(complete): Add completion test without arg's help",
+   "expected_entity_ids": [
+    "465537a5-204d-5e3e-b963-d9e8c09d6637",
+    "605700a1-a308-5371-90c0-56e60972c0d6"
+   ],
+   "expected_titles": [
+    "_my__app",
+    "sub_subcommands_command"
+   ],
+   "notes": "commit face9e81df, 6 files"
+  },
+  {
+   "id": "c7f870209",
+   "intent": "commit",
+   "query": "test(derive): Build before nested introspection",
+   "expected_entity_ids": [
+    "488d67e0-f569-5a91-b299-f47295ccfe9c"
+   ],
+   "expected_titles": [
+    "app_help_heading_flattened"
+   ],
+   "notes": "commit 7f870209bf, 1 files"
+  },
+  {
+   "id": "c24719832",
+   "intent": "commit",
+   "query": "refactor(derive): Unify subcommand variant construction",
+   "expected_entity_ids": [
+    "79251686-d94f-59cd-b1c5-56732820f5a2"
+   ],
+   "expected_titles": [
+    "gen_augment"
+   ],
+   "notes": "commit 247198320f, 1 files"
+  },
+  {
+   "id": "c8cf344b7",
+   "intent": "commit",
+   "query": "refactor(derive): Extract top-level command methods",
+   "expected_entity_ids": [
+    "4d52ede6-e726-5cce-8681-aaace6abf7b7",
+    "79251686-d94f-59cd-b1c5-56732820f5a2",
+    "9443b2df-55bf-5882-97a9-e852f336b5bc",
+    "fd6a6885-d093-5f5e-be44-1a191421cf5f"
+   ],
+   "expected_titles": [
+    "gen_augment",
+    "gen_for_enum",
+    "gen_for_struct"
+   ],
+   "notes": "commit 8cf344b707, 2 files"
+  },
+  {
+   "id": "c9a0248c8",
+   "intent": "commit",
+   "query": "fix(complete): Make it easier to debug",
+   "expected_entity_ids": [
+    "988a5ae5-3fa3-5499-baf4-898fffdfeb2a",
+    "c89f49ed-c454-5e14-b3e6-8908003dea72"
+   ],
+   "expected_titles": [
+    "complete_arg_value",
+    "complete_option"
+   ],
+   "notes": "commit 9a0248c837, 1 files"
+  },
+  {
+   "id": "c07c6fd2d",
+   "intent": "commit",
+   "query": "fix(mangen): Hide hidden positionals from the SYNOPSIS",
+   "expected_entity_ids": [
+    "9147c313-813c-5fba-a9b0-580601497328"
+   ],
+   "expected_titles": [
+    "synopsis"
+   ],
+   "notes": "commit 07c6fd2d7c, 2 files"
+  },
+  {
+   "id": "c2003b342",
+   "intent": "commit",
+   "query": "test(mangen): Show hidden positionals in the SYNOPSIS",
+   "expected_entity_ids": [
+    "3b3cd12e-7241-5e4e-a7e7-d02bdbda3bee",
+    "8142c7d4-46a4-5ec8-845c-0868073a8942"
+   ],
+   "expected_titles": [
+    "hidden_positional_command",
+    "hidden_positionals"
+   ],
+   "notes": "commit 2003b34217, 3 files"
+  },
+  {
+   "id": "cdee8b8e4",
+   "intent": "commit",
+   "query": "fix(clap_complete_nushell): Set argument type to `directory` for `ValueHint::DirPath`",
+   "expected_entity_ids": [
+    "8520ab36-2966-5e47-954c-3026e5fa6a39"
+   ],
+   "expected_titles": [
+    "append_value_completion_and_help"
+   ],
+   "notes": "commit dee8b8e4f0, 3 files"
+  },
+  {
+   "id": "c6dd2e5a0",
+   "intent": "commit",
+   "query": "test(complete): Show POSIX bash will not source",
+   "expected_entity_ids": [
+    "6590b3c1-0ace-51a1-8565-38980c518d3b",
+    "7e8e5f0b-332c-5c52-a54d-fddd9e96f130"
+   ],
+   "expected_titles": [
+    "source_under_posix_mode",
+    "sources_under_posix_mode_bash"
+   ],
+   "notes": "commit 6dd2e5a080, 1 files"
+  },
+  {
+   "id": "ceb39a0eb",
+   "intent": "commit",
+   "query": "fix(mangen): Render the synopsis from override_usage",
+   "expected_entity_ids": [
+    "3d7aaf31-1ded-5d21-bacf-759f3a9dc18b",
+    "9147c313-813c-5fba-a9b0-580601497328"
+   ],
+   "expected_titles": [
+    "override_synopsis",
+    "synopsis"
+   ],
+   "notes": "commit eb39a0eb5f, 3 files"
+  },
+  {
+   "id": "c543c5322",
+   "intent": "commit",
+   "query": "test(mangen): Show the SYNOPSIS ignoring override_usage",
+   "expected_entity_ids": [
+    "26f90a5d-5ad2-555e-a884-a9acb052ab2c",
+    "3b3cd12e-7241-5e4e-a7e7-d02bdbda3bee",
+    "853e1cf8-ed1f-5282-a15a-eeaa243a5c8d",
+    "d38d0ade-e32f-5d03-b5e6-f74953d94c3d"
+   ],
+   "expected_titles": [
+    "env_value_command",
+    "hidden_positionals",
+    "override_usage",
+    "override_usage_command"
+   ],
+   "notes": "commit 543c5322e9, 4 files"
+  },
+  {
+   "id": "c801277e0",
+   "intent": "commit",
+   "query": "fix(clap_mangen): Render required ArgGroups",
+   "expected_entity_ids": [
+    "0719dba3-949b-5108-8650-1b197d3f70a9",
+    "31185be5-30c2-56ad-9ea9-ff458928a336",
+    "5a354cbb-039f-50f7-8680-6f2b5347609b",
+    "9147c313-813c-5fba-a9b0-580601497328"
+   ],
+   "expected_titles": [
+    "render_synopsis_arg",
+    "render_synopsis_option",
+    "synopsis",
+    "unroll_group_args"
+   ],
+   "notes": "commit 801277e030, 7 files"
+  },
+  {
+   "id": "ce19aeb7a",
+   "intent": "commit",
+   "query": "test(clap_mangen): Test required ArgGroup markers",
+   "expected_entity_ids": [
+    "04e948bd-6718-5991-90b5-c57ac0695f88",
+    "082fa870-1abd-58d2-8614-92e41b617acc",
+    "1cec589b-1e94-5af6-8f3a-df48c2a74e10",
+    "44ff6963-a497-5fa0-83df-d42f6979b6c3",
+    "559046ce-7c14-5beb-917e-33df0c67ac4e",
+    "55ee9075-230d-53bd-b889-5bbc6d68a2d6",
+    "94a251c4-177b-50e1-aa98-73870371055c",
+    "981d72f1-5d00-5acf-9ba4-72f95eddd087",
+    "a378d343-393d-59b3-a64c-8e2ff4cf9647",
+    "a9549993-206d-5acd-a7fc-8a120bb7ae75",
+    "b58b1db7-21c4-55d0-a310-0f054a9be003",
+    "c2a7a3db-08db-5a31-a525-ab41fd134402",
+    "c7540441-d0fe-5b76-8e7f-df305fce6c12",
+    "c9ee34e3-7370-5b82-9997-e9732907d2c2",
+    "dda88476-d877-5fdd-872c-279c2e5e0b6b",
+    "e1145360-882a-5f9e-a1b1-dcbc27a0af26"
+   ],
+   "expected_titles": [
+    "configured_display_order_args",
+    "configured_subcmd_order",
+    "count_required_group",
+    "count_required_group_command",
+    "default_subcmd_order",
+    "optional_group",
+    "optional_group_command",
+    "required_group",
+    "required_group_command",
+    "required_group_with_required_option",
+    "required_group_with_required_option_command",
+    "single_required_group",
+    "single_required_group_command",
+    "variadic_values"
+   ],
+   "notes": "commit e19aeb7a18, 9 files"
+  },
+  {
+   "id": "c14d47fb7",
+   "intent": "commit",
+   "query": "refactor(builder): Rename internal blacklist field to conflicts",
+   "expected_entity_ids": [
+    "29f7faec-8681-5a11-bbb8-a786bf6fe1d4",
+    "4790c7b4-b919-5630-8a83-d32cd17ab9f6",
+    "4c1b2075-092c-561b-bdaa-e007fd687dcd",
+    "695da44f-81f3-56c2-b8e3-9dc2fc636651",
+    "7de85749-a346-5e9e-938d-70d8956deee6",
+    "9212f1a7-7ab7-5d5a-b6c4-7a64e3aabea8",
+    "c468871a-b6ac-5211-90a0-9ebb6e310666",
+    "d1cb4ec3-32ec-5e94-9e57-727f75163adb"
+   ],
+   "expected_titles": [
+    "Arg",
+    "assert_app",
+    "assert_arg",
+    "conflicts_with",
+    "conflicts_with_all",
+    "gather_arg_direct_conflicts",
+    "get_arg_conflicts_with",
+    "impl fmt::Debug for Arg"
+   ],
+   "notes": "commit 14d47fb7e5, 4 files"
+  },
+  {
+   "id": "c9a1ec1f2",
+   "intent": "commit",
+   "query": "docs: add configurable command alias example",
+   "expected_entity_ids": [
+    "0ccd751a-5a0e-57cb-916b-dfad1eada619",
+    "354772ce-f584-51d9-a1ad-0c0edb8a8d8b",
+    "48dd1215-773d-5b7c-a80b-e7c6c60c9123",
+    "4f4ce403-e41c-5ad2-bce0-8bcd5375e878",
+    "68bc4629-121c-53b6-8b94-629614419b1b",
+    "9ebb9051-d4b6-566c-8059-f9d5ff121997",
+    "a5e9cdb2-7eb0-5a0e-9d5b-e451674cc07d",
+    "c3a0ee55-3f81-5a9b-ad1e-b4a3d3e546ea"
+   ],
+   "expected_titles": [
+    "aliases",
+    "expand_aliases",
+    "main",
+    "parse_aliases"
+   ],
+   "notes": "commit 9a1ec1f2be, 5 files"
+  },
+  {
+   "id": "c1ca55413",
+   "intent": "commit",
+   "query": "fix(help): Bracket values past the minimum",
+   "expected_entity_ids": [
+    "4e90fed1-edc6-5a2d-9b2c-f976d3e1188e",
+    "a8917e00-0392-5c65-b1cb-49258cfbbf5b"
+   ],
+   "expected_titles": [
+    "partially_optional_value_names",
+    "render_arg_val"
+   ],
+   "notes": "commit 1ca55413c8, 2 files"
+  },
+  {
+   "id": "c2935d5a1",
+   "intent": "commit",
+   "query": "docs: Add help snapshot to pacman example",
+   "expected_entity_ids": [
+    "1c7ff7f3-5f95-5b44-bb52-afb410b4130c",
+    "5c90800e-39d1-541c-9999-7ef874d7b374"
+   ],
+   "expected_titles": [
+    "cli",
+    "main"
+   ],
+   "notes": "commit 2935d5a189, 6 files"
+  },
+  {
+   "id": "c4e4ddc47",
+   "intent": "commit",
+   "query": "test(help): Show values past minimum as required",
+   "expected_entity_ids": [
+    "a8917e00-0392-5c65-b1cb-49258cfbbf5b"
+   ],
+   "expected_titles": [
+    "partially_optional_value_names"
+   ],
+   "notes": "commit 4e4ddc47e8, 2 files"
+  },
+  {
+   "id": "c2550f328",
+   "intent": "commit",
+   "query": "feat(complete): Expose possible value completers",
+   "expected_entity_ids": [
+    "57913590-2bbe-52d5-9c3c-ce713ce9caa8",
+    "d4c7a501-7459-53fc-8566-8116a0d28e53",
+    "e42d67a6-f340-5ee6-913c-817b91afd0e0"
+   ],
+   "expected_titles": [
+    "complete_possible_values",
+    "populate_arg_candidate",
+    "possible_value_candidates"
+   ],
+   "notes": "commit 2550f328b0, 3 files"
+  },
+  {
+   "id": "c9048857b",
+   "intent": "commit",
+   "query": "refactor(complete): Pull out possible values candidate conversion",
+   "expected_entity_ids": [
+    "0d87a81b-85d4-5704-9765-bc82bf1cb32e",
+    "18dc051d-2c00-5f01-917d-c521f78deaf0",
+    "82d7656a-70b0-5e1f-a9a5-75d6e2af64cd",
+    "bd5af13f-9bbc-5aa0-ae0a-c30179ea0ac7",
+    "c89f49ed-c454-5e14-b3e6-8908003dea72",
+    "d4c7a501-7459-53fc-8566-8116a0d28e53"
+   ],
+   "expected_titles": [
+    "complete_arg_value",
+    "complete_candidates_str",
+    "complete_value_candidates",
+    "complete_value_candidates_str",
+    "populate_arg_candidate",
+    "possible_values"
+   ],
+   "notes": "commit 9048857bc4, 1 files"
+  },
+  {
+   "id": "c0607d660",
+   "intent": "commit",
+   "query": "refactor(complete): Remove unused allocation",
+   "expected_entity_ids": [
+    "d4c7a501-7459-53fc-8566-8116a0d28e53"
+   ],
+   "expected_titles": [
+    "populate_arg_candidate"
+   ],
+   "notes": "commit 0607d66001, 1 files"
+  },
+  {
+   "id": "c943de735",
+   "intent": "commit",
+   "query": "refactor(complete): Move related functions next to each other",
+   "expected_entity_ids": [
+    "0d87a81b-85d4-5704-9765-bc82bf1cb32e",
+    "18dc051d-2c00-5f01-917d-c521f78deaf0",
+    "a2c61b91-e2fd-5459-9c7e-66356575f674"
+   ],
+   "expected_titles": [
+    "complete_candidates_str",
+    "complete_subcommand",
+    "complete_value_candidates_str"
+   ],
+   "notes": "commit 943de73500, 1 files"
+  },
+  {
+   "id": "c81b86a9f",
+   "intent": "commit",
+   "query": "refactor(complete): Generalize value candidate handling",
+   "expected_entity_ids": [
+    "0d87a81b-85d4-5704-9765-bc82bf1cb32e",
+    "11563d79-ff5c-51d9-9d31-20092cf390ac",
+    "2c83e7b4-6fba-50bb-a653-89f471f91bf6",
+    "54a61bce-3847-5916-9e02-1047fb7cb61d",
+    "5a5e3bdc-f756-51f9-bf38-0f730a01c4d3",
+    "916ff4b7-bea1-5817-83c9-35fe0886ae59",
+    "a2c61b91-e2fd-5459-9c7e-66356575f674",
+    "bd5af13f-9bbc-5aa0-ae0a-c30179ea0ac7",
+    "c89f49ed-c454-5e14-b3e6-8908003dea72",
+    "db307961-2b92-502f-b22d-d5af6f1715fe"
+   ],
+   "expected_titles": [
+    "candidates",
+    "complete_arg_value",
+    "complete_subcommand",
+    "complete_value_candidates",
+    "complete_value_candidates_str",
+    "impl ArgValueCandidates",
+    "impl SubcommandCandidates",
+    "value_candidates"
+   ],
+   "notes": "commit 81b86a9fc3, 2 files"
+  },
+  {
+   "id": "cae09202e",
+   "intent": "commit",
+   "query": "refactor(complete): Remove extra allocation",
+   "expected_entity_ids": [
+    "a2c61b91-e2fd-5459-9c7e-66356575f674"
+   ],
+   "expected_titles": [
+    "complete_subcommand"
+   ],
+   "notes": "commit ae09202eeb, 1 files"
+  },
+  {
+   "id": "c5df71cdb",
+   "intent": "commit",
+   "query": "docs: Note that empty ValueRange also panics",
+   "expected_entity_ids": [
+    "b865a839-b0c7-5768-be86-9681f36efbae"
+   ],
+   "expected_titles": [
+    "impl ValueRange"
+   ],
+   "notes": "commit 5df71cdbe8, 1 files"
+  },
+  {
+   "id": "c7cf4891e",
+   "intent": "commit",
+   "query": "chore: Upgrade to syn v3",
+   "expected_entity_ids": [
+    "fcc39a62-4ed8-5e25-b51a-2715f58c9259"
+   ],
+   "expected_titles": [
+    "only_last_segment"
+   ],
+   "notes": "commit 7cf4891eba, 3 files"
+  },
+  {
+   "id": "cf1814170",
+   "intent": "commit",
+   "query": "fix: Require literal attribute values",
+   "expected_entity_ids": [
+    "224c6d23-a33b-59e2-b27c-7b940d9ef522",
+    "8bc536b7-df60-5a53-9e06-57558170e5e0",
+    "8e93c777-73d5-577c-9579-69c49e4f65bb",
+    "bd5d1f8c-13c4-5898-90ed-d0208cc9597b",
+    "bf4f6de2-18eb-5066-a695-1071efc820a9",
+    "d3e8cd9b-0139-526b-a1ff-fa7373bd7d5f"
+   ],
+   "expected_titles": [
+    "MagicAttrName",
+    "default_value_t_string_expr",
+    "impl ClapAttr",
+    "impl Parse for ClapAttr",
+    "lit_str_or_abort",
+    "parse"
+   ],
+   "notes": "commit f181417013, 3 files"
+  },
+  {
+   "id": "c9011fa58",
+   "intent": "commit",
+   "query": "test(derive): Show bad literal",
+   "expected_entity_ids": [
+    "c937047f-5487-5134-ae78-817d5b533ef2",
+    "dfe90c8d-8a84-54cf-9bc9-016b847f5853"
+   ],
+   "expected_titles": [
+    "Opt",
+    "main"
+   ],
+   "notes": "commit 9011fa583b, 2 files"
+  },
+  {
+   "id": "c7dd8df1b",
+   "intent": "commit",
+   "query": "fix(clap_complete_nushell): Disable gen last-args",
+   "expected_entity_ids": [
+    "0acd5834-105c-5bd4-85cc-41b1db517d9a",
+    "4588cc49-3ff1-577a-b045-00a20c2364b8",
+    "ba641630-9e46-5dc6-84db-6077aee82a4f"
+   ],
+   "expected_titles": [
+    "append_argument",
+    "completion_last_hint",
+    "generate_completion"
+   ],
+   "notes": "commit 7dd8df1b46, 4 files"
+  },
+  {
+   "id": "ce63b8ec1",
+   "intent": "commit",
+   "query": "test(clap_complete_nushell): Add last-args test",
+   "expected_entity_ids": [
+    "0acd5834-105c-5bd4-85cc-41b1db517d9a",
+    "15aadd2f-5e15-50c1-8f21-a3d0ab6f32a4",
+    "3935d2fa-d40b-535f-9fbe-2eb605c1c829",
+    "39728a5a-5771-5169-be92-9d4bafb01b5b",
+    "cb6f1f06-24a3-50db-85cf-42994ec0d86f"
+   ],
+   "expected_titles": [
+    "cli",
+    "completion_last_hint",
+    "completion_value_hint",
+    "last_args",
+    "last_args_command"
+   ],
+   "notes": "commit e63b8ec184, 6 files"
+  },
+  {
+   "id": "c8a93d4be",
+   "intent": "commit",
+   "query": "feat: Display word alias as singular when unique",
+   "expected_entity_ids": [
+    "0949284c-9e51-5168-8773-a7b4ceb3a461",
+    "2bdce2ea-ea5c-589d-9dbb-6efa72988af3",
+    "a7d6b8bc-4e45-5788-ac41-7da57e32b805",
+    "a9b2cca1-8525-5615-af95-6526b53f2702",
+    "b3e58ece-ee82-5f15-a26f-4db1748ad775",
+    "c4c07517-057c-552a-bb1d-1aa8c0b61d24"
+   ],
+   "expected_titles": [
+    "issue_418",
+    "pluralize",
+    "sc_spec_vals",
+    "spec_vals",
+    "visible_arg_aliases_help_output",
+    "visible_short_arg_aliases_help_output"
+   ],
+   "notes": "commit 8a93d4be29, 8 files"
+  },
+  {
+   "id": "c9f5451d5",
+   "intent": "commit",
+   "query": "style: Make clippy happy",
+   "expected_entity_ids": [
+    "3bae1e00-e63b-56d0-b82c-b0b82ff8316d",
+    "627ea9e9-0162-5127-ad66-2a39c3ce87d5",
+    "68fc98fa-2866-57f0-8006-3f842b3cb74e",
+    "9ebb9051-d4b6-566c-8059-f9d5ff121997",
+    "bd5b29c5-8eea-5d42-8845-8460622bb4f3",
+    "fdcdbd42-cff9-590e-9e51-12fe016405e7"
+   ],
+   "expected_titles": [
+    "generate_inner",
+    "get_long_and_visible_aliases",
+    "get_short_and_visible_aliases",
+    "main"
+   ],
+   "notes": "commit 9f5451d597, 5 files"
+  },
+  {
+   "id": "cb793fd60",
+   "intent": "commit",
+   "query": "fix: correct typos in comments",
+   "expected_entity_ids": [
+    "46a78d52-3c29-5eee-9785-9b0261b1ee5c",
+    "520422f5-5b80-5939-9d37-a7d0bf3801c5",
+    "f1ab17a1-70e8-5ca6-99f2-2ab99379c6a1"
+   ],
+   "expected_titles": [
+    "impl Command",
+    "impl CompletionCandidate",
+    "render_usage_"
+   ],
+   "notes": "commit b793fd602a, 3 files"
+  },
+  {
+   "id": "c2310870f",
+   "intent": "commit",
+   "query": "test(complete): Add tests for completer_for_path",
+   "expected_entity_ids": [
+    "f8e92a5d-ec24-5a0a-8fd5-3a180c44c2f9"
+   ],
+   "expected_titles": [
+    "shells_completer_for_path_finds_powershell"
+   ],
+   "notes": "commit 2310870f7a, 1 files"
+  },
+  {
+   "id": "c5967c173",
+   "intent": "commit",
+   "query": "refactor(complete): Move shell detection to Shells",
+   "expected_entity_ids": [
+    "22440727-1230-5af4-8cda-3e57f699f65e",
+    "3a60cdd2-2874-50bf-8e77-83566577925c",
+    "a610a6e1-844d-5d9d-8297-bee8849de9fb"
+   ],
+   "expected_titles": [
+    "completer_for_path",
+    "impl Shells<'s>",
+    "try_complete_"
+   ],
+   "notes": "commit 5967c17393, 1 files"
+  },
+  {
+   "id": "c594602bb",
+   "intent": "commit",
+   "query": "fix(complete): Detect pwsh for PowerShell",
+   "expected_entity_ids": [
+    "31e3287a-7589-584e-8847-b7c694a72fc4",
+    "3427fab5-8232-5e1d-adb2-4d2fae67f044",
+    "8ebc88bc-413a-5ee1-a59e-443d898f94e2",
+    "98c81124-226a-5446-a8af-f8cb43a2a7fb"
+   ],
+   "expected_titles": [
+    "impl EnvCompleter for Powershell",
+    "impl Shell",
+    "is",
+    "parse_shell_from_path"
+   ],
+   "notes": "commit 594602bb29, 2 files"
+  },
+  {
+   "id": "cf90a9663",
+   "intent": "commit",
+   "query": "fix(complete): Use spaces for indentation in fish",
+   "expected_entity_ids": [
+    "99d5474f-0a99-5c14-bd94-b8354f9ac058"
+   ],
+   "expected_titles": [
+    "gen_subcommand_helpers"
+   ],
+   "notes": "commit f90a96636a, 10 files"
+  },
+  {
+   "id": "cdd4997ba",
+   "intent": "commit",
+   "query": "fix(complete): Don't glob-expand bash positionals",
+   "expected_entity_ids": [
+    "01fcc2d6-19c2-5b40-aa37-2e8751f00ec8",
+    "465537a5-204d-5e3e-b963-d9e8c09d6637",
+    "46938bb9-cea7-5297-b551-92ff4cd8a2b3",
+    "5be3e786-a19c-53a1-88d0-284ed82c1760",
+    "8858b191-f2fa-5e15-8e9a-e755438d5924",
+    "9daa89cf-a507-5238-b269-1c76b342c53a",
+    "b82ed781-19f2-5769-ab32-1c728c780735",
+    "dc766f64-a230-5d49-9340-1ac6641178c7",
+    "f061f859-ab57-53a6-a344-1cffce1fa974"
+   ],
+   "expected_titles": [
+    "_my__app",
+    "all_options_for_path"
+   ],
+   "notes": "commit dd4997ba2d, 10 files"
+  },
+  {
+   "id": "c49a05cdc",
+   "intent": "commit",
+   "query": "fix(complete): Two-pass quote fish env-completer",
+   "expected_entity_ids": [
+    "1feb422e-46ef-59aa-a32d-ca0c3f91557f",
+    "21650f74-89e0-5f3f-80b3-2e42aa729fac",
+    "87ed8332-1651-597a-b3d0-d140e367c459",
+    "8c625ea4-6a95-50c2-9fc6-851d0c8c5973",
+    "f58da71f-e21a-5b80-9a28-8ec78a2892a5"
+   ],
+   "expected_titles": [
+    "fish_needs_quoting",
+    "fish_quote",
+    "fish_quote_for_eval",
+    "impl EnvCompleter for Fish",
+    "write_registration"
+   ],
+   "notes": "commit 49a05cdc99, 1 files"
+  },
+  {
+   "id": "ce791004a",
+   "intent": "commit",
+   "query": "test(complete): Snapshot fish env quoting cases",
+   "expected_entity_ids": [
+    "733f2e25-4d5f-5170-b637-d34a269acd95",
+    "92fdf5c4-4ba2-5f83-81bd-583b047c4f0b",
+    "acd99e18-4005-579c-a710-2dd8c7bd472e",
+    "daf4ea77-3a61-533f-b7f3-51e7ad74752b",
+    "dc0488f4-ab48-5c0f-afaa-5ab45cd1539f"
+   ],
+   "expected_titles": [
+    "escape_help",
+    "escape_value",
+    "impl EnvCompleter for Zsh",
+    "impl Zsh",
+    "write_registration"
+   ],
+   "notes": "commit e791004a5b, 1 files"
+  },
+  {
+   "id": "c74c66666",
+   "intent": "commit",
+   "query": "fix(complete): Keep zsh candidate order",
+   "expected_entity_ids": [
+    "09aeb34f-4df1-5b65-90a0-bf6bc1dcce99",
+    "98c81124-226a-5446-a8af-f8cb43a2a7fb",
+    "99828f56-2007-5a92-b950-ffa18990610e",
+    "fd7d2063-5ac6-5c12-a59d-b466c07bc51b"
+   ],
+   "expected_titles": [
+    "complete_dynamic_dir_no_trailing_space",
+    "complete_dynamic_env_toplevel",
+    "impl EnvCompleter for Powershell",
+    "write_complete"
+   ],
+   "notes": "commit 74c6666698, 3 files"
+  },
+  {
+   "id": "c1565a3cb",
+   "intent": "commit",
+   "query": "test(complete): Cover indexed multi-value case",
+   "expected_entity_ids": [
+    "16955a1a-66d6-5cb1-8aa2-bcb08af22b75"
+   ],
+   "expected_titles": [
+    "suggest_custom_arg_completer_at_index"
+   ],
+   "notes": "commit 1565a3cbb4, 1 files"
+  },
+  {
+   "id": "c34ef8a02",
+   "intent": "commit",
+   "query": "fix(derive): Track Cargo env vars for incremental rebuilds",
+   "expected_entity_ids": [
+    "3c91147c-5316-5ef8-a11b-f4a571746c8a",
+    "5de5c0ea-df92-5af1-b119-7c22313a5c6f",
+    "faca42e3-c9a5-54e9-8c8c-9a24eb1adf99",
+    "fe85a713-05d5-58f8-8539-4e71b0c8e27d"
+   ],
+   "expected_titles": [
+    "derive_parser",
+    "from_env",
+    "impl Method",
+    "new"
+   ],
+   "notes": "commit 34ef8a02f7, 2 files"
+  },
+  {
+   "id": "c7ffe7399",
+   "intent": "commit",
+   "query": "fix(complete): Do not suggest options after \"--\"",
+   "expected_entity_ids": [
+    "f4549acf-be80-570b-91e7-28dceeaa2ef4",
+    "f68a1603-3850-5697-98b4-97d328fb510e"
+   ],
+   "expected_titles": [
+    "complete_arg",
+    "suggest_multiple_positional_after_escape"
+   ],
+   "notes": "commit 7ffe7399ff, 2 files"
+  },
+  {
+   "id": "cd47fc4f8",
+   "intent": "commit",
+   "query": "test(complete): Options suggested after escape (`--`)",
+   "expected_entity_ids": [
+    "f4549acf-be80-570b-91e7-28dceeaa2ef4"
+   ],
+   "expected_titles": [
+    "suggest_multiple_positional_after_escape"
+   ],
+   "notes": "commit d47fc4f8a5, 1 files"
+  },
+  {
+   "id": "ca49fadbf",
+   "intent": "commit",
+   "query": "refactor(complete): Pull out subcommand separator",
+   "expected_entity_ids": [
+    "01eedc2c-0257-59f8-900e-18755f7b9744",
+    "0433598d-7c00-569c-a180-d415ab21461d",
+    "5be3e786-a19c-53a1-88d0-284ed82c1760",
+    "83086a91-98dc-597a-a268-686a94cb006b",
+    "89fe14ee-6283-5cc7-b818-4bf698457a8f",
+    "d16084ea-0215-5e73-b517-bfbdb0cf9bf5"
+   ],
+   "expected_titles": [
+    "all_options_for_path",
+    "all_subcommands",
+    "get_args_of",
+    "option_details_for_path",
+    "subcommand_details"
+   ],
+   "notes": "commit a49fadbf4a, 2 files"
+  },
+  {
+   "id": "cdd1fcd3d",
+   "intent": "commit",
+   "query": "fix(man)!: Put env support behind the env feature",
+   "expected_entity_ids": [
+    "3b3cd12e-7241-5e4e-a7e7-d02bdbda3bee",
+    "752d3827-0a99-5ee1-bc29-a819b3c60392",
+    "8142c7d4-46a4-5ec8-845c-0868073a8942",
+    "f6f37448-908e-540e-b99a-b517fb4e2826"
+   ],
+   "expected_titles": [
+    "hidden_positional_command",
+    "hidden_positionals",
+    "options",
+    "possible_options"
+   ],
+   "notes": "commit dd1fcd3d4b, 4 files"
+  },
+  {
+   "id": "cc774a892",
+   "intent": "commit",
+   "query": "docs: Reduce main's in doctests",
+   "expected_entity_ids": [
+    "0e3e6295-b5ea-5460-adc4-0fe6377ee7f5",
+    "46a78d52-3c29-5eee-9785-9b0261b1ee5c"
+   ],
+   "expected_titles": [
+    "impl Command",
+    "impl CompleteEnv<'s, F>"
+   ],
+   "notes": "commit c774a892ba, 6 files"
+  },
+  {
+   "id": "cdfe05a9b",
+   "intent": "commit",
+   "query": "chore: Bump MSRV to 1.85",
+   "expected_entity_ids": [
+    "3717a136-c77b-5851-af17-05921cdc21b1"
+   ],
+   "expected_titles": [
+    "get_matches_with"
+   ],
+   "notes": "commit dfe05a9bfe, 3 files"
+  },
+  {
+   "id": "c2fabbf02",
+   "intent": "commit",
+   "query": "style(complete): Apply missing formatting",
+   "expected_entity_ids": [
+    "d5799fe7-61d8-5384-bfd3-3df39cb2dec2"
+   ],
+   "expected_titles": [
+    "external_subcommands"
+   ],
+   "notes": "commit 2fabbf027c, 1 files"
+  },
+  {
+   "id": "c42066994",
+   "intent": "commit",
+   "query": "fix(builder): Quote empty default values",
+   "expected_entity_ids": [
+    "a6fbccf3-53a2-53e9-a0bc-6803774d677a",
+    "c5b1bfc7-e8bf-5b09-8ad4-29c202e3b993",
+    "de52c269-6727-5313-9da1-3d0ebae71c46"
+   ],
+   "expected_titles": [
+    "empty_default_value",
+    "impl Escape<'s>",
+    "needs_escaping"
+   ],
+   "notes": "commit 420669948a, 2 files"
+  },
+  {
+   "id": "ceb16ae4d",
+   "intent": "commit",
+   "query": "refactor(builder): Consolidate escaping with Escape",
+   "expected_entity_ids": [
+    "2840aaa0-b92b-5f65-9d80-3a798f2a6ee6",
+    "61d8973b-7e69-54c5-82e0-aedfaf9791c3",
+    "a1517ed0-4211-5904-870b-f7a9fc1867f7",
+    "a74bc640-8135-5fa7-ad61-d154cdf5556a",
+    "a7d6b8bc-4e45-5788-ac41-7da57e32b805",
+    "ac213aab-ae5d-5cdf-9dc2-727649df426e",
+    "c5b1bfc7-e8bf-5b09-8ad4-29c202e3b993",
+    "de52c269-6727-5313-9da1-3d0ebae71c46",
+    "f5e2583c-3d2b-5dd1-bbfe-7b6431a74353"
+   ],
+   "expected_titles": [
+    "Escape",
+    "did_you_mean",
+    "fmt",
+    "get_visible_quoted_name",
+    "impl Escape<'s>",
+    "impl std::fmt::Display for Escape<'_>",
+    "needs_escaping",
+    "spec_vals",
+    "to_cow"
+   ],
+   "notes": "commit eb16ae4d25, 5 files"
+  },
+  {
+   "id": "c806d9816",
+   "intent": "commit",
+   "query": "test(help): Add coverage for empty default values",
+   "expected_entity_ids": [
+    "a6fbccf3-53a2-53e9-a0bc-6803774d677a"
+   ],
+   "expected_titles": [
+    "empty_default_value"
+   ],
+   "notes": "commit 806d98164c, 1 files"
+  },
+  {
+   "id": "c144e5cb4",
+   "intent": "commit",
+   "query": "fix(parser): Allow --help to propagate up through subcommands with ignore_erros",
+   "expected_entity_ids": [
+    "27acf5ea-a2b8-5ea1-afe6-8ab12256b11c",
+    "67ef16ac-795b-5e31-9a6d-35580e80eb8c"
+   ],
+   "expected_titles": [
+    "help_flag_subcommand",
+    "parse_subcommand"
+   ],
+   "notes": "commit 144e5cb46d, 2 files"
+  },
+  {
+   "id": "cca5bdfc4",
+   "intent": "commit",
+   "query": "test(parser): Add ignore_errors/subcommand/help case",
+   "expected_entity_ids": [
+    "67ef16ac-795b-5e31-9a6d-35580e80eb8c"
+   ],
+   "expected_titles": [
+    "help_flag_subcommand"
+   ],
+   "notes": "commit ca5bdfc45e, 1 files"
+  },
+  {
+   "id": "c7801872e",
+   "intent": "commit",
+   "query": "test(builder): Migrate to more snapshots",
+   "expected_entity_ids": [
+    "b7507634-b70e-5d53-aec5-ad11a14ec7ea"
+   ],
+   "expected_titles": [
+    "help_flag"
+   ],
+   "notes": "commit 7801872ea4, 1 files"
+  },
+  {
+   "id": "cf5ba9c51",
+   "intent": "commit",
+   "query": "style(docs): remove `||` for simple closure",
+   "expected_entity_ids": [
+    "0e3e6295-b5ea-5460-adc4-0fe6377ee7f5",
+    "9d9148be-5d14-578c-b711-02a57c2f7a9c"
+   ],
+   "expected_titles": [
+    "impl CompleteEnv<'s, F>",
+    "with_factory"
+   ],
+   "notes": "commit f5ba9c5169, 1 files"
+  },
+  {
+   "id": "c3ef96604",
+   "intent": "commit",
+   "query": "fix(docs): Typo in `ValueHint` docs \"anther\" -> \"another\"",
+   "expected_entity_ids": [
+    "2f5086f7-5bef-5077-aead-373e0579e717"
+   ],
+   "expected_titles": [
+    "ValueHint"
+   ],
+   "notes": "commit 3ef9660452, 1 files"
+  },
+  {
+   "id": "cb8c9ad5b",
+   "intent": "commit",
+   "query": "test(complete): Update for new versions",
+   "expected_entity_ids": [
+    "0db5370f-7dec-5221-b3db-5b4a2a386cf9",
+    "a49c80b7-bfa8-5f0b-bf1a-2b36bf8d2c82",
+    "b7f237c6-1aeb-51d0-b3c8-fa5ca4a3d5f7",
+    "b86b8acd-bd30-566c-ae77-93a86661d6b0"
+   ],
+   "expected_titles": [
+    "complete",
+    "complete_dynamic_empty_option_value",
+    "complete_dynamic_empty_subcommand",
+    "complete_dynamic_env_quoted_help"
+   ],
+   "notes": "commit b8c9ad5b33, 2 files"
+  }
+ ]
+}

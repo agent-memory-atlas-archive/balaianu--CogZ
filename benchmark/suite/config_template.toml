@@ -1,0 +1,85 @@
+# Benchmark corpus config — written to <corpus>/.cogz/config.toml by
+# fetch_corpus.py. {{NAME}} is replaced with the corpus name.
+# Mirrors the values used across the report-card campaign; changing
+# anything here invalidates cross-corpus comparisons.
+
+[project]
+name = "{{NAME}}"
+
+[storage]
+db_path = ".cogz/cogz.db"
+
+[embedding]
+code_model = "nomic-ai/CodeRankEmbed-int8"
+knowledge_model = "BAAI/bge-base-en-v1.5"
+dimension = 768
+nli_model = "cross-encoder/nli-deberta-v3-xsmall"
+auto_download = true
+model_idle_ttl = 300
+model_min_free_mb = 512
+
+[search]
+fts_weight = 0.3
+vec_weight = 0.4
+code_vec_weight = 0.3
+rrf_k = 60
+max_results = 20
+min_source_proportion = 0.2
+source_balance_enabled = false
+merge_strategy = "detect"
+min_relevance = 0.05
+edge_weighted_expansion = true
+silence_threshold = 0.05
+top_diversity_share = 0.2
+provenance_boost = 0.3
+drift_penalty = 0.7
+fts_title_weight = 5.0
+mmr_lambda = 0.7
+graph_first_enabled = true
+graph_max_seeds = 20
+graph_max_hops = 2
+graph_hop_decay = 0.5
+graph_weight = 0.35
+silence_strength_floor = 0.64
+prf_enabled = true
+prf_feedback_docs = 5
+prf_max_terms = 8
+graph_seed_min_sim = 0.7
+
+[search.calibration.code]
+mid = 0.32
+width = 0.04
+
+[search.calibration.knowledge]
+mid = 0.64
+width = 0.03
+
+[consolidation]
+dedup_threshold = 0.85
+title_match_threshold = 0.85
+contradiction_check = true
+promotion_threshold = 3
+contradiction_threshold = 0.7
+contradiction_cosine_threshold = 0.85
+contradiction_length_ratio = 5.0
+dedup_nli_threshold = 0.85
+
+[index]
+allow = []
+deny = []
+
+[retention]
+observation_prune_after_days = 90
+tombstone_max_count = 1000
+
+[context]
+default_token_budget = 4096
+task_token_budget = 8192
+escalation_token_budget = 8192
+cold_start_rules = 5
+task_max_results = 40
+task_max_hops = 2
+escalation_max_results = 20
+escalation_max_hops = 3
+tiered_push = true
+tier0_rules = 3

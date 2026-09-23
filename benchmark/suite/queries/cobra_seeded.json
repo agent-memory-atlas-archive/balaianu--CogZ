@@ -1,0 +1,139 @@
+{
+ "version": "seeded-gt-v1",
+ "corpus": "cobra",
+ "queries": [
+  {
+   "id": "ck01",
+   "intent": "knowledge",
+   "query": "persistent flags versus local flags inheritance",
+   "expected_entity_ids": [
+    "1be0fa79-30a4-4a09-b652-5b8e70023a04",
+    "3bd263c8-b239-4589-81ff-96397e9a8607",
+    "43513881-613a-42a0-8973-7baa3241a530",
+    "756bbf78-7043-4951-a635-375d6199db14",
+    "bfcc7754-c1b3-4f91-b790-f9c19d6896bc"
+   ]
+  },
+  {
+   "id": "ck02",
+   "intent": "knowledge",
+   "query": "prerun and postrun hook execution order",
+   "expected_entity_ids": [
+    "785f5367-f893-43f3-a8e3-6f9b9c15622f",
+    "bcb5530b-80d1-48df-a35b-a129f7b575fe",
+    "e89ed7b2-3044-4111-a9ce-f524e11e4079"
+   ]
+  },
+  {
+   "id": "ck03",
+   "intent": "knowledge",
+   "query": "how does shell completion work internally",
+   "expected_entity_ids": [
+    "1a078f19-6d25-451a-b169-22733ee0bbde",
+    "f94e5fc4-8698-4bb9-8ef8-84c8010d65bb"
+   ]
+  },
+  {
+   "id": "ck04",
+   "intent": "knowledge",
+   "query": "did you mean suggestions for unknown commands",
+   "expected_entity_ids": [
+    "63881166-24a5-4b40-907d-2619efc49709"
+   ]
+  },
+  {
+   "id": "ck05",
+   "intent": "knowledge",
+   "query": "mark flags mutually exclusive",
+   "expected_entity_ids": [
+    "5af708db-cdc3-4d00-8fe9-99669510e19f"
+   ]
+  },
+  {
+   "id": "ck06",
+   "intent": "knowledge",
+   "query": "generate man pages and markdown docs from commands",
+   "expected_entity_ids": [
+    "1370b54e-abe7-48f7-bc88-dce7f79e319e",
+    "c422d0c1-b135-4f6f-b93d-9abf1db47b77"
+   ]
+  },
+  {
+   "id": "ck07",
+   "intent": "knowledge",
+   "query": "active help in shell completion",
+   "expected_entity_ids": [
+    "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+    "d52a9d9f-8462-4c7b-991d-7ab70f662767"
+   ]
+  },
+  {
+   "id": "ck08",
+   "intent": "knowledge",
+   "query": "validate positional arguments",
+   "expected_entity_ids": [
+    "4c876d3d-bebe-4d43-90bd-c07b6bb7d9ac",
+    "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
+   ]
+  },
+  {
+   "id": "ck09",
+   "intent": "knowledge",
+   "query": "prerun hook never fires",
+   "expected_entity_ids": [
+    "96101179-ac96-4283-95e7-2be5fbadc284",
+    "b9b64e62-8368-40ae-963a-77fe6a6fb267"
+   ]
+  },
+  {
+   "id": "ck10",
+   "intent": "knowledge",
+   "query": "test a cobra command without subprocess",
+   "expected_entity_ids": [
+    "1fc0a961-1b8a-42f3-9a28-12bda648a8e6",
+    "4451da44-25f8-467c-9100-b22c62e7c89f"
+   ]
+  },
+  {
+   "id": "ck11",
+   "intent": "knowledge",
+   "query": "pass context for cancellation to commands",
+   "expected_entity_ids": [
+    "5550c532-4af9-47cd-8e7d-02ab54f39f0d"
+   ]
+  },
+  {
+   "id": "ck12",
+   "intent": "knowledge",
+   "query": "hide usage output on errors",
+   "expected_entity_ids": [
+    "5f9ac011-e857-4a68-b74b-e3b69db9fda2"
+   ]
+  },
+  {
+   "id": "ck13",
+   "intent": "knowledge",
+   "query": "difference between Run and RunE",
+   "expected_entity_ids": [
+    "a7df4e40-9a5d-4815-ae58-a36732edb23e"
+   ]
+  },
+  {
+   "id": "ck14",
+   "intent": "knowledge",
+   "query": "fish shell completion quoting",
+   "expected_entity_ids": [
+    "5b1708cb-df7d-4179-8dc7-97035f5028d5",
+    "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5"
+   ]
+  },
+  {
+   "id": "ck15",
+   "intent": "knowledge",
+   "query": "cobra generator scaffolding new commands",
+   "expected_entity_ids": [
+    "b2ee6841-dd72-4399-91de-983e1870bda4"
+   ]
+  }
+ ]
+}

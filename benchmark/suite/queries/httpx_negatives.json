@@ -1,0 +1,36 @@
+{
+ "version": "neg-v1",
+ "corpus": "httpx",
+ "queries": [
+  {
+   "id": "hn01",
+   "intent": "negative",
+   "query": "websocket client connection upgrade handshake",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "hn02",
+   "intent": "negative",
+   "query": "grpc channel interceptor middleware",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "hn03",
+   "intent": "negative",
+   "query": "http3 quic transport configuration",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "hn04",
+   "intent": "negative",
+   "query": "quantum entanglement routing protocol",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "hn05",
+   "intent": "negative",
+   "query": "kubernetes pod autoscaler webhook",
+   "expected_entity_ids": []
+  }
+ ]
+}

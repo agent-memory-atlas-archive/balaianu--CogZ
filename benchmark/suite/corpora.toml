@@ -1,0 +1,60 @@
+# Benchmark corpus manifest — every corpus is pinned to a commit SHA.
+# `github` entries are publicly fetchable (the reproducible set);
+# `local` entries are private development corpora (battery-only).
+
+[suite]
+corpora_dir = "/home/andy/cogz_bench/corpora"
+results_dir = "results/suite"
+config_template = "config_template.toml"
+
+[[corpus]]
+name = "httpx"
+source = "github"
+url = "https://github.com/encode/httpx"
+sha = "b5addb64f0161ff6bfe94c124ef76f6a1fba5254"
+language = "python"
+
+[[corpus]]
+name = "clap"
+source = "github"
+url = "https://github.com/clap-rs/clap"
+sha = "8ab46fe22b4aa5c3bd09cc0e6c3fe9a75fc178a8"
+language = "rust"
+
+[[corpus]]
+name = "cobra"
+source = "github"
+url = "https://github.com/spf13/cobra"
+sha = "adbc8813901bba65827259daa8e22ff94ec1f30e"
+language = "go"
+
+# Private corpora — included in the battery but not publicly fetchable.
+[[corpus]]
+name = "CogZ"
+source = "local"
+path = "/home/andy/dev/personal/CogZ"
+language = "rust"
+
+[[corpus]]
+name = "CogZ-py"
+source = "local"
+path = "/home/andy/cogz_bench/corpora/CogZ-py"
+language = "python"
+
+[[corpus]]
+name = "api_tool"
+source = "local"
+path = "/home/andy/cogz_bench/corpora/api_tool"
+language = "python"
+
+[[corpus]]
+name = "kinetik"
+source = "local"
+path = "/home/andy/cogz_bench/corpora/kinetik"
+language = "rust"
+
+[[corpus]]
+name = "kaos-website"
+source = "local"
+path = "/home/andy/cogz_bench/corpora/kaos-website"
+language = "typescript"

@@ -1,0 +1,1095 @@
+{
+ "version": "commit-gt-v1",
+ "corpus": "/home/andy/cogz_bench/corpora/httpx",
+ "queries": [
+  {
+   "id": "cb5addb64",
+   "intent": "commit",
+   "query": "Adapt test_response_decode_text_using_autodetect for chardet 6.0 (#3773)",
+   "expected_entity_ids": [
+    "7c2a445d-9f56-5f97-a507-5addd3ea4907"
+   ],
+   "expected_titles": [
+    "test_response_decode_text_using_autodetect"
+   ],
+   "notes": "commit b5addb64f0, 1 files"
+  },
+  {
+   "id": "cb55d4635",
+   "intent": "commit",
+   "query": "Upgrade Python type checker mypy (#3654)",
+   "expected_entity_ids": [
+    "6065747f-8e5b-5182-81da-722bfbb99925",
+    "76130956-79f5-5ac2-80cd-819d1e4098ad",
+    "8432e059-8d8f-5cd5-83c0-893bcd74a2e8",
+    "84c782df-74bc-5331-994a-46db7a2c5b02",
+    "8cb0ca48-2c26-5f11-8ccf-84e7ddd26509",
+    "b1b32828-e07f-5bcb-a02e-c891263cd036",
+    "f0a4a9b2-9e6c-5401-8120-f4a5a006128c"
+   ],
+   "expected_titles": [
+    "test_client_base_url",
+    "test_client_base_url_with_trailing_slash",
+    "test_client_base_url_without_trailing_slash",
+    "test_client_cookies",
+    "test_client_headers",
+    "test_client_queryparams_string",
+    "test_client_timeout"
+   ],
+   "notes": "commit b55d463570, 4 files"
+  },
+  {
+   "id": "c364697ef",
+   "intent": "commit",
+   "query": "Upgrade Python formatter ruff (#3651)",
+   "expected_entity_ids": [
+    "059498ff-9d44-5277-a404-36946bdfc5d3",
+    "6b76d6ea-ff01-5f8a-9771-fb5003985163",
+    "9dc4adef-7981-54cb-900f-c4ee3d517afb",
+    "bcf59b15-e18b-5a73-a116-566b45af394e",
+    "e5c12c03-2c0e-55af-8065-fc848f1b05f8",
+    "e833658a-d769-5f2d-b190-dd41368b9786"
+   ],
+   "expected_titles": [
+    "StreamClosed",
+    "URL",
+    "__init__",
+    "__repr__",
+    "test_ensure_ascii_false_with_french_characters",
+    "test_separators_for_compact_json"
+   ],
+   "notes": "commit 364697efca, 4 files"
+  },
+  {
+   "id": "c336204f0",
+   "intent": "commit",
+   "query": "Display proxy protocol scheme on error (#3571)",
+   "expected_entity_ids": [
+    "874cc222-1421-5a68-8a5d-ff476cf0d836",
+    "9d53ce7a-5719-53f9-8e58-da48f8038522"
+   ],
+   "expected_titles": [
+    "AsyncHTTPTransport",
+    "__init__"
+   ],
+   "notes": "commit 336204f012, 1 files"
+  },
+  {
+   "id": "c89599a95",
+   "intent": "commit",
+   "query": "Fix `verify=False`, `cert=...` case. (#3442)",
+   "expected_entity_ids": [
+    "bde8c574-043d-5b62-b474-002fb7f1fbfb"
+   ],
+   "expected_titles": [
+    "create_ssl_context"
+   ],
+   "notes": "commit 89599a9541, 2 files"
+  },
+  {
+   "id": "c8ecb86f0",
+   "intent": "commit",
+   "query": "Add test for request params behavior changes (#3364) (#3440)",
+   "expected_entity_ids": [
+    "1a4c6b92-5d4f-5cdb-8423-53fbc2d4dd46"
+   ],
+   "expected_titles": [
+    "test_request_params"
+   ],
+   "notes": "commit 8ecb86f0d7, 2 files"
+  },
+  {
+   "id": "c15e21e9e",
+   "intent": "commit",
+   "query": "Updating deprecated docstring Client() class (#3426)",
+   "expected_entity_ids": [
+    "7520683c-d7a1-5c7a-90f0-be48715a2f5c"
+   ],
+   "expected_titles": [
+    "Client"
+   ],
+   "notes": "commit 15e21e9ea3, 1 files"
+  },
+  {
+   "id": "ca33c8785",
+   "intent": "commit",
+   "query": "Fix `extensions` type annotation. (#3380)",
+   "expected_entity_ids": [
+    "2e19fed6-5402-5986-b04e-c191b1b594e8",
+    "6e3f6bd8-0154-5078-8f41-9acd7d1f8881",
+    "9eeebe32-4673-5bd8-9538-042521441d53",
+    "d4c440f4-073d-525c-ad66-6c1047621547"
+   ],
+   "expected_titles": [
+    "Request",
+    "Response",
+    "__init__"
+   ],
+   "notes": "commit a33c87852b, 2 files"
+  },
+  {
+   "id": "cce7e14da",
+   "intent": "commit",
+   "query": "Error on verify as str. (#3418)",
+   "expected_entity_ids": [
+    "bde8c574-043d-5b62-b474-002fb7f1fbfb"
+   ],
+   "expected_titles": [
+    "create_ssl_context"
+   ],
+   "notes": "commit ce7e14da27, 1 files"
+  },
+  {
+   "id": "c47f4a96f",
+   "intent": "commit",
+   "query": "Handle empty zstd responses (#3412)",
+   "expected_entity_ids": [
+    "2466c0af-5cba-5073-a5e0-48cf807b7a45",
+    "294a86f7-75e3-5972-a35e-5d5408441116",
+    "3d3b58fc-0d45-5973-91fc-c4612276b1b5",
+    "7bb3f5e1-5338-5e0b-8065-14cba70cb2e9",
+    "c421411b-b6f2-5d23-80d2-5a5189f1516f",
+    "cdb0d443-5553-5589-adf2-1f522ec7b361"
+   ],
+   "expected_titles": [
+    "ZStandardDecoder",
+    "__init__",
+    "decode",
+    "flush",
+    "test_zstd_empty",
+    "test_zstd_truncated"
+   ],
+   "notes": "commit 47f4a96ffa, 5 files"
+  },
+  {
+   "id": "c7b19cd5f",
+   "intent": "commit",
+   "query": "Move utility functions from _utils.py to _client.py (#3389)",
+   "expected_entity_ids": [
+    "0772aaaa-3072-5883-9275-b0c698e991d8",
+    "0988dc14-4e0e-5f15-aed1-a4396403a8e7",
+    "46c7a01b-0880-5c79-9c73-8ca80a61b663",
+    "4f626d25-4678-5b24-acb5-af52566eff43",
+    "bb07fce5-c0e3-5f33-ac9b-62eae36aae9e",
+    "bf373676-6a8e-5f35-a344-454ed7115538",
+    "ce88e71e-afdb-58b7-864e-90c36dc5f51c",
+    "d661ac1f-c471-5356-9498-4bcb4ec234c8",
+    "df9f8167-bd78-5635-8dd9-4d497325f1c5",
+    "fd94d0f7-d47f-5bd5-9411-313a1e518c2f"
+   ],
+   "expected_titles": [
+    "BaseClient",
+    "_is_https_redirect",
+    "_port_or_default",
+    "_redirect_headers",
+    "_same_origin",
+    "test_is_https_redirect",
+    "test_is_not_https_redirect",
+    "test_is_not_https_redirect_if_not_default_ports",
+    "test_not_same_origin",
+    "test_same_origin"
+   ],
+   "notes": "commit 7b19cd5f4b, 4 files"
+  },
+  {
+   "id": "cb47d94c9",
+   "intent": "commit",
+   "query": "Avoid private imports in test cases. (#3403)",
+   "expected_entity_ids": [
+    "7a2c9337-dce8-5dda-a24f-6f148e621128",
+    "bcf59b15-e18b-5a73-a116-566b45af394e",
+    "e5c12c03-2c0e-55af-8065-fc848f1b05f8"
+   ],
+   "expected_titles": [
+    "test_allow_nan_false",
+    "test_ensure_ascii_false_with_french_characters",
+    "test_separators_for_compact_json"
+   ],
+   "notes": "commit b47d94c904, 1 files"
+  },
+  {
+   "id": "c41597adf",
+   "intent": "commit",
+   "query": "Move remaining utility functions from _utils.py to _models.py  (#3387)",
+   "expected_entity_ids": [
+    "236110e0-803b-58eb-91ea-7d49be30ec49",
+    "349c6411-6b56-56c9-b255-abf4b9f4601c",
+    "3f1aacc5-95b5-5df0-a674-31baf3e769a3",
+    "9eeebe32-4673-5bd8-9538-042521441d53",
+    "a53312eb-b54c-5f62-9f6e-4dc4515fee31",
+    "c1db8ec9-fa12-59f3-91f1-0d506b8edaf4",
+    "c8f1434a-10ee-5d0c-a334-0fe7fb7ef4ae",
+    "dc767078-973f-5070-95b7-caa6bfda7053",
+    "e5930437-59a6-583e-ba73-837c281198bc"
+   ],
+   "expected_titles": [
+    "Headers",
+    "Response",
+    "__repr__",
+    "_is_known_encoding",
+    "_obfuscate_sensitive_headers",
+    "_parse_content_type_charset",
+    "_parse_header_links",
+    "test_logging_request",
+    "test_parse_header_links_no_link"
+   ],
+   "notes": "commit 41597adffa, 5 files"
+  },
+  {
+   "id": "c6212e8fa",
+   "intent": "commit",
+   "query": "Move utility functions from _utils.py to _multipart.py (#3388)",
+   "expected_entity_ids": [
+    "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
+    "2aa6b8a3-e93b-524d-851a-b1e6ec027458",
+    "5ca70a19-3084-5ea2-9135-ab8ba93789bc",
+    "5caabbcf-a24b-5214-891b-a5b31910e6ca",
+    "70682da6-bf0f-55f0-921a-810948199297",
+    "78ddee01-2cbd-50ee-851c-265838e78580",
+    "85276a54-d935-561b-8062-d7ea555b21c0",
+    "af18b130-eb16-586d-9e34-8fe6afc1d013",
+    "b729f927-d79a-56a9-b8f4-d81889b11349",
+    "ee7da051-9c42-5149-9553-e2bf3d06f829",
+    "ffc3bc4b-fd2e-50c4-88d6-418282231fc2"
+   ],
+   "expected_titles": [
+    "DataField",
+    "FileField",
+    "URLPattern",
+    "__init__",
+    "_format_form_param",
+    "_guess_content_type",
+    "get_environment_proxies",
+    "matches",
+    "primitive_value_to_str",
+    "render_headers"
+   ],
+   "notes": "commit 6212e8fa3b, 2 files"
+  },
+  {
+   "id": "c83a85189",
+   "intent": "commit",
+   "query": "Move normalize header functions from _utils.py to _models.py (#3382)",
+   "expected_entity_ids": [
+    "349c6411-6b56-56c9-b255-abf4b9f4601c",
+    "519f5e7f-57a2-5ff9-9685-0078c2344067",
+    "85276a54-d935-561b-8062-d7ea555b21c0",
+    "99b38e8f-5d94-51b6-b2cf-f0893a1cef7a",
+    "a53312eb-b54c-5f62-9f6e-4dc4515fee31",
+    "c8f1434a-10ee-5d0c-a334-0fe7fb7ef4ae"
+   ],
+   "expected_titles": [
+    "_is_known_encoding",
+    "_normalize_header_key",
+    "_normalize_header_value",
+    "_parse_content_type_charset",
+    "_parse_header_links",
+    "primitive_value_to_str"
+   ],
+   "notes": "commit 83a85189c7, 2 files"
+  },
+  {
+   "id": "c66225539",
+   "intent": "commit",
+   "query": "Cleanup `Request` method parameter. (#3378)",
+   "expected_entity_ids": [
+    "25180906-3b01-5c0c-ae9a-e7df956ab14f",
+    "dc767078-973f-5070-95b7-caa6bfda7053"
+   ],
+   "expected_titles": [
+    "Headers",
+    "__setitem__"
+   ],
+   "notes": "commit 6622553979, 2 files"
+  },
+  {
+   "id": "c12be5c44",
+   "intent": "commit",
+   "query": "add socks5h proxy support (#3178)",
+   "expected_entity_ids": [
+    "53a06c67-22b9-5f16-9869-077ba6f88cc5",
+    "60b31f34-9863-5f7c-b6fa-bba9f36f477b",
+    "874cc222-1421-5a68-8a5d-ff476cf0d836",
+    "8bf20482-5712-5e98-887e-95be4e7a2b5a",
+    "9d53ce7a-5719-53f9-8e58-da48f8038522",
+    "e996bd70-adca-5e1c-a399-a4a8b27ff07d",
+    "f23757fc-a095-5c52-a85f-befb301ec97c"
+   ],
+   "expected_titles": [
+    "AsyncHTTPTransport",
+    "HTTPTransport",
+    "__aexit__",
+    "__enter__",
+    "__init__",
+    "test_socks_proxy"
+   ],
+   "notes": "commit 12be5c44ca, 4 files"
+  },
+  {
+   "id": "ce9cabc8e",
+   "intent": "commit",
+   "query": "made dependencies on certifi and httpcore only load when required (#3377)",
+   "expected_entity_ids": [
+    "2c60456b-0e22-54a2-b834-9c587cf46e8b",
+    "7e5b68fd-0b3c-5f30-ae32-8666c4eb1b26",
+    "874cc222-1421-5a68-8a5d-ff476cf0d836",
+    "8bf20482-5712-5e98-887e-95be4e7a2b5a",
+    "8f68297a-b7b8-5a19-bac6-d7b3f82f06e1",
+    "9437527d-03e5-569d-9e57-04e38536ee5c",
+    "9d53ce7a-5719-53f9-8e58-da48f8038522",
+    "e20307eb-a75e-5379-815e-c53835ea72cc",
+    "e996bd70-adca-5e1c-a399-a4a8b27ff07d"
+   ],
+   "expected_titles": [
+    "AsyncHTTPTransport",
+    "HTTPTransport",
+    "Timeout",
+    "__init__",
+    "_load_httpcore_exceptions",
+    "handle_async_request",
+    "handle_request",
+    "test_httpcore_lazy_loading"
+   ],
+   "notes": "commit e9cabc8e1d, 7 files"
+  },
+  {
+   "id": "ceeb5e3c2",
+   "intent": "commit",
+   "query": "Cleanup unneccessary test case (#3375)",
+   "expected_entity_ids": [
+    "2f22d141-1a82-5f71-8f07-2a8475316b66"
+   ],
+   "expected_titles": [
+    "test_netrc_auth_credentials_do_not_exist"
+   ],
+   "notes": "commit eeb5e3c2a3, 1 files"
+  },
+  {
+   "id": "c5dda2aa3",
+   "intent": "commit",
+   "query": "Just use default `safe=...` characters for `urlescape` (#3376)",
+   "expected_entity_ids": [
+    "46ead567-d72b-5089-bdda-890ee73a1774",
+    "dd92b90b-20c1-5011-a9df-58f1bd304525",
+    "ff66b1c2-0ce6-5a1b-97ab-6ee66474c6f4"
+   ],
+   "expected_titles": [
+    "QueryParams",
+    "test_param_with_existing_escape_requires_encoding",
+    "test_url_query_encoding"
+   ],
+   "notes": "commit 5dda2aa306, 2 files"
+  },
+  {
+   "id": "cba2e5121",
+   "intent": "commit",
+   "query": "Review urlescape percent-safe set, and use + behavior for form spaces. (#3373)",
+   "expected_entity_ids": [
+    "30291d66-d9e8-58b0-837c-3b87c983899f",
+    "46ead567-d72b-5089-bdda-890ee73a1774",
+    "ac611568-a4b9-5033-9981-aebb192a430d",
+    "b8d94fc2-49c6-55b4-a524-8080826c4944",
+    "dd92b90b-20c1-5011-a9df-58f1bd304525",
+    "e833658a-d769-5f2d-b190-dd41368b9786",
+    "ff66b1c2-0ce6-5a1b-97ab-6ee66474c6f4"
+   ],
+   "expected_titles": [
+    "QueryParams",
+    "URL",
+    "percent_encoded",
+    "quote",
+    "test_param_with_existing_escape_requires_encoding",
+    "test_param_with_space",
+    "test_url_query_encoding"
+   ],
+   "notes": "commit ba2e51215e, 3 files"
+  },
+  {
+   "id": "cd293374b",
+   "intent": "commit",
+   "query": "Review URL percent escaping sets, from whatwg. (#3371)",
+   "expected_entity_ids": [
+    "4e0af780-0eb4-5f30-a883-ab3b15daa03c",
+    "550ba29a-87f7-554c-b7fd-53f13b3f1224"
+   ],
+   "expected_titles": [
+    "test_url_copywith_invalid_component",
+    "urlparse"
+   ],
+   "notes": "commit d293374b66, 2 files"
+  },
+  {
+   "id": "c9fd6f0ca",
+   "intent": "commit",
+   "query": "Ensure JSON representation is compact. #3363 (#3367)",
+   "expected_entity_ids": [
+    "0fe4944c-7c6a-5809-b344-4956519a9431",
+    "19ea518d-6ea1-5dd4-9431-63d9a9aeb8f5",
+    "7a2c9337-dce8-5dda-a24f-6f148e621128",
+    "9d0a60f2-7084-5a9c-af4e-de0d9a824fdf",
+    "ab382126-f333-536c-a208-f9009312ad88",
+    "b04bc1fa-002a-56dc-82d7-4a12d18b5ec9",
+    "bcf59b15-e18b-5a73-a116-566b45af394e",
+    "e13f6d6a-73d8-516e-8c54-f2b0ffe70070",
+    "e2b3f02f-4781-52ac-8901-4496aeef0421",
+    "e5c12c03-2c0e-55af-8065-fc848f1b05f8"
+   ],
+   "expected_titles": [
+    "encode_json",
+    "test_allow_nan_false",
+    "test_ensure_ascii_false_with_french_characters",
+    "test_headers",
+    "test_json_encoded_data",
+    "test_post",
+    "test_request_picklable",
+    "test_response_json",
+    "test_separators_for_compact_json",
+    "test_sync_auth"
+   ],
+   "notes": "commit 9fd6f0ca66, 7 files"
+  },
+  {
+   "id": "c3f76571d",
+   "intent": "commit",
+   "query": "Concise URL instantiation. (#3364)",
+   "expected_entity_ids": [
+    "586eb656-0ffd-598a-a101-2a34d725ea7c",
+    "dc767078-973f-5070-95b7-caa6bfda7053"
+   ],
+   "expected_titles": [
+    "Headers",
+    "__delitem__"
+   ],
+   "notes": "commit 3f76571d34, 1 files"
+  },
+  {
+   "id": "c49d74a2e",
+   "intent": "commit",
+   "query": "Clarified error when header value is None (#3312)",
+   "expected_entity_ids": [
+    "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
+    "d8ebb869-9ee6-56e9-94ed-28ad65678000"
+   ],
+   "expected_titles": [
+    "get_environment_proxies",
+    "test_header_with_incorrect_value"
+   ],
+   "notes": "commit 49d74a2e7f, 2 files"
+  },
+  {
+   "id": "c7c0cda15",
+   "intent": "commit",
+   "query": "Improve InvalidURL error message. (#3250)",
+   "expected_entity_ids": [
+    "550ba29a-87f7-554c-b7fd-53f13b3f1224",
+    "dd8b277a-3284-5760-bf3e-524876633636",
+    "f1e61bde-eeae-56b6-bf37-367237a6f60a"
+   ],
+   "expected_titles": [
+    "ParseResult",
+    "test_url_non_printing_character_in_component",
+    "urlparse"
+   ],
+   "notes": "commit 7c0cda153d, 3 files"
+  },
+  {
+   "id": "cdb9072f9",
+   "intent": "commit",
+   "query": "Add URL parsing tests from WHATWG (#3188)",
+   "expected_entity_ids": [
+    "03680f25-121a-5b2e-ab46-c93a1fd5ddc8",
+    "28eaaf0d-4f90-530d-aa23-7c1cd4585d3f",
+    "41742861-0659-5913-a0b9-3f8fd26f70e0",
+    "550ba29a-87f7-554c-b7fd-53f13b3f1224"
+   ],
+   "expected_titles": [
+    "encode_host",
+    "test_url_ipv4_like_host",
+    "test_urlparse_with_invalid_path",
+    "urlparse"
+   ],
+   "notes": "commit db9072f998, 4 files"
+  },
+  {
+   "id": "c92e9dfb3",
+   "intent": "commit",
+   "query": "Update asgi.py docstring (#3210)",
+   "expected_entity_ids": [
+    "753353f2-283d-5776-b3af-04f5ab500df6"
+   ],
+   "expected_titles": [
+    "create_event"
+   ],
+   "notes": "commit 92e9dfb399, 1 files"
+  },
+  {
+   "id": "c37593c19",
+   "intent": "commit",
+   "query": "Fast path returns for normalize_path cases (#3189)",
+   "expected_entity_ids": [
+    "892300ce-83af-517b-b52e-ff513f679043"
+   ],
+   "expected_titles": [
+    "normalize_port"
+   ],
+   "notes": "commit 37593c1952, 1 files"
+  },
+  {
+   "id": "c88a81c5d",
+   "intent": "commit",
+   "query": "[fix] Use proxy ssl context consistently (#3175)",
+   "expected_entity_ids": [
+    "874cc222-1421-5a68-8a5d-ff476cf0d836",
+    "9d53ce7a-5719-53f9-8e58-da48f8038522"
+   ],
+   "expected_titles": [
+    "AsyncHTTPTransport",
+    "__init__"
+   ],
+   "notes": "commit 88a81c5d31, 1 files"
+  },
+  {
+   "id": "ca7092af2",
+   "intent": "commit",
+   "query": "Resolve queryparam quoting (#3187)",
+   "expected_entity_ids": [
+    "03680f25-121a-5b2e-ab46-c93a1fd5ddc8",
+    "15d33525-3023-5d15-b430-5e071936ae0a",
+    "41395a63-030a-5004-8004-5ef5e02e0c49",
+    "46ead567-d72b-5089-bdda-890ee73a1774",
+    "4c778abf-63ea-585f-8b02-c2bb8f78a7df",
+    "533c28a1-5651-5b2e-bb70-1a2c6ca22c80",
+    "892300ce-83af-517b-b52e-ff513f679043",
+    "ac611568-a4b9-5033-9981-aebb192a430d",
+    "d5780254-bb48-5abc-b737-08163feba4fe",
+    "f8cf7489-d691-56f3-b6a2-a6d6099d67a9"
+   ],
+   "expected_titles": [
+    "normalize_port",
+    "test_param_with_existing_escape_requires_encoding",
+    "test_param_with_percent_encoded",
+    "test_param_with_space",
+    "test_query_requiring_percent_encoding",
+    "test_query_with_existing_percent_encoding",
+    "test_query_with_mixed_percent_encoding",
+    "test_url_invalid_hostname",
+    "test_url_ipv4_like_host",
+    "validate_path"
+   ],
+   "notes": "commit a7092af2fd, 2 files"
+  },
+  {
+   "id": "c7354ed70",
+   "intent": "commit",
+   "query": "Bump the python-packages group with 8 updates (#3156)",
+   "expected_entity_ids": [
+    "2988059a-1d8a-50ba-ad41-98bb39835203",
+    "83f05043-9a42-5485-9f11-12d1f7068b43"
+   ],
+   "expected_titles": [
+    "TestServer",
+    "serve"
+   ],
+   "notes": "commit 7354ed70ce, 2 files"
+  },
+  {
+   "id": "cf3eb3c90",
+   "intent": "commit",
+   "query": "Keep clients in sync (#3120)",
+   "expected_entity_ids": [
+    "5356ba71-b9d1-5141-b612-fec89a2c4bb7",
+    "5bca184a-ab9c-55c8-8dbe-1f2fff3a3693",
+    "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+    "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
+    "eb4395b1-23b2-5ca3-96fc-dfea6431ec16",
+    "f99de492-ddce-5163-9698-045c81f8103b"
+   ],
+   "expected_titles": [
+    "AsyncClient",
+    "Client",
+    "__init__",
+    "_init_transport",
+    "get",
+    "send"
+   ],
+   "notes": "commit f3eb3c90fd, 1 files"
+  },
+  {
+   "id": "c6045186f",
+   "intent": "commit",
+   "query": "Update /advanced/#<anchor> links -> /advanced/clients/#<anchor> (#3123)",
+   "expected_entity_ids": [
+    "5b584db0-75dd-555d-8ed8-82779c8cce74",
+    "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+    "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
+    "b85449bc-0ea6-5183-8aa4-297ad63c56a9",
+    "df9f8167-bd78-5635-8dd9-4d497325f1c5",
+    "e0e20c72-304b-5b68-b916-08ffb6ea5e2e",
+    "f633b6b5-e32f-543e-bc52-4f988c35d308"
+   ],
+   "expected_titles": [
+    "AsyncClient",
+    "BaseClient",
+    "Client",
+    "_send_handling_auth",
+    "build_request",
+    "request",
+    "send"
+   ],
+   "notes": "commit 6045186f7d, 1 files"
+  },
+  {
+   "id": "c6d852d31",
+   "intent": "commit",
+   "query": "Fix client.send() timeout new Request instance (#3116)",
+   "expected_entity_ids": [
+    "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+    "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
+    "8ff36387-b5ed-5367-b793-9523eef2b421",
+    "bb07fce5-c0e3-5f33-ac9b-62eae36aae9e",
+    "df9f8167-bd78-5635-8dd9-4d497325f1c5",
+    "e0e20c72-304b-5b68-b916-08ffb6ea5e2e",
+    "f633b6b5-e32f-543e-bc52-4f988c35d308"
+   ],
+   "expected_titles": [
+    "AsyncClient",
+    "BaseClient",
+    "Client",
+    "_redirect_headers",
+    "_redirect_stream",
+    "_send_handling_auth",
+    "send"
+   ],
+   "notes": "commit 6d852d319a, 2 files"
+  },
+  {
+   "id": "c4de13707",
+   "intent": "commit",
+   "query": "Use more permissible types in ASGIApp  (#3109)",
+   "expected_entity_ids": [
+    "015f55c0-df75-54a6-a56b-4a32e34903dd",
+    "1d091b1b-8794-578b-bc6b-2083dbc00247"
+   ],
+   "expected_titles": [
+    "ASGITransport",
+    "handle_async_request"
+   ],
+   "notes": "commit 4de13707ee, 2 files"
+  },
+  {
+   "id": "ccabd1c09",
+   "intent": "commit",
+   "query": "Deprecate `app=...` in favor of explicit `WSGITransport`/`ASGITransport`. (#3050)",
+   "expected_entity_ids": [
+    "29b781c6-33ae-50bb-8751-09bc2a2a7e56",
+    "4889689f-925f-5735-8206-4eb21fa8f9d0",
+    "5356ba71-b9d1-5141-b612-fec89a2c4bb7",
+    "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+    "669b7ad6-6d4b-504a-b8d2-70a50495cf95",
+    "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
+    "8fb2a023-8d21-50f1-ab6b-a3c73b7621c1",
+    "970ba8ff-9e76-5e3e-b079-2cce3bec702f",
+    "9d9ce735-6816-560b-a57c-2f416faee678",
+    "a959ece9-2743-5bea-b67c-3afe923662ca",
+    "b7f9a311-ce0f-5159-9c61-96f668cda4c5",
+    "f1831b9d-5ae0-5022-8d9d-a98cc7153830"
+   ],
+   "expected_titles": [
+    "AsyncClient",
+    "Client",
+    "__init__",
+    "test_wsgi",
+    "test_wsgi_exc",
+    "test_wsgi_generator",
+    "test_wsgi_generator_empty",
+    "test_wsgi_http_error",
+    "test_wsgi_server_protocol",
+    "test_wsgi_upload",
+    "test_wsgi_upload_with_response_stream"
+   ],
+   "notes": "commit cabd1c095e, 6 files"
+  },
+  {
+   "id": "c4f6edf36",
+   "intent": "commit",
+   "query": "test `parse_header_links` via public api (#3061)",
+   "expected_entity_ids": [
+    "8887fd2c-61e0-5d27-a763-8394ff9eb331",
+    "9eeebe32-4673-5bd8-9538-042521441d53"
+   ],
+   "expected_titles": [
+    "Response",
+    "test_logging_redirect_chain"
+   ],
+   "notes": "commit 4f6edf36e9, 2 files"
+  },
+  {
+   "id": "c99cba6ac",
+   "intent": "commit",
+   "query": "Fix RFC 2069 mode digest authentication (#3045)",
+   "expected_entity_ids": [
+    "39677472-b8cb-55bb-9f56-50044a7b53ae",
+    "6b93cece-d33d-5b56-93cf-bcc6c47b441d",
+    "9534b2b0-3da1-5293-8e38-790a31a5cb1c",
+    "9e03f519-1bfc-585c-85eb-283bb0360501",
+    "b5a1618d-451e-543f-98cf-717f219d5017",
+    "e9594cd5-61e0-5f9d-a2e7-c47855c9a862"
+   ],
+   "expected_titles": [
+    "DigestAuth",
+    "_build_auth_header",
+    "test_digest_auth_rfc_2069",
+    "test_digest_auth_rfc_7616_md5",
+    "test_digest_auth_rfc_7616_sha_256",
+    "test_digest_auth_setting_cookie_in_request"
+   ],
+   "notes": "commit 99cba6ac64, 3 files"
+  },
+  {
+   "id": "cca51b453",
+   "intent": "commit",
+   "query": "Keep clients in sync (#3042)",
+   "expected_entity_ids": [
+    "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+    "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
+    "f633b6b5-e32f-543e-bc52-4f988c35d308"
+   ],
+   "expected_titles": [
+    "AsyncClient",
+    "Client",
+    "_send_handling_auth"
+   ],
+   "notes": "commit ca51b4532a, 1 files"
+  },
+  {
+   "id": "cc6907c22",
+   "intent": "commit",
+   "query": "Remove unused type: ignore (#3038)",
+   "expected_entity_ids": [
+    "118321e2-68e3-5a51-8622-e66424c8e16f",
+    "5c552d62-90f0-5749-8d26-0745114a7ceb",
+    "70682da6-bf0f-55f0-921a-810948199297",
+    "cd16f6db-64fe-5bdd-81bf-1f1ac2bd2812"
+   ],
+   "expected_titles": [
+    "DataField",
+    "Limits",
+    "__eq__",
+    "get_length"
+   ],
+   "notes": "commit c6907c2203, 3 files"
+  },
+  {
+   "id": "c1a660147",
+   "intent": "commit",
+   "query": "Add missing argument (#3023)",
+   "expected_entity_ids": [
+    "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+    "ab5f56fd-a225-509a-b1ee-c128fcb0d747"
+   ],
+   "expected_titles": [
+    "AsyncClient",
+    "request"
+   ],
+   "notes": "commit 1a660147ed, 2 files"
+  },
+  {
+   "id": "ca11fc384",
+   "intent": "commit",
+   "query": "Cleanup URL percent-encoding behavior. (#2990)",
+   "expected_entity_ids": [
+    "02c14723-b834-5c70-b03b-17b8d98795a4",
+    "15d33525-3023-5d15-b430-5e071936ae0a",
+    "550ba29a-87f7-554c-b7fd-53f13b3f1224",
+    "75409025-8748-56f7-9701-fad8446e6986",
+    "9c950079-1cea-5beb-9605-223c4d7dcd1f",
+    "b8d94fc2-49c6-55b4-a524-8080826c4944",
+    "dd92b90b-20c1-5011-a9df-58f1bd304525"
+   ],
+   "expected_titles": [
+    "PERCENT",
+    "normalize_path",
+    "quote",
+    "test_url_params",
+    "test_url_query_encoding",
+    "urlparse",
+    "validate_path"
+   ],
+   "notes": "commit a11fc3849b, 2 files"
+  },
+  {
+   "id": "c3b9060ee",
+   "intent": "commit",
+   "query": "Fix environment proxies (#2741)",
+   "expected_entity_ids": [
+    "a7fe0389-9c6c-5c51-94e7-b8bec7d635e5"
+   ],
+   "expected_titles": [
+    "is_ipv4_hostname"
+   ],
+   "notes": "commit 3b9060ee11, 3 files"
+  },
+  {
+   "id": "c2318fd82",
+   "intent": "commit",
+   "query": "Enabling `ruff` C416 (#3001)",
+   "expected_entity_ids": [
+    "364a6e5f-4afc-5da7-a282-1a1e82f321e8",
+    "4e7347e6-30d1-5cd7-bf05-a23717f38751",
+    "577a80d0-5c30-53df-8ce0-102dc879dbee",
+    "5caabbcf-a24b-5214-891b-a5b31910e6ca",
+    "889758a4-fe0d-540f-b011-5a42112f7fbc",
+    "89bde520-2758-59bd-8596-36ebd27a252b",
+    "937a0a3d-e953-58c2-8171-fc2c58541d7e",
+    "ad0f2f09-14e4-5176-8f0d-02b294c89cda",
+    "b136dd78-12f8-5153-876f-3eb8ffaf2259",
+    "b40166b5-e533-51aa-8749-d84e61350708",
+    "d258587f-b4b6-5598-87df-9568189dc9c0",
+    "f0f60390-c7b2-5d98-a4d4-4831984b278b",
+    "f87479b3-5911-50c0-a28b-dc2b03727921"
+   ],
+   "expected_titles": [
+    "ConsumeBodyTransport",
+    "URLPattern",
+    "encode_content",
+    "handle_request",
+    "test_iter_bytes_doesnt_return_empty_chunks",
+    "test_iter_bytes_with_chunk_size",
+    "test_iter_bytes_with_empty_response",
+    "test_iter_lines",
+    "test_iter_raw_doesnt_return_empty_chunks",
+    "test_iter_raw_on_async",
+    "test_iter_raw_with_chunksize",
+    "test_iter_text_with_chunk_size",
+    "test_read_and_stream_data"
+   ],
+   "notes": "commit 2318fd822c, 6 files"
+  },
+  {
+   "id": "c1e110964",
+   "intent": "commit",
+   "query": "Fixed `iter_text` adding an empty string (#2998)",
+   "expected_entity_ids": [
+    "3c755505-e316-548e-9abc-f0e42e7c3247",
+    "9eeebe32-4673-5bd8-9538-042521441d53",
+    "ad4c36e9-d365-58a5-bbd2-fd022dd2d674",
+    "eb213e34-333a-5c9a-8d5f-54532ea3d81a"
+   ],
+   "expected_titles": [
+    "MultiDecoder",
+    "Response",
+    "TextChunker",
+    "decode"
+   ],
+   "notes": "commit 1e11096473, 3 files"
+  },
+  {
+   "id": "c90538a3b",
+   "intent": "commit",
+   "query": "Ensure that ASGI 'raw_path' does not include query component of URL. (#2999)",
+   "expected_entity_ids": [
+    "015f55c0-df75-54a6-a56b-4a32e34903dd",
+    "1d091b1b-8794-578b-bc6b-2083dbc00247"
+   ],
+   "expected_titles": [
+    "ASGITransport",
+    "handle_async_request"
+   ],
+   "notes": "commit 90538a3b46, 3 files"
+  },
+  {
+   "id": "cb471f01d",
+   "intent": "commit",
+   "query": "Allow URLs where username or password contains unescaped '@'. (#2986)",
+   "expected_entity_ids": [
+    "9c950079-1cea-5beb-9605-223c4d7dcd1f",
+    "dd92b90b-20c1-5011-a9df-58f1bd304525"
+   ],
+   "expected_titles": [
+    "test_url_params",
+    "test_url_query_encoding"
+   ],
+   "notes": "commit b471f01d66, 3 files"
+  },
+  {
+   "id": "cf653b2f0",
+   "intent": "commit",
+   "query": "Inline Brotli samples in tests (#2935)",
+   "expected_entity_ids": [
+    "302b22f0-5bc4-5238-9ea3-7ace5f5f8bb0",
+    "39b6a6ae-be9a-516f-b7f7-a38f85508ad2"
+   ],
+   "expected_titles": [
+    "test_multi",
+    "test_zstd_decoding_error"
+   ],
+   "notes": "commit f653b2f0cf, 1 files"
+  },
+  {
+   "id": "c1d73150c",
+   "intent": "commit",
+   "query": "Cleanup response.json() method (#2911)",
+   "expected_entity_ids": [
+    "236110e0-803b-58eb-91ea-7d49be30ec49",
+    "9eeebe32-4673-5bd8-9538-042521441d53"
+   ],
+   "expected_titles": [
+    "Response",
+    "test_logging_request"
+   ],
+   "notes": "commit 1d73150c1f, 3 files"
+  },
+  {
+   "id": "cad06741d",
+   "intent": "commit",
+   "query": "Lazily import 'netrc' module (#2910)",
+   "expected_entity_ids": [
+    "82435e36-27dc-5bd7-a8a0-618501104ef3",
+    "b89912f8-d941-5f48-a9b6-086f76d5d5f9"
+   ],
+   "expected_titles": [
+    "NetRCAuth",
+    "__init__"
+   ],
+   "notes": "commit ad06741d1e, 1 files"
+  },
+  {
+   "id": "c9751f761",
+   "intent": "commit",
+   "query": "Drop unneccessary `binascii` import (#2909)",
+   "expected_entity_ids": [
+    "5ca70a19-3084-5ea2-9135-ab8ba93789bc"
+   ],
+   "expected_titles": [
+    "FileField"
+   ],
+   "notes": "commit 9751f76186, 1 files"
+  },
+  {
+   "id": "c7c9db49f",
+   "intent": "commit",
+   "query": "Add support for Python 3.12 (#2854)",
+   "expected_entity_ids": [
+    "5c552d62-90f0-5749-8d26-0745114a7ceb",
+    "adf39b07-abbe-5924-b613-2724a042198c",
+    "d0384d8e-6332-595a-92f1-c3c7747b3cda",
+    "e20307eb-a75e-5379-815e-c53835ea72cc"
+   ],
+   "expected_titles": [
+    "Limits",
+    "Timeout",
+    "__init__",
+    "as_dict"
+   ],
+   "notes": "commit 7c9db49f0c, 6 files"
+  },
+  {
+   "id": "c59df8190",
+   "intent": "commit",
+   "query": "Raise ValueError on `Response.encoding` being set after `Response.text` has been accessed (#2852)",
+   "expected_entity_ids": [
+    "19a33716-2eb0-5d48-bc76-bed89699c557",
+    "9eeebe32-4673-5bd8-9538-042521441d53"
+   ],
+   "expected_titles": [
+    "Response",
+    "test_response_force_encoding_after_text_accessed"
+   ],
+   "notes": "commit 59df8190a4, 3 files"
+  },
+  {
+   "id": "c88e84314",
+   "intent": "commit",
+   "query": "Add cookies to the retried request when performing digest authentication. (#2846)",
+   "expected_entity_ids": [
+    "39677472-b8cb-55bb-9f56-50044a7b53ae",
+    "87ff763a-526e-5d8b-888b-38a6c34364a2",
+    "9e03f519-1bfc-585c-85eb-283bb0360501",
+    "bb3dd677-ffbd-5014-83d5-77c9af91eea7",
+    "d06c1765-7941-52ee-88eb-142e77c36e75",
+    "e2db4319-d8cf-5e7f-949e-d9c8d73a0415"
+   ],
+   "expected_titles": [
+    "DigestAuth",
+    "auth_flow",
+    "set_cookies",
+    "test_digest_auth_setting_cookie_in_request",
+    "test_digest_auth_with_401",
+    "test_digest_auth_with_401_nonce_counting"
+   ],
+   "notes": "commit 88e8431437, 2 files"
+  },
+  {
+   "id": "ca54ecccd",
+   "intent": "commit",
+   "query": "HTTPS proxies support (#2845)",
+   "expected_entity_ids": [
+    "8bf20482-5712-5e98-887e-95be4e7a2b5a",
+    "e996bd70-adca-5e1c-a399-a4a8b27ff07d"
+   ],
+   "expected_titles": [
+    "HTTPTransport",
+    "__init__"
+   ],
+   "notes": "commit a54ecccd5b, 3 files"
+  },
+  {
+   "id": "cadbcd0e0",
+   "intent": "commit",
+   "query": "Change extensions type (#2803)",
+   "expected_entity_ids": [
+    "59ef1dfc-83cf-5145-8db8-1cdfb1384e17",
+    "f3cb540c-85e3-5027-8686-62a64cbe30d4"
+   ],
+   "expected_titles": [
+    "AsyncByteStream",
+    "__aiter__"
+   ],
+   "notes": "commit adbcd0e0e7, 3 files"
+  },
+  {
+   "id": "cb40c04df",
+   "intent": "commit",
+   "query": "Drop support for Python 3.7 (#2813)",
+   "expected_entity_ids": [
+    "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
+    "8657ebb2-84b6-5810-8f96-fa43b5a447d2"
+   ],
+   "expected_titles": [
+    "test_invalid_proxy_scheme",
+    "test_proxy_with_auth_from_url"
+   ],
+   "notes": "commit b40c04dfa6, 9 files"
+  },
+  {
+   "id": "c9415af64",
+   "intent": "commit",
+   "query": "Make `raise_for_status` chainable (#2776)",
+   "expected_entity_ids": [
+    "4b79d26d-bf77-5e29-a372-a1a636361d42",
+    "58fc1359-950e-52ec-9da2-1a1489ac793a",
+    "9eeebe32-4673-5bd8-9538-042521441d53"
+   ],
+   "expected_titles": [
+    "Response",
+    "_get_content_decoder",
+    "test_raise_for_status"
+   ],
+   "notes": "commit 9415af643f, 6 files"
+  },
+  {
+   "id": "c18d7721c",
+   "intent": "commit",
+   "query": "Use Mozilla documentation instead of `httpstatuses.com` for HTTP error reference (#2768)",
+   "expected_entity_ids": [
+    "9eb1a581-61dc-5421-a8a4-459bea2c9167",
+    "9eeebe32-4673-5bd8-9538-042521441d53"
+   ],
+   "expected_titles": [
+    "Response",
+    "test_raise_for_status"
+   ],
+   "notes": "commit 18d7721c38, 3 files"
+  }
+ ]
+}
