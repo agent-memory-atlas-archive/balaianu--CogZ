@@ -42,6 +42,14 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
         result.created, result.updated, result.marked_stale, result.skipped
     );
 
+    // Mine co-change rows for new commits — same channel `index` and
+    // `reindex` refresh; without it the feature decays on hook-only
+    // repos.
+    let cochange_rows = index::cochange::sync_cochange(&storage, repo)?;
+    if cochange_rows > 0 {
+        eprintln!("reindex-bg: co-change index: {} rows", cochange_rows);
+    }
+
     // Post-index maintenance: flag orphaned knowledge, backfill
     // provenance, recompute drift, heal recovered orphans.
     let post = index::drift::post_index_pass(&storage, &cogz_dir);
