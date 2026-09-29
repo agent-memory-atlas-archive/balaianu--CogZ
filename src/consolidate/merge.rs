@@ -45,7 +45,7 @@ pub struct MergeResult {
 /// merged pairs. When `dry_run` is true, no changes are made.
 ///
 /// NLI confirmation gates auto-merge: embedding similarity finds
-/// candidates, then bidirectional NLI entailment confirms true
+/// candidates, then max-direction NLI entailment confirms true
 /// duplicates before any merge occurs. When `nli_model` is `None`,
 /// falls back to embedding-only (candidates are reported but not
 /// merged in non-dry-run mode — a warning is logged).
@@ -108,7 +108,7 @@ struct MergeCandidate {
 }
 
 /// Find duplicate observation pairs via embedding similarity, confirmed
-/// by NLI bidirectional entailment. The earlier-created entity survives;
+/// by max-direction NLI entailment. The earlier-created entity survives;
 /// the later one is superseded.
 ///
 /// Embedding similarity (cosine ≥ `dedup_threshold`) finds candidates.

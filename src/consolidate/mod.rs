@@ -8,6 +8,7 @@
 pub mod contradict;
 pub mod dedup;
 pub mod merge;
+pub mod numgate;
 pub mod promote;
 
 pub use dedup::{DedupResult, DuplicateWarning, check_duplicate, confirm_duplicate_nli};

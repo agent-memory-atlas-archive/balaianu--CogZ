@@ -86,7 +86,9 @@ pub fn fetch_contradiction_candidates(
 }
 
 /// Classify candidate entities against the new content using the NLI
-/// model. Returns the IDs of entities that contradict the new content.
+/// model and the deterministic numeric-slot gate. Returns the IDs of
+/// entities that contradict the new content. The gate still flags
+/// same-slot numeric conflicts when the NLI model is unavailable.
 /// This is the I/O portion — it must NOT be called while holding the
 /// storage lock, since ONNX inference is blocking.
 ///
@@ -106,7 +108,8 @@ pub fn fetch_contradiction_candidates(
 /// 1. Texts are not identical.
 /// 2. Length ratio is within bounds.
 /// 3. Cosine similarity ≥ threshold (when embedding model is available).
-/// 4. Max-direction P(contradiction) ≥ `contradiction_threshold`.
+/// 4. The numeric-slot gate fires a contradiction, or max-direction
+///    P(contradiction) ≥ `contradiction_threshold`.
 pub fn classify_candidates(
     candidates: Vec<Entity>,
     new_content: &str,
@@ -114,10 +117,6 @@ pub fn classify_candidates(
     embed_model: Option<&dyn EmbeddingModel>,
     config: &ConsolidationConfig,
 ) -> Vec<String> {
-    let Some(model) = model else {
-        return Vec::new();
-    };
-
     let new_lower = new_content.to_lowercase();
     let new_len = new_content.len();
 
@@ -175,6 +174,23 @@ pub fn classify_candidates(
                 continue;
             }
         }
+
+        // Deterministic numeric-slot gate: NLI models are weak at
+        // comparing explicit values ("90 days" vs "30 days"). When both
+        // texts put a number in the same definitional slot, the symbol
+        // check decides; ambiguous pairs fall through to NLI.
+        match super::numgate::decide(new_content, &entity.content) {
+            Some(super::numgate::GateDecision::Contradiction) => {
+                contradicts_ids.push(entity.id.clone());
+                continue;
+            }
+            Some(super::numgate::GateDecision::Equivalent) => continue,
+            None => {}
+        }
+
+        let Some(model) = model else {
+            continue;
+        };
 
         // Bidirectional NLI scoring: max P(contradiction) across both
         // directions. Real contradictions can score asymmetrically.

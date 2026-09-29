@@ -229,16 +229,19 @@ fn check_embedding_similarity(
     }
 }
 
-/// Confirm a potential duplicate pair using NLI bidirectional entailment.
-/// True duplicates entail mutually: both A entails B and B entails A
-/// must score above the threshold. A subset-fact (A entails B but not
-/// vice versa) is not a duplicate.
+/// Confirm a potential duplicate pair using NLI entailment scored in
+/// both directions. The pair is confirmed when *either* direction's
+/// P(entailment) exceeds the threshold — max-direction. Mutual
+/// (min-direction) entailment is the stricter textbook check but is
+/// unreachable in practice on spec-style text: measured on the
+/// rule-pair corpus, min-dir recall stays ≤4% at any threshold, so
+/// the confirmation would never fire. The cosine dedup prefilter
+/// (which candidates must pass first) is what guards against
+/// subset-facts.
 ///
 /// If one direction fails (tokenization or inference error), falls back
-/// to the other direction's score alone. This is more lenient than full
-/// bidirectional confirmation but avoids missing real duplicates on
-/// transient single-direction failures. Both directions failing returns
-/// false.
+/// to the other direction's score alone. Both directions failing
+/// returns false.
 ///
 /// Returns true if the pair is confirmed as duplicates, false otherwise.
 /// Returns false if the NLI model is unavailable.
@@ -255,14 +258,20 @@ pub fn confirm_duplicate_nli(
     let forward = model.classify(text_a, text_b);
     let reverse = model.classify(text_b, text_a);
 
-    let min_entailment = match (forward, reverse) {
-        (Ok(f), Ok(r)) => f.entailment.min(r.entailment),
+    // Max-direction entailment. Mutual (min-dir) entailment is the
+    // textbook dedup check but is unreachable in practice: on the
+    // rule-style corpus, min-dir P(E) stays below ~0.05 even for true
+    // duplicates, so the gate never fired. Max-dir at a calibrated
+    // threshold keeps precision high for candidates that already
+    // passed the cosine dedup filter.
+    let max_entailment = match (forward, reverse) {
+        (Ok(f), Ok(r)) => f.entailment.max(r.entailment),
         (Ok(f), Err(_)) => f.entailment,
         (Err(_), Ok(r)) => r.entailment,
         (Err(_), _) => return false,
     };
 
-    min_entailment >= threshold as f32
+    max_entailment >= threshold as f32
 }
 
 /// Normalize a title for fuzzy comparison: lowercase, remove

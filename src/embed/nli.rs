@@ -214,8 +214,12 @@ impl OnnxNliModel {
             EmbeddingError::ModelUnavailable(format!("failed to load NLI tokenizer: {}", e))
         })?;
 
-        // Truncate to the model's max sequence length.
+        // Strip any padding baked into tokenizer.json and truncate to
+        // the model's max sequence length. Some exports (e.g. the
+        // tasksource NLI family) ship pad-to-max-length configs — 1680
+        // padding tokens per pair turn a 30ms inference into 5s.
         let mut tokenizer = tokenizer;
+        tokenizer.with_padding(None);
         tokenizer
             .with_truncation(Some(tokenizers::TruncationParams {
                 max_length: 512,

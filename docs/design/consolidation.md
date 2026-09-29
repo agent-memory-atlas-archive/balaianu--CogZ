@@ -58,7 +58,7 @@ Confirmed duplicate observations are merged: one entity survives, the other is m
 
 **Pipeline:**
 1. Find candidates — pairs of active observations with embedding cosine similarity > `dedup_threshold` (0.85).
-2. NLI confirmation — bidirectional entailment check. Both P(A entails B) and P(B entails A) must exceed `dedup_nli_threshold` (0.85). True duplicates entail mutually; a subset-fact does not.
+2. NLI confirmation — entailment scored in both directions; the pair confirms when *either* direction's P(entailment) exceeds `dedup_nli_threshold` (0.55). Mutual-entailment was the earlier check but is unreachable on spec-style text (≤4% recall at any threshold); the cosine prefilter guards against subset-facts.
 3. If NLI is unavailable, candidates are reported but not merged (conservative — no merge without confirmation).
 4. For each confirmed pair:
    - Survivor = earlier-created entity
