@@ -130,6 +130,11 @@ pub struct SearchParams {
     /// graph expansion from window membership) disable it to avoid
     /// churning the expansion seed set.
     pub window_quota: bool,
+    /// Upper bound (unix seconds) on the git history the co-change
+    /// channel may draw from. `None` uses all mined history. Set when
+    /// the caller needs as-of semantics — e.g. the benchmark queries
+    /// against commits strictly before the query commit.
+    pub before_ts: Option<i64>,
 }
 
 impl Default for SearchParams {
@@ -143,6 +148,7 @@ impl Default for SearchParams {
             include_tests: false,
             silence_gate: true,
             window_quota: true,
+            before_ts: None,
         }
     }
 }

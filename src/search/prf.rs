@@ -27,7 +27,7 @@ const STOPWORDS: &[&str] = &[
 /// Split text into lowercase terms: non-alphanumeric boundaries plus
 /// camelCase and snake_case splits, so `runMigrations` and
 /// `run_migrations` both yield `run`, `migrations`.
-fn tokenize(text: &str) -> Vec<String> {
+pub(crate) fn tokenize(text: &str) -> Vec<String> {
     let mut terms = Vec::new();
     for chunk in text.split(|c: char| !c.is_alphanumeric()) {
         if chunk.is_empty() {
@@ -100,6 +100,20 @@ pub fn expansion_terms(feedback: &[Entity], query: &str, max_terms: usize) -> Ve
     });
     terms.truncate(max_terms);
     terms.into_iter().map(|(t, _)| t).collect()
+}
+
+/// Terms worth indexing or expanding: tokenized, lowercased,
+/// length >= 4, non-numeric, non-stopword. Shared by query-side
+/// expansion and index-side co-change mining so both ends of the
+/// term vocabulary agree.
+pub(crate) fn content_terms(text: &str) -> Vec<String> {
+    let stop: HashSet<&str> = STOPWORDS.iter().copied().collect();
+    tokenize(text)
+        .into_iter()
+        .filter(|t| {
+            t.len() >= 4 && !t.chars().all(|c| c.is_ascii_digit()) && !stop.contains(t.as_str())
+        })
+        .collect()
 }
 
 /// Build the expanded FTS query: original query plus the expansion

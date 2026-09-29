@@ -134,6 +134,7 @@ Search across all entities using hybrid FTS5 + vector search with RRF fusion. Re
 | `limit` | integer | no | Max results before expansion |
 | `expand` | boolean | no | Enable graph expansion (default: `true`) |
 | `code_search` | boolean | no | Use code model for query embedding (for code-focused queries) |
+| `before` | integer | no | Only use git history committed before this unix timestamp for the co-change channel |
 
 **Returns:** JSON with `results` array and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`), and optionally `write_nudge` (see below).
 

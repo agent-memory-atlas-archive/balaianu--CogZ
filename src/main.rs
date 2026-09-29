@@ -99,6 +99,11 @@ enum Commands {
         /// the knowledge model. Applies the CodeRankEmbed query prefix.
         #[arg(long)]
         code: bool,
+
+        /// Only use git history committed before this unix timestamp
+        /// for the co-change channel.
+        #[arg(long)]
+        before: Option<i64>,
     },
 
     /// Assemble a context pack for agent consumption.
@@ -360,7 +365,17 @@ fn main() -> anyhow::Result<()> {
             limit,
             no_expand,
             code,
-        } => cli::run_search(&query, &repo, entity_type, status, limit, no_expand, code),
+            before,
+        } => cli::run_search(
+            &query,
+            &repo,
+            entity_type,
+            status,
+            limit,
+            no_expand,
+            code,
+            before,
+        ),
         Commands::Context {
             mode,
             query,

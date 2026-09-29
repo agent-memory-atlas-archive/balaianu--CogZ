@@ -85,7 +85,7 @@ The diversity-slot guarantee and window quota (`top_diversity_share`, described 
 
 `min_relevance` (default: 0.05) drops merged and expanded results below the threshold; `filtered_count` in the response reports how many were removed. Note the decay interaction: any floor ≥ 0.09 makes all two-hop expansions unreachable (max expanded score is `seed × 0.3²`).
 
-`silence_threshold` (default: 0.05) is the silence gate: when *neither* channel's KNN batch shows a distinctive match (within-batch gradient below the threshold on both) **and** neither channel's top-3 absolute cosine reaches `silence_strength_floor` (default: 0.64), search returns empty instead of a confidently-ranked list of irrelevant entities. The strength escape matters: flat gradients also occur when a query's nearest neighbors are uniformly *decent* (no standout), which suppressed real queries entirely. 0.0 disables. Skipped in FTS-only mode. The `signals` field in the response exposes both channels' strength and gradient for recalibration.
+`silence_threshold` (default: 0.05) is the silence gate: when *neither* channel's KNN batch shows a distinctive match (within-batch gradient below the threshold on both) **and** neither channel's top-3 absolute cosine reaches `silence_strength_floor` (default: 0.66), search returns empty instead of a confidently-ranked list of irrelevant entities. The strength escape matters: flat gradients also occur when a query's nearest neighbors are uniformly *decent* (no standout), which suppressed real queries entirely. 0.0 disables. Skipped in FTS-only mode. The `signals` field in the response exposes both channels' strength and gradient for recalibration.
 
 The gate applies to agent-facing search only (`cogz search`, MCP `search`). Context-pack retrieval bypasses it (`silence_gate: false` internally) — a pack ships whatever clears the per-result relevance floor, and an empty retrieval naturally produces an orientation-only pack. Wholesale silencing is an honest answer to a direct query; in a pushed pack it would delete task context the agent never asked for.
 
@@ -107,8 +107,10 @@ With `edge_weighted_expansion` (default: true), edges are traversed strongest-fi
 
 Each result includes a `graph_path` — the list of entity IDs from the seed to this entity — and a human-readable `graph_path_description`.
 
-Two non-edge sources also join the expansion set, scored like 1-hop expansions and subject to the same cap:
+Four non-edge sources also join the expansion set, scored like 1-hop expansions and subject to the same cap:
 
+- **File siblings** (`sibling_expand_enabled`, default: true): class entities sharing a `contains` parent file with a top-`sibling_max_anchors` (8) direct hit join as "same file" expansions, decayed from the anchor's score and boosted by title-token overlap with the query. Emitted before generic expansion so enclosing-scope entities aren't claimed-and-floored by 2-hop `contains` traversal.
+- **Git co-change** (`cochange_enabled`, default: true): entities historically touched by commits whose messages share terms with the query, mined at index time (see the `cochange` table). Scored by summed inverse term frequency; bounded to a quarter of the expansion cap so history leads can't crowd out graph expansions. This is the only channel reading repository history — it bridges commit-style queries to entities sharing zero identifier overlap. `search --before` / MCP `before` bounds the history it draws on.
 - **PRF second pass** (`prf_enabled`, default: true): informative terms mined from the top `prf_feedback_docs` (5) FTS hits — appearing in at least two of them, title-weighted — extend the query for a second FTS pass (`prf_max_terms`, 8). Hits not already in the first-pass results join as "shares vocabulary" expansions. This is the only vocabulary-mismatch recall path when embedding models are absent.
 - **Deep-channel candidates**: channels fetch `limit × 3` and entities ranked beyond `limit` in *at least two* channels join as "deep candidate" expansions. Single-channel deep hits are usually noise; multi-channel corroboration is the selectivity test.
 

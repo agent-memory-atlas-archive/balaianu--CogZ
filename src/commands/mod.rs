@@ -18,6 +18,16 @@ use crate::cli;
 pub use doctor::run_doctor;
 pub use models::{run_models_clean, run_models_download, run_models_list};
 
+/// Mine git history for the co-change channel — derived state,
+/// rebuilt wholesale each index. Silent zero on non-git repos.
+fn sync_cochange_report(storage: &cogz::storage::Storage, repo: &Path) -> anyhow::Result<()> {
+    let rows = cogz::index::cochange::sync_cochange(storage, repo)?;
+    if rows > 0 {
+        println!("  Co-change index: {rows} rows");
+    }
+    Ok(())
+}
+
 pub(crate) fn load_config(repo: &Path) -> anyhow::Result<(Config, std::path::PathBuf)> {
     let cogz_dir = repo.join(".cogz");
     let config_path = cogz_dir.join("config.toml");
@@ -182,6 +192,8 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         }
     }
 
+    sync_cochange_report(&storage, repo)?;
+
     let post = cogz::index::drift::post_index_pass(&storage, &cogz_dir);
     if post.stale_flagged > 0
         || post.healed > 0
@@ -266,6 +278,8 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
         }
     }
 
+    sync_cochange_report(&storage, repo)?;
+
     let post = cogz::index::drift::post_index_pass(&storage, &cogz_dir);
     if post.stale_flagged > 0 || post.healed > 0 || post.drifted_entities > 0 {
         println!(
@@ -308,6 +322,9 @@ pub fn run_reset(repo: &Path, purge: bool) -> anyhow::Result<()> {
     }
 
     println!("\nRun `cogz index` to rebuild the database from files.");
+    println!(
+        "Restart any running `cogz mcp-stdio` servers — they hold a handle to the deleted DB file."
+    );
 
     Ok(())
 }

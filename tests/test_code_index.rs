@@ -360,6 +360,7 @@ fn build_sql_query(table: &str) -> String {
         include_tests: false,
         silence_gate: true,
         window_quota: true,
+        before_ts: None,
     };
     let config = cogz::config::SearchConfig {
         fts_weight: 0.3,
@@ -388,6 +389,9 @@ fn build_sql_query(table: &str) -> String {
         prf_enabled: false,
         prf_feedback_docs: 5,
         prf_max_terms: 8,
+        sibling_expand_enabled: true,
+        sibling_max_anchors: 8,
+        cochange_enabled: true,
         graph_seed_min_sim: 0.0,
     };
     let results = search(

@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 6;
+pub const SCHEMA_VERSION: u32 = 7;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -44,6 +44,10 @@ pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), Sto
 
     if current < 6 {
         migrate_v6(conn)?;
+    }
+
+    if current < 7 {
+        migrate_v7(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -361,6 +365,30 @@ fn migrate_v6(conn: &Connection) -> Result<(), StorageError> {
         );
 
         CREATE INDEX IF NOT EXISTS idx_drift_entity ON entity_drift(entity_id);
+        "#,
+    )?;
+    Ok(())
+}
+
+/// Migration v7: git co-change memory. `cochange` records which
+/// commit-message terms travel with which entities — one row per
+/// (term, entity, commit) so queries can bound the history used.
+/// Mined from `git log -p -U0`: a commit's hunk ranges intersected
+/// with current entity line ranges. Derived state — rebuilt by
+/// `cogz index`; never written to canonical files.
+fn migrate_v7(conn: &Connection) -> Result<(), StorageError> {
+    conn.execute_batch(
+        r#"
+        CREATE TABLE IF NOT EXISTS cochange (
+            term      TEXT NOT NULL,
+            entity_id TEXT NOT NULL,
+            commit_id TEXT NOT NULL,
+            commit_ts INTEGER NOT NULL,
+            PRIMARY KEY (term, entity_id, commit_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_cochange_term      ON cochange(term);
+        CREATE INDEX IF NOT EXISTS idx_cochange_entity_ts ON cochange(entity_id, commit_ts);
         "#,
     )?;
     Ok(())

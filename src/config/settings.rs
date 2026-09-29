@@ -224,6 +224,22 @@ pub struct SearchConfig {
     /// Expansion terms added to the second-pass query.
     #[serde(default = "default_prf_max_terms")]
     pub prf_max_terms: usize,
+    /// File-sibling expansion: entities sharing a `contains` parent
+    /// file with a top direct hit join the expansion set. Targets
+    /// enclosing-scope misses — the class or sibling function whose
+    /// identifiers share no vocabulary with the query but sit
+    /// structurally adjacent to a real hit.
+    #[serde(default = "default_true")]
+    pub sibling_expand_enabled: bool,
+    /// Number of top direct results used as sibling-expansion anchors.
+    #[serde(default = "default_sibling_max_anchors")]
+    pub sibling_max_anchors: usize,
+    /// Git co-change channel: query terms map to entities historically
+    /// touched under those terms, joining the expansion set. The
+    /// vocabulary bridge for commit-style queries — no identifier
+    /// overlap with the target is required.
+    #[serde(default = "default_true")]
+    pub cochange_enabled: bool,
     /// Minimum absolute cosine similarity for a KNN hit to count as a
     /// direct-eligible graph seed. Semantic neighbors are noisier than
     /// lexical hits — on lexically-aligned queries weak KNN seeds pull
@@ -306,7 +322,7 @@ fn default_graph_weight() -> f64 {
 }
 
 fn default_silence_strength_floor() -> f64 {
-    0.64
+    0.66
 }
 
 fn default_prf_feedback_docs() -> usize {
@@ -314,6 +330,10 @@ fn default_prf_feedback_docs() -> usize {
 }
 
 fn default_prf_max_terms() -> usize {
+    8
+}
+
+fn default_sibling_max_anchors() -> usize {
     8
 }
 
@@ -338,9 +358,10 @@ pub struct ConsolidationConfig {
     /// types, not a genuine contradiction.
     #[serde(default = "default_contradiction_length_ratio")]
     pub contradiction_length_ratio: f64,
-    /// Minimum bidirectional P(entailment) to confirm a duplicate pair.
-    /// Both A entails B AND B entails A must score above this. True
-    /// duplicates entail mutually; a subset-fact does not.
+    /// Minimum max-direction P(entailment) to confirm a duplicate pair.
+    /// Either A entails B OR B entails A must score above this.
+    /// Calibrated on the rule-pair benchmark corpus; the previous
+    /// min-direction 0.85 gate was unreachable (≤4% recall).
     #[serde(default = "default_dedup_nli_threshold")]
     pub dedup_nli_threshold: f64,
 }
@@ -355,7 +376,7 @@ fn default_contradiction_length_ratio() -> f64 {
     5.0
 }
 fn default_dedup_nli_threshold() -> f64 {
-    0.85
+    0.55
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
@@ -494,6 +515,9 @@ impl Config {
                 prf_enabled: default_true(),
                 prf_feedback_docs: default_prf_feedback_docs(),
                 prf_max_terms: default_prf_max_terms(),
+                sibling_expand_enabled: default_true(),
+                sibling_max_anchors: default_sibling_max_anchors(),
+                cochange_enabled: default_true(),
                 graph_seed_min_sim: default_graph_seed_min_sim(),
             },
             consolidation: ConsolidationConfig {

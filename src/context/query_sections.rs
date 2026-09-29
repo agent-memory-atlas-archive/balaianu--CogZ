@@ -53,6 +53,9 @@ pub(super) fn query_sections(
         // "task phrased differently than identifiers" from "no match"
         // on code corpora.
         silence_gate: false,
+        // Context packs serve the present working session; history
+        // terms are unbounded.
+        before_ts: None,
         // The quota's job is rescuing entities from the caller-visible
         // cut; the pack consumes every returned result and seeds graph
         // expansion from window membership, so reordering here only

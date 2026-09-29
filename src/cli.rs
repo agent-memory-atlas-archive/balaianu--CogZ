@@ -17,6 +17,7 @@ pub fn run_search(
     limit: Option<u32>,
     no_expand: bool,
     code: bool,
+    before: Option<i64>,
 ) -> anyhow::Result<()> {
     let cogz_dir = repo.join(".cogz");
     let config_path = cogz_dir.join("config.toml");
@@ -68,6 +69,7 @@ pub fn run_search(
         include_tests: true,
         silence_gate: true,
         window_quota: true,
+        before_ts: before,
     };
 
     let results = {

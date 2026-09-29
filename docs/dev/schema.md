@@ -183,6 +183,10 @@ Adds `entity_usage.tier` (`baseline` | `full` | `pointer`, default `full`) recor
 
 Adds `entity_drift` — per-reference divergence between a knowledge entity's `verified_against` provenance (canonical frontmatter) and the referenced entity's current content hash. Recomputed by the post-index maintenance pass (`flag` → `backfill` → `recompute` → `heal`); `verified_against` itself lives in files, so the table is fully disposable.
 
+### v7 — Git co-change memory
+
+Adds `cochange` — one row per `(term, entity_id, commit_id)` pairing a normalized commit-message term with an entity that commit touched, plus `commit_ts` for temporal filtering. Mined by `cogz index`/`cogz reindex` from `git log -p -U0` (last 20k commits, merges excluded): each commit's new-side hunk ranges are intersected with current entity `line_start`/`line_end` ranges, so a term maps to the functions and classes its diffs actually touched. Queried by the search co-change channel with inverse-frequency scoring over a bounded quota. Fully derived from repository history — `cogz reset` + `cogz index` rebuilds it. On non-git repos the table simply stays empty.
+
 ## Version checking
 
 `check_version()` verifies the DB schema version matches `SCHEMA_VERSION`. A mismatch returns `SchemaVersionMismatch { db, expected }`. This happens when a newer binary opens an older DB (or vice versa). The fix is `cogz reset` + `cogz index` to rebuild from files.

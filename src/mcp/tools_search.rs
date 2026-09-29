@@ -52,6 +52,7 @@ pub async fn search(
             include_tests: true,
             silence_gate: true,
             window_quota: true,
+            before_ts: params.before,
         };
         let results = search_entities(
             &conn,

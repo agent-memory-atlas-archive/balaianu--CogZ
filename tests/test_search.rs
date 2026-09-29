@@ -41,6 +41,9 @@ fn default_config() -> SearchConfig {
         prf_enabled: false,
         prf_feedback_docs: 5,
         prf_max_terms: 8,
+        sibling_expand_enabled: true,
+        sibling_max_anchors: 8,
+        cochange_enabled: true,
         graph_seed_min_sim: 0.0,
     }
 }

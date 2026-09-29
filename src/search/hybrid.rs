@@ -572,6 +572,38 @@ pub fn search(
 
         let mut expanded_results: Vec<SearchResult> = Vec::new();
         let mut seen_expanded: HashSet<String> = HashSet::new();
+
+        // Channel expansions (file siblings, then co-change) run
+        // BEFORE the generic expansion loops — see the emit helpers.
+        let query_terms: HashSet<String> = prf::tokenize(query).into_iter().collect();
+        if config.sibling_expand_enabled {
+            filtered_count += hybrid_helpers::emit_sibling_expansions(
+                conn,
+                &results,
+                config,
+                params,
+                &mut entity_map,
+                &exclude_ids,
+                &seed_relevance,
+                &query_terms,
+                &mut seen_expanded,
+                &mut expanded_results,
+            )?;
+        }
+        if config.cochange_enabled {
+            filtered_count += hybrid_helpers::emit_cochange_expansions(
+                conn,
+                query,
+                params,
+                config,
+                &mut entity_map,
+                &exclude_ids,
+                &query_terms,
+                &mut seen_expanded,
+                &mut expanded_results,
+            )?;
+        }
+
         for (exp, desc) in expansions.into_iter().zip(descriptions) {
             if !seen_expanded.insert(exp.entity_id.clone()) {
                 continue;
@@ -682,15 +714,33 @@ pub fn search(
         // Cap expanded results to prevent graph fan-out from flooding
         // the result set. Expanded entities are context, not primary
         // matches — a small number suffices.
+        //
+        // Co-change candidates hold a small quota rather than compete
+        // for the cap on equal footing: they draw on repository
+        // history — a source no other channel reads — and measured
+        // head-to-head they found real hits but lost them back to
+        // score-calibrated displacement (≈zero net). The quota keeps
+        // the strongest history leads while the rest of the cap still
+        // ranks by score.
         let max_expansions = params.limit as usize;
         if expanded_results.len() > max_expansions {
-            expanded_results.sort_by(|a, b| {
-                b.relevance
-                    .partial_cmp(&a.relevance)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-                    .then_with(|| a.entity.id.cmp(&b.entity.id))
-            });
-            expanded_results.truncate(max_expansions);
+            let co_quota = max_expansions / 4;
+            let sort_desc = |v: &mut Vec<SearchResult>| {
+                v.sort_by(|a, b| {
+                    b.relevance
+                        .partial_cmp(&a.relevance)
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                        .then_with(|| a.entity.id.cmp(&b.entity.id))
+                });
+            };
+            let (mut co, mut rest): (Vec<SearchResult>, Vec<SearchResult>) = expanded_results
+                .into_iter()
+                .partition(|r| r.graph_path_description == hybrid_helpers::COCHANGE_DESC);
+            sort_desc(&mut co);
+            sort_desc(&mut rest);
+            co.truncate(co_quota);
+            rest.truncate(max_expansions);
+            expanded_results = rest.into_iter().chain(co).collect();
         }
 
         results.extend(expanded_results);

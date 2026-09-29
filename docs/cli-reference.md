@@ -84,7 +84,7 @@ Reads entity IDs, loads the code model, embeds in batches of 32, stores vectors,
 Hybrid FTS5 + vector search with graph expansion.
 
 ```
-cogz search <query> [--repo <path>] [--entity-type <type>] [--status <status>] [--limit <n>] [--no-expand] [--code]
+cogz search <query> [--repo <path>] [--entity-type <type>] [--status <status>] [--limit <n>] [--no-expand] [--code] [--before <ts>]
 ```
 
 **Arguments:**
@@ -97,6 +97,7 @@ cogz search <query> [--repo <path>] [--entity-type <type>] [--status <status>] [
 - `--limit <n>` — max results before graph expansion (default: from config)
 - `--no-expand` — disable graph expansion
 - `--code` — use the code model (CodeRankEmbed) for query embedding. Applies the CodeRankEmbed query prefix for code-focused search.
+- `--before <ts>` — only use git history committed before this unix timestamp for the co-change channel
 
 ## `cogz context`
 
@@ -155,7 +156,7 @@ cogz consolidate [--repo <path>] [--dry-run]
 - `--repo <path>` — repository root (default: `.`)
 - `--dry-run` — report what would be consolidated without making changes
 
-Dedup and contradiction detection happen automatically on every insert. This command runs the deferred phases (promotion and merge). Merge candidates are confirmed by NLI bidirectional entailment before any merge occurs.
+Dedup and contradiction detection happen automatically on every insert. This command runs the deferred phases (promotion and merge). Merge candidates are confirmed by NLI entailment (either direction meeting `dedup_nli_threshold`) before any merge occurs.
 
 ## `cogz capture-event`
 

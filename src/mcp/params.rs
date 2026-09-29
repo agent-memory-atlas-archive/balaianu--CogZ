@@ -195,6 +195,10 @@ pub struct SearchToolParams {
     /// the CodeRankEmbed query prefix for code-focused search.
     #[serde(default)]
     pub code_search: Option<bool>,
+    /// Only use git history committed before this unix timestamp for
+    /// the co-change channel.
+    #[serde(default)]
+    pub before: Option<i64>,
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]

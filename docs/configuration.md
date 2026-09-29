@@ -51,7 +51,7 @@ promotion_threshold = 3
 contradiction_threshold = 0.7
 contradiction_cosine_threshold = 0.85
 contradiction_length_ratio = 5.0
-dedup_nli_threshold = 0.85
+dedup_nli_threshold = 0.55
 
 [index]
 allow = []
@@ -133,10 +133,13 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `mmr_lambda` | f64 | `0.7` | MMR diversification: `λ·relevance − (1−λ)·max cosine to already-selected same-channel items`. Similarity never crosses channels (different embedding spaces). 0.0 disables; skipped in FTS-only mode. |
 | `edge_weighted_expansion` | bool | `true` | Traverse edges strongest-first and weight expansion scores by edge type (curated semantic > auto_references > structural). |
 | `silence_threshold` | f64 | `0.05` | Return empty when both channels' KNN gradients are below this AND both top-3 strengths are below `silence_strength_floor`. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
-| `silence_strength_floor` | f64 | `0.64` | Escape hatch on the silence gate: a channel whose top-3 absolute cosine reaches this floor prevents silencing even with flat gradients. Model-scale dependent — calibrated on bge-base/CodeRankEmbed. |
+| `silence_strength_floor` | f64 | `0.66` | Escape hatch on the silence gate: a channel whose top-3 absolute cosine reaches this floor prevents silencing even with flat gradients. Model-scale dependent — calibrated on bge-base/CodeRankEmbed. |
 | `prf_enabled` | bool | `true` | Pseudo-relevance feedback: mine informative terms from the top FTS hits, re-run FTS, and add novel hits as expansion results. The only vocabulary-mismatch recall path in FTS-only mode. |
 | `prf_feedback_docs` | usize | `5` | FTS hits mined for expansion terms. |
 | `prf_max_terms` | usize | `8` | Expansion terms appended to the second-pass query. |
+| `sibling_expand_enabled` | bool | `true` | File-sibling expansion: class entities sharing a `contains` parent file with a top direct hit join the expansion set. Targets enclosing-scope misses — entities whose identifiers share no vocabulary with the query but sit structurally adjacent to a real hit. |
+| `sibling_max_anchors` | usize | `8` | Number of top direct results used as sibling-expansion anchors. |
+| `cochange_enabled` | bool | `true` | Git co-change channel: query terms map to entities historically touched under those terms (mined from `git log` at index time), joining the expansion set under a bounded quota. No identifier overlap with the target is required. |
 | `graph_first_enabled` | bool | `true` | Traverse curated edges from top direct-channel hits (FTS + KNN) before the merge, fusing graph candidates at full score. `false` = legacy graph-as-expansion-only pipeline. |
 | `graph_max_seeds` | usize | `20` | Top hits per direct channel (FTS + each KNN space) used as graph traversal seeds. |
 | `graph_seed_min_sim` | f64 | `0.7` | Minimum cosine similarity for a KNN hit to count as a direct-eligible graph seed. Sub-floor seeds still traverse, but candidates reachable only through them are demoted to expansion. FTS seeds always qualify. `0.0` disables. |
@@ -155,7 +158,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `contradiction_threshold` | f64 | `0.7` | Minimum P(contradiction) to flag a pair. Calibrated against XNLI. |
 | `contradiction_cosine_threshold` | f64 | `0.85` | Minimum embedding similarity for a contradiction pair. Genuine contradictions share the same topic. |
 | `contradiction_length_ratio` | f64 | `5.0` | Maximum text length ratio for a contradiction pair. Texts differing more are likely different content types. |
-| `dedup_nli_threshold` | f64 | `0.85` | Minimum bidirectional P(entailment) to confirm a duplicate merge. Both directions must exceed this. |
+| `dedup_nli_threshold` | f64 | `0.55` | Minimum max-direction P(entailment) to confirm a duplicate merge. Either direction may exceed it. |
 
 ### `[index]`
 

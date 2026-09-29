@@ -6,6 +6,7 @@
 
 pub mod auto_link;
 pub mod baseline;
+pub mod cochange;
 pub mod code_graph;
 pub mod detection;
 pub mod drift;
