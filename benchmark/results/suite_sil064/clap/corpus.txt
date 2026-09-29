@@ -1,0 +1,2 @@
+clap: 338 files, 84711 LOC, 4664 entities, 6301 edges, 4664 embeddings, db=33800KB
+wrote /home/andy/dev/personal/CogZ/benchmark/results/corpus_metrics.json

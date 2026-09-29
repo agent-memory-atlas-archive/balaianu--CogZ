@@ -1054,20 +1054,21 @@
     "no_expand": false,
     "code_search": false,
     "status": null,
+    "temporal": false,
     "pack_tokens": null
   },
   "results": [
     {
       "id": "hn01",
       "search_mode": "hybrid",
-      "filtered_count": 209,
+      "filtered_count": 182,
       "signals": {
         "code_gradient": 0.007940145950537847,
         "code_strength": 0.271340559487534,
         "knowledge_gradient": 0.028570437808667283,
         "knowledge_strength": 0.6823947483980639
       },
-      "latency_ms": 4383,
+      "latency_ms": 1971,
       "results": [
         {
           "id": "7f349bcf-d598-535d-a6c9-0f401576fabb",
@@ -1250,10 +1251,64 @@
           "stale": null
         },
         {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.16923362016677856,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "17ee05a5-1afd-549d-ad80-b70d910835e3",
+          "type": "class",
+          "title": "UseClientDefault",
+          "relevance": 0.09199067205190659,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+          "type": "class",
+          "title": "AsyncClient",
+          "relevance": 0.09199067205190659,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
           "type": "class",
           "title": "Client",
-          "relevance": 0.08871857076883316,
+          "relevance": 0.09199067205190659,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "df9f8167-bd78-5635-8dd9-4d497325f1c5",
+          "type": "class",
+          "title": "BaseClient",
+          "relevance": 0.09199067205190659,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "93ea0c80-6431-5e84-a4ab-587ca7328c66",
+          "type": "file",
+          "title": "test_headers.py",
+          "relevance": 0.08461681008338928,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
+          "type": "knowledge",
+          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
+          "relevance": 0.06335486471652985,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1286,15 +1341,6 @@
           "stale": null
         },
         {
-          "id": "85b2f5a2-a29e-5d6d-b7f9-efcbe06de235",
-          "type": "file",
-          "title": "_auth.py",
-          "relevance": 0.05173511430621147,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "6bd4b3fe-b46c-4762-87f5-32135de6a963",
           "type": "knowledge",
           "title": "Timeout behavior is four separate phases",
@@ -1313,37 +1359,19 @@
           "stale": null
         },
         {
-          "id": "8bf20482-5712-5e98-887e-95be4e7a2b5a",
-          "type": "class",
-          "title": "HTTPTransport",
-          "relevance": 0.05337749794125557,
+          "id": "a59b015c-0ff9-4a2e-8d40-e41942901cc8",
+          "type": "observation",
+          "title": "Remove unused type: ignore (#3038)",
+          "relevance": 0.05692756175994873,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "9d53ce7a-5719-53f9-8e58-da48f8038522",
-          "type": "class",
-          "title": "AsyncHTTPTransport",
-          "relevance": 0.05337749794125557,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e2885b2a-926f-5649-8806-826b3017a4ea",
-          "type": "file",
-          "title": "default.py",
-          "relevance": 0.05337749794125557,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5dba69d4-271d-522f-8e02-9a6b906e55cb",
-          "type": "class",
-          "title": "AsyncClient",
-          "relevance": 0.09153646230697632,
+          "id": "baa0b9c2-9aaa-418a-9128-cc057c219c16",
+          "type": "observation",
+          "title": "Use standard logging style (#2547)",
+          "relevance": 0.05692756175994873,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1376,55 +1404,64 @@
           "stale": null
         },
         {
-          "id": "a59b015c-0ff9-4a2e-8d40-e41942901cc8",
-          "type": "observation",
-          "title": "Remove unused type: ignore (#3038)",
-          "relevance": 0.05692756175994873,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
-          "relevance": 0.06335486471652985,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "baa0b9c2-9aaa-418a-9128-cc057c219c16",
-          "type": "observation",
-          "title": "Use standard logging style (#2547)",
-          "relevance": 0.05692756175994873,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "93ea0c80-6431-5e84-a4ab-587ca7328c66",
+          "id": "e2885b2a-926f-5649-8806-826b3017a4ea",
           "type": "file",
-          "title": "test_headers.py",
-          "relevance": 0.08461681008338928,
+          "title": "default.py",
+          "relevance": 0.05337749794125557,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "id": "85b2f5a2-a29e-5d6d-b7f9-efcbe06de235",
           "type": "file",
-          "title": "test_config.py",
-          "relevance": 0.16923362016677856,
+          "title": "_auth.py",
+          "relevance": 0.05173511430621147,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
-          "type": "rule",
-          "title": "Always set an explicit timeout on Client",
-          "relevance": 0.16923362016677856,
+          "id": "76130956-79f5-5ac2-80cd-819d1e4098ad",
+          "type": "function",
+          "title": "test_client_base_url_without_trailing_slash",
+          "relevance": 0.14929859340190887,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8cb0ca48-2c26-5f11-8ccf-84e7ddd26509",
+          "type": "function",
+          "title": "test_client_base_url",
+          "relevance": 0.14929859340190887,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6065747f-8e5b-5182-81da-722bfbb99925",
+          "type": "function",
+          "title": "test_client_queryparams_string",
+          "relevance": 0.14387096464633942,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8432e059-8d8f-5cd5-83c0-893bcd74a2e8",
+          "type": "function",
+          "title": "test_client_base_url_with_trailing_slash",
+          "relevance": 0.1384381353855133,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "84c782df-74bc-5331-994a-46db7a2c5b02",
+          "type": "function",
+          "title": "test_client_headers",
+          "relevance": 0.1384381353855133,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1441,20 +1478,20 @@
         "knowledge_gradient": 0.007046198375549451,
         "knowledge_strength": 0.619073081707139
       },
-      "latency_ms": 1121,
+      "latency_ms": 324,
       "results": []
     },
     {
       "id": "hn03",
       "search_mode": "hybrid",
-      "filtered_count": 314,
+      "filtered_count": 286,
       "signals": {
         "code_gradient": 0.01169501360309555,
         "code_strength": 0.28178575831536773,
         "knowledge_gradient": 0.02103785330726544,
         "knowledge_strength": 0.680380086346983
       },
-      "latency_ms": 1305,
+      "latency_ms": 561,
       "results": [
         {
           "id": "280c3f8b-4512-583d-8c0a-629a15422769",
@@ -1637,55 +1674,46 @@
           "stale": null
         },
         {
-          "id": "037f8c26-3a53-5b34-ab8f-77412f123aad",
-          "type": "file",
-          "title": "asgi.py",
-          "relevance": 0.07830198109149933,
+          "id": "0c07b7d4-00bd-5e67-9e94-cbe9bb0e16af",
+          "type": "function",
+          "title": "get",
+          "relevance": 0.17895755171775818,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "20e60548-e5f4-48fe-80e7-2f781bfb4be6",
-          "type": "observation",
-          "title": "fix typo (#3519)",
-          "relevance": 0.06262031197547913,
+          "id": "a2aa8c00-0c99-5ef7-bbe2-06d229889703",
+          "type": "function",
+          "title": "patch",
+          "relevance": 0.17895755171775818,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
-          "type": "knowledge",
-          "title": "Public API is re-exported from underscore modules",
-          "relevance": 0.06262031197547913,
+          "id": "ba2ba326-9405-56a6-a20f-0061be8db62b",
+          "type": "function",
+          "title": "put",
+          "relevance": 0.17895755171775818,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "2c08cc74-ee6f-4446-bb5e-42408589d17f",
-          "type": "observation",
-          "title": "Add the 'proxy' parameter and deprecate 'proxies'. (#2879)",
-          "relevance": 0.06672656536102295,
+          "id": "dee14cd2-0158-5630-97a3-18351bd4e1c4",
+          "type": "function",
+          "title": "post",
+          "relevance": 0.17895755171775818,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "383dbcee-97b8-4498-9d03-bff7e5093503",
-          "type": "observation",
-          "title": "add missing type hints to __init__(...) (#2938)",
-          "relevance": 0.06262031197547913,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "41fc8937-758d-4fa5-b514-15cb72864b6e",
-          "type": "observation",
-          "title": "Add `NetRCAuth()` class. (#2535)",
-          "relevance": 0.06262031197547913,
+          "id": "17d8bee2-0409-58db-9104-76f63abd9d71",
+          "type": "function",
+          "title": "test_logging",
+          "relevance": 0.14913128316402435,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1700,91 +1728,10 @@
           "stale": null
         },
         {
-          "id": "653a168a-b1dd-4ad8-a6b6-f2534737170f",
-          "type": "observation",
-          "title": "Define and expose the API from the same place (#3106)",
-          "relevance": 0.06262031197547913,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6b0f1b52-8417-4d36-834d-b56a5949aca8",
-          "type": "rule",
-          "title": "Behavior must hold for sync and async paths",
-          "relevance": 0.06672656536102295,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8eac3896-2511-4533-a72e-d28db17ec169",
-          "type": "observation",
-          "title": "Introduce new `SSLContext` API & escalate deprecations. (#3319)",
-          "relevance": 0.06167152151465416,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "96e21085-8a19-4125-926f-367ea8babdf1",
-          "type": "knowledge",
-          "title": "Timeouts are a 4-tuple: connect, read, write, pool",
-          "relevance": 0.05732845515012741,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "98c25da6-9726-4aef-995b-5c5c20a05041",
           "type": "knowledge",
           "title": "In-process testing uses WSGITransport or ASGITransport",
           "relevance": 0.125270277261734,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
-          "relevance": 0.05732845515012741,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "baa0b9c2-9aaa-418a-9128-cc057c219c16",
-          "type": "observation",
-          "title": "Use standard logging style (#2547)",
-          "relevance": 0.06262031197547913,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
-          "type": "class",
-          "title": "Client",
-          "relevance": 0.08349338173866272,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "efdf699b-ea8c-434e-852c-6f5850f0f7c3",
-          "type": "observation",
-          "title": "Ruff linter: Use the default line-length (#2922)",
-          "relevance": 0.06262031197547913,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f66f6067-9651-419e-97f1-c7fc23ef02f7",
-          "type": "observation",
-          "title": "Fix client.send() timeout new Request instance (#3116)",
-          "relevance": 0.06262031197547913,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1808,10 +1755,145 @@
           "stale": null
         },
         {
-          "id": "17d8bee2-0409-58db-9104-76f63abd9d71",
+          "id": "7a08dbcf-8c37-564b-b529-afa8a45a402c",
+          "type": "class",
+          "title": "WSGIByteStream",
+          "relevance": 0.08947877585887909,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "07378fad-3a52-5055-a592-cddfe3ffa16d",
+          "type": "class",
+          "title": "BoundAsyncStream",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "17ee05a5-1afd-549d-ad80-b70d910835e3",
+          "type": "class",
+          "title": "UseClientDefault",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "29a6a8d5-10f2-5e3f-a0ab-34e1e3dd94a0",
+          "type": "class",
+          "title": "ClientState",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5dba69d4-271d-522f-8e02-9a6b906e55cb",
+          "type": "class",
+          "title": "AsyncClient",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
+          "type": "class",
+          "title": "Client",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c5fb26e9-5162-5d03-b7b3-f5cb1c5146bc",
+          "type": "class",
+          "title": "BoundSyncStream",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "df9f8167-bd78-5635-8dd9-4d497325f1c5",
+          "type": "class",
+          "title": "BaseClient",
+          "relevance": 0.08258247375488281,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "037f8c26-3a53-5b34-ab8f-77412f123aad",
+          "type": "file",
+          "title": "asgi.py",
+          "relevance": 0.07830198109149933,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2c08cc74-ee6f-4446-bb5e-42408589d17f",
+          "type": "observation",
+          "title": "Add the 'proxy' parameter and deprecate 'proxies'. (#2879)",
+          "relevance": 0.06672656536102295,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6b0f1b52-8417-4d36-834d-b56a5949aca8",
+          "type": "rule",
+          "title": "Behavior must hold for sync and async paths",
+          "relevance": 0.06672656536102295,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bb07fce5-c0e3-5f33-ac9b-62eae36aae9e",
           "type": "function",
-          "title": "test_logging",
-          "relevance": 0.14913128316402435,
+          "title": "_redirect_headers",
+          "relevance": 0.10693548619747162,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "936f39b4-d78d-5fe0-8434-04daeb39d27c",
+          "type": "function",
+          "title": "options",
+          "relevance": 0.10098360478878021,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a47468a4-57bc-50a1-9b88-1467798af785",
+          "type": "function",
+          "title": "test_get",
+          "relevance": 0.10098360478878021,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d1d1655b-314d-546a-b512-210ebe44402a",
+          "type": "function",
+          "title": "_redirect_url",
+          "relevance": 0.10098360478878021,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "132dff79-a3a1-51cd-ad5e-38f00a50e4e6",
+          "type": "function",
+          "title": "test_load_ssl_with_keylog",
+          "relevance": 0.0950000062584877,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1821,14 +1903,14 @@
     {
       "id": "hn04",
       "search_mode": "hybrid",
-      "filtered_count": 477,
+      "filtered_count": 444,
       "signals": {
         "code_gradient": 0.008093874258779655,
         "code_strength": 0.2862086814071721,
         "knowledge_gradient": 0.02472464556841303,
         "knowledge_strength": 0.6421964426663228
       },
-      "latency_ms": 1278,
+      "latency_ms": 559,
       "results": [
         {
           "id": "970ba8ff-9e76-5e3e-b079-2cce3bec702f",
@@ -2011,96 +2093,6 @@
           "stale": null
         },
         {
-          "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
-          "type": "class",
-          "title": "Client",
-          "relevance": 0.057748276740312576,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8bf20482-5712-5e98-887e-95be4e7a2b5a",
-          "type": "class",
-          "title": "HTTPTransport",
-          "relevance": 0.057748276740312576,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "01b10bfc-1da0-54cf-a395-4b51754a0ed6",
-          "type": "file",
-          "title": "test_wsgi.py",
-          "relevance": 0.10344666987657547,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "51fa98d0-ae00-5c19-819a-d6259b345dd1",
-          "type": "class",
-          "title": "LocalProtocolError",
-          "relevance": 0.10033201426267624,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "72e1d382-0207-573f-b3a2-c26b321d536d",
-          "type": "file",
-          "title": "test_auth.py",
-          "relevance": 0.051283273845911026,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4b90128f-e49f-5782-8744-e9e755e22207",
-          "type": "class",
-          "title": "TransportError",
-          "relevance": 0.10033201426267624,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2567c72c-9236-42b7-a2c4-23746ae23dee",
-          "type": "knowledge",
-          "title": "Mount patterns dispatch requests to transports",
-          "relevance": 0.20689333975315094,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "59fd4027-fcd8-53d0-8fe4-8e7eb29699f1",
-          "type": "function",
-          "title": "test_proxy_with_mounts",
-          "relevance": 0.20689333975315094,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f60e678d-2aec-5a2e-a2a4-b47b1c523d40",
-          "type": "file",
-          "title": "test_proxies.py",
-          "relevance": 0.20689333975315094,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5f57dcae-b6a8-567a-9350-edaf0c2d3f6e",
-          "type": "file",
-          "title": "_utils.py",
-          "relevance": 0.20689333975315094,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
           "type": "function",
           "title": "test_mounted_transport",
@@ -2117,6 +2109,213 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
+        },
+        {
+          "id": "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
+          "type": "file",
+          "title": "test_client.py",
+          "relevance": 0.20689333975315094,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c46e98c3-65f9-593a-907e-58bfc98b3f55",
+          "type": "file",
+          "title": "test_async_client.py",
+          "relevance": 0.20689333975315094,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "51fa98d0-ae00-5c19-819a-d6259b345dd1",
+          "type": "class",
+          "title": "LocalProtocolError",
+          "relevance": 0.20518480241298676,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "01b10bfc-1da0-54cf-a395-4b51754a0ed6",
+          "type": "file",
+          "title": "test_wsgi.py",
+          "relevance": 0.10344666987657547,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "059498ff-9d44-5277-a404-36946bdfc5d3",
+          "type": "class",
+          "title": "StreamClosed",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0e849e0a-c092-5f1f-90bf-0d281d9e14d1",
+          "type": "class",
+          "title": "RequestNotRead",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "11db4ad2-c556-5960-806c-cc5ff5f24705",
+          "type": "class",
+          "title": "TimeoutException",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "23061728-2317-5f95-8204-966e37fc498e",
+          "type": "class",
+          "title": "PoolTimeout",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "24a95b0b-deb1-58ff-87c2-61b988e44f63",
+          "type": "class",
+          "title": "ReadTimeout",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "271077d5-ecd4-533f-b75c-04c2bc7bc119",
+          "type": "class",
+          "title": "ConnectError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
+          "type": "class",
+          "title": "DecodingError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "440dd853-0991-5501-9959-d161ca6af688",
+          "type": "class",
+          "title": "HTTPStatusError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "46ccfd6e-3b8d-5f28-a936-83ef9d1e8eb3",
+          "type": "class",
+          "title": "NetworkError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4b387de0-b846-5474-a7fd-35dfedad1b6e",
+          "type": "class",
+          "title": "ResponseNotRead",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4b90128f-e49f-5782-8744-e9e755e22207",
+          "type": "class",
+          "title": "TransportError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "56db3f51-a44d-5642-a9c3-b4207734cd3a",
+          "type": "class",
+          "title": "StreamError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "656f1e3e-701a-521c-92f2-20e26b5ce08e",
+          "type": "class",
+          "title": "WriteError",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "721b9414-2cd7-5d64-befc-601272e7178f",
+          "type": "class",
+          "title": "TooManyRedirects",
+          "relevance": 0.10259240120649338,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "280c3f8b-4512-583d-8c0a-629a15422769",
+          "type": "class",
+          "title": "WSGITransport",
+          "relevance": 0.08115384727716446,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "47bbea53-daa8-58fd-8d95-42cca8809421",
+          "type": "function",
+          "title": "slow_response",
+          "relevance": 0.08115384727716446,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "577cfe9d-c9eb-5b99-8e91-2e9ad29e415b",
+          "type": "function",
+          "title": "handle_request",
+          "relevance": 0.08115384727716446,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "874cc222-1421-5a68-8a5d-ff476cf0d836",
+          "type": "function",
+          "title": "__init__",
+          "relevance": 0.08115384727716446,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9d53ce7a-5719-53f9-8e58-da48f8038522",
+          "type": "class",
+          "title": "AsyncHTTPTransport",
+          "relevance": 0.08115384727716446,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
         }
       ]
     },
@@ -2130,7 +2329,7 @@
         "knowledge_gradient": 0.012980228603951871,
         "knowledge_strength": 0.6162188750665525
       },
-      "latency_ms": 850,
+      "latency_ms": 347,
       "results": []
     }
   ]

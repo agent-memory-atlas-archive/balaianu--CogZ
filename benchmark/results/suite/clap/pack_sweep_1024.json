@@ -5,12 +5,12 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1840.4,
+    "cold_first_ms": 1804.6,
     "n": 15,
-    "p50_ms": 474.5,
-    "p95_ms": 760.7,
-    "p99_ms": 779.6,
-    "mean_ms": 577.4,
+    "p50_ms": 458.2,
+    "p95_ms": 831.0,
+    "p99_ms": 892.4,
+    "mean_ms": 589.6,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -22,7 +22,7 @@
      "sections": 13,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 71,
+     "dropped": 81,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -35,7 +35,7 @@
      "sections": 24,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 60,
+     "dropped": 70,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -50,7 +50,7 @@
      "sections": 17,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 53,
+     "dropped": 77,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -61,16 +61,16 @@
     },
     {
      "query": "data validation logic",
-     "sections": 17,
+     "sections": 18,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 44,
+     "dropped": 72,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "module/full": 1,
       "class/full": 2,
-      "function/full": 9,
+      "function/full": 10,
       "file/full": 1
      }
     },
@@ -94,12 +94,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 345.6,
+    "cold_first_ms": 434.7,
     "n": 15,
-    "p50_ms": 388.6,
-    "p95_ms": 525.8,
-    "p99_ms": 542.4,
-    "mean_ms": 410.1,
+    "p50_ms": 465.0,
+    "p95_ms": 637.2,
+    "p99_ms": 891.7,
+    "mean_ms": 482.3,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -111,7 +111,7 @@
      "sections": 13,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 71,
+     "dropped": 81,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -124,7 +124,7 @@
      "sections": 17,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 67,
+     "dropped": 77,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -141,7 +141,7 @@
      "sections": 18,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 66,
+     "dropped": 76,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -153,13 +153,14 @@
     },
     {
      "query": "data validation logic",
-     "sections": 18,
+     "sections": 19,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 66,
+     "dropped": 75,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
+      "rule/full": 1,
       "module/full": 1,
       "knowledge/full": 2,
       "function/full": 10,
@@ -177,7 +178,8 @@
       "identity/baseline": 1,
       "knowledge/full": 1,
       "file/full": 3,
-      "function/full": 5
+      "function/full": 4,
+      "rule/full": 1
      }
     }
    ]

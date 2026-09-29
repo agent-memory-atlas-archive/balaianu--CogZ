@@ -1,0 +1,142 @@
+{"premise": "The frontmatter parser is a hand-rolled YAML subset handling only scalars and inline arrays.", "hypothesis": "CogZ does not depend on a full YAML library for entity frontmatter.", "label": "entailment"}
+{"premise": "The frontmatter parser is a hand-rolled YAML subset handling only scalars and inline arrays.", "hypothesis": "CogZ uses a complete YAML implementation for frontmatter parsing.", "label": "contradiction"}
+{"premise": "Entity file slugs are limited to 60 characters.", "hypothesis": "A slug longer than 60 characters is truncated.", "label": "entailment"}
+{"premise": "Entity file slugs are limited to 60 characters.", "hypothesis": "Entity file slugs have no length limit.", "label": "contradiction"}
+{"premise": "A stale entity re-activates automatically when all its references resolve active again.", "hypothesis": "Reverting the deleted code can return a stale entity to active status.", "label": "entailment"}
+{"premise": "A stale entity re-activates automatically when all its references resolve active again.", "hypothesis": "Once stale, an entity can never become active again.", "label": "contradiction"}
+{"premise": "Manually-flagged stale entities are never auto-reactivated.", "hypothesis": "A user-flagged stale entity stays stale until a human changes it.", "label": "entailment"}
+{"premise": "Manually-flagged stale entities are never auto-reactivated.", "hypothesis": "Manually-flagged stale entities reactivate when references resolve.", "label": "contradiction"}
+{"premise": "Illegal status transitions are rejected by transition_status with an IllegalTransition error.", "hypothesis": "The state machine is enforced: an active entity cannot jump straight to pruned.", "label": "entailment"}
+{"premise": "Illegal status transitions are rejected by transition_status with an IllegalTransition error.", "hypothesis": "Entities can transition between any two statuses freely.", "label": "contradiction"}
+{"premise": "Drifted entities stay active and retrievable but are demoted in search ranking.", "hypothesis": "An entity whose referenced code changed still appears in search results.", "label": "entailment"}
+{"premise": "Drifted entities stay active and retrievable but are demoted in search ranking.", "hypothesis": "Drifted entities are deleted from the database.", "label": "contradiction"}
+{"premise": "verified_against entries are never rewritten except by cogz verify.", "hypothesis": "Indexing alone does not re-stamp verified_against provenance.", "label": "entailment"}
+{"premise": "verified_against entries are never rewritten except by cogz verify.", "hypothesis": "verified_against is rewritten on every index run.", "label": "contradiction"}
+{"premise": "The entity_drift table is recomputed on every index and never written to canonical files.", "hypothesis": "Drift state lives in the database, not in entity frontmatter.", "label": "entailment"}
+{"premise": "The entity_drift table is recomputed on every index and never written to canonical files.", "hypothesis": "Drift state is persisted into entity markdown files.", "label": "contradiction"}
+{"premise": "Code entity UUIDs are derived deterministically from file path, entity type, and qualified name.", "hypothesis": "The same function in the same file gets the same UUID across rebuilds.", "label": "entailment"}
+{"premise": "Code entity UUIDs are derived deterministically from file path, entity type, and qualified name.", "hypothesis": "Code entities receive random UUIDs on each index run.", "label": "contradiction"}
+{"premise": "Code entity paths are normalized to forward slashes on all platforms.", "hypothesis": "A source file produces the same code-entity UUID on Linux and Windows.", "label": "entailment"}
+{"premise": "Code entity paths are normalized to forward slashes on all platforms.", "hypothesis": "Code entity UUIDs differ between operating systems.", "label": "contradiction"}
+{"premise": "CogZ indexes code in Rust, Python, Go, JavaScript, TypeScript, TSX, and Bash.", "hypothesis": "TSX files are parsed by the code indexer.", "label": "entailment"}
+{"premise": "CogZ indexes code in Rust, Python, Go, JavaScript, TypeScript, TSX, and Bash.", "hypothesis": "CogZ indexes Ruby source files.", "label": "contradiction"}
+{"premise": "auto_references edges exist only in the database, not in entity frontmatter.", "hypothesis": "Auto-extracted knowledge-to-code links are fully rebuildable on reindex.", "label": "entailment"}
+{"premise": "auto_references edges exist only in the database, not in entity frontmatter.", "hypothesis": "auto_references are written into entity markdown files.", "label": "contradiction"}
+{"premise": "Test files are excluded from search results by default.", "hypothesis": "A query will not return test fixtures unless include_tests is set.", "label": "entailment"}
+{"premise": "Test files are excluded from search results by default.", "hypothesis": "Test files always appear in search results.", "label": "contradiction"}
+{"premise": "Observations are prunable only after the retention period, default 90 days.", "hypothesis": "A rejected observation becomes eligible for pruning 90 days after the cutoff.", "label": "entailment"}
+{"premise": "Observations are prunable only after the retention period, default 90 days.", "hypothesis": "Observations are prunable after 30 days.", "label": "contradiction"}
+{"premise": "Pruned entities keep their graph edges while content, embedding, and FTS entries are removed.", "hypothesis": "Graph traversal can still reach a pruned tombstone.", "label": "entailment"}
+{"premise": "Pruned entities keep their graph edges while content, embedding, and FTS entries are removed.", "hypothesis": "Pruning deletes all edges connected to the entity.", "label": "contradiction"}
+{"premise": "The embedding dedup check flags pairs above cosine similarity 0.85.", "hypothesis": "Two entities with 0.9 cosine similarity are flagged as duplicates.", "label": "entailment"}
+{"premise": "The embedding dedup check flags pairs above cosine similarity 0.85.", "hypothesis": "The dedup check flags pairs above cosine similarity 0.5.", "label": "contradiction"}
+{"premise": "Dedup flags duplicates on insert but never merges them.", "hypothesis": "Insertion can report a duplicate while still creating the entity.", "label": "entailment"}
+{"premise": "Dedup flags duplicates on insert but never merges them.", "hypothesis": "Duplicate entities are merged automatically at insert time.", "label": "contradiction"}
+{"premise": "Contradiction candidates are same-type entities above cosine 0.85 with length ratio under 5.", "hypothesis": "An observation cannot be checked for contradiction against a rule.", "label": "entailment"}
+{"premise": "Contradiction candidates are same-type entities above cosine 0.85 with length ratio under 5.", "hypothesis": "Contradiction candidates can be entities of different types.", "label": "contradiction"}
+{"premise": "A pair is flagged as contradicting when P(contradiction) exceeds 0.70.", "hypothesis": "A contradiction probability of 0.5 does not trigger a flag.", "label": "entailment"}
+{"premise": "A pair is flagged as contradicting when P(contradiction) exceeds 0.70.", "hypothesis": "A pair is flagged when P(contradiction) exceeds 0.5.", "label": "contradiction"}
+{"premise": "An entity flagged for contradiction is still created, with the flag left for review.", "hypothesis": "Contradiction flags do not block entity creation.", "label": "entailment"}
+{"premise": "An entity flagged for contradiction is still created, with the flag left for review.", "hypothesis": "Flagged contradictions are rejected and not stored.", "label": "contradiction"}
+{"premise": "An observation is promoted to a rule once it has three or more supporting observations.", "hypothesis": "Two supporting observations are not enough for promotion.", "label": "entailment"}
+{"premise": "An observation is promoted to a rule once it has three or more supporting observations.", "hypothesis": "An observation needs five supporters to be promoted.", "label": "contradiction"}
+{"premise": "Promotion creates a new rule without mutating the source observation.", "hypothesis": "The original observation remains unchanged after promotion.", "label": "entailment"}
+{"premise": "Promotion creates a new rule without mutating the source observation.", "hypothesis": "Promotion rewrites the source observation's content.", "label": "contradiction"}
+{"premise": "Merge requires bidirectional entailment above 0.85 in both directions.", "hypothesis": "A pair where only A entails B is not merged.", "label": "entailment"}
+{"premise": "Merge requires bidirectional entailment above 0.85 in both directions.", "hypothesis": "Merge happens when entailment holds in a single direction.", "label": "contradiction"}
+{"premise": "Without the NLI model, merge candidates are reported but never merged.", "hypothesis": "Merge is conservative: no NLI confirmation means no merge.", "label": "entailment"}
+{"premise": "Without the NLI model, merge candidates are reported but never merged.", "hypothesis": "Without the NLI model, high-similarity pairs are merged anyway.", "label": "contradiction"}
+{"premise": "In a merge, the earlier-created entity survives and the later one is superseded.", "hypothesis": "The surviving entity is the older of the two.", "label": "entailment"}
+{"premise": "In a merge, the earlier-created entity survives and the later one is superseded.", "hypothesis": "In a merge, the later-created entity survives.", "label": "contradiction"}
+{"premise": "Merging redirects all edges from the superseded entity to the survivor.", "hypothesis": "References pointing at the merged-away entity end up pointing at the survivor.", "label": "entailment"}
+{"premise": "Merging redirects all edges from the superseded entity to the survivor.", "hypothesis": "Edges of the superseded entity are deleted during merge.", "label": "contradiction"}
+{"premise": "Knowledge and rules are flagged as near-duplicates for human review, not auto-merged.", "hypothesis": "Automatic merge applies only to observations.", "label": "entailment"}
+{"premise": "Knowledge and rules are flagged as near-duplicates for human review, not auto-merged.", "hypothesis": "Knowledge entities are merged automatically like observations.", "label": "contradiction"}
+{"premise": "Models are skipped when available RAM falls below 512 MB by default.", "hypothesis": "The system prefers FTS-only mode over causing swap pressure.", "label": "entailment"}
+{"premise": "Models are skipped when available RAM falls below 512 MB by default.", "hypothesis": "Models load regardless of available memory.", "label": "contradiction"}
+{"premise": "Models are lazy-loaded: the ONNX runtime loads on first embed or classify call.", "hypothesis": "Constructing the model object does not load ONNX weights.", "label": "entailment"}
+{"premise": "Models are lazy-loaded: the ONNX runtime loads on first embed or classify call.", "hypothesis": "ONNX models are loaded eagerly at startup.", "label": "contradiction"}
+{"premise": "Models are unloaded after 300 seconds of inactivity by default.", "hypothesis": "Idle models release their memory after five minutes.", "label": "entailment"}
+{"premise": "Models are unloaded after 300 seconds of inactivity by default.", "hypothesis": "Once loaded, models stay in memory until process exit.", "label": "contradiction"}
+{"premise": "With only the code model available, search runs in code_hybrid mode.", "hypothesis": "Partial model availability still enables vector search for one channel.", "label": "entailment"}
+{"premise": "With only the code model available, search runs in code_hybrid mode.", "hypothesis": "A single missing model forces full FTS-only mode.", "label": "contradiction"}
+{"premise": "Hooks should pass --fts-only to avoid loading the ONNX runtime per call.", "hypothesis": "A hook call with --fts-only completes in about half a second.", "label": "entailment"}
+{"premise": "Hooks should pass --fts-only to avoid loading the ONNX runtime per call.", "hypothesis": "Hook calls must load the ONNX runtime every time.", "label": "contradiction"}
+{"premise": "clean_broken_cache removes .incomplete files older than one hour before every model load.", "hypothesis": "Failed partial downloads do not accumulate forever.", "label": "entailment"}
+{"premise": "clean_broken_cache removes .incomplete files older than one hour before every model load.", "hypothesis": "Partial download files are never cleaned up.", "label": "contradiction"}
+{"premise": "The silence gate is skipped entirely in FTS-only mode.", "hypothesis": "FTS-only search never returns an empty silence response.", "label": "entailment"}
+{"premise": "The silence gate is skipped entirely in FTS-only mode.", "hypothesis": "The silence gate also applies when no models are loaded.", "label": "contradiction"}
+{"premise": "The RRF smoothing constant rrf_k defaults to 60.", "hypothesis": "Lower rrf_k values would produce sharper rank separation.", "label": "entailment"}
+{"premise": "The RRF smoothing constant rrf_k defaults to 60.", "hypothesis": "The RRF smoothing constant rrf_k defaults to 10.", "label": "contradiction"}
+{"premise": "FTS5, knowledge-vector, and code-vector channels carry weights 0.3, 0.4, and 0.3.", "hypothesis": "The knowledge vector channel has the largest merge weight.", "label": "entailment"}
+{"premise": "FTS5, knowledge-vector, and code-vector channels carry weights 0.3, 0.4, and 0.3.", "hypothesis": "The FTS channel carries the largest merge weight.", "label": "contradiction"}
+{"premise": "The detect merge strategy infers code versus knowledge intent per query.", "hypothesis": "A code-shaped query shifts merge weight toward the code channel.", "label": "entailment"}
+{"premise": "The detect merge strategy infers code versus knowledge intent per query.", "hypothesis": "The merge always splits weight fifty-fifty between channels.", "label": "contradiction"}
+{"premise": "Absolute cosine scores are not comparable between the bge and CodeRankEmbed models.", "hypothesis": "A 0.5 code-model cosine can be a stronger match than a 0.7 knowledge cosine.", "label": "entailment"}
+{"premise": "Absolute cosine scores are not comparable between the bge and CodeRankEmbed models.", "hypothesis": "Cosine scores are directly comparable across the two embedding models.", "label": "contradiction"}
+{"premise": "The provenance boost counts only curated edge types, excluding auto_references.", "hypothesis": "Generated links do not raise an entity's provenance score.", "label": "entailment"}
+{"premise": "The provenance boost counts only curated edge types, excluding auto_references.", "hypothesis": "All edge types contribute to the provenance in-degree count.", "label": "contradiction"}
+{"premise": "MMR diversification only penalizes similarity within the same embedding channel.", "hypothesis": "A code entity and a knowledge entity are never MMR-penalized against each other.", "label": "entailment"}
+{"premise": "MMR diversification only penalizes similarity within the same embedding channel.", "hypothesis": "MMR compares embeddings across the code and knowledge channels.", "label": "contradiction"}
+{"premise": "The silence gate applies only to agent-facing search; context packs bypass it.", "hypothesis": "A context pack ships whatever passes the relevance floor even on weak signal.", "label": "entailment"}
+{"premise": "The silence gate applies only to agent-facing search; context packs bypass it.", "hypothesis": "Context packs return empty when the silence gate fires.", "label": "contradiction"}
+{"premise": "Graph-first retrieval traverses only curated edge types, not structural ones.", "hypothesis": "calls and contains edges cannot seed graph-first candidates.", "label": "entailment"}
+{"premise": "Graph-first retrieval traverses only curated edge types, not structural ones.", "hypothesis": "Graph-first retrieval traverses all edge types including imports.", "label": "contradiction"}
+{"premise": "A candidate's graph score sums contributions over all seeds and paths.", "hypothesis": "Entities reachable from several seeds outrank single-seed candidates.", "label": "entailment"}
+{"premise": "A candidate's graph score sums contributions over all seeds and paths.", "hypothesis": "The first seed to reach a candidate claims it exclusively.", "label": "contradiction"}
+{"premise": "KNN seeds below cosine 0.7 can traverse but their exclusive candidates are demoted.", "hypothesis": "A weak KNN seed alone cannot put a candidate into a direct slot.", "label": "entailment"}
+{"premise": "KNN seeds below cosine 0.7 can traverse but their exclusive candidates are demoted.", "hypothesis": "KNN seeds of any similarity produce direct-slot candidates.", "label": "contradiction"}
+{"premise": "PRF mines terms appearing in at least two of the top five FTS hits for a second pass.", "hypothesis": "PRF is a vocabulary-mismatch recall path that works without embeddings.", "label": "entailment"}
+{"premise": "PRF mines terms appearing in at least two of the top five FTS hits for a second pass.", "hypothesis": "PRF requires the embedding model to expand the query.", "label": "contradiction"}
+{"premise": "Task mode expands at most 2 hops and escalation mode at most 3.", "hypothesis": "Escalation mode permits deeper graph traversal than task mode.", "label": "entailment"}
+{"premise": "Task mode expands at most 2 hops and escalation mode at most 3.", "hypothesis": "Graph expansion has no hop limit.", "label": "contradiction"}
+{"premise": "The --code flag embeds queries with CodeRankEmbed and a fixed query prefix.", "hypothesis": "Code queries are automatically prefixed before embedding.", "label": "entailment"}
+{"premise": "The --code flag embeds queries with CodeRankEmbed and a fixed query prefix.", "hypothesis": "The same embedding model handles code and knowledge queries.", "label": "contradiction"}
+{"premise": "Knowledge and code embeddings are stored in separate vec0 tables.", "hypothesis": "KNN never compares vectors across the two embedding spaces.", "label": "entailment"}
+{"premise": "Knowledge and code embeddings are stored in separate vec0 tables.", "hypothesis": "All embeddings share one vector table.", "label": "contradiction"}
+{"premise": "session_end runs consolidation including promotion and merge.", "hypothesis": "Ending a session can promote observations to rules.", "label": "entailment"}
+{"premise": "session_end runs consolidation including promotion and merge.", "hypothesis": "session_end only records the event and does nothing else.", "label": "contradiction"}
+{"premise": "file_save triggers a single-file reindex for source files.", "hypothesis": "Saving a Rust file reindexes just that file, not the whole tree.", "label": "entailment"}
+{"premise": "file_save triggers a single-file reindex for source files.", "hypothesis": "Every file save triggers a full repository reindex.", "label": "contradiction"}
+{"premise": "pre_tool_use records the event only, with no output to the agent.", "hypothesis": "pre_tool_use exists purely for the audit trail.", "label": "entailment"}
+{"premise": "pre_tool_use records the event only, with no output to the agent.", "hypothesis": "pre_tool_use injects a context pack before every tool call.", "label": "contradiction"}
+{"premise": "When no .cogz directory exists, the hook prints empty JSON and exits silently.", "hypothesis": "The hook is a no-op in repositories that do not use CogZ.", "label": "entailment"}
+{"premise": "When no .cogz directory exists, the hook prints empty JSON and exits silently.", "hypothesis": "The hook fails with an error when .cogz is missing.", "label": "contradiction"}
+{"premise": "file_save pushes the active rules that govern the saved file's path.", "hypothesis": "Saving a governed file surfaces its rules as a compact pack.", "label": "entailment"}
+{"premise": "file_save pushes the active rules that govern the saved file's path.", "hypothesis": "file_save returns no contextual output.", "label": "contradiction"}
+{"premise": "The frontmatter parser is a hand-rolled YAML subset.", "hypothesis": "Search combines FTS5 and vector scores with reciprocal rank fusion.", "label": "neutral"}
+{"premise": "Entity file slugs are limited to 60 characters.", "hypothesis": "The knowledge embedding model produces 768-dimensional vectors.", "label": "neutral"}
+{"premise": "Illegal status transitions are rejected with an IllegalTransition error.", "hypothesis": "Migrations run automatically on first open.", "label": "neutral"}
+{"premise": "Drifted entities are demoted by a 0.7 multiplier per diverging reference.", "hypothesis": "Context packs are assembled per prompt-submit event.", "label": "neutral"}
+{"premise": "Code entities use deterministic UUID v5 values.", "hypothesis": "The embed-bg command spawns background embedding workers.", "label": "neutral"}
+{"premise": "CogZ indexes code in Rust, Python, Go, JavaScript, TypeScript, TSX, and Bash.", "hypothesis": "The binary weighs about 28 MB on disk.", "label": "neutral"}
+{"premise": "Dedup flags duplicates on insert but never merges them.", "hypothesis": "Hooks capture session_start lifecycle events.", "label": "neutral"}
+{"premise": "An observation is promoted to a rule once it has three or more supporting observations.", "hypothesis": "Token counting uses a chars-divided-by-4 heuristic.", "label": "neutral"}
+{"premise": "Merge requires bidirectional entailment above 0.85.", "hypothesis": "The NLI model runs via ONNX Runtime.", "label": "neutral"}
+{"premise": "The silence gate is skipped in FTS-only mode.", "hypothesis": "cogz doctor can prune observations.", "label": "neutral"}
+{"premise": "The RRF smoothing constant defaults to 60.", "hypothesis": "cogz models clean removes broken cache artifacts.", "label": "neutral"}
+{"premise": "MMR penalizes similarity only within the same channel.", "hypothesis": "cogz index supports Rust source files.", "label": "neutral"}
+{"premise": "PRF mines terms from the top FTS hits.", "hypothesis": "Model downloads come from HuggingFace via hf-hub.", "label": "neutral"}
+{"premise": "Task mode expands at most 2 hops.", "hypothesis": "The DB schema includes a sessions table.", "label": "neutral"}
+{"premise": "session_end runs consolidation.", "hypothesis": "Edges are stored in a separate SQLite table.", "label": "neutral"}
+{"premise": "file_save triggers a single-file reindex.", "hypothesis": "CodeRankEmbed produces 768-dimensional embeddings.", "label": "neutral"}
+{"premise": "pre_tool_use records the event only.", "hypothesis": "Knowledge files use YAML frontmatter.", "label": "neutral"}
+{"premise": "The provenance boost counts curated edges only.", "hypothesis": "The CLI prints status as a table.", "label": "neutral"}
+{"premise": "Models unload after 300 seconds idle.", "hypothesis": "Observation directories are named by year and month.", "label": "neutral"}
+{"premise": "auto_references edges are DB-only.", "hypothesis": "The Rust binary links against libonnxruntime dynamically.", "label": "neutral"}
+{"premise": "Test files are excluded from search by default.", "hypothesis": "The MCP server speaks JSON-RPC over stdio.", "label": "neutral"}
+{"premise": "A stale entity re-activates when references resolve.", "hypothesis": "The git index tracks .cogz entity files.", "label": "neutral"}
+{"premise": "Contradiction candidates require cosine above 0.85.", "hypothesis": "The release build uses LTO.", "label": "neutral"}
+{"premise": "Promotion does not mutate the source observation.", "hypothesis": "cargo fmt runs in CI.", "label": "neutral"}
+{"premise": "The dedup threshold is 0.85 cosine.", "hypothesis": "Documentation lives under docs/.", "label": "neutral"}
+{"premise": "merge survivor is the earlier-created entity.", "hypothesis": "The config file lives at .cogz/config.toml.", "label": "neutral"}
+{"premise": "Hooks should use --fts-only.", "hypothesis": "The README lists installation steps.", "label": "neutral"}
+{"premise": "clean_broken_cache runs before every model load.", "hypothesis": "Benchmark datasets live under benchmark/.", "label": "neutral"}
+{"premise": "Slugs break on hyphen boundaries at 60 chars.", "hypothesis": "Rust tests run via cargo test.", "label": "neutral"}
+{"premise": "The entity_drift table never writes to files.", "hypothesis": "Clippy warnings fail the build.", "label": "neutral"}
+{"premise": "Stale entities carry stale_reason in frontmatter.", "hypothesis": "The crate uses thiserror for error types.", "label": "neutral"}
+{"premise": "Knowledge entities require a category field.", "hypothesis": "Tracing is the logging facade.", "label": "neutral"}
+{"premise": "Observation source defaults to agent.", "hypothesis": "Tokio is the async runtime.", "label": "neutral"}
+{"premise": "Rules can carry an optional confidence score.", "hypothesis": "The project uses cargo for builds.", "label": "neutral"}
+{"premise": "graph_first traversal is per-seed.", "hypothesis": "Version numbers follow semver.", "label": "neutral"}
+{"premise": "silence_strength_floor defaults to 0.64.", "hypothesis": "LICENSE file is in the repo root.", "label": "neutral"}

@@ -1,0 +1,14 @@
+I'll start by exploring the relevant code — the injected CogZ context points to `src/index/sync.rs` where content hashing happens, and tests referencing a `normalize_content` function.Now let me read the sync module and the test file to understand what's expected.I have the full picture of the tests. Now let me check the `CodeEntity` struct and how language is determined, plus the `db_sync` module.`CodeEntity.properties["language"]` already carries the language string — that's what `normalize_content` needs. Let me check the `CodeEntity` struct and `Language::as_str` values.Let me verify all extractors set the `language` property (including module entities), since `convert_entities` will need it.All entity types carry `properties["language"]`, so `convert_entities` can pull it directly. Let me check the Rust edition and idioms used (`is_none_or` vs `map_or`) before writing the normalizer.Edition 2024, Rust 1.88 — `is_none_or` is available. Now I'll add `normalize_content` to `src/index/sync/mod.rs` and wire it into the hash computation in `convert_entities`.Now let me run the target tests.Cold compile — waiting for the build to finish.All 8 target tests pass. Now verify nothing else broke — full lib test suite plus clippy and fmt (per the repo's pre-commit checklist).All 361 lib tests pass. Now clippy and fmt.Done. All 8 target tests pass, plus the full lib suite (361 tests), `cargo clippy -- -D warnings`, and `cargo fmt --check`.
+
+## Changes — all in `src/index/sync/mod.rs`
+
+**Added `normalize_content(content, language)`** — a single-pass scanner that strips comments before hashing:
+
+- `//` and `/* */` for C-like languages (rust, go, javascript, typescript, tsx); `#` for python and bash
+- String literals are copied verbatim so `"hello # world"` and `"not a // comment"` survive — `'` only counts as a delimiter for hash languages, since in Rust it would misparse lifetimes like `&'a str`
+- For bash, `#` only starts a comment at a word boundary, so `${#x}` and `x#y` aren't mistaken for comments
+- Post-pass trims trailing whitespace per line and drops blank lines; internal whitespace is deliberately preserved so real edits still register
+
+**Wired into `convert_entities`** — the hash is now `content_hash(&normalize_content(&ce.content, language))`, with the language pulled from `ce.properties["language"]` (every extractor, including file entities, sets it). The raw `ce.content` stored in the DB is untouched — only change detection uses the normalized form.
+
+Net effect: a comment-only or blank-line edit produces the same hash → entity skipped → no entry in `changed_code_ids` → no spurious `flag_stale_knowledge` run. Semantic changes (`a + b` → `a * b`) still hash differently and update normally.

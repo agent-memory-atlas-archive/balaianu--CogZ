@@ -227,7 +227,7 @@
     "code_embeddings": 684,
     "knowledge_embeddings": 84,
     "drift_rows": 0,
-    "db_bytes": 8986624,
+    "db_bytes": 47370240,
     "code_entity_langs": {
       "go": 684
     }
@@ -265,7 +265,7 @@
     "code_embeddings": 965,
     "knowledge_embeddings": 86,
     "drift_rows": 0,
-    "db_bytes": 9609216,
+    "db_bytes": 51875840,
     "code_entity_langs": {
       "python": 965
     }
@@ -305,7 +305,7 @@
     "code_embeddings": 4581,
     "knowledge_embeddings": 83,
     "drift_rows": 0,
-    "db_bytes": 31801344,
+    "db_bytes": 84643840,
     "code_entity_langs": {
       "rust": 4549,
       "bash": 32

@@ -12,6 +12,7 @@ Usage:
 """
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -127,19 +128,40 @@ REPLAY_TMP = Path.home() / "cogz_bench" / "replay_tmp"
 CARGO_TARGET = Path.home() / ".cache" / "cogz-replay-target"
 
 
+# Commits of history each worktree carries. The co-change channel
+# needs real `git log` to mine; the fix commit is a descendant of the
+# fetched parent — never transferred — so `git show <fix-sha>` still
+# fails while history up to the parent is real.
+HISTORY_DEPTH = 500
+
+
 def setup_worktree(repo: Path, sha: str, task: dict) -> Path:
-    """Export the parent tree with no upstream history.
+    """Worktree at parent sha with bounded history.
 
     A git worktree shares the repo's full history — the agent can just
-    `git show <fix-sha>` and copy the answer. Export via git archive and
-    init a fresh repo so history starts empty.
+    `git show <fix-sha>` and copy the answer. Export used to mean git
+    archive + fresh init, which starved the co-change channel of the
+    history it mines. Instead: temp branch pinned at the parent sha,
+    shallow fetch of only its ancestors (descendants never transfer),
+    then the test payload applied on top.
     """
     REPLAY_TMP.mkdir(parents=True, exist_ok=True)
     wt = Path(tempfile.mkdtemp(prefix=f"cogz_replay_{sha[:8]}_",
                                dir=REPLAY_TMP))
-    arc = subprocess.run(["git", "-C", str(repo), "archive", f"{sha}^"],
-                         capture_output=True)
-    subprocess.run(["tar", "-x"], input=arc.stdout, cwd=wt, check=True)
+    parent = git(repo, "rev-parse", f"{sha}^").stdout.strip()
+    tmp_branch = f"replay/{sha[:8]}/{wt.name}"
+    git(repo, "branch", "-f", tmp_branch, parent)
+    try:
+        subprocess.run(["git", "init", "-q"], cwd=wt, check=True)
+        subprocess.run(
+            ["git", "-C", str(wt), "fetch", "-q",
+             f"--depth={HISTORY_DEPTH}", str(repo),
+             f"{tmp_branch}:refs/heads/main"],
+            check=True, capture_output=True, text=True)
+    finally:
+        git(repo, "branch", "-q", "-D", tmp_branch)
+    subprocess.run(["git", "-C", str(wt), "checkout", "-q", "main"],
+                   check=True)
     # apply the test payload (fix commit's test files, or paired test
     # commit's) without revealing it in history
     src_sha = task.get("test_sha") or sha
@@ -147,7 +169,6 @@ def setup_worktree(repo: Path, sha: str, task: dict) -> Path:
                *task["test_files"]).stdout
     subprocess.run(["git", "apply", "--whitespace=nowarn"],
                    input=show, text=True, cwd=wt, check=True)
-    subprocess.run(["git", "init", "-q"], cwd=wt, check=True)
     subprocess.run(["git", "add", "-A"], cwd=wt, check=True)
     subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t",
                     "commit", "-qm", "baseline"], cwd=wt, check=True)
@@ -223,13 +244,22 @@ def cogzify(wt: Path, corpus_root: Path, cogz: str) -> int:
     return purge_stale_code_entities(wt)
 
 
-def agent_run(wt: Path, prompt: str, timeout: int = 1800) -> dict:
+def agent_run(wt: Path, prompt: str, cogz_dir: Path | None = None,
+              timeout: int = 1800) -> dict:
+    # The agent calls `cogz` by name — PATH must resolve it to the
+    # binary under test, not whatever is installed. A stale install
+    # hits schema mismatches on the worktree DB and the agent abandons
+    # the tool, silently zeroing the arm's adoption signal.
+    env = dict(os.environ)
+    if cogz_dir:
+        env["PATH"] = f"{cogz_dir}:{env['PATH']}"
     t0 = time.time()
     try:
         r = subprocess.run(
             ["devin", "-p", prompt, "--respect-workspace-trust", "false",
              "--permission-mode", "dangerous"],
-            cwd=wt, capture_output=True, text=True, timeout=timeout)
+            cwd=wt, capture_output=True, text=True, timeout=timeout,
+            env=env)
         return {"rc": r.returncode, "wall_s": round(time.time() - t0, 1),
                 "out": r.stdout, "err": r.stderr}
     except subprocess.TimeoutExpired as e:
@@ -289,7 +319,7 @@ def run_task(repo: Path, corpus: str, task: dict, arm: str,
     if gitdir.exists():
         gitdir.rename(hidden)
     try:
-        res = agent_run(wt, prompt)
+        res = agent_run(wt, prompt, Path(cogz).parent)
     finally:
         if hidden.exists():
             hidden.rename(gitdir)

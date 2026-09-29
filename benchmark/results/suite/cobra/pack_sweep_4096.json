@@ -5,12 +5,12 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 4683.9,
+    "cold_first_ms": 1880.5,
     "n": 15,
-    "p50_ms": 1132.0,
-    "p95_ms": 1270.6,
-    "p99_ms": 1300.1,
-    "mean_ms": 1081.1,
+    "p50_ms": 467.3,
+    "p95_ms": 923.7,
+    "p99_ms": 937.6,
+    "mean_ms": 468.2,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -19,74 +19,76 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 62,
-     "size_tokens": 4096,
+     "sections": 63,
+     "size_tokens": 4099,
      "budget": 4096,
-     "dropped": 22,
+     "dropped": 31,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 41,
+      "function/full": 43,
       "file/full": 1,
-      "class/full": 1,
+      "class/full": 2,
       "knowledge/full": 4,
-      "observation/full": 11
+      "rule/full": 1,
+      "observation/full": 8
      }
     },
     {
      "query": "error handling strategy",
-     "sections": 70,
-     "size_tokens": 4097,
+     "sections": 74,
+     "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 14,
+     "dropped": 20,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 57,
+      "function/full": 54,
       "file/full": 1,
-      "class/full": 3,
+      "class/full": 10,
       "knowledge/full": 3,
       "rule/full": 2
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 49,
+     "sections": 59,
      "size_tokens": 4096,
      "budget": 4096,
      "dropped": 9,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 30,
-      "observation/full": 7,
+      "function/full": 36,
+      "observation/full": 6,
       "knowledge/full": 6,
       "file/full": 1,
-      "class/full": 1
+      "class/full": 6
      }
     },
     {
      "query": "data validation logic",
-     "sections": 71,
-     "size_tokens": 4103,
+     "sections": 74,
+     "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 14,
+     "dropped": 21,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 50,
+      "function/full": 51,
       "file/full": 1,
-      "class/full": 3,
+      "rule/full": 1,
+      "class/full": 4,
       "observation/full": 9,
       "knowledge/full": 4
      }
     },
     {
      "query": "how are requests processed",
-     "sections": 76,
+     "sections": 75,
      "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 8,
+     "dropped": 9,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -95,7 +97,7 @@
       "class/full": 9,
       "knowledge/full": 6,
       "observation/full": 15,
-      "rule/full": 2
+      "rule/full": 1
      }
     }
    ]
@@ -103,12 +105,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 343.2,
+    "cold_first_ms": 857.8,
     "n": 15,
-    "p50_ms": 297.1,
-    "p95_ms": 437.7,
-    "p99_ms": 468.0,
-    "mean_ms": 308.1,
+    "p50_ms": 373.0,
+    "p95_ms": 620.4,
+    "p99_ms": 1023.3,
+    "mean_ms": 416.2,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -117,32 +119,33 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 67,
-     "size_tokens": 4096,
+     "sections": 66,
+     "size_tokens": 4082,
      "budget": 4096,
-     "dropped": 17,
+     "dropped": 30,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 6,
-      "function/full": 25,
-      "rule/full": 2,
+      "function/full": 31,
+      "rule/full": 3,
       "file/full": 1,
       "class/full": 1,
-      "observation/full": 28
+      "observation/full": 19,
+      "overflow_index/pointer": 1
      }
     },
     {
      "query": "error handling strategy",
-     "sections": 66,
+     "sections": 68,
      "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 19,
+     "dropped": 27,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 7,
-      "function/full": 39,
+      "function/full": 41,
       "file/full": 1,
       "observation/full": 12,
       "class/full": 1,
@@ -151,8 +154,41 @@
     },
     {
      "query": "configuration and initialization",
-     "sections": 69,
+     "sections": 76,
      "size_tokens": 4096,
+     "budget": 4096,
+     "dropped": 14,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 33,
+      "observation/full": 25,
+      "knowledge/full": 11,
+      "file/full": 1,
+      "rule/full": 2
+     }
+    },
+    {
+     "query": "data validation logic",
+     "sections": 74,
+     "size_tokens": 4102,
+     "budget": 4096,
+     "dropped": 16,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "rule/full": 1,
+      "file/full": 1,
+      "knowledge/full": 5,
+      "function/full": 30,
+      "observation/full": 31,
+      "class/full": 2
+     }
+    },
+    {
+     "query": "how are requests processed",
+     "sections": 71,
+     "size_tokens": 4087,
      "budget": 4096,
      "dropped": 15,
      "composition": {
@@ -160,40 +196,7 @@
       "identity/baseline": 1,
       "function/full": 27,
       "observation/full": 25,
-      "knowledge/full": 11,
-      "file/full": 1,
-      "rule/full": 1
-     }
-    },
-    {
-     "query": "data validation logic",
-     "sections": 66,
-     "size_tokens": 4096,
-     "budget": 4096,
-     "dropped": 14,
-     "composition": {
-      "rule/baseline": 3,
-      "identity/baseline": 1,
-      "file/full": 1,
-      "knowledge/full": 5,
-      "function/full": 26,
-      "observation/full": 28,
-      "class/full": 1,
-      "rule/full": 1
-     }
-    },
-    {
-     "query": "how are requests processed",
-     "sections": 72,
-     "size_tokens": 4074,
-     "budget": 4096,
-     "dropped": 14,
-     "composition": {
-      "rule/baseline": 3,
-      "identity/baseline": 1,
-      "function/full": 27,
-      "observation/full": 25,
-      "rule/full": 3,
+      "rule/full": 2,
       "knowledge/full": 10,
       "file/full": 1,
       "class/full": 1,

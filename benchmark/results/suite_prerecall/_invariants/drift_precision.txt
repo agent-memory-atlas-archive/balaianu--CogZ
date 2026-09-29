@@ -1,0 +1,9 @@
+drift rows: 3 | expected: 3
+precision=1.000 recall=1.000
+  k_change: status=active
+  k_gone: status=stale
+  k_samefile: status=active
+  k_otherfile: status=active
+  k_mixed: status=active
+  k_noref: status=active
+DRIFT PRECISION: all rows and statuses as expected

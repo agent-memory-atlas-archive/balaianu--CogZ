@@ -107,6 +107,10 @@ def main():
     ap.add_argument("--no-expand", action="store_true")
     ap.add_argument("--code-search", action="store_true")
     ap.add_argument("--status", default=None, help='entity status filter passed to search, e.g. "all"')
+    ap.add_argument("--temporal", action="store_true",
+                    help="pass each commit query's own timestamp as `before` so the "
+                         "co-change channel only draws on history strictly prior to "
+                         "the query commit (temporally honest evaluation)")
     ap.add_argument("--pack-tokens", type=int, default=None,
                     help="max_tokens override for get_context calls (budget sweep)")
     args = ap.parse_args()
@@ -121,6 +125,7 @@ def main():
         print(f"corpus: {len(corpus_ids)} entities", file=sys.stderr)
 
         raw = {"repo": repo, "corpus_ids": sorted(corpus_ids), "args": vars(args), "results": []}
+        ts_cache = {}
         for q in qset["queries"]:
             t0 = time.monotonic()
             try:
@@ -133,6 +138,15 @@ def main():
                 }
                 if args.status:
                     params["status"] = args.status
+                if args.temporal:
+                    sha = q["id"][1:]
+                    if sha not in ts_cache:
+                        out = subprocess.run(
+                            ["git", "-C", repo, "show", "-s", "--format=%ct", sha],
+                            capture_output=True, text=True)
+                        ts_cache[sha] = int(out.stdout.strip()) if out.returncode == 0 else None
+                    if ts_cache[sha] is not None:
+                        params["before"] = ts_cache[sha]
                 data = sess.tool_json("search", params)
             except Exception as exc:
                 raw["results"].append({"id": q["id"], "error": str(exc)})

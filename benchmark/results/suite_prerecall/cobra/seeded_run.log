@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 759 entities
+  ck01: 23 results, 2071ms
+  ck02: 30 results, 507ms
+  ck03: 40 results, 486ms
+  ck04: 39 results, 507ms
+  ck05: 35 results, 467ms
+  ck06: 40 results, 516ms
+  ck07: 33 results, 659ms
+  ck08: 34 results, 545ms
+  ck09: 27 results, 495ms
+  ck10: 35 results, 519ms
+  ck11: 35 results, 497ms
+  ck12: 28 results, 475ms
+  ck13: 40 results, 753ms
+  ck14: 40 results, 495ms
+  ck15: 40 results, 521ms
+wrote /home/andy/dev/personal/CogZ/benchmark/results/suite/cobra/seeded_run.json

@@ -1,0 +1,20 @@
+{
+ "corpus": "httpx",
+ "arm": "cogz",
+ "sha": "47f4a96ffaaaa07dca1614409549b5d7a6e7af49",
+ "subject": "Handle empty zstd responses (#3412)",
+ "test_cmd": "python3 -m pytest tests/test_decoders.py -x -q --no-header",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 134.7,
+  "err": "",
+  "tail": "I'll start by looking at the failing test and the zstd decoder code.The failure is clear: `ZStandardDecoder.flush()` raises `DecodingError` because `decompressor.eof` is never reached when the body is empty. Let me check how `iter_bytes` calls the decoder for empty content.`decompress(b\"\")` returns `b\"\"` but leaves `eof` False, so `flush()` raises. Truncated input raises during `decompress` in `decode()` \u2014 so the `eof` check in `flush` only needs to distinguish \"no data seen\" from \"incomplete frame\". `BrotliDecoder` already solves this exact problem with a `seen_data` flag. Let me check the git history for context, then apply the same pattern.No useful git history. The fix: mirror `BrotliDecoder`'s `seen_data` pattern \u2014 same file, same problem. Let me first verify zstandard's behavior on a partial frame (should still raise via the `eof` check in `flush`).Confirmed \u2014 a partial frame doesn't error during `decompress`, so tracking `seen_data` is required to keep the incomplete-data check working. Applying the fix to `ZStandardDecoder`:All 40 tests pass. Per repo rules, let me run `scripts/check` (lint+typecheck) on the change.`ruff` isn't installed here. Let me check what's available for a sanity check.Lint tooling isn't installed in this environment, but the change mirrors `BrotliDecoder`'s existing `seen_data` convention exactly. Final diff review:Done. `tests/test_decoders.py` \u2014 all 40 tests pass.\n\n**Root cause:** `ZStandardDecoder.flush()` raised `DecodingError(\"Zstandard data is incomplete\")` for empty bodies \u2014 `decompress(b\"\")` leaves `decompressor.eof` False, so the incomplete-frame check fired even when no data ever arrived.\n\n**Fix** in `httpx/_decoders.py` \u2014 applied the same `seen_data` pattern `BrotliDecoder` already uses for this exact case:\n\n- `decode()` early-returns on empty input and sets `self.seen_data = True` on real data\n- `flush()` returns `b\"\"` when nothing was ever decoded; otherwise keeps the `eof` check\n\nTruncation detection is preserved: a partial frame (`c[:5]`) decompresses silently but still trips the `eof` check in `flush`, and malformed data (`c[1:3]`) raises `ZstdError` \u2192 `DecodingError` during `decode()` \u2014 `test_zstd_truncated` and `test_zstd_decoding_error` still pass.\n\nNote: `./scripts/check` can't run in this environment (`ruff` not installed), but the change follows the file's existing convention verbatim.\n"
+ },
+ "diff_stat": "httpx/_decoders.py | 6 ++++++\n 1 file changed, 6 insertions(+)",
+ "used_cogz": false,
+ "purged_entities": 1,
+ "test_tail": "........................................                                 [100%]\n40 passed in 0.10s\n",
+ "cogz_entities_accessed": 718
+}

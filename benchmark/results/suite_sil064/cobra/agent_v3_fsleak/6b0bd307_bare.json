@@ -1,0 +1,18 @@
+{
+ "corpus": "cobra",
+ "arm": "bare",
+ "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+ "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+ "test_cmd": "go test ./... -run 'TestFind' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 122.6,
+  "tail": "I'll explore the repository structure and find the relevant code.This is the cobra library. Let me look at the relevant code and test.Let me see the rest of `stripFlags`, `argsMinusFirstX`, and `innerfind`.Now I understand the bug. `innerfind` uses `stripFlags` to correctly skip flag values when *finding* the subcommand name, but `argsMinusFirstX` does a naive first-match removal \u2014 so `root -f child child` removes the `-f` flag's value `child` instead of the trailing subcommand `child`, corrupting args on the recursive call.\n\nThe fix: make `argsMinusFirstX` flag-aware (mirroring `stripFlags`' logic) so it skips over flag values when searching for `x`. It needs access to the command's flag set, so it becomes a method.Target test passes. Let me run the full suite to check for regressions.Done. Full suite passes.\n\nThe bug: `innerfind` locates the next subcommand via `stripFlags`, which correctly skips flag values \u2014 but `argsMinusFirstX` then removed the *first* arg matching the subcommand name unconditionally. With `root -f child child`, it removed `-f`'s value `child` rather than the actual subcommand arg, corrupting the args on recursion.\n\nFix in [command.go](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_6b0bd307_fmie32et/command.go): converted `argsMinusFirstX` to a `*Command` method so it can consult the flag set, and gave it the same flag-value-skipping logic as `stripFlags` \u2014 `--`/`-f` flags without `=` and without `NoOptDefVal` cause the following arg to be skipped, and `--` terminates the search. The call site now uses `c.argsMinusFirstX(innerArgs, nextSubCmd)`.\n",
+  "err": ""
+ },
+ "diff_stat": "command.go | 41 +++++++++++++++++++++++++++++++++--------\n 1 file changed, 33 insertions(+), 8 deletions(-)",
+ "used_cogz": false,
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.004s\nok  \tgithub.com/spf13/cobra/doc\t0.005s [no tests to run]\n"
+}

@@ -1,0 +1,13 @@
+I'll start by checking the CogZ index for relevant context, then look at the group-validation code.Now let me find the relevant tests and the current group-check code.The tests expect the panic to happen during `ExecuteC` (the `defer`/`recover` is registered after `AddCommand`, so `AddCommand` itself must no longer panic). Let me look at `ExecuteC`.Now let me check `InitDefaultCompletionCmd` and `SetCompletionCommandGroupID` to confirm where the group IDs get applied.I have the full picture. This mirrors upstream cobra's change: remove the panic from `AddCommand` and add a recursive `checkCommandGroups()` called in `ExecuteC` after help/completion commands are initialized. Let me quickly check the `executeCommand` test helper to confirm panics propagate.Confirmed — panics propagate from `ExecuteC` to the test's `recover`. Now I'll make the changes:
+
+1. Remove the eager panic in `AddCommand`
+2. Add a recursive `checkCommandGroups()` 
+3. Call it in `ExecuteC` after default help/completion commands are initialized (so their group IDs are validated too)Now let me run the target tests.Target tests pass. Let me run the full suite to check for regressions.All tests pass. Quick vet check to be safe.Done. The required tests and full suite pass. Changes in `command.go`:
+
+1. **`AddCommand`** — removed the eager panic on unregistered `GroupID`, so groups no longer need to exist before commands are added (works with `init()`-style creation). [command.go:1219-1226](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_10cf7be9_7kv99qn4/command.go)
+
+2. **`ExecuteC`** — added `c.checkCommandGroups()` after `InitDefaultHelpCmd()`/`InitDefaultCompletionCmd()`, so validation happens after full initialization and also covers the auto-created help and completion commands. [command.go:996-1003](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_10cf7be9_7kv99qn4/command.go)
+
+3. **New `checkCommandGroups()`** — recursively walks the command tree and panics when a subcommand's `GroupID` isn't registered on its parent. [command.go:1278-1290](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_10cf7be9_7kv99qn4/command.go)
+
+Verified: the 4 target tests pass, plus `go test ./...`, `go vet`, and `go build` are all clean.

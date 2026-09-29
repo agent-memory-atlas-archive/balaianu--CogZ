@@ -771,20 +771,21 @@
     "no_expand": false,
     "code_search": false,
     "status": null,
+    "temporal": false,
     "pack_tokens": null
   },
   "results": [
     {
       "id": "cn01",
       "search_mode": "hybrid",
-      "filtered_count": 475,
+      "filtered_count": 431,
       "signals": {
         "code_gradient": 0.008801706506299323,
         "code_strength": 0.275963059502286,
         "knowledge_gradient": 0.008102084154895262,
         "knowledge_strength": 0.6525548578512327
       },
-      "latency_ms": 4230,
+      "latency_ms": 1869,
       "results": [
         {
           "id": "4a9d62ee-ab2a-5800-b701-7fb69bacf9ae",
@@ -967,37 +968,10 @@
           "stale": null
         },
         {
-          "id": "0aa3b659-190c-417c-9573-06298fb239a4",
-          "type": "rule",
-          "title": "Prefer stdlib + pflag; dependencies need justification",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4780f88b-d26b-5c4e-85df-155bdabb4681",
-          "type": "function",
-          "title": "TestGenMdNoHiddenParents",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6740b6b2-4837-593a-9848-5f087b2d2ef1",
-          "type": "function",
-          "title": "TestGenManNoHiddenParents",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "35600b73-80c9-5614-af7a-4f0af4a74402",
           "type": "class",
           "title": "commandSorterByName",
-          "relevance": 0.06818728893995285,
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1006,7 +980,7 @@
           "id": "ad822fbb-8c10-5237-97d7-fdaaaca3bb6d",
           "type": "class",
           "title": "Group",
-          "relevance": 0.06818728893995285,
+          "relevance": 0.12000000476837158,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1015,16 +989,7 @@
           "id": "e1e4a7d5-8003-588a-bc54-ee35ac73b191",
           "type": "class",
           "title": "FParseErrWhitelist",
-          "relevance": 0.06818728893995285,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "eff71d84-543b-5516-9d1e-bf0cc75df351",
-          "type": "class",
-          "title": "CompletionOptions",
-          "relevance": 0.06818728893995285,
+          "relevance": 0.12000000476837158,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1033,7 +998,7 @@
           "id": "fee621e6-a018-534e-ac99-0ad3502ecb7d",
           "type": "class",
           "title": "tmplFunc",
-          "relevance": 0.06818728893995285,
+          "relevance": 0.12000000476837158,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1042,15 +1007,6 @@
           "id": "b86d55b9-d10c-5a27-9dda-76af9cd5b185",
           "type": "function",
           "title": "GenMarkdownCustom",
-          "relevance": 0.06708749383687973,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c7e324b8-38b9-5b7d-b01a-f340268eb2d5",
-          "type": "function",
-          "title": "GenYamlCustom",
           "relevance": 0.06708749383687973,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -1079,15 +1035,6 @@
           "type": "file",
           "title": "command_test.go",
           "relevance": 0.0660226121544838,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2482b221-98ca-5cdd-a9b9-9bb72ddb5980",
-          "type": "function",
-          "title": "hasSeeAlso",
-          "relevance": 0.06499101221561432,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1138,10 +1085,100 @@
           "stale": null
         },
         {
+          "id": "cf8aa4ba-87d0-58c1-b717-657a87bc6593",
+          "type": "class",
+          "title": "ShellCompDirective",
+          "relevance": 0.06399115175008774,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "eff71d84-543b-5516-9d1e-bf0cc75df351",
+          "type": "class",
+          "title": "CompletionOptions",
+          "relevance": 0.06399115175008774,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "47a813ee-dede-5372-991f-3d363b1d6d51",
           "type": "file",
           "title": "command.go",
           "relevance": 0.05545899644494057,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
+          "type": "file",
+          "title": "args.go",
+          "relevance": 0.05332595482468605,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2acc4eb8-3300-5633-b184-7a1a2cfc4ccc",
+          "type": "function",
+          "title": "ShellCompDirective::string",
+          "relevance": 0.051992807537317276,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
+          "type": "file",
+          "title": "completions.go",
+          "relevance": 0.051992807537317276,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "eb0d0c4c-b670-5f83-b34f-6de504ae097c",
+          "type": "function",
+          "title": "*Command::CommandPathPadding",
+          "relevance": 0.18623076379299164,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "17e6bb5f-24af-5848-a6e5-ffd15f952c22",
+          "type": "function",
+          "title": "*Command::SetCompletionCommandGroupID",
+          "relevance": 0.17541450262069702,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3d6c42c9-a20c-55f2-abff-55881eeab7ec",
+          "type": "function",
+          "title": "*Command::Find",
+          "relevance": 0.15242424607276917,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0504e502-1edb-58e2-80ac-7f17296c4de4",
+          "type": "function",
+          "title": "*Command::SetHelpTemplate",
+          "relevance": 0.14703044295310974,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d502262d-5648-51bb-9c5e-5a03455a912b",
+          "type": "function",
+          "title": "*Command::findSuggestions",
+          "relevance": 0.14703044295310974,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1151,14 +1188,14 @@
     {
       "id": "cn02",
       "search_mode": "hybrid",
-      "filtered_count": 503,
+      "filtered_count": 461,
       "signals": {
         "code_gradient": 0.014440141233575732,
         "code_strength": 0.3637568962100535,
         "knowledge_gradient": 0.015349217991610441,
         "knowledge_strength": 0.686231978937629
       },
-      "latency_ms": 1430,
+      "latency_ms": 1153,
       "results": [
         {
           "id": "ea3b6c6e-9b55-5b01-a40e-6713958e6e49",
@@ -1359,19 +1396,19 @@
           "stale": null
         },
         {
-          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
-          "type": "file",
-          "title": "completions_test.go",
+          "id": "441ae355-6963-5af9-bb2a-ae96dc453571",
+          "type": "class",
+          "title": "customMultiString",
           "relevance": 0.090134397149086,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "1d9aa95c-0d92-5592-a456-3d300985ec37",
-          "type": "function",
-          "title": "genFlagResult",
-          "relevance": 0.08332176506519318,
+          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
+          "type": "file",
+          "title": "completions_test.go",
+          "relevance": 0.090134397149086,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -1389,24 +1426,6 @@
           "id": "83dd2b23-085c-59bf-ba33-d54bd954d881",
           "type": "class",
           "title": "cmdDoc",
-          "relevance": 0.08332176506519318,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9a3515e9-ec1f-5f8e-ad8a-9a34ed403c09",
-          "type": "function",
-          "title": "GenYamlTreeCustom",
-          "relevance": 0.08332176506519318,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "eebf78b8-f5d2-5e41-990c-41a614d110c9",
-          "type": "function",
-          "title": "GenYaml",
           "relevance": 0.08332176506519318,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -1431,36 +1450,9 @@
           "stale": null
         },
         {
-          "id": "2e17e519-79ae-5d50-815a-83b1ba24669f",
-          "type": "function",
-          "title": "GenManTree",
-          "relevance": 0.07906189560890198,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "49194c8b-cc21-587e-978d-55ef81e99820",
-          "type": "function",
-          "title": "GenYamlTree",
-          "relevance": 0.07906189560890198,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "6f830dca-1005-5692-9c11-b3c782bd5513",
           "type": "file",
           "title": "man_docs.go",
-          "relevance": 0.07906189560890198,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a3ea19e1-4a10-5fa9-8851-12c91476859b",
-          "type": "function",
-          "title": "GenMarkdownTree",
           "relevance": 0.07906189560890198,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -1519,6 +1511,96 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
+        },
+        {
+          "id": "a78e2537-fe27-5956-9c71-0983e1271618",
+          "type": "function",
+          "title": "ExactValidArgs",
+          "relevance": 0.07509981095790863,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a951e14b-502c-5d80-a7b7-25abc9601daf",
+          "type": "function",
+          "title": "RangeArgs",
+          "relevance": 0.07509981095790863,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d9cf3c03-de40-5bbb-a998-ad236befe178",
+          "type": "function",
+          "title": "ArbitraryArgs",
+          "relevance": 0.07509981095790863,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
+          "type": "file",
+          "title": "args.go",
+          "relevance": 0.07509981095790863,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e5df886f-9fa3-5369-b5f2-be702b3ad944",
+          "type": "function",
+          "title": "NoArgs",
+          "relevance": 0.07509981095790863,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "85a962f0-fa4b-5d3c-a61a-cc588fedeea4",
+          "type": "function",
+          "title": "BenchmarkGenYamlToFile",
+          "relevance": 0.18115383386611938,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "324075b1-ce19-5b11-807c-c39310d1949c",
+          "type": "function",
+          "title": "TestCompletionForOneRequiredGroupFlags",
+          "relevance": 0.1786363571882248,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8b1a338c-2ab5-57c5-acf0-17bac64cdc9f",
+          "type": "function",
+          "title": "prepareCustomAnnotationsForFlags",
+          "relevance": 0.1786363571882248,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "98ac427d-d64a-5129-a306-d9c1786e058c",
+          "type": "function",
+          "title": "TestCompletionForGroupedFlags",
+          "relevance": 0.1786363571882248,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fb46aeff-d649-56d2-82e4-e82360655645",
+          "type": "function",
+          "title": "*Command::SuggestionsFor",
+          "relevance": 0.14723464846611023,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
         }
       ]
     },
@@ -1532,7 +1614,7 @@
         "knowledge_gradient": 0.01561040702962795,
         "knowledge_strength": 0.6422589112088861
       },
-      "latency_ms": 1314,
+      "latency_ms": 663,
       "results": [
         {
           "id": "dc5d8bb8-13a4-5e02-841b-d62692246c99",
@@ -1906,7 +1988,7 @@
         "knowledge_gradient": 0.006851566486870686,
         "knowledge_strength": 0.5772249441819058
       },
-      "latency_ms": 1046,
+      "latency_ms": 354,
       "results": []
     },
     {
@@ -1919,7 +2001,7 @@
         "knowledge_gradient": 0.010183848483752289,
         "knowledge_strength": 0.6033373889358403
       },
-      "latency_ms": 957,
+      "latency_ms": 308,
       "results": []
     }
   ]

@@ -67,6 +67,11 @@ def main() -> None:
             print(f"skip {phase}: {q} missing")
             continue
         ctx = ["--with-context"] if phase == "seeded" else []
+        # Commit queries carry their own commit's timestamp so the
+        # co-change channel can only draw on strictly-earlier history —
+        # no leakage from the query commit or anything after it.
+        if phase == "commit":
+            ctx.append("--temporal")
         raw = outdir / f"{phase}_run.json"
         run(["python3", str(BENCH / "run.py"), "--repo", str(repo),
              "--queries", str(q), "--out", str(raw), "--cogz", args.cogz,

@@ -1,0 +1,18 @@
+{
+ "corpus": "httpx",
+ "arm": "cogz",
+ "sha": "99cba6ac642b12f0331d069ae324402c54c4c600",
+ "subject": "Fix RFC 2069 mode digest authentication (#3045)",
+ "test_cmd": "python3 -m pytest tests/test_auth.py -x -q --no-header",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 150.0,
+  "tail": "I'll start by exploring the repository and using CogZ to retrieve relevant context about digest authentication.Let me run the failing test and read the current auth code.The test failure is in `test_digest_auth_rfc_2069`. Looking at `_build_auth_header`, I can see the bug: when `qop is None` (RFC 2069 mode), `digest_data` includes `HA1`, but `HA1` is prepended again in the final response digest \u2014 producing `MD5(HA1:HA1:nonce:HA2)` instead of `MD5(HA1:nonce:HA2)`.\n\nLet me check the test file to confirm expectations.The bug is confirmed. In `_build_auth_header`, when `qop is None` (RFC 2069 mode), `digest_data` wrongly includes `HA1` \u2014 but `HA1` gets prepended again in the final response computation, yielding `MD5(HA1:HA1:nonce:HA2)` instead of `MD5(HA1:nonce:HA2)`.\n\nLet me verify the correct computation produces the expected test value:Confirmed \u2014 `MD5(HA1:nonce:HA2)` produces the expected `1949323746fe6a43ef61f9606e7febea`. The fix is to drop `HA1` from `digest_data` in the `qop is None` branch, since `HA1` is already prepended in the final response computation.Now add the CHANGELOG entry under Unreleased \u2192 Fixed (this was upstream PR #3045):All 8 tests pass. Per project rules, let me run `scripts/check` (lint+typecheck) and the auth-related test files to verify nothing broke.`ruff` isn't on PATH. Let me check the environment setup.Tooling (ruff/mypy) isn't installed and there's no venv \u2014 the environment only supports the pytest gate. The change is one line; let me verify syntax and run the auth-related test files plus a quick smoke test for regressions.All auth tests pass (88 passed, 1 pre-existing skip). Let me review the final diff.Done. The fix is a one-line change.\n\n**Root cause:** In `DigestAuth._build_auth_header`, when the server challenge omits `qop` (RFC 2069 mode), `digest_data` incorrectly included `HA1`. Since `HA1` is prepended again in the final response computation (`digest(b\":\".join((HA1, key_digest)))`), the response was computed as `MD5(HA1:HA1:nonce:HA2)` instead of `MD5(HA1:nonce:HA2)` per RFC 2069 \u00a73.1.2. The `qop` branch was unaffected \u2014 `digest_data` correctly starts with `nonce` there.\n\n**Changes:**\n- `httpx/_auth.py` \u2014 removed `HA1` from `digest_data` in the `qop is None` branch [_auth.py:281-286](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_99cba6ac_4vk4tr2p/httpx/_auth.py)\n- `CHANGELOG.md` \u2014 added entry under Unreleased \u2192 Fixed per the changelog rule\n\n**Verification:**\n- `python3 -m pytest tests/test_auth.py -x -q --no-header` \u2192 8 passed (was failing on `test_digest_auth_rfc_2069` with `response=\"5000ea52...\"`; now produces the RFC-expected `1949323746fe6a43ef61f9606e7febea`)\n- `tests/client/test_auth.py` \u2192 88 passed, 1 pre-existing skip \u2014 sync `Client` integration path covered; `DigestAuth` uses the shared `auth_flow` generator for both sync and async paths, so no parallel-path divergence\n- `./scripts/check` can't run here \u2014 ruff/mypy aren't installed in this environment (no venv, pinned tooling absent). The change carries no lint/type risk regardless.\n",
+  "err": ""
+ },
+ "diff_stat": "CHANGELOG.md   | 1 +\n httpx/_auth.py | 2 +-\n 2 files changed, 2 insertions(+), 1 deletion(-)",
+ "used_cogz": false,
+ "test_tail": "........                                                                 [100%]\n8 passed in 0.13s\n"
+}

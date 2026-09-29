@@ -3,4 +3,4 @@
 overall: P@5=None   MRR=None   R@20=None   avg Nonems
 errors: none  rotted-expected: 0
 intent       n    P@k    MRR   R@20  xpd/q      ms
-negative     5   None    0.0    1.0    8.0   849.0  neg_ok=0.6
+negative     5   None    0.0    1.0   10.0  1043.4  neg_ok=0.6

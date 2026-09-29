@@ -1,0 +1,8 @@
+collecting corpus ids...
+corpus: 759 entities
+  cn01: 40 results, 1951ms
+  cn02: 40 results, 890ms
+  cn03: 40 results, 530ms
+  cn04: 0 results, 332ms
+  cn05: 0 results, 801ms
+wrote /home/andy/dev/personal/CogZ/benchmark/results/suite/cobra/negatives_run.json

@@ -1,0 +1,18 @@
+{
+ "corpus": "httpx",
+ "arm": "cogz",
+ "sha": "49d74a2e7f773f88a84dd4af900d7a8543636ae2",
+ "subject": "Clarified error when header value is None (#3312)",
+ "test_cmd": "python3 -m pytest tests/client/test_headers.py -x -q --no-header",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 106.6,
+  "tail": "I'll start by checking CogZ context and looking at the failing test.The key test is `test_header_with_incorrect_value` \u2014 it expects `httpx.Headers({\"foo\": None})` to raise `TypeError: Header value must be str or bytes, not <class 'NoneType'>`. Let me look at the header normalization code.Found it \u2014 `normalize_header_value` raises `AttributeError` on `None` instead of the expected `TypeError`. Let me check the function.The test expects a `TypeError` with a specific message. The fix is to explicitly check for `str` and raise a descriptive `TypeError` otherwise:All 12 tests pass. Per repo rules, let me run `./scripts/check` to verify lint/typecheck.`ruff` isn't installed here. Let me check if the dev tooling is available another way.No lint/typecheck tooling is installed in this environment, so `scripts/check` can't run \u2014 but let me verify no regressions in the related header/model tests.All 86 related tests pass. Since this is a user-facing change, let me check the CHANGELOG convention per repo rules.Done. The target test passes and related tests are green.\n\n**Change** \u2014 `httpx/_utils.py`, `normalize_header_value`: instead of blindly calling `.encode()` on non-bytes values (which produced `AttributeError: 'NoneType' object has no attribute 'encode'`), it now checks `str` explicitly and raises a descriptive `TypeError`:\n\n```python\nif isinstance(value, bytes):\n    return value\nelif isinstance(value, str):\n    return value.encode(encoding or \"ascii\")\n\nraise TypeError(f\"Header value must be str or bytes, not {type(value)}\")\n```\n\n[_utils.py:47-56](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_49d74a2e__tl5o_68/httpx/_utils.py)\n\n**Verification:**\n- `tests/client/test_headers.py` \u2014 12 passed (previously failed on `test_header_with_incorrect_value`)\n- `tests/models/test_headers.py` + `tests/test_utils.py` \u2014 86 passed, no regressions\n- `./scripts/check` can't run \u2014 ruff/mypy aren't installed in this environment \u2014 but the change is a simple isinstance narrowing that's type-clean.\n\nNote: `Headers({\"foo\": None})` reaches this via `_models.py` line 78, so the TypeError propagates correctly from construction, `__setitem__`, and `update` paths alike. Since header keys are typed `str | bytes` the same way, only the value path needed the clarified error (a `None` key already fails earlier in dict normalization). No CHANGELOG entry added \u2014 there's no Unreleased heading or PR number in this repo; easy to add if you want one.\n",
+  "err": ""
+ },
+ "diff_stat": "httpx/_utils.py | 5 ++++-\n 1 file changed, 4 insertions(+), 1 deletion(-)",
+ "used_cogz": false,
+ "test_tail": "............                                                             [100%]\n12 passed in 0.03s\n"
+}

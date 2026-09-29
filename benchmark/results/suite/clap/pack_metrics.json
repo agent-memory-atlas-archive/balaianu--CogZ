@@ -5,12 +5,12 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1868.3,
+    "cold_first_ms": 1783.9,
     "n": 15,
-    "p50_ms": 458.2,
-    "p95_ms": 755.5,
-    "p99_ms": 759.1,
-    "mean_ms": 568.4,
+    "p50_ms": 467.1,
+    "p95_ms": 840.5,
+    "p99_ms": 860.2,
+    "mean_ms": 595.7,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -19,86 +19,85 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 70,
+     "sections": 75,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 14,
+     "dropped": 20,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 31,
-      "file/full": 28,
-      "class/full": 5,
+      "function/full": 33,
+      "file/full": 18,
+      "class/full": 18,
       "module/full": 1,
       "knowledge/full": 1
      }
     },
     {
      "query": "error handling strategy",
-     "sections": 77,
+     "sections": 89,
      "size_tokens": 8192,
-     "budget": 8192,
-     "dropped": 7,
-     "composition": {
-      "rule/baseline": 3,
-      "identity/baseline": 1,
-      "class/full": 12,
-      "module/full": 4,
-      "function/full": 29,
-      "file/full": 24,
-      "knowledge/full": 2,
-      "observation/full": 2
-     }
-    },
-    {
-     "query": "configuration and initialization",
-     "sections": 67,
-     "size_tokens": 8078,
      "budget": 8192,
      "dropped": 5,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 34,
+      "class/full": 41,
+      "module/full": 4,
+      "function/full": 28,
+      "file/full": 10,
+      "knowledge/full": 1,
+      "observation/full": 1
+     }
+    },
+    {
+     "query": "configuration and initialization",
+     "sections": 87,
+     "size_tokens": 8128,
+     "budget": 8192,
+     "dropped": 10,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 43,
       "module/full": 2,
-      "class/full": 6,
+      "class/full": 18,
       "observation/full": 6,
       "knowledge/full": 2,
       "file/full": 11,
-      "rule/full": 1,
       "overflow_index/pointer": 1
      }
     },
     {
      "query": "data validation logic",
-     "sections": 59,
-     "size_tokens": 8192,
+     "sections": 87,
+     "size_tokens": 7897,
      "budget": 8192,
-     "dropped": 2,
+     "dropped": 5,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "module/full": 1,
-      "class/full": 11,
-      "function/full": 31,
+      "class/full": 32,
+      "function/full": 37,
       "file/full": 8,
-      "knowledge/full": 4
+      "knowledge/full": 4,
+      "overflow_index/pointer": 1
      }
     },
     {
      "query": "how are requests processed",
-     "sections": 80,
-     "size_tokens": 8038,
+     "sections": 82,
+     "size_tokens": 8190,
      "budget": 8192,
-     "dropped": 8,
+     "dropped": 4,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "file/full": 20,
-      "class/full": 10,
-      "module/full": 7,
-      "function/full": 34,
-      "rule/full": 1,
+      "file/full": 13,
+      "class/full": 28,
+      "module/full": 6,
+      "function/full": 27,
       "knowledge/full": 2,
       "observation/full": 1,
       "overflow_index/pointer": 1
@@ -109,12 +108,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 396.1,
+    "cold_first_ms": 464.9,
     "n": 15,
-    "p50_ms": 371.2,
-    "p95_ms": 482.4,
-    "p99_ms": 571.3,
-    "mean_ms": 384.6,
+    "p50_ms": 445.8,
+    "p95_ms": 726.7,
+    "p99_ms": 1099.9,
+    "mean_ms": 501.5,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -123,14 +122,14 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 72,
+     "sections": 79,
      "size_tokens": 8186,
      "budget": 8192,
-     "dropped": 14,
+     "dropped": 18,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 35,
+      "function/full": 42,
       "file/full": 24,
       "class/full": 6,
       "module/full": 2,
@@ -139,54 +138,55 @@
     },
     {
      "query": "error handling strategy",
-     "sections": 78,
+     "sections": 86,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 6,
+     "dropped": 8,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "knowledge/full": 5,
-      "function/full": 29,
+      "knowledge/full": 6,
+      "function/full": 35,
       "observation/full": 1,
       "module/full": 8,
       "rule/full": 1,
-      "class/full": 9,
-      "file/full": 21
+      "class/full": 12,
+      "file/full": 19
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 78,
-     "size_tokens": 7919,
+     "sections": 87,
+     "size_tokens": 7867,
      "budget": 8192,
-     "dropped": 9,
+     "dropped": 11,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 43,
+      "function/full": 51,
       "observation/full": 5,
       "rule/full": 1,
       "knowledge/full": 4,
       "file/full": 13,
-      "class/full": 6,
+      "class/full": 7,
       "module/full": 1,
       "overflow_index/pointer": 1
      }
     },
     {
      "query": "data validation logic",
-     "sections": 78,
-     "size_tokens": 7975,
+     "sections": 88,
+     "size_tokens": 7962,
      "budget": 8192,
      "dropped": 8,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
+      "rule/full": 1,
       "module/full": 3,
       "knowledge/full": 2,
-      "function/full": 37,
-      "class/full": 13,
+      "function/full": 41,
+      "class/full": 18,
       "file/full": 16,
       "observation/full": 2,
       "overflow_index/pointer": 1
@@ -194,21 +194,20 @@
     },
     {
      "query": "how are requests processed",
-     "sections": 72,
-     "size_tokens": 8182,
+     "sections": 69,
+     "size_tokens": 8170,
      "budget": 8192,
-     "dropped": 14,
+     "dropped": 15,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 3,
-      "file/full": 18,
-      "rule/full": 2,
-      "function/full": 35,
-      "module/full": 2,
+      "file/full": 8,
+      "function/full": 27,
+      "rule/full": 1,
+      "module/full": 1,
       "observation/full": 1,
-      "class/full": 6,
-      "overflow_index/pointer": 1
+      "class/full": 24
      }
     }
    ]

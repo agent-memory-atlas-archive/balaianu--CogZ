@@ -1,0 +1,19 @@
+{
+ "corpus": "cobra",
+ "arm": "cogz",
+ "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+ "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+ "test_cmd": "go test ./... -run 'TestFind' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 100.0,
+  "err": "",
+  "tail": "I'll start by checking the CogZ index and finding the relevant code.Now let me check the test expectations and run the tests to see the current failure.Two failing cases: `Find` strips flag values to locate the subcommand, but `argsMinusFirstX` then removes the *first* string equal to the subcommand name \u2014 which can be a flag value. E.g. `[\"-f\",\"child\",\"-b\",\"something\",\"child\"]` drops the `-f` value instead of the real subcommand at the end.\n\nThe fix: make `argsMinusFirstX` flag-aware, like `stripFlags`, so it skips over flag values while scanning. I'll make it a method on `*Command` (it needs the flag set) and update the call site.Done \u2014 all tests pass. The failure was that `argsMinusFirstX` removed the first string equal to the subcommand name, even when that string was a flag value. Now it's a `*Command` method that walks args like `stripFlags` does, skipping the arg after any `-f`/`--foo`-style flag that takes a value (and stopping at `--`), so only the real positional arg matching the subcommand name is removed.\n\nLet me record the pitfall in CogZ as suggested.Fixed. Summary:\n\n- `argsMinusFirstX` in command.go is now a `*Command` method that mirrors `stripFlags` logic: it merges persistent flags, skips the argument following any `-x`/`--foo` flag without `=` (unless the flag has `NoOptDefVal`), and stops scanning at `--`. Only a genuine positional arg equal to the subcommand name is removed.\n- Call site in `Find`'s `innerfind` updated to `c.argsMinusFirstX(innerArgs, nextSubCmd)` \u2014 `c` being the command whose flags govern the current arg list.\n\nVerification:\n- `go test ./... -run 'TestFind' -count=1` \u2014 passes (both previously failing cases now correct)\n- `go build ./...` and full `go test .` \u2014 clean\n\n[command.go:656-711](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_6b0bd307_67vxb8cv/command.go)\n\nAlso recorded the pitfall as a CogZ observation (`8c74751f`) so future sessions know arg-list re-walks must apply the same flag-value skipping as `stripFlags`.\n"
+ },
+ "diff_stat": "command.go | 32 ++++++++++++++++++++++++++------\n 1 file changed, 26 insertions(+), 6 deletions(-)",
+ "used_cogz": false,
+ "purged_entities": 207,
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.008s\nok  \tgithub.com/spf13/cobra/doc\t0.008s [no tests to run]\n"
+}

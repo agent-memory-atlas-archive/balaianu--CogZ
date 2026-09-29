@@ -1,0 +1,18 @@
+{
+ "corpus": "cobra",
+ "arm": "cogz",
+ "sha": "746ef07158728502482cea9f880a6f4b21ef29a9",
+ "subject": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
+ "test_cmd": "go test ./... -run 'TestCompletionDoesNotMutateOsArgs' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 75.9,
+  "tail": "The injected context already shows me the bug location \u2014 `getCompletions` in `completions.go`. Let me read the relevant section.The bug is at line 369 \u2014 `append(finalArgs, \"--\")` where `finalArgs` is a sub-slice sharing `os.Args`' backing array. The described fix is to copy `trimmedArgs` at the top. Let me check the Go version to pick the idiomatic copy.Go 1.15 \u2014 no `slices.Clone`, so a plain `append` into a fresh slice is the idiomatic copy here. Applying the fix at the top of `getCompletions`:Target test passes. Running the full suite to check for regressions:Done. The fix is in `getCompletions` at `completions.go:323`.\n\n**Root cause:** `finalArgs` (returned by `Traverse`/`Find` as a sub-slice of the original args, which derive from `os.Args[1:]`) was appended to at `completions.go:373` \u2014 `append(finalArgs, \"--\")`. With spare capacity in the shared backing array, that write landed in `os.Args` in place, corrupting e.g. `os.Args[2]` from `\"x\"` to `\"--\"`.\n\n**Fix:** copy `trimmedArgs` into a fresh backing array at the top of `getCompletions`, so all downstream sub-slices and appends only touch private memory. `slices.Clone` isn't available (go.mod targets Go 1.15), so `append([]string{}, ...)` it is.\n\nVerification:\n- `go test ./... -run 'TestCompletionDoesNotMutateOsArgs' -count=1` \u2014 passes\n- `go test ./... -count=1` \u2014 full suite passes, no regressions\n",
+  "err": ""
+ },
+ "diff_stat": "completions.go | 5 ++++-\n 1 file changed, 4 insertions(+), 1 deletion(-)",
+ "used_cogz": false,
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.005s\nok  \tgithub.com/spf13/cobra/doc\t0.009s [no tests to run]\n"
+}

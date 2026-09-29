@@ -1,0 +1,17 @@
+{
+ "corpus": "cobra",
+ "arm": "bare",
+ "sha": "6b0bd3076cfafd1c108264ed1e4aa0c0fe3f8537",
+ "subject": "fix: don't remove flag value that matches subcommand name (#1781)",
+ "test_cmd": "go test ./... -run 'TestFind' -count=1",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 122.3,
+  "tail": "I'll start by exploring the repository structure and finding the relevant code.This is the Cobra repo. Let me look at the relevant code.Let me find the relevant test cases.Now let me check where `isFlagArg` is used and run the failing test to see the current state.Bug confirmed \u2014 the flag value \"child\" gets removed instead of the actual subcommand arg. I'll apply the upstream fix: make `argsMinusFirstX` a `*Command` method that skips flag values while scanning, mirroring `stripFlags` logic.Now run the test:TestFind passes. Let me run the full test suite to make sure nothing else broke.Done. The fix mirrors upstream cobra PR #1781.\n\n**Root cause:** `argsMinusFirstX` removed the first literal occurrence of the subcommand name in the raw args, without accounting for flags. For `[\"-f\", \"child\", \"-b\", \"something\", \"child\"]`, it removed the `child` at index 1 \u2014 which is the *value* of flag `-f` \u2014 instead of the actual subcommand arg at index 4.\n\n**Changes in `command.go`:**\n- `argsMinusFirstX` is now a `*Command` method so it can call `mergePersistentFlags()` and look up flag definitions.\n- The scan now mirrors `stripFlags`' logic: `--` terminates scanning, and a `--flag`/`-f` token without `=` and without `NoOptDefVal` causes the next arg to be skipped as its value.\n- Call site in `innerfind` uses `c.argsMinusFirstX(innerArgs, nextSubCmd)` \u2014 the same command context `stripFlags` used to locate `nextSubCmd`. [command.go:656-692](file:///tmp/cogz_replay_6b0bd307_o87lwu43/command.go)\n\n`go test ./... -run 'TestFind' -count=1` passes, and the full suite (`go test ./...`) plus `go vet` are clean.\n",
+  "err": ""
+ },
+ "diff_stat": "command.go | 40 ++++++++++++++++++++++++++++++++--------\n 1 file changed, 32 insertions(+), 8 deletions(-)",
+ "test_tail": "ok  \tgithub.com/spf13/cobra\t0.017s\nok  \tgithub.com/spf13/cobra/doc\t0.017s [no tests to run]\n"
+}

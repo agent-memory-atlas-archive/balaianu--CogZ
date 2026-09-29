@@ -1,0 +1,11 @@
+I'll explore the repository structure and find the relevant group-checking code.Let me look at the relevant sections in `command.go` and the tests.Now let me look at the tests that must pass.I have the full picture. The tests expect `AddCommand` to no longer panic on a missing group; instead the panic must occur during `ExecuteC` — recursively, and after `InitDefaultHelpCmd`/`InitDefaultCompletionCmd` so help/completion command groups are checked too. This matches upstream cobra's change.
+
+Edits to `command.go`:
+
+1. Remove the group check from `AddCommand`.Now run the target tests.Target tests pass. Running the full suite to check for regressions.All tests pass. Final diff review:Done. The change moves group validation from `AddCommand` to `ExecuteC`:
+
+- **`AddCommand`** no longer panics when a subcommand's `GroupID` isn't registered — groups can now be added after commands are attached (e.g., via `init()`).
+- **`ExecuteC`** calls the new `checkCommandGroups()` after `InitDefaultHelpCmd()` and `InitDefaultCompletionCmd()`, so the check covers the default help/completion commands too (needed for `SetHelpCommandGroupID`/`SetCompletionCommandGroupID` to be validated).
+- **`checkCommandGroups`** recurses through the command tree, panicking on any subcommand whose `GroupID` isn't defined on its parent — covering the nested-level test.
+
+Verification: all 4 target tests pass, and `go test ./... -count=1` is fully green with no regressions.

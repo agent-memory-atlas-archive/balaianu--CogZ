@@ -1,3 +1,8 @@
 target/
-benchmark/__pycache__/
+__pycache__/
 benchmark/results/raw_*.json
+benchmark/nli_compare/export-env/
+benchmark/nli_compare/**/*.onnx
+benchmark/nli_compare/*/config*.json
+benchmark/nli_compare/*/tokenizer*.json
+benchmark/rerank/*/

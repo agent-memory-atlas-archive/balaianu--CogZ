@@ -1,0 +1,26 @@
+I'll explore the codebase to understand the structure and find the relevant code.Let me look at the test and the relevant sync code.Now let me read the sync implementation files.I understand the structure now. Let me check how `sync_code_entities` is called and how `removed_entity_ids` is used downstream.Let me see how the full-index path uses the sync result (for knowledge flagging).I have the full picture now. The bug: `sync_code_entities` (full-index path) only calls `mark_stale_code_entities`, which marks entities stale when their whole file disappears. Entities for definitions removed inside a still-existing file stay `active`. The incremental path already handles this via `mark_stale_for_removed_entities`. The fix is to run that same per-file sweep in `sync_code_entities` and flow the ids into `removed_entity_ids`.Now run the target test.The build finished compiling and the test is running. Let me get the output.Target test passes. Let me run the rest of the sync module tests to check for regressions, plus fmt/clippy on the changed file.All 20 sync tests pass. Now checking clippy and fmt per the project checklist.Done. The fix is minimal and matches the task description.
+
+## What was wrong
+
+`sync_code_entities` (the full-index path used by `index_code`) only ran `mark_stale_code_entities`, which marks code entities stale when their entire `file_path` disappears from the scan. Entities for functions/types removed *inside* a still-existing file stayed `active` with stale content — still retrievable by search. The incremental path (`sync_code_entities_incremental`) already handled this via `mark_stale_for_removed_entities`.
+
+## Change
+
+In `src/index/sync/mod.rs`, `sync_code_entities` now runs the same per-file sweep after the file-level pass:
+
+```rust
+result.marked_stale = mark_stale_code_entities(&conn, &file_to_entity_ids, failed_paths);
+
+let (removed_count, removed_ids) = mark_stale_for_removed_entities(&conn, &file_to_entity_ids);
+result.marked_stale += removed_count;
+result.removed_entity_ids = removed_ids;
+```
+
+Removed ids flow into `removed_entity_ids` for knowledge flagging (in the no-git fallback, `reindex_code`'s `query_stale_code_ids` picks them up since it selects all stale code entities). Files that failed to read are untouched — they aren't keys in `file_to_entity_ids`, so the per-file sweep can't see them. Also updated the function's doc comment to reflect both stale-marking behaviors.
+
+## Verified
+
+- `full_sync_marks_removed_entities_stale` — passes
+- All 20 `index::sync::tests` — pass (no regressions in file-removal, reactivation, skip/update paths)
+- `cargo fmt --check` — clean
+- `cargo clippy --lib` — clean, no warnings

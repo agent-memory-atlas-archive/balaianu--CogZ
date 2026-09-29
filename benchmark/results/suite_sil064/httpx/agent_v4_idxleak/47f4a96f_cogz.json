@@ -1,0 +1,18 @@
+{
+ "corpus": "httpx",
+ "arm": "cogz",
+ "sha": "47f4a96ffaaaa07dca1614409549b5d7a6e7af49",
+ "subject": "Handle empty zstd responses (#3412)",
+ "test_cmd": "python3 -m pytest tests/test_decoders.py -x -q --no-header",
+ "test_rc": 0,
+ "passed": true,
+ "agent": {
+  "rc": 0,
+  "wall_s": 147.5,
+  "tail": "Let me look at the failing test.Now let me reproduce the failure.The failure is in `ZStandardDecoder.flush()` \u2014 `eof` is `False` when no data was ever fed. Let me check how `decode`/`flush` are called in `_models.py`.`decode` is called per raw chunk; for an empty body it's never called, then `flush()` raises because `eof` is `False`. I'll mirror the `seen_data` pattern already used by `BrotliDecoder`.All 40 decoder tests pass. Let me record the non-obvious quirk as a CogZ observation.Per project rules, let me run `scripts/check` to verify lint/typecheck.`ruff`/`mypy` aren't installed here \u2014 the pytest gate is the verification that applies. Since this is a user-visible bug fix, let me add a CHANGELOG entry per the repo's contributing rule.Done. `tests/test_decoders.py` passes 40/40.\n\n**Root cause:** `ZStandardDecoder.flush()` raised `DecodingError(\"Zstandard data is incomplete\")` for empty bodies \u2014 `iter_bytes()` never calls `decode()` when there are no raw chunks, so `decompressor.eof` stayed `False`.\n\n**Fix** in `httpx/_decoders.py` \u2014 mirrored the existing `BrotliDecoder` pattern:\n- `ZStandardDecoder.__init__` now sets `self.seen_data = False`\n- `decode()` sets `self.seen_data = True`\n- `flush()` returns `b\"\"` early when no data was seen\n\nTruncated bodies still raise `DecodingError` (`seen_data` is True, `eof` is False), so `test_zstd_truncated` and the multiframe case still pass. Both sync and async paths are covered since they share the same decoder via `iter_bytes`/`aiter_bytes`. Added a CHANGELOG entry under Unreleased per the repo's contributing convention.\n\nNote: `scripts/check` couldn't run \u2014 `ruff`/`mypy` aren't installed in this environment; pytest is the available verification here.\n",
+  "err": ""
+ },
+ "diff_stat": "CHANGELOG.md       | 1 +\n httpx/_decoders.py | 4 ++++\n 2 files changed, 5 insertions(+)",
+ "used_cogz": false,
+ "test_tail": "........................................                                 [100%]\n40 passed in 0.10s\n"
+}

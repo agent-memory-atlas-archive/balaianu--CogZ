@@ -1,0 +1,16 @@
+I'll start by exploring the repository structure and finding the relevant code.This is the cobra repository. Let me look at the tests and the relevant group-checking code.Now let me look at the key sections of command.go — `AddCommand`, `ExecuteC`, `InitDefaultHelpCmd`, and `InitDefaultCompletionCmd`.Now let me look at `ExecuteC` and `InitDefaultCompletionCmd`:Let me check `initCompleteCmd` and how the `__complete` command is added, plus look at the struct fields near `commandgroups`.Now let me check the `executeCommand` helper and run the target tests to see current state.The test panics at `AddCommand` before the deferred recover is registered — exactly what the upstream change addresses. The fix: remove the group check from `AddCommand` and add a recursive `checkCommandGroups()` called from `ExecuteC` after default help/completion commands are initialized.
+
+**Edit 1** — remove the check from `AddCommand`:Now let me run the target tests plus a build check.All 4 target tests pass. Now let me verify the full test suite doesn't regress.Full suite passes. Let me do a final review of the diff:Done. The change moves group validation from `AddCommand()` to `ExecuteC()`, matching the commit's intent:
+
+**Changes in `command.go`:**
+
+- `ExecuteC` — added `c.checkCommandGroups()` after `InitDefaultHelpCmd()`/`InitDefaultCompletionCmd()`, so validation runs once all commands (including the auto-generated `help` and `completion` commands) exist. [command.go:996-1003](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_10cf7be9_qh_pzrk7/command.go)
+- Added `checkCommandGroups()` — recursively walks the command tree and panics if a subcommand's `GroupID` isn't registered on its parent. The recursion is what catches nested cases like `TestWrongGroupNestedLevel`. [command.go:1142-1151](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_10cf7be9_qh_pzrk7/command.go)
+- `AddCommand` — removed the immediate panic check, so groups no longer need to be registered before commands are added (e.g., in `init()`). [command.go:1229-1236](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_10cf7be9_qh_pzrk7/command.go)
+
+**Why this ordering matters:** `SetHelpCommandGroupID`/`SetCompletionCommandGroupID` assign group IDs to commands created lazily inside `ExecuteC`. Checking after both init calls means a wrong ID there still panics — and checking at execute time means the `defer`/`recover` in the tests is already registered when the panic fires.
+
+**Verification:**
+- All 4 target tests pass
+- `go test ./... -count=1` — full suite green (cobra + doc)
+- `go vet ./...` — clean

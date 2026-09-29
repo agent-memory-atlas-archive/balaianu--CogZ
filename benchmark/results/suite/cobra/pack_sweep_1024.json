@@ -5,12 +5,12 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 5129.7,
+    "cold_first_ms": 1809.9,
     "n": 15,
-    "p50_ms": 1046.9,
-    "p95_ms": 1371.7,
-    "p99_ms": 1490.8,
-    "mean_ms": 1042.6,
+    "p50_ms": 510.1,
+    "p95_ms": 566.3,
+    "p99_ms": 583.9,
+    "mean_ms": 453.0,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -22,7 +22,7 @@
      "sections": 13,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 71,
+     "dropped": 80,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -36,7 +36,7 @@
      "sections": 17,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 67,
+     "dropped": 77,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -49,7 +49,7 @@
      "sections": 19,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 39,
+     "dropped": 49,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -63,7 +63,7 @@
      "sections": 16,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 68,
+     "dropped": 78,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -74,7 +74,7 @@
     {
      "query": "how are requests processed",
      "sections": 14,
-     "size_tokens": 1024,
+     "size_tokens": 1033,
      "budget": 1024,
      "dropped": 70,
      "composition": {
@@ -92,12 +92,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 353.4,
+    "cold_first_ms": 336.2,
     "n": 15,
-    "p50_ms": 282.4,
-    "p95_ms": 348.1,
-    "p99_ms": 395.8,
-    "mean_ms": 290.2,
+    "p50_ms": 375.1,
+    "p95_ms": 626.8,
+    "p99_ms": 936.4,
+    "mean_ms": 425.1,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -106,19 +106,18 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 14,
+     "sections": 13,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 70,
+     "dropped": 81,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 2,
-      "function/full": 4,
-      "rule/full": 1,
+      "function/full": 3,
+      "rule/full": 2,
       "file/full": 1,
-      "class/full": 1,
-      "observation/full": 1
+      "class/full": 1
      }
     },
     {
@@ -126,7 +125,7 @@
      "sections": 14,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 70,
+     "dropped": 80,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -141,7 +140,7 @@
      "sections": 17,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 67,
+     "dropped": 73,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -153,13 +152,14 @@
     },
     {
      "query": "data validation logic",
-     "sections": 15,
+     "sections": 16,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 64,
+     "dropped": 73,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
+      "rule/full": 1,
       "file/full": 1,
       "knowledge/full": 2,
       "function/full": 7,

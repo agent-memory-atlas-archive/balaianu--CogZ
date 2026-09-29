@@ -1,0 +1,2 @@
+cobra: 36 files, 16765 LOC, 768 entities, 1332 edges, 768 embeddings, db=8776KB
+wrote /home/andy/dev/personal/CogZ/benchmark/results/corpus_metrics.json
