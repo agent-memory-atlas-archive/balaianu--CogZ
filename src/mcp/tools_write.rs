@@ -11,7 +11,7 @@ use serde_json::json;
 use crate::files::frontmatter::FmValue;
 use crate::files::{EntityFile, FileEntityType};
 use crate::mcp::helpers::{
-    auto_title, create_entity_file, mcp_internal_error, mcp_invalid_parameter,
+    auto_title, create_entity_file, mcp_error, mcp_internal_error, mcp_invalid_parameter,
     update_knowledge_file, write_and_sync,
 };
 use crate::mcp::params::*;
@@ -196,6 +196,65 @@ pub async fn verify_knowledge(
     .map_err(|e| mcp_internal_error("verify_knowledge", &e.to_string()))?;
 
     let (mut result, write_nudge) = result;
+    if let Some(nudge) = write_nudge {
+        result["write_nudge"] = nudge;
+    }
+    Ok(tool_success(result))
+}
+
+/// Reject an entity through the canonical file path — writes
+/// `status: rejected` (+ optional `rejected_reason`) to the entity
+/// file, then syncs so the status lattice validates the transition.
+pub async fn reject_entity(
+    server: &CogzServer,
+    Parameters(params): Parameters<RejectEntityParams>,
+) -> Result<CallToolResult, McpError> {
+    use crate::files::reject::RejectError;
+    let repo = server.resolve_repo(&params.repo)?;
+    let storage = repo.storage.clone();
+    let cogz_dir = repo.cogz_dir.clone();
+
+    let (mut result, write_nudge) = tokio::task::spawn_blocking(move || {
+        let outcome = crate::files::reject::reject_entity_file(
+            &storage,
+            &cogz_dir,
+            &params.id,
+            params.reason.as_deref(),
+        )
+        .map_err(|e| {
+            let (code, msg) = match &e {
+                RejectError::NotFound(_) => ("entity_not_found", e.to_string()),
+                RejectError::NotEpistemic { .. } => ("invalid_parameter", e.to_string()),
+                RejectError::NoFile(_) => ("entity_not_found", e.to_string()),
+                RejectError::Storage(crate::storage::StorageError::IllegalTransition {
+                    ..
+                }) => ("illegal_transition", e.to_string()),
+                RejectError::Storage(_) => ("db_error", e.to_string()),
+                RejectError::PathOutsideCogz { .. }
+                | RejectError::Read { .. }
+                | RejectError::Write { .. } => ("file_write_failed", e.to_string()),
+                RejectError::Sync { .. } => ("db_error", e.to_string()),
+            };
+            mcp_error(code, &msg)
+        })?;
+
+        let conn = storage.conn();
+        let fresh = crate::hooks::nudge::fresh_suggestions(&conn, "reject_entity");
+        let write_nudge = (!fresh.is_empty()).then(|| crate::hooks::nudge::format_json(&fresh));
+
+        Ok::<_, McpError>((
+            json!({
+                "id": outcome.id,
+                "file_path": outcome.file_path.display().to_string(),
+                "status": "rejected",
+                "reason": outcome.reason,
+            }),
+            write_nudge,
+        ))
+    })
+    .await
+    .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))??;
+
     if let Some(nudge) = write_nudge {
         result["write_nudge"] = nudge;
     }

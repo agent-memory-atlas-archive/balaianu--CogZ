@@ -38,6 +38,12 @@ pub enum EventType {
     /// An orphaned-stale knowledge entity recovered automatically —
     /// all references resolve active again.
     StaleRecovered,
+    /// A knowledge-layer entity was explicitly rejected — the write
+    /// that produces `status: rejected`, carrying the entity type and
+    /// the caller's reason. (ObservationRejected predates the general
+    /// tool; new rejections record as entity_rejected regardless of
+    /// entity type.)
+    EntityRejected,
     /// An MCP `search` ran — query text + result count, so misses are
     /// minable (a silenced search is a knowledge gap the agent then
     /// crossed by hand) and the query log doubles as telemetry.
@@ -72,6 +78,7 @@ impl EventType {
             Self::SuggestionsRequested => "suggestions_requested",
             Self::KnowledgeVerified => "knowledge_verified",
             Self::StaleRecovered => "stale_recovered",
+            Self::EntityRejected => "entity_rejected",
             Self::SearchPerformed => "search_performed",
             Self::WriteNudgeShown => "write_nudge_shown",
         }

@@ -5,7 +5,7 @@
 //! tests (test_mcp_server.rs) cannot — specifically main()-level
 //! concerns like tracing subscriber configuration.
 //!
-//! All 16 tools are exercised over the real stdio transport against
+//! All 15 tools are exercised over the real stdio transport against
 //! a temporary repo initialized via `cogz init` + `cogz index`.
 //! The MCP server runs with a fake HOME so ONNX models are not
 //! found — search and get_context operate in FTS-only mode, which
@@ -298,7 +298,7 @@ fn mcp_stdio_handshake_and_tools() {
     let tools = resp["result"]["tools"]
         .as_array()
         .expect("tools should be an array");
-    assert_eq!(tools.len(), 14, "should expose 14 tools");
+    assert_eq!(tools.len(), 15, "should expose 15 tools");
 
     // Verify repo is required in every tool schema
     for tool in tools {

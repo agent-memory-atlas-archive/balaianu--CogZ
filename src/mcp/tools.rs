@@ -1,7 +1,8 @@
 //! MCP tool router — dispatches tool calls to implementation modules.
 //!
 //! Tool implementations are grouped by category:
-//! - `tools_write` — create_entity, update_knowledge, verify_knowledge
+//! - `tools_write` — create_entity, update_knowledge, verify_knowledge,
+//!   reject_entity
 //! - `tools_query` — query_entities, list_entities
 //! - `tools_search` — search, get_context
 //! - `tools_graph` — get_callers, get_impact, find_orphans
@@ -52,6 +53,17 @@ impl CogzServer {
         params: Parameters<VerifyKnowledgeParams>,
     ) -> Result<CallToolResult, McpError> {
         tools_write::verify_knowledge(self, params).await
+    }
+
+    #[tool(
+        name = "reject_entity",
+        description = "Reject a knowledge-layer entity — writes `status: rejected` (and an optional `rejected_reason`) into its canonical file, then syncs so the status lattice validates the transition. Only `active` entities can be rejected; verify a stale one first if it must be ruled wrong. This is a verdict, not an edit — do not use it for content changes. Rejected entities stay on record: retrieval filters them out, and dedup can warn when a matching claim resurfaces."
+    )]
+    async fn reject_entity(
+        &self,
+        params: Parameters<RejectEntityParams>,
+    ) -> Result<CallToolResult, McpError> {
+        tools_write::reject_entity(self, params).await
     }
 
     #[tool(

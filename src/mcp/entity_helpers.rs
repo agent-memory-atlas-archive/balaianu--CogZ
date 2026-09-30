@@ -196,6 +196,7 @@ pub fn write_and_sync(
         "dedup_flagged": dedup.dedup_flagged,
         "contradiction_flagged": contradiction_flagged,
         "duplicate_warning": dedup.duplicate_warning,
+        "rejected_match": dedup.rejected_match,
     }))
 }
 

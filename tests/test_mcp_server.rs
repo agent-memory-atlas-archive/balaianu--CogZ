@@ -1485,7 +1485,7 @@ async fn capture_event_invalid_type_returns_error() {
 }
 
 #[tokio::test]
-async fn mcp_server_lists_14_tools() {
+async fn mcp_server_lists_15_tools() {
     let (server, _dir) = setup();
     let client = spawn_server(server).await;
 
@@ -1493,13 +1493,14 @@ async fn mcp_server_lists_14_tools() {
 
     let tool_names: Vec<String> = tools.tools.iter().map(|t| t.name.to_string()).collect();
 
-    assert_eq!(tool_names.len(), 14, "server should expose 14 tools");
+    assert_eq!(tool_names.len(), 15, "server should expose 15 tools");
     for expected in [
         "capture_event",
         "get_callers",
         "get_impact",
         "find_orphans",
         "suggest_observations",
+        "reject_entity",
     ] {
         assert!(
             tool_names.contains(&expected.to_string()),
@@ -1584,4 +1585,81 @@ async fn create_entity_knowledge_allows_non_secret_content() {
 
     let value = parse_result(result);
     assert!(value["id"].as_str().is_some(), "should create the entry");
+}
+
+// ── reject_entity ─────────────────────────────────────────────────────────
+
+#[tokio::test]
+async fn reject_entity_marks_file_and_db() {
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+    std::fs::create_dir_all(cogz_dir.join("observations")).unwrap();
+    let models_dir = dir.path().join("models");
+    std::fs::create_dir_all(&models_dir).unwrap();
+
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let config = Config::default_for("test-project");
+    let server = CogzServer::with_models_dir(storage.clone(), config, cogz_dir, &models_dir);
+    let client = spawn_server(server).await;
+
+    let created = client
+        .call_tool(
+            CallToolRequestParams::new("create_entity").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"entity_type": "observation",
+                        "content": "Embeddings drift on model rebuild",
+                        "title": "Embedding drift"}),
+                )
+                .unwrap(),
+            ),
+        )
+        .await
+        .unwrap();
+    let created_id = parse_result(created)["id"].as_str().unwrap().to_string();
+
+    let rejected = client
+        .call_tool(
+            CallToolRequestParams::new("reject_entity").with_arguments(
+                call_tool_args(
+                    dir.path(),
+                    json!({"id": created_id, "reason": "disproven by pinned-model test"}),
+                )
+                .unwrap(),
+            ),
+        )
+        .await
+        .unwrap();
+    let rejected_value = parse_result(rejected);
+    assert_eq!(rejected_value["status"].as_str().unwrap(), "rejected");
+
+    // Canonical file carries the verdict and reason.
+    let file = std::fs::read_to_string(
+        dir.path()
+            .join(".cogz")
+            .join(rejected_value["file_path"].as_str().unwrap()),
+    )
+    .unwrap();
+    assert!(file.contains("status: rejected"), "frontmatter written");
+    assert!(file.contains("disproven by pinned-model test"));
+
+    // DB agrees, and the event was logged.
+    let conn = storage.conn();
+    let status: String = conn
+        .query_row(
+            "SELECT status FROM entities WHERE id = ?1",
+            [&created_id],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(status, "rejected");
+    let events: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM events WHERE event_type = 'entity_rejected' AND entity_id = ?1",
+            [&created_id],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(events, 1);
 }

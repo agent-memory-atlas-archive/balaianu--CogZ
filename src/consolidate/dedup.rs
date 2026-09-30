@@ -31,6 +31,10 @@ pub struct DedupResult {
     /// Warning with details if a title match or high similarity was
     /// found. `None` if no duplicate detected.
     pub duplicate_warning: Option<DuplicateWarning>,
+    /// Set when the new entity matches a `rejected` one — not a
+    /// duplicate, but evidence: a claim like this was ruled wrong
+    /// before. Surfaced to the writer, never a block.
+    pub rejected_match: Option<RejectedMatch>,
 }
 
 impl DedupResult {
@@ -41,8 +45,23 @@ impl DedupResult {
             dedup_flagged: false,
             contradiction_flagged: false,
             duplicate_warning: None,
+            rejected_match: None,
         }
     }
+}
+
+/// A match against a `rejected` entity — surfaced so the writing
+/// agent sees the prior verdict before a matching claim lands again.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct RejectedMatch {
+    pub existing_id: String,
+    pub existing_title: String,
+    pub similarity: f64,
+    /// "exact", "fuzzy", or "embedding"
+    pub title_match: String,
+    /// The `rejected_reason` frontmatter value, if the rejected
+    /// record carried one.
+    pub rejected_reason: Option<String>,
 }
 
 /// A warning that a newly created entity may duplicate an existing one.
@@ -62,6 +81,26 @@ pub struct DuplicateWarning {
 /// its title. `new_embedding` is its embedding vector, if available.
 /// `entity_type` is the string form ("observation", "rule", "knowledge").
 pub fn check_duplicate(
+    conn: &Connection,
+    new_id: &str,
+    new_title: &str,
+    entity_type: &str,
+    new_embedding: Option<&[f32]>,
+    config: &ConsolidationConfig,
+) -> DedupResult {
+    let mut result =
+        check_duplicate_active(conn, new_id, new_title, entity_type, new_embedding, config);
+    // The rejected pass runs even when the active pass found a
+    // duplicate — a prior rejection is evidence worth surfacing either
+    // way, and rejected sets are small enough that the extra pass is
+    // cheap.
+    result.rejected_match =
+        check_rejected_match(conn, new_id, new_title, entity_type, new_embedding, config);
+    result
+}
+
+/// Dedup against `active` candidates — the duplicate check proper.
+fn check_duplicate_active(
     conn: &Connection,
     new_id: &str,
     new_title: &str,
@@ -93,6 +132,7 @@ pub fn check_duplicate(
             dedup_flagged: false,
             contradiction_flagged: false,
             duplicate_warning: Some(warning),
+            rejected_match: None,
         };
     }
 
@@ -105,10 +145,55 @@ pub fn check_duplicate(
             dedup_flagged,
             contradiction_flagged: false,
             duplicate_warning: warning,
+            rejected_match: None,
         };
     }
 
     DedupResult::empty()
+}
+
+/// Match the new entity against `rejected` ones of the same type.
+/// A rejected match is not a duplicate — the claim may legitimately
+/// be new — but it is a prior verdict on the same claim, so the
+/// writer should see it.
+fn check_rejected_match(
+    conn: &Connection,
+    new_id: &str,
+    new_title: &str,
+    entity_type: &str,
+    new_embedding: Option<&[f32]>,
+    config: &ConsolidationConfig,
+) -> Option<RejectedMatch> {
+    let rejected = get_entities_by_type(conn, entity_type, Some("rejected"), 100).ok()?;
+    if rejected.is_empty() {
+        return None;
+    }
+    let reason_of = |id: &str| {
+        rejected
+            .iter()
+            .find(|e| e.id == id)
+            .and_then(|e| e.properties.get("rejected_reason"))
+            .and_then(|v| v.as_str())
+            .map(str::to_string)
+    };
+    let convert = |w: DuplicateWarning| RejectedMatch {
+        rejected_reason: reason_of(&w.existing_id),
+        existing_id: w.existing_id,
+        existing_title: w.existing_title,
+        similarity: w.similarity,
+        title_match: w.title_match,
+    };
+
+    if let Some(w) = check_title_match(&rejected, new_id, new_title, config.title_match_threshold) {
+        return Some(convert(w));
+    }
+    if let Some(embedding) = new_embedding
+        && let Some((_, Some(w))) =
+            check_embedding_similarity(conn, embedding, &rejected, new_id, config.dedup_threshold)
+    {
+        return Some(convert(w));
+    }
+    None
 }
 
 /// Check for title matches among existing entities.

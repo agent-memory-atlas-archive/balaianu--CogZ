@@ -9,6 +9,7 @@ pub mod entities;
 pub mod events;
 pub mod frontmatter;
 pub mod refs;
+pub mod reject;
 pub mod sync;
 
 pub use entities::{EntityFile, FileEntityType, read_entity_file, slugify, write_entity_file};

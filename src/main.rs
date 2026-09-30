@@ -226,6 +226,23 @@ enum Commands {
         repo: PathBuf,
     },
 
+    /// Reject a knowledge-layer entity — writes `status: rejected`
+    /// into its file, validated against the status lattice. Only
+    /// `active` entities can be rejected.
+    Reject {
+        /// Entity UUID to reject.
+        entity_id: String,
+
+        /// Why the entity is rejected — stored as `rejected_reason`
+        /// in the file's frontmatter.
+        #[arg(long)]
+        reason: Option<String>,
+
+        /// Repository root directory. Defaults to current directory.
+        #[arg(long, default_value = ".")]
+        repo: PathBuf,
+    },
+
     /// Model management — download, list, clean.
     Models {
         #[command(subcommand)]
@@ -387,6 +404,11 @@ fn main() -> anyhow::Result<()> {
         Commands::McpStdio => cli_events::run_mcp_stdio(),
         Commands::Consolidate { repo, dry_run } => commands::run_consolidate(&repo, dry_run),
         Commands::Verify { entity_id, repo } => commands::run_verify(&repo, &entity_id),
+        Commands::Reject {
+            entity_id,
+            reason,
+            repo,
+        } => commands::run_reject(&repo, &entity_id, reason.as_deref()),
         Commands::CaptureEvent {
             event_type,
             repo,

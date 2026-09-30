@@ -11,4 +11,6 @@ pub mod merge;
 pub mod numgate;
 pub mod promote;
 
-pub use dedup::{DedupResult, DuplicateWarning, check_duplicate, confirm_duplicate_nli};
+pub use dedup::{
+    DedupResult, DuplicateWarning, RejectedMatch, check_duplicate, confirm_duplicate_nli,
+};

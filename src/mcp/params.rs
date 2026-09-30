@@ -88,6 +88,18 @@ pub struct VerifyKnowledgeParams {
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
+pub struct RejectEntityParams {
+    /// Absolute path to the project root containing `.cogz/`.
+    pub repo: String,
+    /// UUID of the entity to reject.
+    pub id: String,
+    /// Why the entity is rejected — stored as `rejected_reason` in
+    /// the file's frontmatter so the verdict carries its evidence.
+    #[serde(default)]
+    pub reason: Option<String>,
+}
+
+#[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
 pub struct UpdateKnowledgeParams {
     /// Absolute path to the project root containing `.cogz/`.
     pub repo: String,

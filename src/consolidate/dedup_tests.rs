@@ -210,3 +210,65 @@ fn nli_rejects_contradiction_as_duplicate() {
 fn nli_dedup_without_model_returns_false() {
     assert!(!confirm_duplicate_nli(None, "same text", "same text", 0.85,));
 }
+
+#[test]
+fn rejected_match_warns_without_flagging_duplicate() {
+    let conn = setup();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "observation", "Config lives in toml", "c"),
+    )
+    .unwrap();
+    crate::storage::crud::update_status(&conn, "r1", "rejected").unwrap();
+
+    let result = check_duplicate(
+        &conn,
+        "u9",
+        "Config lives in toml",
+        "observation",
+        None,
+        &config(),
+    );
+    // A rejected twin is evidence, not a duplicate: no flag, no
+    // duplicate warning — but the match is surfaced.
+    assert!(!result.dedup_flagged);
+    assert!(result.duplicate_warning.is_none());
+    let m = result.rejected_match.expect("rejected twin should surface");
+    assert_eq!(m.existing_id, "r1");
+    assert_eq!(m.title_match, "exact");
+}
+
+#[test]
+fn rejected_match_carries_reason() {
+    let conn = setup();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "observation", "Config lives in toml", "c"),
+    )
+    .unwrap();
+    conn.execute(
+        "UPDATE entities SET status = 'rejected', properties = json_set(properties, '$.rejected_reason', 'measured wrong') WHERE id = 'r1'",
+        [],
+    )
+    .unwrap();
+
+    let result = check_duplicate(
+        &conn,
+        "u9",
+        "Config lives in toml",
+        "observation",
+        None,
+        &config(),
+    );
+    let m = result.rejected_match.unwrap();
+    assert_eq!(m.rejected_reason.as_deref(), Some("measured wrong"));
+}
+
+#[test]
+fn no_rejected_match_without_rejected_entities() {
+    let conn = setup();
+    insert_entity(&conn, &Entity::new("a1", "observation", "Some claim", "c")).unwrap();
+
+    let result = check_duplicate(&conn, "u9", "Some claim", "observation", None, &config());
+    assert!(result.rejected_match.is_none());
+}
