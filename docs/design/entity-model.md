@@ -82,7 +82,7 @@ pruned    → (terminal)
 |---|---|
 | `active` | Live, in use. Default on creation. |
 | `stale` | Orphaned — the code it referenced is gone (deleted, renamed, or itself stale). Carries `stale_reason: code_orphaned` in frontmatter. Re-activates automatically when all references resolve active again (revert, rename re-link), or explicitly via `cogz verify`. Manually-flagged stale (no `stale_reason`) is never auto-reactivated. |
-| `rejected` | Manually rejected. Eligible for pruning. |
+| `rejected` | Rejected via `reject_entity` (MCP) or `cogz reject` (CLI) — a verdict that the claim is wrong, not merely outdated. Optional `rejected_reason` frontmatter records why. Eligible for pruning. |
 | `superseded` | Replaced by another entity (merge). Has a `superseded_by` field. Eligible for pruning. |
 | `pruned` | Terminal. Content removed, embedding removed, FTS entry removed. Graph edges preserved. |
 

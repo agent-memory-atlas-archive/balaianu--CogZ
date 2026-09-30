@@ -269,6 +269,20 @@ cogz verify <entity-id> [--repo <path>]
 
 Writes canonical frontmatter first, then re-syncs the DB. Fails on unknown IDs and entities with no backing file (code entities — they carry no `verified_against` frontmatter to re-stamp). Works on observations, rules, and knowledge.
 
+## `cogz reject`
+
+Reject a knowledge-layer entity — a verdict that the claim is wrong. Writes `status: rejected` into the canonical file (with an optional `rejected_reason`), then re-syncs so the status lattice validates the transition.
+
+```
+cogz reject <entity-id> [--reason <text>] [--repo <path>]
+```
+
+**Flags:**
+- `--reason <text>` — why the entity is rejected; stored as `rejected_reason` in frontmatter and surfaced by dedup when a matching claim resurfaces
+- `--repo <path>` — repository root (default: `.`)
+
+Only `active` observations, rules, and knowledge can be rejected — code entities carry no verdict, and a `stale` entity must be verified (reactivated) or updated first. Rejected entities stay on record: retrieval filters them out, and they become eligible for pruning. Mirrors the `reject_entity` MCP tool.
+
 ## `cogz update`
 
 Self-update from GitHub releases.

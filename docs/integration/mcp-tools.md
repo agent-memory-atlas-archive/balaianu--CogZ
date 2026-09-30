@@ -1,6 +1,6 @@
 # MCP Tools
 
-CogZ exposes 14 tools via the Model Context Protocol (MCP) over stdio. The server is stateless per the 2026-07-28 MCP spec (SEP-2577) — no Roots, no sessions, no cwd inference. Every tool call must include a `repo` parameter with the absolute path to the project root containing `.cogz/`.
+CogZ exposes 15 tools via the Model Context Protocol (MCP) over stdio. The server is stateless per the 2026-07-28 MCP spec (SEP-2577) — no Roots, no sessions, no cwd inference. Every tool call must include a `repo` parameter with the absolute path to the project root containing `.cogz/`.
 
 ## Server setup
 
@@ -53,7 +53,7 @@ Create a knowledge-layer entity. `entity_type` selects the lifecycle class — p
 | `source` | string | no | Observation only: who or what produced it. Default: `"agent"`. |
 | `confidence` | float | no | Rule only: confidence score (0.0–1.0) |
 
-**Returns:** JSON with `id`, `title`, `status`, `duplicate_warning` (if a similar entity exists), `contradiction_flagged` (if NLI detected a contradiction), `file_path` (knowledge only).
+**Returns:** JSON with `id`, `title`, `status`, `duplicate_warning` (if a similar active entity exists), `rejected_match` (if a similar `rejected` entity exists — a prior verdict on the same claim, surfaced as evidence, never a block), `contradiction_flagged` (if NLI detected a contradiction), `file_path` (knowledge only).
 
 ### `update_knowledge`
 
@@ -85,6 +85,19 @@ Re-stamp a knowledge entry's `verified_against` provenance to the current hashes
 | `id` | string | yes | UUID of the knowledge entry to verify |
 
 **Returns:** JSON with `id`, `restamped` (number of references re-stamped), `reactivated` (whether a `code_orphaned` stale status was cleared), and optionally `write_nudge` (see below).
+
+### `reject_entity`
+
+Reject a knowledge-layer entity — writes `status: rejected` (and an optional `rejected_reason`) into its canonical file, then syncs so the status lattice validates the transition. Only `active` entities can be rejected; verify a stale one first if it must be ruled wrong. This is a verdict, not an edit — do not use it for content changes. Rejected entities stay on record: retrieval filters them out, and dedup can warn when a matching claim resurfaces.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `repo` | string | yes | Absolute path to project root |
+| `id` | string | yes | UUID of the entity to reject |
+| `reason` | string | no | Why the entity is rejected — stored as `rejected_reason` in the file's frontmatter |
+
+**Returns:** JSON with `id`, `file_path`, `status` (`"rejected"`), `reason`, and optionally `write_nudge` (see below). Errors: `entity_not_found`, `invalid_parameter` (non-epistemic type — code entities carry no verdict), `illegal_transition` (e.g. `stale → rejected`).
 
 ## Query tools
 
@@ -261,7 +274,7 @@ Capture a lifecycle event. Called by hook scripts. For `session_start` and `prom
 
 ## Write-back nudges (`write_nudge`)
 
-`search`, `get_context`, and `verify_knowledge` responses may carry an optional `write_nudge` object when the mining pass finds a fresh observation candidate:
+`search`, `get_context`, `verify_knowledge`, and `reject_entity` responses may carry an optional `write_nudge` object when the mining pass finds a fresh observation candidate:
 
 ```json
 "write_nudge": {

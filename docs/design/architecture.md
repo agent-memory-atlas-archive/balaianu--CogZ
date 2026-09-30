@@ -124,8 +124,8 @@ src/
   mcp/                 MCP server
     server.rs          ServerHandler impl, repo/model caching
     repo_cache.rs      Repo cache: herd protection, LRU, staleness
-    tools.rs           Tool router (14 tools)
-    tools_write.rs     create_entity, update_knowledge, verify_knowledge
+    tools.rs           Tool router (15 tools)
+    tools_write.rs     create_entity, update_knowledge, verify_knowledge, reject_entity
     tools_query.rs     query_entities, list_entities
     tools_search.rs    search, get_context
     tools_graph.rs     get_callers, get_impact, find_orphans
