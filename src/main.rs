@@ -31,6 +31,37 @@ enum Commands {
         /// DB is gitignored).
         #[arg(long)]
         local_only: bool,
+
+        /// Wire host-agent MCP + hook config after init.
+        /// Comma-separated harness ids (claude-code, cursor, codex,
+        /// gemini, copilot, devin) or `auto` to configure every
+        /// detected agent.
+        #[arg(long)]
+        configure: Option<String>,
+
+        /// With --configure: write user-level (global) agent config
+        /// instead of project files.
+        #[arg(long, requires = "configure")]
+        global: bool,
+    },
+
+    /// Write host-agent MCP + hook configuration for this repo.
+    /// Merges into existing files (with a .cogz.bak backup) and never
+    /// clobbers other servers or hooks.
+    Configure {
+        /// Harness(es) to configure: claude-code, cursor, codex,
+        /// gemini, copilot, devin — comma-separated, or `auto` to
+        /// configure every detected agent.
+        harnesses: String,
+
+        /// Repository root directory. Defaults to current directory.
+        #[arg(long, default_value = ".")]
+        repo: PathBuf,
+
+        /// Write user-level (global) agent config instead of project
+        /// files.
+        #[arg(long)]
+        global: bool,
     },
 
     /// Show system status — DB stats, entity counts, stale count.
@@ -365,9 +396,50 @@ fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Init { repo, local_only } => {
+        Commands::Init {
+            repo,
+            local_only,
+            configure,
+            global,
+        } => {
             let msg = cogz::init::run(&repo, local_only)?;
             println!("{}", msg);
+            let home = std::env::home_dir()
+                .ok_or_else(|| anyhow::anyhow!("cannot determine home directory"))?;
+            match configure {
+                Some(arg) => {
+                    let scope = if global {
+                        cogz::configure::Scope::User
+                    } else {
+                        cogz::configure::Scope::Project
+                    };
+                    print!("{}", cogz::configure::run(&repo, &arg, scope, &home)?);
+                }
+                None => {
+                    let detected = cogz::configure::detect(&repo, &home);
+                    if !detected.is_empty() {
+                        println!(
+                            "  agents detected: {}\n  wire MCP + hooks: cogz configure auto",
+                            detected.join(", ")
+                        );
+                    }
+                }
+            }
+            Ok(())
+        }
+        Commands::Configure {
+            harnesses,
+            repo,
+            global,
+        } => {
+            let home = std::env::home_dir()
+                .ok_or_else(|| anyhow::anyhow!("cannot determine home directory"))?;
+            let scope = if global {
+                cogz::configure::Scope::User
+            } else {
+                cogz::configure::Scope::Project
+            };
+            print!("{}", cogz::configure::run(&repo, &harnesses, scope, &home)?);
             Ok(())
         }
         Commands::Status { repo } => commands::run_status(&repo),
