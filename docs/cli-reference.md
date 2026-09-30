@@ -7,14 +7,44 @@ Every command accepts `--repo <path>` to specify the repository root (defaults t
 Initialize `.cogz/` in a repository.
 
 ```
-cogz init [--repo <path>] [--local-only]
+cogz init [--repo <path>] [--local-only] [--configure <harnesses>] [--global]
 ```
 
 **Flags:**
 - `--repo <path>` — repository root (default: `.`)
 - `--local-only` — gitignore all of `.cogz/` (nothing committed). Default is team-sharing mode: knowledge, rules, and observations are committed; only the DB is gitignored.
+- `--configure <harnesses>` — also wire host-agent MCP + hook config (see `cogz configure`). Accepts comma-separated harness ids or `auto` for every detected agent.
+- `--global` — with `--configure`, write user-level agent config instead of project files.
 
-**Output:** Creates `.cogz/` with `config.toml`, `.gitignore`, and subdirectories (`knowledge/`, `rules/`, `observations/`). Refuses to run if `.cogz/` already exists — use `cogz reset` first.
+**Output:** Creates `.cogz/` with `config.toml`, `.gitignore`, and subdirectories (`knowledge/`, `rules/`, `observations/`). Refuses to run if `.cogz/` already exists — use `cogz reset` first. Without `--configure`, prints the detected agents and the `cogz configure` hint when any are found.
+
+## `cogz configure`
+
+Write host-agent configuration so an agent picks up CogZ's MCP server and lifecycle hooks without hand-editing JSON. Merges into existing config files — other servers' entries and other tools' hooks are preserved — and writes a `<file>.cogz.bak` backup before overwriting an existing file. Re-running is idempotent: a file that already matches is reported as already configured and left untouched.
+
+```
+cogz configure <harnesses> [--repo <path>] [--global]
+```
+
+**Arguments:**
+- `<harnesses>` — comma-separated ids, or `auto` to configure every detected agent: `claude-code`, `cursor`, `codex`, `gemini`, `copilot`, `devin`
+
+**Flags:**
+- `--repo <path>` — repository root (default: `.`)
+- `--global` — write user-level config (e.g. `~/.claude.json`, `~/.config/devin/config.json`) instead of project files
+
+**Files written (project scope):**
+
+| Harness | MCP | Hooks |
+|---|---|---|
+| `claude-code` | `.mcp.json` | `.claude/settings.json` |
+| `cursor` | `.cursor/mcp.json` | `.cursor/hooks.json` |
+| `codex` | `.codex/config.toml` (TOML `[mcp_servers.cogz]`) | `.codex/hooks.json` |
+| `gemini` | `.gemini/settings.json` (`mcpServers` key) | same file (`hooks` key) |
+| `copilot` | `.mcp.json` | `.github/hooks/cogz.json` |
+| `devin` | `.devin/mcp_config.json` | `.devin/hooks.v1.json` |
+
+Existing files that fail to parse (invalid JSON/TOML) abort the run with an error rather than being overwritten.
 
 ## `cogz index`
 

@@ -2,6 +2,8 @@
 
 CogZ integrates with any AI coding agent that supports MCP servers or shell command hooks. This guide covers configuration for the 6 supported agents.
 
+**Fast path:** `cogz init --configure auto` detects installed agents and writes both the MCP server entry and lifecycle hooks for all of them — project-scoped files by default, `--global` for user-level config. `cogz configure <harness>` does the same for already-initialized repos. Both merge into existing files (with `.cogz.bak` backups) and never clobber other tools' config. The rest of this page documents what gets written and the manual alternative.
+
 All 6 agents support both MCP and hooks, and all support global (user-level) and project-scoped config for both. The MCP server config is the same for all agents — only the file location and format differ. Hook config varies by agent; see [Hooks](hooks.md) for the full event reference and canonical hook JSON.
 
 ## MCP server configuration

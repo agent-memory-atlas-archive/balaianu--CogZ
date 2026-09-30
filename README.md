@@ -91,7 +91,7 @@ CogZ periodically consolidates what has been learned: deduplicates entries, dete
 # Install
 curl -fsSL https://raw.githubusercontent.com/balaianu/CogZ/master/install.sh | bash
 
-# Initialize in a repo
+# Initialize in a repo (add --configure auto to wire MCP + hooks for detected agents)
 cd ~/your-project
 cogz init
 
@@ -162,6 +162,7 @@ Normal operation is automatic: hooks fire on lifecycle events, the agent drives 
 | Command | Description |
 |---|---|
 | `cogz init` | Initialize `.cogz/` in a repository |
+| `cogz configure <harnesses>` | Write agent MCP + hook config (`auto` detects installed agents) |
 | `cogz index [--no-download]` | Sync files to DB + index source code |
 | `cogz reindex` | Incremental reindex (changed files only) |
 | `cogz search <query>` | Hybrid FTS + vector + graph search |
