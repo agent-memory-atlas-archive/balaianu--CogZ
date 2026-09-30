@@ -93,6 +93,7 @@ impl CogzServer {
             storage,
             config,
             cogz_dir,
+            None,
             query_model.clone(),
             code_model.clone(),
             nli_model.clone(),

@@ -15,18 +15,80 @@ use crate::mcp::errors::{mcp_internal_error, mcp_invalid_parameter};
 /// Maximum number of repos cached before LRU eviction kicks in.
 const MAX_CACHED_REPOS: usize = 8;
 
+/// Identity of a file on disk: device, inode-equivalent, and birth
+/// time where the platform reports one. A `cogz reset` unlinks the
+/// database and a later `cogz index` recreates it — without an
+/// identity check a cached connection keeps writing to the dead
+/// inode and those writes vanish when the process exits. Birth time
+/// is set at creation and never on writes, so where it exists it
+/// also defeats the inode-reuse corner.
+#[derive(Clone, Copy, PartialEq, Eq)]
+struct FileIdentity {
+    dev: u64,
+    ino: u64,
+    created: Option<SystemTime>,
+}
+
+/// Identify the file at `path`. Returns `None` when the file cannot
+/// be statted or the platform offers no usable file identity — the
+/// caller treats `None` as "cannot verify", which for a state that
+/// recorded an identity means stale.
+#[cfg(unix)]
+fn file_identity(path: &std::path::Path) -> Option<FileIdentity> {
+    use std::os::unix::fs::MetadataExt;
+    let meta = std::fs::metadata(path).ok()?;
+    Some(FileIdentity {
+        dev: meta.dev(),
+        ino: meta.ino(),
+        created: meta.created().ok(),
+    })
+}
+
+/// Identify the file at `path` — see the unix implementation.
+#[cfg(windows)]
+fn file_identity(path: &std::path::Path) -> Option<FileIdentity> {
+    use std::os::windows::fs::MetadataExt;
+    let meta = std::fs::metadata(path).ok()?;
+    Some(FileIdentity {
+        dev: meta.volume_serial_number().unwrap_or(0),
+        ino: meta.file_index().unwrap_or(0),
+        created: meta.created().ok(),
+    })
+}
+
+/// Identify the file at `path` — on other platforms only a birth
+/// time is available; if even that is missing there is no identity
+/// to compare and the staleness check degrades to a no-op.
+#[cfg(not(any(unix, windows)))]
+fn file_identity(path: &std::path::Path) -> Option<FileIdentity> {
+    let meta = std::fs::metadata(path).ok()?;
+    meta.created().ok().map(|created| FileIdentity {
+        dev: 0,
+        ino: 0,
+        created: Some(created),
+    })
+}
+
 /// Per-repo state: DB connection, config, file root.
 /// Model instances are shared via the server's model cache.
 pub struct RepoState {
     pub storage: Arc<crate::storage::Storage>,
     pub config: crate::config::Config,
     pub cogz_dir: PathBuf,
+    /// Absolute path of the database file this storage opened.
+    /// Re-statted on every cache hit to detect `cogz reset`.
+    pub db_path: PathBuf,
     pub query_model: Arc<crate::embed::OnnxEmbeddingModel>,
     pub code_model: Arc<crate::embed::OnnxEmbeddingModel>,
     pub nli_model: Arc<crate::embed::OnnxNliModel>,
     /// mtime of config.toml when this entry was created. Used to
     /// detect config changes and trigger a cache reload.
     config_mtime: SystemTime,
+    /// File identity of `db_path` at open. `None` means the storage
+    /// has no on-disk file to validate (in-memory test DBs) or the
+    /// platform cannot identify files — the staleness check is then
+    /// skipped for this entry.
+    db_identity: Option<FileIdentity>,
 }
 
 /// Cache entry: either being opened (thundering herd guard) or ready.
@@ -75,7 +137,8 @@ impl RepoCache {
     /// Try to get a ready repo from the cache. Returns:
     /// - `Ok(Some(state))` if cached and ready (also touches LRU)
     /// - `Ok(None)` if not cached or being opened
-    /// - `Err(path)` if cached but config changed (caller should evict)
+    /// - `Err(path)` if cached but stale — config changed or the DB
+    ///   file was replaced (caller should evict)
     pub fn get(&self, path: &PathBuf) -> Result<Option<Arc<RepoState>>, PathBuf> {
         let repos = self.lock_repos();
         match repos.get(path) {
@@ -87,6 +150,15 @@ impl RepoCache {
                     .unwrap_or(SystemTime::UNIX_EPOCH);
                 if current_mtime != state.config_mtime {
                     tracing::info!("Config changed for {}, reloading", path.display());
+                    return Err(path.clone());
+                }
+                // DB staleness check: a `cogz reset` unlinks the file
+                // a cached connection still writes to. Missing file or
+                // a different identity both mean evict and reopen.
+                if let Some(expected) = state.db_identity
+                    && file_identity(&state.db_path) != Some(expected)
+                {
+                    tracing::info!("Database file changed for {}, reloading", path.display());
                     return Err(path.clone());
                 }
                 let state = state.clone();
@@ -251,6 +323,8 @@ pub fn open_repo(
         storage,
         config,
         cogz_dir,
+        db_identity: file_identity(&db_path),
+        db_path,
         query_model,
         code_model,
         nli_model,
@@ -259,10 +333,14 @@ pub fn open_repo(
 }
 
 /// Create a RepoState from pre-opened components (used by tests).
+/// `db_path` is `Some` when the storage is file-backed — pass the
+/// path it was opened with so the staleness check can verify the
+/// file is still the same one. `None` for in-memory storage.
 pub fn make_repo_state(
     storage: Arc<crate::storage::Storage>,
     config: crate::config::Config,
     cogz_dir: PathBuf,
+    db_path: Option<PathBuf>,
     query_model: Arc<crate::embed::OnnxEmbeddingModel>,
     code_model: Arc<crate::embed::OnnxEmbeddingModel>,
     nli_model: Arc<crate::embed::OnnxNliModel>,
@@ -270,14 +348,21 @@ pub fn make_repo_state(
     let config_mtime = std::fs::metadata(cogz_dir.join("config.toml"))
         .and_then(|m| m.modified())
         .unwrap_or(SystemTime::UNIX_EPOCH);
+    let db_identity = db_path.as_deref().and_then(file_identity);
 
     Arc::new(RepoState {
         storage,
         config,
         cogz_dir,
+        db_path: db_path.unwrap_or_default(),
+        db_identity,
         query_model,
         code_model,
         nli_model,
         config_mtime,
     })
 }
+
+#[cfg(test)]
+#[path = "repo_cache_tests.rs"]
+mod tests;
