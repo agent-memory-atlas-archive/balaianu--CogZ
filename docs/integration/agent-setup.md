@@ -36,7 +36,7 @@ See [MCP Tools](mcp-tools.md) for the full tool reference.
 | Copilot CLI | `.mcp.json` | `~/.copilot/mcp-config.json` | `.github/hooks/*.json` | `~/.copilot/hooks/*.json` | JSON |
 | Devin | `.devin/mcp_config.json` | `~/.config/devin/mcp_config.json` | `.devin/hooks.v1.json` | `~/.config/devin/config.json` (`hooks` key) | JSON |
 
-Hook event names are largely standardized — Claude Code's naming is the de facto standard. Cursor auto-maps Claude Code hook names. Codex reuses the same lifecycle event names. The canonical hook config from [Hooks](hooks.md) works across all agents with minor path adjustments.
+Hook event names are largely standardized — Claude Code's naming is the de facto standard that Codex and Devin also speak — but file formats and a few event names diverge per agent (see the per-agent sections below). `cogz configure` emits each agent's native shape.
 
 ## Per-agent setup
 
@@ -50,9 +50,7 @@ Hook event names are largely standardized — Claude Code's naming is the de fac
 
 **Hooks config (global):** `~/.claude/settings.json` under the `hooks` key
 
-Claude Code supports hooks via the `hooks` key in its settings JSON. The event names and format match the [canonical hook config](hooks.md#full-hook-configuration). Supported events: `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`.
-
-Claude Code does not currently support `SessionEnd` or `PostCompaction` hooks. To run consolidation, use `cogz consolidate` manually or via the MCP `consolidate` tool.
+Claude Code supports hooks via the `hooks` key in its settings JSON, using matcher groups `{matcher?, hooks: [{type: "command", command, timeout?}]}` (timeout in seconds) — the [canonical hook config](hooks.md#full-hook-configuration). CogZ uses `SessionStart`, `UserPromptSubmit`, `PostToolUse` (incl. an `Edit|Write|MultiEdit|NotebookEdit` matcher for `file_save`), `SessionEnd`, `Stop`, and `PostCompact` to re-inject the session-start pack after compaction.
 
 ### Cursor
 
@@ -64,7 +62,9 @@ Claude Code does not currently support `SessionEnd` or `PostCompaction` hooks. T
 
 **Hooks config (global):** `~/.cursor/hooks.json`
 
-Cursor supports both MCP servers and lifecycle hooks. Hook event names use camelCase (`sessionStart`, `preToolUse`, etc.) and auto-map from Claude Code's PascalCase names. Cursor also loads Claude Code's `.claude/settings.json` hooks directly if third-party hook support is enabled in Settings.
+Cursor supports both MCP servers and lifecycle hooks. `hooks.json` requires a top-level `"version": 1` and uses **flat** hook entries — `{"command": "...", "matcher"?, "timeout"?}` — not Claude's nested matcher-group shape. Event names are camelCase and differ from Claude's: `sessionStart`, `beforeSubmitPrompt`, `postToolUse`, `afterFileEdit`, `sessionEnd`, `stop`, `preCompact`. CogZ maps `file_save` onto the native `afterFileEdit` event (no tool matcher needed) and re-injects the session pack on `preCompact`.
+
+Cursor's context-injection stdout field is `additional_context` (snake_case), so `cogz configure` emits commands with `--hook-format cursor`. `beforeSubmitPrompt`'s output schema is only `continue`/`user_message` — it cannot inject context — so the prompt hook runs `--fts-only` (event still recorded). Cursor also auto-maps Claude Code hook names when loading Claude-format configs — see [Third Party Hooks](https://cursor.com/docs/reference/third-party-hooks.md).
 
 ### Codex (OpenAI)
 
@@ -84,7 +84,7 @@ command = "cogz"
 args = ["mcp-stdio"]
 ```
 
-Codex hooks use the same JSON format and event names as Claude Code. Hooks require explicit trust review before running — use `/hooks` in the CLI to review and trust CogZ hooks after adding them.
+Codex hooks use the same JSON format and PascalCase event names as Claude Code (including `PostCompact`). Hooks require explicit trust review before running — use `/hooks` in the CLI to review and trust CogZ hooks after adding them. Codex also merges `hooks.json` with inline `[hooks]` tables in `config.toml` when both exist (with a startup warning); CogZ writes `hooks.json` only.
 
 ### Gemini CLI (Google)
 
@@ -96,7 +96,7 @@ Codex hooks use the same JSON format and event names as Claude Code. Hooks requi
 
 **Hooks config (global):** `~/.gemini/settings.json` under the `hooks` key (same file as MCP)
 
-Gemini CLI stores both MCP and hooks config in the same `settings.json` file. Hook event names use PascalCase (`SessionStart`, `BeforeTool`, `AfterTool`, etc.) and follow a similar pattern to Claude Code. See the [Gemini CLI hooks reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md) for the full event list.
+Gemini CLI stores both MCP and hooks config in the same `settings.json` file. The hook shape mirrors Claude's matcher groups (`{matcher?, hooks: [{type: "command", command, name?, timeout?}]}`), but event names differ — `SessionStart`, `BeforeAgent` (user prompt), `AfterTool`, `SessionEnd`, `AfterAgent` (turn end), `PreCompress` — and **`timeout` is in milliseconds**, not seconds (default 60000). `AfterTool` matchers filter on tool names, so `file_save` uses `write_file|replace|edit|notebook_edit`. See the [Gemini CLI hooks reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md) for the full event list.
 
 ### GitHub Copilot CLI
 
@@ -108,7 +108,9 @@ Gemini CLI stores both MCP and hooks config in the same `settings.json` file. Ho
 
 **Hooks config (global):** `~/.copilot/hooks/cogz.json`
 
-Copilot CLI loads hooks from JSON files in the hooks directory — each file is a separate hook set. The format uses a `version` field and a `hooks` object with event names in camelCase (`sessionStart`, `preToolUse`, `postToolUse`, etc.). See the [Copilot hooks reference](https://docs.github.com/en/copilot/reference/hooks-reference) for the full event list.
+Copilot CLI loads hooks from JSON files in the hooks directory — each file is a separate hook set. The format uses a `version` field (`1`) and a `hooks` object with flat entries — `{"type": "command", "command"|"bash"|"powershell"|"exec", "cwd"?, "env"?, "timeoutSec"?}`; `command` is the cross-platform fallback Copilot copies to both `bash` and `powershell`.
+
+`cogz configure` writes PascalCase event names (`SessionStart`, `UserPromptSubmit`, `PostToolUse`, `SessionEnd`, `Stop`) — under PascalCase, Copilot delivers snake_case stdin payloads (`tool_name`, `tool_input`, `tool_result`), matching CogZ's hook parser. Its context-injection stdout field is top-level `additionalContext`, so commands pass `--hook-format copilot`. Two coverage limits by design: `UserPromptSubmit` hook output is dropped by Copilot's command-hook runtime (prompt_submit runs `--fts-only`, record-only), and the versioned format has no matcher field, so `file_save` has no Copilot analog. See the [Copilot hooks reference](https://docs.github.com/en/copilot/reference/hooks-reference) for the full event list.
 
 ### Devin
 

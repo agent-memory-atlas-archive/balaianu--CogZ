@@ -4,6 +4,30 @@
 use crate::context::ContextPack;
 use crate::hooks::lifecycle::LifecycleEvent;
 
+/// Which agent's stdout envelope a hook response should use. The
+/// injected-context field name is not standardized across agents.
+#[derive(Clone, Copy, PartialEq, Eq, Default)]
+pub enum HookFormat {
+    /// Claude Code, Codex, Gemini, Devin: `hookSpecificOutput` envelope.
+    #[default]
+    Claude,
+    /// Cursor: top-level `additional_context` (snake_case).
+    Cursor,
+    /// Copilot CLI: top-level `additionalContext` (camelCase).
+    Copilot,
+}
+
+impl HookFormat {
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "claude" => Some(Self::Claude),
+            "cursor" => Some(Self::Cursor),
+            "copilot" => Some(Self::Copilot),
+            _ => None,
+        }
+    }
+}
+
 /// Build the `additionalContext` markdown for a hook event — pack
 /// body, drift notice, or both. `None` means the hook stays silent.
 fn hook_additional_context(
@@ -40,34 +64,42 @@ fn hook_additional_context(
     }
 }
 
-/// Print a hook-compatible JSON response. A context pack and/or a
-/// drift notice are wrapped in `hookSpecificOutput.additionalContext`.
+/// Print a hook-compatible JSON response in the agent's envelope
+/// format. A context pack and/or a drift notice become the injected
+/// `additionalContext` (or Cursor's snake_case `additional_context`).
 /// When neither is present, prints `{}` (no action).
 pub fn print_hook_json(
     event: &LifecycleEvent,
     pack: Option<&ContextPack>,
     file_path: Option<&str>,
     notice: Option<&str>,
+    format: HookFormat,
 ) {
     let Some(markdown) = hook_additional_context(event, pack, file_path, notice) else {
         println!("{{}}");
         return;
     };
-    let event_name = match event {
-        LifecycleEvent::SessionStart => "SessionStart",
-        LifecycleEvent::PromptSubmit => "UserPromptSubmit",
-        LifecycleEvent::PostToolUse => "PostToolUse",
-        LifecycleEvent::SessionEnd => "SessionEnd",
-        LifecycleEvent::Stop => "Stop",
-        LifecycleEvent::PreToolUse => "PreToolUse",
-        LifecycleEvent::FileSave => "PostToolUse",
-    };
-    let json = serde_json::json!({
-        "hookSpecificOutput": {
-            "hookEventName": event_name,
-            "additionalContext": markdown,
+    let json = match format {
+        HookFormat::Claude => {
+            let event_name = match event {
+                LifecycleEvent::SessionStart => "SessionStart",
+                LifecycleEvent::PromptSubmit => "UserPromptSubmit",
+                LifecycleEvent::PostToolUse => "PostToolUse",
+                LifecycleEvent::SessionEnd => "SessionEnd",
+                LifecycleEvent::Stop => "Stop",
+                LifecycleEvent::PreToolUse => "PreToolUse",
+                LifecycleEvent::FileSave => "PostToolUse",
+            };
+            serde_json::json!({
+                "hookSpecificOutput": {
+                    "hookEventName": event_name,
+                    "additionalContext": markdown,
+                }
+            })
         }
-    });
+        HookFormat::Cursor => serde_json::json!({"additional_context": markdown}),
+        HookFormat::Copilot => serde_json::json!({"additionalContext": markdown}),
+    };
     println!(
         "{}",
         serde_json::to_string(&json).unwrap_or_else(|_| "{}".into())

@@ -52,6 +52,7 @@ pub struct CaptureInput<'a> {
     pub file_path: Option<&'a str>,
     pub hook_json: bool,
     pub fts_only: bool,
+    pub hook_format: crate::hooks::format::HookFormat,
 }
 
 /// Run `cogz capture-event` — the CLI entry point for hook integration.
@@ -216,6 +217,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
             output.context_pack.as_ref(),
             file_path,
             output.notices.as_deref(),
+            input.hook_format,
         );
     } else {
         if let Some(ref pack) = output.context_pack {
@@ -311,7 +313,21 @@ fn parse_hook_stdin() -> (
                 })
         })
         .or_else(|| {
-            json.get("tool_result")
+            // Copilot's snake_case payload sends `tool_result` as an
+            // object ({resultType, content/output}); accept a bare
+            // string too.
+            json.get("tool_result").and_then(|v| {
+                v.as_str().map(|s| s.to_string()).or_else(|| {
+                    v.get("output")
+                        .or_else(|| v.get("content"))
+                        .and_then(|c| c.as_str())
+                        .map(|s| s.to_string())
+                })
+            })
+        })
+        .or_else(|| {
+            // Cursor sends `tool_output` — a JSON-stringified string.
+            json.get("tool_output")
                 .and_then(|v| v.as_str())
                 .map(|s| s.to_string())
         });

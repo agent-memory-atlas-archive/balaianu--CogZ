@@ -127,6 +127,34 @@ fn gemini_writes_mcp_and_hooks_to_one_file() {
     assert_eq!(settings["mcpServers"]["cogz"]["command"], "cogz");
     assert!(settings["hooks"]["SessionStart"].is_array());
     assert!(settings["hooks"]["AfterTool"].is_array());
+    // Gemini-specific names — UserPromptSubmit/Stop do not exist there.
+    assert!(settings["hooks"]["BeforeAgent"].is_array());
+    assert!(settings["hooks"]["AfterAgent"].is_array());
+    // Gemini timeouts are milliseconds, not seconds.
+    let entry = &settings["hooks"]["SessionStart"][0]["hooks"][0];
+    assert_eq!(entry["timeout"], json!(15000));
+}
+
+#[test]
+fn cursor_writes_flat_versioned_hooks() {
+    let (repo, home) = dirs();
+    run(repo.path(), "cursor", Scope::Project, home.path()).unwrap();
+    let hooks = read_json(&repo.path().join(".cursor/hooks.json"));
+    assert_eq!(hooks["version"], json!(1));
+    // Flat {command, timeout} entries, camelCase event names.
+    let entry = &hooks["hooks"]["beforeSubmitPrompt"][0];
+    assert!(entry["command"].as_str().unwrap().contains("prompt_submit"));
+    // Cursor reads additional_context, not hookSpecificOutput.
+    assert!(
+        entry["command"]
+            .as_str()
+            .unwrap()
+            .contains("--hook-format cursor")
+    );
+    assert!(entry.get("hooks").is_none(), "entries must be flat");
+    // Native file-edit event; no postToolUse matcher needed.
+    assert!(hooks["hooks"]["afterFileEdit"].is_array());
+    assert!(hooks["hooks"]["stop"].is_array());
 }
 
 #[test]
@@ -135,7 +163,22 @@ fn copilot_writes_versioned_hookset_file() {
     run(repo.path(), "copilot", Scope::Project, home.path()).unwrap();
     let hooks = read_json(&repo.path().join(".github/hooks/cogz.json"));
     assert_eq!(hooks["version"], json!(1));
-    assert!(hooks["hooks"]["sessionStart"].is_array());
+    // PascalCase names → Copilot sends snake_case stdin payloads.
+    assert!(hooks["hooks"]["SessionStart"].is_array());
+    assert!(hooks["hooks"]["UserPromptSubmit"].is_array());
+    assert!(hooks["hooks"]["Stop"].is_array());
+    // Flat entries use `command` (cross-platform) + `timeoutSec`.
+    let entry = &hooks["hooks"]["SessionStart"][0];
+    assert_eq!(entry["type"], json!("command"));
+    assert_eq!(entry["timeoutSec"], json!(15));
+    assert!(entry["command"].as_str().unwrap().contains("session_start"));
+    // Copilot reads top-level additionalContext, not hookSpecificOutput.
+    assert!(
+        entry["command"]
+            .as_str()
+            .unwrap()
+            .contains("--hook-format copilot")
+    );
 }
 
 #[test]

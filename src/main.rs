@@ -241,6 +241,13 @@ enum Commands {
         /// ranking. Recommended for hook calls where speed matters.
         #[arg(long)]
         fts_only: bool,
+
+        /// Hook response envelope for agents whose stdout contract
+        /// isn't Claude-shaped: `cursor` emits {"additional_context"},
+        /// `copilot` emits {"additionalContext"}. Default `claude`
+        /// emits {"hookSpecificOutput": {...}}. Requires --hook-json.
+        #[arg(long, value_parser = ["claude", "cursor", "copilot"], default_value = "claude", requires = "hook_json")]
+        hook_format: String,
     },
 
     /// Verify a knowledge entity against its referenced code —
@@ -491,6 +498,7 @@ fn main() -> anyhow::Result<()> {
             file_path,
             hook_json,
             fts_only,
+            hook_format,
         } => cli_events::run_capture_event(&cogz::hooks::CaptureInput {
             repo: &repo,
             event_str: &event_type,
@@ -501,6 +509,7 @@ fn main() -> anyhow::Result<()> {
             file_path: file_path.as_deref(),
             hook_json,
             fts_only,
+            hook_format: cogz::hooks::format::HookFormat::parse(&hook_format).unwrap_or_default(),
         }),
         Commands::Models { subcommand } => match subcommand {
             ModelsSub::Download {
