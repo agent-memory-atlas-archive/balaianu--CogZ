@@ -45,14 +45,28 @@ fn file_identity(path: &std::path::Path) -> Option<FileIdentity> {
 }
 
 /// Identify the file at `path` — see the unix implementation.
+///
+/// `MetadataExt::volume_serial_number`/`file_index` are still unstable
+/// (`windows_by_handle`), so this opens the file and calls
+/// `GetFileInformationByHandle` — the stable kernel API those fields
+/// wrap.
 #[cfg(windows)]
 fn file_identity(path: &std::path::Path) -> Option<FileIdentity> {
-    use std::os::windows::fs::MetadataExt;
-    let meta = std::fs::metadata(path).ok()?;
+    use std::os::windows::io::AsRawHandle;
+    use windows_sys::Win32::Foundation::HANDLE;
+    use windows_sys::Win32::Storage::FileSystem::{
+        BY_HANDLE_FILE_INFORMATION, GetFileInformationByHandle,
+    };
+
+    let file = std::fs::File::open(path).ok()?;
+    let mut info: BY_HANDLE_FILE_INFORMATION = unsafe { std::mem::zeroed() };
+    if unsafe { GetFileInformationByHandle(file.as_raw_handle() as HANDLE, &mut info) } == 0 {
+        return None;
+    }
     Some(FileIdentity {
-        dev: meta.volume_serial_number().unwrap_or(0),
-        ino: meta.file_index().unwrap_or(0),
-        created: meta.created().ok(),
+        dev: u64::from(info.dwVolumeSerialNumber),
+        ino: (u64::from(info.nFileIndexHigh) << 32) | u64::from(info.nFileIndexLow),
+        created: file.metadata().ok().and_then(|m| m.created().ok()),
     })
 }
 

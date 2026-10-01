@@ -423,6 +423,7 @@ dependencies = [
  "ureq",
  "uuid",
  "walkdir",
+ "windows-sys 0.59.0",
  "zerocopy",
 ]
 
