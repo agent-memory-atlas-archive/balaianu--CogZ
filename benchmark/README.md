@@ -49,22 +49,31 @@ no longer exist in the corpus (a corpus-health signal, not a retrieval miss).
 
 | Run | Variant | P@5 | MRR | Recall@20 | Avg latency |
 |---|---|---|---|---|---|
-| `k3_hybrid.json` | full pipeline (FTS + vec + graph expansion) | 0.103 | **0.336** | **0.659** | 3.7 s |
-| `k3_fts.json` | FTS-only degradation | 0.097 | 0.204 | 0.634 | 0.6 s |
-| `k3_noexpand.json` | hybrid, no graph expansion | 0.100 | 0.336 | 0.506 | 3.8 s |
+| `v052_hybrid.json` | full pipeline (FTS + vec + graph expansion) — v0.5.1+, grown corpus | 0.085 | **0.298** | **0.653** | 0.69 s |
+| `v052_fts.json` | FTS-only degradation | 0.071 | 0.184 | 0.600 | 0.43 s |
+| `v052_noexpand.json` | hybrid, no graph expansion | 0.085 | 0.298 | 0.509 | 0.68 s |
+| `k3_hybrid.json` | v0.5.0-era corpus snapshot | 0.103 | 0.336 | 0.659 | 3.7 s |
+| `k3_fts.json` | FTS-only degradation (v0.5.0 era) | 0.097 | 0.204 | 0.634 | 0.6 s |
+| `k3_noexpand.json` | hybrid, no graph expansion (v0.5.0 era) | 0.100 | 0.336 | 0.506 | 3.8 s |
 | `v2.json` | earlier pipeline snapshot | 0.106 | 0.367 | 0.581 | 0.4 s |
 
-Context-pack metrics (`k3_hybrid`, `--with-context`): pack recall 0.816,
-avg 8,174 tokens per pack, avg 73.7 sections, zero packs with duplicate
+Context-pack metrics (`v052_hybrid`, `--with-context`): pack recall 0.670,
+avg 8,182 tokens per pack, avg 69.9 sections, zero packs with duplicate
 content above threshold.
 
 Reading the deltas:
 
-- **Vector channel doubles MRR** (0.204 FTS-only → 0.336 hybrid) — semantic
-  recall matters for knowledge phrasing that doesn't share keywords.
-- **Graph expansion adds +0.15 recall@20** (0.506 → 0.659) at flat MRR —
+- **Vector channel lifts MRR ~60%** (0.184 FTS-only → 0.298 hybrid) —
+  semantic recall matters for knowledge phrasing that doesn't share
+  keywords.
+- **Graph expansion adds +0.14 recall@20** (0.509 → 0.653) at flat MRR —
   expansion surfaces entities that direct ranking misses, at the cost of
-  latency (ONNX embedding dominates the 3.7 s; FTS-only runs in 0.6 s).
+  latency (ONNX inference dominates the 0.69 s; FTS-only runs in 0.43 s).
+- The v052 dip vs the k3 snapshot (MRR 0.298 vs 0.336, P@5 0.085 vs
+  0.103) is corpus growth — 1 rotted expectation and a denser candidate
+  pool — with overlapping confidence intervals, not a pipeline
+  regression. Latency improved ~5× (3.7 s → 0.69 s) from warm
+  model reuse in the persistent benchmark session.
 - Latency is dominated by model inference on a CPU-only box; see
   `docs/evaluations/` for the resource profile.
 

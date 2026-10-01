@@ -213,11 +213,11 @@ CogZ ships a self-contained retrieval benchmark (`benchmark/`) run against this 
 
 | Variant | MRR | Recall@20 |
 |---|---|---|
-| Hybrid (FTS + vector + graph) | 0.336 | 0.659 |
-| FTS-only (degraded mode) | 0.204 | 0.634 |
-| Hybrid, no graph expansion | 0.336 | 0.506 |
+| Hybrid (FTS + vector + graph) | 0.298 | 0.653 |
+| FTS-only (degraded mode) | 0.184 | 0.600 |
+| Hybrid, no graph expansion | 0.298 | 0.509 |
 
-The vector channel roughly doubles MRR over FTS alone; graph expansion adds +0.15 recall@20. Context packs reach 0.816 expected-entity recall at ~8K average tokens. Methodology, per-intent breakdowns, and the tuning sweep history are in [benchmark/README.md](benchmark/README.md).
+The vector channel lifts MRR ~60% over FTS alone; graph expansion adds +0.14 recall@20. Context packs reach 0.67 expected-entity recall at ~8K average tokens. Methodology, per-intent breakdowns, and the tuning sweep history are in [benchmark/README.md](benchmark/README.md).
 
 ## Architecture
 
