@@ -72,7 +72,8 @@ fn new_candidate_still_surfaces_after_dedup() {
     seed_search_miss(&conn);
     assert_eq!(fresh_suggestions(&conn, "file_save").len(), 1);
 
-    // A second, distinct signal — three saves of another file.
+    // A second, distinct signal — hot file needs cross-day saves now:
+    // same-day churn is task noise, not a durable signal.
     indexed_file(&conn, "src/hot.rs");
     for _ in 0..3 {
         record_event(
@@ -83,6 +84,19 @@ fn new_candidate_still_surfaces_after_dedup() {
         )
         .unwrap();
     }
+    // Different calendar date yet inside the 24h mining window: only a
+    // timestamp just short of a day ago satisfies both (a full -1 day
+    // lands exactly on/outside the window edge).
+    conn.execute(
+        "UPDATE events SET created_at = datetime('now', '-86390 seconds')
+         WHERE id IN (
+             SELECT id FROM events
+             WHERE event_type = 'file_save'
+               AND json_extract(payload, '$.file_path') = 'src/hot.rs'
+             LIMIT 1)",
+        [],
+    )
+    .unwrap();
     let next = fresh_suggestions(&conn, "file_save");
     assert!(
         next.iter().any(|s| s.signal == "hot_file"),
@@ -127,6 +141,18 @@ fn fingerprint_is_stable_across_volatile_evidence() {
         )
         .unwrap();
     }
+    // hot_file requires recurrence across distinct days — backdate one
+    // save to just inside the 24h window so the signal fires (a full
+    // -1 day lands on/outside the window edge).
+    conn.execute(
+        "UPDATE events SET created_at = datetime('now', '-86390 seconds')
+         WHERE id = (
+             SELECT MIN(id) FROM events
+             WHERE event_type = 'file_save'
+               AND json_extract(payload, '$.file_path') = 'src/hot.rs')",
+        [],
+    )
+    .unwrap();
     let first = mining::mine_suggestions(&conn, 1, 8).unwrap();
     let fp1 = first[0].fingerprint();
 

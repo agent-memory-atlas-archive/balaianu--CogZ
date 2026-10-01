@@ -686,14 +686,17 @@ fn mcp_stdio_suggest_observations() {
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
-    // Seed the hot_file signal: three saves of an indexed file.
-    for _ in 0..3 {
+    // Seed the error_fix signal: a failing exec call followed by a
+    // clean one on the same tool. (hot_file would need saves on two
+    // distinct days — unreachable through capture_event's clock.)
+    for result in ["boom\nExit code: 1", "ok\nExit code: 0"] {
         client.tool_text(
             "capture_event",
             serde_json::json!({
                 "repo": repo.path_str(),
-                "event_type": "file_save",
-                "file_path": "src/main.rs",
+                "event_type": "post_tool_use",
+                "tool_name": "exec",
+                "tool_result": result,
             }),
         );
     }
@@ -709,8 +712,8 @@ fn mcp_stdio_suggest_observations() {
             .as_array()
             .unwrap()
             .iter()
-            .any(|s| s["signal"] == "hot_file" && s["evidence"]["file_path"] == "src/main.rs"),
-        "expected a hot_file suggestion for src/main.rs, got: {text}"
+            .any(|s| s["signal"] == "error_fix" && s["evidence"]["tool_name"] == "exec"),
+        "expected an error_fix suggestion for exec, got: {text}"
     );
 
     child.kill().unwrap();

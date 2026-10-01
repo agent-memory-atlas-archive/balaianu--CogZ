@@ -50,11 +50,29 @@ fn hot_file_signal() {
     )
     .unwrap();
 
+    // Same-day churn is task symptom, not durable knowledge — the
+    // signal requires saves on at least two distinct days.
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    assert!(out.iter().all(|s| s.signal != "hot_file"));
+
+    // Backdate two of the hot.rs saves → cross-day recurrence fires.
+    conn.execute(
+        "UPDATE events SET created_at = datetime('now', '-2 days')
+         WHERE id IN (
+             SELECT id FROM events
+             WHERE event_type = 'file_save'
+               AND json_extract(payload, '$.file_path') = 'src/hot.rs'
+             LIMIT 2)",
+        [],
+    )
+    .unwrap();
+
     let out = mine_suggestions(&conn, 7, 10).unwrap();
     let hot: Vec<_> = out.iter().filter(|s| s.signal == "hot_file").collect();
     assert_eq!(hot.len(), 1);
     assert_eq!(hot[0].evidence["file_path"], "src/hot.rs");
     assert_eq!(hot[0].evidence["saves"], 4);
+    assert_eq!(hot[0].evidence["days"], 2);
 }
 
 #[test]

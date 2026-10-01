@@ -216,8 +216,12 @@ pub(super) fn recurring_use(
         .collect())
 }
 
-/// Files saved repeatedly — a hot spot often means missing docs,
-/// missing abstractions, or a convention the agent keeps re-deriving.
+/// Files saved repeatedly *across distinct days* — a hot spot often
+/// means missing docs, missing abstractions, or a convention the agent
+/// keeps re-deriving. Single-session churn is task symptom, not durable
+/// knowledge: seven saves during one deep audit is the work, not a fact
+/// about the file. Distinct dates are the session-agnostic proxy —
+/// events carry no session id, and session_start hooks may be absent.
 pub(super) fn hot_files(
     conn: &Connection,
     days: u32,
@@ -226,18 +230,23 @@ pub(super) fn hot_files(
     let mut stmt = conn.prepare(
         "SELECT COALESCE(
              json_extract(payload, '$.file_path_rel'),
-             json_extract(payload, '$.file_path')), COUNT(*)
+             json_extract(payload, '$.file_path')),
+             COUNT(*), COUNT(DISTINCT date(created_at))
          FROM events
          WHERE event_type = 'file_save'
            AND created_at > datetime('now', '-' || ? || ' days')
          GROUP BY 1
-         HAVING COUNT(*) >= ?
+         HAVING COUNT(*) >= ? AND COUNT(DISTINCT date(created_at)) >= 2
          ORDER BY 2 DESC
          LIMIT ?",
     )?;
     let rows = stmt
         .query_map(rusqlite::params![days, HOT_FILE_MIN, limit as i64], |r| {
-            Ok((r.get::<_, Option<String>>(0)?, r.get::<_, i64>(1)?))
+            Ok((
+                r.get::<_, Option<String>>(0)?,
+                r.get::<_, i64>(1)?,
+                r.get::<_, i64>(2)?,
+            ))
         })?
         .collect::<Result<Vec<_>, _>>()?;
 
@@ -247,14 +256,14 @@ pub(super) fn hot_files(
     let mut indexable_stmt = conn.prepare("SELECT 1 FROM entities WHERE file_path = ? LIMIT 1")?;
     Ok(rows
         .into_iter()
-        .filter_map(|(path, saves)| {
+        .filter_map(|(path, saves, days_hot)| {
             let path = path?;
             (!path.is_empty() && is_indexed(&mut indexable_stmt, &path)).then(|| Suggestion {
                 signal: "hot_file",
-                evidence: serde_json::json!({ "file_path": path, "saves": saves }),
+                evidence: serde_json::json!({ "file_path": path, "saves": saves, "days": days_hot }),
                 suggested_title: format!("Frequently edited: {path}"),
                 suggested_content: format!(
-                    "{path} was saved {saves} times recently — a hot spot. \
+                    "{path} was saved {saves} times across {days_hot} days — a recurring hot spot. \
                      Worth recording what makes it churn-prone."
                 ),
                 suggested_refs: vec![],
