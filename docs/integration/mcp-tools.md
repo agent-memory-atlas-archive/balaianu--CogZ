@@ -86,6 +86,8 @@ Re-stamp a knowledge entry's `verified_against` provenance to the current hashes
 
 **Returns:** JSON with `id`, `restamped` (number of references re-stamped), `reactivated` (whether a `code_orphaned` stale status was cleared), and optionally `write_nudge` (see below).
 
+Despite the name, `verify_knowledge` accepts any file-backed knowledge-layer entity — stale observations and rules can be re-stamped the same way. The name is historical; "knowledge" is the umbrella term for the `.cogz/`-file layer vs. code entities.
+
 ### `reject_entity`
 
 Reject a knowledge-layer entity — writes `status: rejected` (and an optional `rejected_reason`) into its canonical file, then syncs so the status lattice validates the transition. Only `active` entities can be rejected; verify a stale one first if it must be ruled wrong. This is a verdict, not an edit — do not use it for content changes. Rejected entities stay on record: retrieval filters them out, and dedup can warn when a matching claim resurfaces.

@@ -206,6 +206,10 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         );
     }
 
+    if result.created + result.updated + code_result.created + code_result.updated == 0 {
+        println!("  Already up to date — no file or source changes since last index.");
+    }
+
     // Scope the guard: update_baseline re-acquires the connection.
     let total = {
         let conn = storage.conn();
