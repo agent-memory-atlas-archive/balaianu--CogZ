@@ -82,11 +82,17 @@ fn resolve_targets(arg: &str, repo: &Path, home: &Path) -> Result<Vec<&'static H
 fn merge_json(base: &mut Value, patch: Value) {
     match (base, patch) {
         (Value::Object(b), Value::Object(p)) => {
-            for (k, v) in p {
-                match b.get_mut(&k) {
-                    Some(existing) => merge_json(existing, v),
-                    None => {
-                        b.insert(k, v);
+            // An existing cogz server entry is already wired — keep the
+            // user's command/args (path variants, env, wrappers); same
+            // contract as hook dedup: install what's missing, never
+            // rewrite what's wired.
+            if !is_cogz_server(b) || !is_cogz_server(&p) {
+                for (k, v) in p {
+                    match b.get_mut(&k) {
+                        Some(existing) => merge_json(existing, v),
+                        None => {
+                            b.insert(k, v);
+                        }
                     }
                 }
             }
@@ -155,11 +161,7 @@ fn hook_key(v: &Value) -> Option<(String, Vec<String>)> {
 /// flag order doesn't matter.
 fn command_key(cmd: &str) -> String {
     let toks: Vec<&str> = cmd.split_whitespace().collect();
-    let bin = toks
-        .first()
-        .map(|t| t.rsplit(['/', '\\']).next().unwrap_or(t))
-        .map(|t| t.strip_suffix(".exe").unwrap_or(t));
-    if bin == Some("cogz")
+    if toks.first().map(|t| argv0_base(t)) == Some("cogz")
         && let Some(verb) = toks
             .iter()
             .position(|t| *t == "capture-event")
@@ -169,17 +171,47 @@ fn command_key(cmd: &str) -> String {
     }
     let mut owned: Vec<String> = toks.iter().map(|t| t.to_string()).collect();
     if let Some(first) = owned.first_mut() {
-        let base = first.rsplit(['/', '\\']).next().unwrap_or(first);
-        *first = base.strip_suffix(".exe").unwrap_or(base).to_string();
+        *first = argv0_base(first).to_string();
     }
     owned.sort();
     owned.join(" ")
 }
 
+/// Basename of argv[0] in a command string, `.exe` stripped —
+/// `cogz` ≡ `/usr/bin/cogz` ≡ `C:\Tools\cogz.exe`.
+fn argv0_base(cmd: &str) -> &str {
+    let first = cmd.split_whitespace().next().unwrap_or("");
+    let base = first.rsplit(['/', '\\']).next().unwrap_or(first);
+    base.strip_suffix(".exe").unwrap_or(base)
+}
+
+/// An MCP server entry already wired to `cogz mcp-stdio` — any argv[0]
+/// path variant counts. Mirrors hook dedup: a hand-maintained entry
+/// pointing at a different binary location or carrying extra keys
+/// (`env`, `cwd`) is user wiring, not a gap to fill.
+fn is_cogz_server(obj: &Map<String, Value>) -> bool {
+    let Some(cmd) = obj.get("command").and_then(|c| c.as_str()) else {
+        return false;
+    };
+    if argv0_base(cmd) != "cogz" {
+        return false;
+    }
+    cmd.contains("mcp-stdio")
+        || obj
+            .get("args")
+            .and_then(|a| a.as_array())
+            .is_some_and(|args| args.iter().any(|a| a.as_str() == Some("mcp-stdio")))
+}
+
 /// Same merge for TOML tables — arrays are absent from the payloads
-/// we write, so table-merge + leaf-override suffices.
+/// we write, so table-merge + leaf-override suffices. The cogz-server
+/// guard mirrors `merge_json`: an entry already wired to
+/// `cogz mcp-stdio` is kept as written.
 fn merge_toml(base: &mut toml::Value, patch: toml::Value) {
     if let (toml::Value::Table(b), toml::Value::Table(p)) = (base, patch) {
+        if is_cogz_server_toml(b) && is_cogz_server_toml(&p) {
+            return;
+        }
         for (k, v) in p {
             match b.get_mut(&k) {
                 Some(existing) => merge_toml(existing, v),
@@ -189,6 +221,15 @@ fn merge_toml(base: &mut toml::Value, patch: toml::Value) {
             }
         }
     }
+}
+
+/// TOML counterpart of `is_cogz_server` — same shape, TOML values.
+fn is_cogz_server_toml(t: &toml::map::Map<String, toml::Value>) -> bool {
+    serde_json::to_value(t)
+        .ok()
+        .as_ref()
+        .and_then(|v| v.as_object())
+        .is_some_and(is_cogz_server)
 }
 
 /// Read, merge, and write one file. Returns the outcome; parse errors

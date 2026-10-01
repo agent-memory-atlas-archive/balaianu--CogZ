@@ -44,6 +44,43 @@ fn json_mcp_merge_preserves_existing_servers() {
     assert_eq!(merged["mcpServers"]["cogz"]["args"], json!(["mcp-stdio"]));
 }
 
+/// A hand-wired `mcpServers.cogz` — absolute binary path, extra keys —
+/// is already installed wiring, not a gap: configure must not rewrite
+/// it to the canonical bare `cogz` form.
+#[test]
+fn existing_cogz_mcp_entry_is_preserved() {
+    let (repo, home) = dirs();
+    let mcp = repo.path().join(".mcp.json");
+    fs::write(
+        &mcp,
+        r#"{"mcpServers":{"cogz":{"command":"/opt/dev/CogZ/target/release/cogz","args":["mcp-stdio"],"env":{"X":"1"}}}}"#,
+    )
+    .unwrap();
+
+    run(repo.path(), "claude-code", Scope::Project, home.path()).unwrap();
+
+    let merged = read_json(&mcp);
+    assert_eq!(
+        merged["mcpServers"]["cogz"]["command"],
+        "/opt/dev/CogZ/target/release/cogz"
+    );
+    assert_eq!(merged["mcpServers"]["cogz"]["env"]["X"], "1");
+}
+
+/// A `cogz` entry that doesn't invoke `mcp-stdio` isn't wired yet —
+/// configure completes it with the canonical args.
+#[test]
+fn incomplete_cogz_mcp_entry_is_completed() {
+    let (repo, home) = dirs();
+    let mcp = repo.path().join(".mcp.json");
+    fs::write(&mcp, r#"{"mcpServers":{"cogz":{"command":"cogz"}}}"#).unwrap();
+
+    run(repo.path(), "claude-code", Scope::Project, home.path()).unwrap();
+
+    let merged = read_json(&mcp);
+    assert_eq!(merged["mcpServers"]["cogz"]["args"], json!(["mcp-stdio"]));
+}
+
 #[test]
 fn merge_creates_backup_of_existing_file() {
     let (repo, home) = dirs();
