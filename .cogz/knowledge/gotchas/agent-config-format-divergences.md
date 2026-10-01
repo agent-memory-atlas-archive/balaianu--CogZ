@@ -38,7 +38,36 @@ harnesses:
   user-scope hooks merge into `config.json`'s `hooks` key alongside
   unrelated config (verified against the real file on the dev machine).
 
-Merge invariants that must hold: element-wise array dedup makes re-runs
-idempotent (a cogz hook entry already present is skipped, foreign entries
-untouched); `.cogz.bak` is written before any overwrite; a corrupt existing
-file aborts with an error — never clobbered.
+Merge invariants that must hold: semantic dedup makes re-runs idempotent —
+a `cogz capture-event <verb>` hook or a wired `mcpServers.cogz` entry is
+recognized under any flag order, `matcher:""`-vs-absent, binary path, or
+grouping (see `covers`/`hook_key`/`command_key`/`is_cogz_server` in
+src/configure/mod.rs); `.cogz.bak` is written before any overwrite; a
+corrupt existing file aborts with an error — never clobbered.
+
+## Context-injection coverage (official docs, 0.5.x audit)
+
+`additionalContext`/`additional_context` support per agent:
+
+- Claude: SessionStart, UserPromptSubmit, PostToolUse inject. PostCompact
+  CANNOT inject (stdout → debug log) but SessionStart refires on compact
+  (`source: "compact"`) — re-injection lands via SessionStart.
+- Codex: SessionStart (incl. `compact` matcher source), UserPromptSubmit,
+  PostToolUse inject. PostCompact cannot. SessionEnd/Interrupt timeout is
+  capped at 3s (1s default) — configure writes `timeout: 3`, consolidation
+  is best-effort inside the cap.
+- Gemini: SessionStart, BeforeAgent, AfterTool inject. PreCompress is
+  advisory-only (systemMessage only) and there is NO post-compress event —
+  compaction re-injection impossible. Timeouts are milliseconds.
+- Cursor: sessionStart (fire-and-forget) and postToolUse inject
+  (`additional_context` snake_case → `--hook-format cursor`).
+  beforeSubmitPrompt returns only `continue` — prompt_submit is
+  `--fts-only` record-only. preCompact observe-only; no post event.
+- Copilot: sessionStart and postToolUse inject (top-level
+  `additionalContext` → `--hook-format copilot`). userPromptSubmitted
+  drops command-hook output — `--fts-only` correct. PascalCase names
+  (`UserPromptSubmit`, `Stop`) are the documented VS-Code-compat aliases
+  for `userPromptSubmitted`, `agentStop`; snake_case payloads. No
+  compaction or post-edit event.
+- Devin: SessionStart, UserPromptSubmit, PostCompaction, PostToolUse all
+  inject — full coverage, the reference harness.

@@ -38,6 +38,21 @@ See [MCP Tools](mcp-tools.md) for the full tool reference.
 
 Hook event names are largely standardized — Claude Code's naming is the de facto standard that Codex and Devin also speak — but file formats and a few event names diverge per agent (see the per-agent sections below). `cogz configure` emits each agent's native shape.
 
+## Effect coverage per agent
+
+What each agent's hook surface can actually deliver, verified against official docs. "Inject" = hook stdout context reaches the model (`additionalContext`/`additional_context`).
+
+| Effect | Claude Code | Cursor | Codex | Gemini CLI | Copilot CLI | Devin |
+|---|---|---|---|---|---|---|
+| Session pack on start | inject | inject (`additional_context`, fire-and-forget) | inject | inject | inject (`sessionStart` only field consumed) | inject |
+| Task pack per prompt | inject (`UserPromptSubmit`) | no channel (`beforeSubmitPrompt` returns `continue` only → record-only) | inject | inject (`BeforeAgent`) | output dropped (`userPromptSubmitted` → record-only) | inject |
+| Tool-result nudges | inject (`PostToolUse`) | inject (`postToolUse`) | inject | inject (`AfterTool`) | inject (`postToolUse`) | inject |
+| File-save reindex | `PostToolUse` matcher | `afterFileEdit` (native) | `PostToolUse` matcher | `AfterTool` matcher | none (no post-edit event) | `PostToolUse` matcher |
+| Post-compaction re-injection | via `SessionStart` refire on compact (`PostCompact` itself cannot inject) | none (`preCompact` is observe-only; no post event) | via `SessionStart` compact source (`PostCompact` cannot inject) | none (`PreCompress` is advisory-only; no post event) | none (no event) | inject (`PostCompaction`) |
+| Session-end consolidation | fires | fires (fire-and-forget) | fires — **3s cap**, consolidation best-effort | advisory | fires | fires |
+
+Compaction hooks on non-injecting surfaces still run record-only (`--fts-only`) — the event is captured and the debounced reindex fires; the pack output is simply not consumed.
+
 ## Per-agent setup
 
 ### Claude Code
@@ -50,7 +65,9 @@ Hook event names are largely standardized — Claude Code's naming is the de fac
 
 **Hooks config (global):** `~/.claude/settings.json` under the `hooks` key
 
-Claude Code supports hooks via the `hooks` key in its settings JSON, using matcher groups `{matcher?, hooks: [{type: "command", command, timeout?}]}` (timeout in seconds) — the [canonical hook config](hooks.md#full-hook-configuration). CogZ uses `SessionStart`, `UserPromptSubmit`, `PostToolUse` (incl. an `Edit|Write|MultiEdit|NotebookEdit` matcher for `file_save`), `SessionEnd`, `Stop`, and `PostCompact` to re-inject the session-start pack after compaction.
+Claude Code supports hooks via the `hooks` key in its settings JSON, using matcher groups `{matcher?, hooks: [{type: "command", command, timeout?}]}` (timeout in seconds) — the [canonical hook config](hooks.md#full-hook-configuration). CogZ uses `SessionStart`, `UserPromptSubmit`, `PostToolUse` (incl. an `Edit|Write|MultiEdit|NotebookEdit` matcher for `file_save`), `SessionEnd`, `Stop`, and `PostCompact`.
+
+`PostCompact` itself cannot inject context (no decision control — stdout goes to the debug log), but `SessionStart` refires after compaction (`source: "compact"`), so post-compaction re-injection lands through the session-start hook regardless; the `PostCompact` entry stays for event recording and the debounced reindex.
 
 ### Cursor
 
@@ -86,6 +103,8 @@ args = ["mcp-stdio"]
 
 Codex hooks use the same JSON format and PascalCase event names as Claude Code (including `PostCompact`). Hooks require explicit trust review before running — use `/hooks` in the CLI to review and trust CogZ hooks after adding them. Codex also merges `hooks.json` with inline `[hooks]` tables in `config.toml` when both exist (with a startup warning); CogZ writes `hooks.json` only.
 
+Codex-specific limits: `SessionEnd` (and `Interrupt`) hooks are capped at **3 seconds** (1s default) — `configure` writes `timeout: 3`, so consolidation runs best-effort inside the cap. `PostCompact` cannot inject context, but `SessionStart` accepts a `compact` matcher source — post-compaction re-injection arrives through the session-start hook. Non-managed hooks are hash-pinned: any edit to a hook command marks it for re-review before it runs again.
+
 ### Gemini CLI (Google)
 
 **MCP config (project):** `.gemini/settings.json` under the `mcpServers` key
@@ -96,7 +115,7 @@ Codex hooks use the same JSON format and PascalCase event names as Claude Code (
 
 **Hooks config (global):** `~/.gemini/settings.json` under the `hooks` key (same file as MCP)
 
-Gemini CLI stores both MCP and hooks config in the same `settings.json` file. The hook shape mirrors Claude's matcher groups (`{matcher?, hooks: [{type: "command", command, name?, timeout?}]}`), but event names differ — `SessionStart`, `BeforeAgent` (user prompt), `AfterTool`, `SessionEnd`, `AfterAgent` (turn end), `PreCompress` — and **`timeout` is in milliseconds**, not seconds (default 60000). `AfterTool` matchers filter on tool names, so `file_save` uses `write_file|replace|edit|notebook_edit`. See the [Gemini CLI hooks reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md) for the full event list.
+Gemini CLI stores both MCP and hooks config in the same `settings.json` file. The hook shape mirrors Claude's matcher groups (`{matcher?, hooks: [{type: "command", command, name?, timeout?}]}`), but event names differ — `SessionStart`, `BeforeAgent` (user prompt), `AfterTool`, `SessionEnd`, `AfterAgent` (turn end), `PreCompress` — and **`timeout` is in milliseconds**, not seconds (default 60000). `AfterTool` matchers filter on tool names, so `file_save` uses `write_file|replace|edit|notebook_edit`. `BeforeAgent`, `AfterTool`, and `SessionStart` all honor `hookSpecificOutput.additionalContext` — packs and nudges inject normally. `PreCompress` is advisory-only (`systemMessage` output only, fires *before* compression) and Gemini has no post-compress event, so compaction re-injection isn't possible there. See the [Gemini CLI hooks reference](https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md) for the full event list.
 
 ### GitHub Copilot CLI
 

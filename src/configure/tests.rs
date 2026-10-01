@@ -290,6 +290,17 @@ fn copilot_writes_versioned_hookset_file() {
     );
 }
 
+/// Codex clamps SessionEnd (and Interrupt) hooks to 3 seconds max —
+/// the canonical 30s would be rejected or truncate consolidation.
+#[test]
+fn codex_session_end_respects_3s_cap() {
+    let (repo, home) = dirs();
+    run(repo.path(), "codex", Scope::Project, home.path()).unwrap();
+    let hooks = read_json(&repo.path().join(".codex/hooks.json"));
+    let end = hooks["hooks"]["SessionEnd"].as_array().unwrap();
+    assert_eq!(end[0]["hooks"][0]["timeout"], json!(3));
+}
+
 #[test]
 fn devin_includes_postcompaction() {
     let (repo, home) = dirs();

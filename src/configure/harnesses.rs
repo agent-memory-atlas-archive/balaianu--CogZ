@@ -105,6 +105,18 @@ fn hooks_devin(bin: &str) -> Value {
     Value::Object(hooks)
 }
 
+/// Codex speaks the canonical map but clamps SessionEnd hooks to 3
+/// seconds max (1s default) — consolidation runs best-effort inside
+/// the cap.
+fn hooks_codex(bin: &str, edit_matcher: &str) -> Value {
+    let mut hooks = hooks_canonical(bin, edit_matcher);
+    hooks.insert(
+        "SessionEnd".into(),
+        hook_entries(bin, "session_end --fts-only", 3, ""),
+    );
+    Value::Object(hooks)
+}
+
 fn claude_shaped_patch(path: PathBuf, bin: &str, edit_matcher: &str) -> Patch {
     Patch::Json(path, json!({"hooks": hooks_canonical(bin, edit_matcher)}))
 }
@@ -264,25 +276,24 @@ fn cursor_user(home: &Path) -> Vec<Patch> {
     ]
 }
 
+fn codex_hooks_patch(path: PathBuf, bin: &str) -> Patch {
+    Patch::Json(
+        path,
+        json!({"hooks": hooks_codex(bin, "Edit|Write|NotebookEdit|apply_patch|edit|write")}),
+    )
+}
+
 fn codex_project(repo: &Path) -> Vec<Patch> {
     vec![
         codex_mcp_patch(repo.join(".codex/config.toml")),
-        claude_shaped_patch(
-            repo.join(".codex/hooks.json"),
-            "cogz",
-            "Edit|Write|NotebookEdit|apply_patch|edit|write",
-        ),
+        codex_hooks_patch(repo.join(".codex/hooks.json"), "cogz"),
     ]
 }
 
 fn codex_user(home: &Path) -> Vec<Patch> {
     vec![
         codex_mcp_patch(home.join(".codex/config.toml")),
-        claude_shaped_patch(
-            home.join(".codex/hooks.json"),
-            "cogz",
-            "Edit|Write|NotebookEdit|apply_patch|edit|write",
-        ),
+        codex_hooks_patch(home.join(".codex/hooks.json"), "cogz"),
     ]
 }
 
