@@ -234,46 +234,69 @@ pub fn handle_lifecycle_event(
                 LifecycleEvent::SessionStart => (ContextMode::ColdStart, None),
                 _ => (ContextMode::Task, input.prompt),
             };
-            let pack = assemble_pack(storage, config, query_model, code_model, mode, query)?;
-            {
-                let conn = storage.conn();
-                let entries = delivered_entries(&pack);
-                if let Some(delivery_id) = with_busy_retry("record delivery", || {
-                    crate::storage::usage::record_delivery(
-                        &conn,
-                        crate::storage::usage::DeliveryKind::Pack,
-                        event_id,
-                    )
-                }) {
-                    with_busy_retry("record delivered", || {
-                        crate::storage::usage::record_delivered(&conn, delivery_id, &entries)
-                    });
-                }
-                // Persist pack metadata onto the event so pack shape
-                // (size, pointer count) is analyzable later.
-                if let Some(eid) = event_id {
-                    let meta = serde_json::json!({
-                        "pack": {
-                            "size_tokens": pack.metadata.size_tokens,
-                            "sections": pack.sections.len(),
-                            "pointers": pack.metadata.pointer_ids.len(),
-                            "search_mode": pack.metadata.search_mode,
-                            "signals": pack.metadata.signals.as_ref().map(|s| {
-                                serde_json::json!({
-                                    "code_strength": s.code_strength,
-                                    "code_gradient": s.code_gradient,
-                                    "knowledge_strength": s.knowledge_strength,
-                                    "knowledge_gradient": s.knowledge_gradient,
-                                })
-                            }),
+            // Pack assembly runs search+embed across the whole storage
+            // layer — a panic there must degrade to no-pack, not kill
+            // the hook process and leave the agent with nothing.
+            let pack = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                assemble_pack(storage, config, query_model, code_model, mode, query)
+            }));
+            match pack {
+                Ok(Ok(pack)) => {
+                    {
+                        let conn = storage.conn();
+                        let entries = delivered_entries(&pack);
+                        if let Some(delivery_id) = with_busy_retry("record delivery", || {
+                            crate::storage::usage::record_delivery(
+                                &conn,
+                                crate::storage::usage::DeliveryKind::Pack,
+                                event_id,
+                            )
+                        }) {
+                            with_busy_retry("record delivered", || {
+                                crate::storage::usage::record_delivered(
+                                    &conn,
+                                    delivery_id,
+                                    &entries,
+                                )
+                            });
                         }
-                    });
-                    with_busy_retry("annotate event", || {
-                        events::annotate_event(&conn, eid, &meta)
-                    });
+                        // Persist pack metadata onto the event so pack shape
+                        // (size, pointer count) is analyzable later.
+                        if let Some(eid) = event_id {
+                            let meta = serde_json::json!({
+                                "pack": {
+                                    "size_tokens": pack.metadata.size_tokens,
+                                    "sections": pack.sections.len(),
+                                    "pointers": pack.metadata.pointer_ids.len(),
+                                    "search_mode": pack.metadata.search_mode,
+                                    "signals": pack.metadata.signals.as_ref().map(|s| {
+                                        serde_json::json!({
+                                            "code_strength": s.code_strength,
+                                            "code_gradient": s.code_gradient,
+                                            "knowledge_strength": s.knowledge_strength,
+                                            "knowledge_gradient": s.knowledge_gradient,
+                                        })
+                                    }),
+                                }
+                            });
+                            with_busy_retry("annotate event", || {
+                                events::annotate_event(&conn, eid, &meta)
+                            });
+                        }
+                    }
+                    Some(pack)
+                }
+                Ok(Err(e)) => {
+                    tracing::warn!("context pack assembly failed: {e}");
+                    None
+                }
+                Err(_) => {
+                    tracing::warn!(
+                        "context pack assembly panicked — hook continues without a pack"
+                    );
+                    None
                 }
             }
-            Some(pack)
         }
         _ => None,
     };
@@ -431,6 +454,22 @@ pub fn handle_lifecycle_event(
     } else {
         None
     };
+
+    // Telemetry retention: events/deliveries/entity_usage grow
+    // unbounded otherwise. 30 days exceeds every mining lookback (≤7d).
+    // Runs at session_end — the one boundary where maintenance already
+    // lives; never fatal.
+    if input.event == LifecycleEvent::SessionEnd {
+        let conn = storage.conn();
+        match with_busy_retry("telemetry sweep", || {
+            crate::storage::usage::sweep_old_telemetry(&conn, 30)
+        }) {
+            Some(n) if n > 0 => {
+                tracing::debug!("session_end: swept {n} expired telemetry events")
+            }
+            _ => {}
+        }
+    }
 
     // session_end is the natural moment to surface unmined candidates —
     // the session's usage signals are closed and complete.
@@ -707,10 +746,10 @@ fn repo_relative_path(raw: &str, cogz_dir: &Path) -> String {
     let repo_abs = std::fs::canonicalize(repo_root).unwrap_or_else(|_| repo_root.to_path_buf());
     for base in [repo_root, repo_abs.as_path()] {
         if let Ok(rel) = path.strip_prefix(base) {
-            return rel.to_string_lossy().to_string();
+            return crate::index::normalize_path(&rel.to_string_lossy());
         }
     }
-    raw.trim_start_matches("./").to_string()
+    crate::index::normalize_path(raw.trim_start_matches("./"))
 }
 
 /// Candidate `entities.file_path` forms for a hook-supplied path.
@@ -725,12 +764,12 @@ fn normalize_file_candidates(raw: &str, cogz_dir: &Path) -> Vec<String> {
     let cogz_abs = std::fs::canonicalize(cogz_dir).unwrap_or_else(|_| cogz_dir.to_path_buf());
     for base in [cogz_dir, cogz_abs.as_path()] {
         if let Ok(rel) = path.strip_prefix(base) {
-            out.push(rel.to_string_lossy().to_string());
+            out.push(crate::index::normalize_path(&rel.to_string_lossy()));
         }
         if let Some(repo_root) = base.parent()
             && let Ok(rel) = path.strip_prefix(repo_root)
         {
-            let rel = rel.to_string_lossy().to_string();
+            let rel = crate::index::normalize_path(&rel.to_string_lossy());
             out.push(rel.clone());
             if let Some(inner) = rel.strip_prefix(".cogz/") {
                 out.push(inner.to_string());
@@ -738,7 +777,10 @@ fn normalize_file_candidates(raw: &str, cogz_dir: &Path) -> Vec<String> {
         }
     }
 
-    let trimmed = raw.trim_start_matches("./").trim_start_matches('/');
+    // Windows harnesses report `\`-separated paths; entities.file_path
+    // stores forward slashes, so candidates must be normalized.
+    let trimmed = crate::index::normalize_path(raw.trim_start_matches("./"));
+    let trimmed = trimmed.trim_start_matches('/');
     out.push(trimmed.to_string());
     if let Some(inner) = trimmed.strip_prefix(".cogz/") {
         out.push(inner.to_string());
@@ -798,8 +840,10 @@ const PROMPT_FILE_EXTS: &[&str] = &[
 fn prompt_file_tokens(prompt: &str) -> Vec<String> {
     prompt
         .split(|c: char| c.is_whitespace() || matches!(c, '`' | '"' | '\'' | '(' | ')' | ',' | ';'))
-        .filter(|t| t.contains('/') || PROMPT_FILE_EXTS.iter().any(|e| t.ends_with(e)))
-        .map(str::to_string)
+        .filter(|t| {
+            t.contains('/') || t.contains('\\') || PROMPT_FILE_EXTS.iter().any(|e| t.ends_with(e))
+        })
+        .map(crate::index::normalize_path)
         .collect()
 }
 

@@ -305,6 +305,34 @@ pub fn never_delivered_since(conn: &Connection, since: &str) -> Result<Vec<Strin
     Ok(out)
 }
 
+/// Delete telemetry rows older than `max_age_days` — events,
+/// deliveries, and entity_usage are derived telemetry that otherwise
+/// grows forever (every prompt, save, and session writes rows, some
+/// carrying multi-KB tool_result payloads). Mining windows are ≤7
+/// days, so a 30-day retention keeps signal intact. Entity-to-event
+/// links (events.entity_id) and usage rows are removed oldest-first;
+/// the canonical corpus is never touched.
+///
+/// Order matters: entity_usage references deliveries, so usage rows
+/// for expired deliveries go first.
+pub fn sweep_old_telemetry(conn: &Connection, max_age_days: u32) -> Result<usize, StorageError> {
+    let cutoff = (chrono::Utc::now() - chrono::Duration::days(max_age_days as i64)).to_rfc3339();
+    conn.execute(
+        "DELETE FROM entity_usage WHERE delivery_id IN \
+         (SELECT id FROM deliveries WHERE created_at < ?1)",
+        rusqlite::params![cutoff],
+    )?;
+    conn.execute(
+        "DELETE FROM deliveries WHERE created_at < ?1",
+        rusqlite::params![cutoff],
+    )?;
+    let events = conn.execute(
+        "DELETE FROM events WHERE created_at < ?1",
+        rusqlite::params![cutoff],
+    )?;
+    Ok(events)
+}
+
 /// Timestamp of the N-th most recent session_start event — the cutoff
 /// for "last N sessions" scoping. None when fewer than N sessions exist.
 pub fn session_cutoff(conn: &Connection, n: usize) -> Result<Option<String>, StorageError> {
@@ -494,5 +522,54 @@ mod tests {
         let mut dead = never_delivered(&conn).unwrap();
         dead.sort();
         assert_eq!(dead, vec!["e2".to_string()]);
+    }
+
+    #[test]
+    fn sweep_removes_expired_telemetry_keeps_recent() {
+        let storage = Storage::open_memory().unwrap();
+        let conn = storage.conn();
+        insert_entity(&conn, "e1", "knowledge/x.md");
+
+        let old = (chrono::Utc::now() - chrono::Duration::days(40)).to_rfc3339();
+        conn.execute(
+            "INSERT INTO events (event_type, payload, created_at) VALUES ('session_start', '{}', ?)",
+            rusqlite::params![old],
+        )
+        .unwrap();
+        conn.execute(
+            "INSERT INTO events (event_type, payload, created_at) VALUES ('session_start', '{}', ?)",
+            rusqlite::params![chrono::Utc::now().to_rfc3339()],
+        )
+        .unwrap();
+        // Old delivery + usage row should cascade-delete; recent one stays.
+        conn.execute(
+            "INSERT INTO deliveries (kind, closed, created_at) VALUES ('pack', 1, ?)",
+            rusqlite::params![old],
+        )
+        .unwrap();
+        let old_did: i64 = conn.last_insert_rowid();
+        conn.execute(
+            "INSERT INTO entity_usage (delivery_id, entity_id, outcome, created_at) VALUES (?, 'e1', 'hit', ?)",
+            rusqlite::params![old_did, old],
+        )
+        .unwrap();
+        let new_did = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
+        record_delivered(&conn, new_did, &[("e1".to_string(), DeliveryTier::Full)]).unwrap();
+
+        let swept = sweep_old_telemetry(&conn, 30).unwrap();
+        assert_eq!(swept, 1);
+
+        let events: i64 = conn
+            .query_row("SELECT COUNT(*) FROM events", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(events, 1);
+        let usage_rows: i64 = conn
+            .query_row("SELECT COUNT(*) FROM entity_usage", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(usage_rows, 1);
+        let deliveries: i64 = conn
+            .query_row("SELECT COUNT(*) FROM deliveries", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(deliveries, 1);
     }
 }

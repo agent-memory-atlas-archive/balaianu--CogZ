@@ -53,8 +53,15 @@ pub fn handle_file_save(
         }
     };
 
-    if path.starts_with(".cogz/") || path.contains("/.cogz/") || path.starts_with("./.cogz/") {
-        return handle_cogz_file_save(storage, cogz_dir, query_model, path);
+    // Normalize separators before the .cogz/ dispatch check — Windows
+    // harnesses report `C:\repo\.cogz\...` paths, which would otherwise
+    // fall into the source-file branch and skip the entity sync.
+    let normalized = crate::index::normalize_path(path);
+    if normalized.starts_with(".cogz/")
+        || normalized.contains("/.cogz/")
+        || normalized.starts_with("./.cogz/")
+    {
+        return handle_cogz_file_save(storage, cogz_dir, query_model, &normalized);
     }
 
     handle_source_file_save(storage, config, cogz_dir, path)

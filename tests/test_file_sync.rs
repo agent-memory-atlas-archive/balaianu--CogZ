@@ -104,6 +104,63 @@ fn sync_creates_new_entities() {
 }
 
 #[test]
+fn sync_rejects_file_containing_secret() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    // Files can arrive by hand edit or git pull — outside the MCP
+    // secret scan — so the sync boundary must scan too.
+    write_file(
+        dir.path(),
+        "knowledge/gotchas/leaked.md",
+        &knowledge_file(
+            "a1b2c3d4-e5f6-4789-abcd-000000000042",
+            "Leaked credential example",
+            "gotchas",
+            "The service reads its key from config: api_key = \"xK9mPq2vLw8nB4zR\"",
+        ),
+    );
+
+    let result = sync_all(&storage, dir.path());
+
+    assert_eq!(result.created, 0);
+    assert_eq!(result.errors.len(), 1);
+    let conn = storage.conn();
+    assert_eq!(storage::crud::count_all(&conn).unwrap(), 0);
+}
+
+#[test]
+fn sync_stores_forward_slash_file_paths() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    write_file(
+        dir.path(),
+        "knowledge/gotchas/seps.md",
+        &knowledge_file(
+            "a1b2c3d4-e5f6-4789-abcd-000000000043",
+            "Separator normalization",
+            "gotchas",
+            "file_path must be /-canonical for cross-platform matching",
+        ),
+    );
+
+    let result = sync_all(&storage, dir.path());
+    assert_eq!(result.errors.len(), 0);
+
+    let conn = storage.conn();
+    let fp: String = conn
+        .query_row(
+            "SELECT file_path FROM entities WHERE id = 'a1b2c3d4-e5f6-4789-abcd-000000000043'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(fp, "knowledge/gotchas/seps.md");
+    assert!(!fp.contains('\\'));
+}
+
+#[test]
 fn sync_updates_changed_files() {
     let storage = setup_storage();
     let dir = tempfile::tempdir().unwrap();

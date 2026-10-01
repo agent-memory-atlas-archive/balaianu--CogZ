@@ -43,6 +43,8 @@ pub enum SyncError {
     Storage(#[from] storage::StorageError),
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
+    #[error("suspected {0} in entity content — remove the secret before this file can sync")]
+    SecretDetected(crate::security::scan::SecretKind),
 }
 
 /// A file-level sync failure — associates a file path with the error.

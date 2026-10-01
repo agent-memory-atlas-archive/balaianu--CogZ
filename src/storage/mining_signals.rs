@@ -357,7 +357,11 @@ fn saved_files_after(
 /// entities store repo-relative paths; entity files strip their
 /// `.cogz/` prefix — check both forms.
 fn is_indexed(stmt: &mut rusqlite::Statement<'_>, path: &str) -> bool {
-    stmt.exists(rusqlite::params![path]).unwrap_or(false)
+    // Event payloads carry hook-supplied paths — normalize separators
+    // so Windows `\` forms match `/`-normalized entities.file_path.
+    let path = crate::index::normalize_path(path);
+    stmt.exists(rusqlite::params![path.as_str()])
+        .unwrap_or(false)
         || path
             .strip_prefix(".cogz/")
             .is_some_and(|inner| stmt.exists(rusqlite::params![inner]).unwrap_or(false))

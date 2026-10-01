@@ -14,12 +14,24 @@ pub(crate) fn read_and_parse(
 ) -> Result<(EntityFile, String, String), SyncError> {
     let raw_content = std::fs::read_to_string(file_path)?;
     let entity_file = EntityFile::from_content(&raw_content)?;
+    // The MCP write path scans for secrets before a file is ever
+    // created; canonical files can also arrive by hand edit or git
+    // pull, so the scan must live at the sync boundary too. A file
+    // carrying a secret must not reach FTS, embeddings, or (in team
+    // mode) the commit — it stays on disk as a retained error.
+    if let Some(scan) = crate::security::scan_content(&entity_file.title, &entity_file.body) {
+        return Err(SyncError::SecretDetected(scan.kind));
+    }
     let hash = content_hash(&raw_content);
-    let relative_path = file_path
-        .strip_prefix(cogz_dir)
-        .unwrap_or(file_path)
-        .to_string_lossy()
-        .to_string();
+    // Forward slashes canonicalize file_path across platforms — code
+    // entities already store `/`-normalized paths (normalize_path), so
+    // hook hit-detection and mining comparisons match on Windows too.
+    let relative_path = crate::index::normalize_path(
+        &file_path
+            .strip_prefix(cogz_dir)
+            .unwrap_or(file_path)
+            .to_string_lossy(),
+    );
     Ok((entity_file, hash, relative_path))
 }
 

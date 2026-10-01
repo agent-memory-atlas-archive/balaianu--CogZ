@@ -305,6 +305,43 @@ fn post_tool_use_without_tool_result_records_event_only() {
 }
 
 #[test]
+fn file_save_backslash_cogz_path_dispatches_to_sync() {
+    let (storage, config, cogz_dir, _dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    // Windows harnesses report `\`-separated paths — the .cogz/
+    // dispatch check must still route to the entity-file sync branch.
+    let entity_md = "---\nid: a1b2c3d4-e5f6-4789-abcd-0000000000ff\ntitle: \"Win path\"\ntype: knowledge\nstatus: active\ncreated_at: 2026-10-01T00:00:00Z\nupdated_at: 2026-10-01T00:00:00Z\nreferences: []\ncategory: test\n---\n\nbody";
+    std::fs::create_dir_all(cogz_dir.join("knowledge/test")).unwrap();
+    std::fs::write(cogz_dir.join("knowledge/test/win.md"), entity_md).unwrap();
+
+    let output = handle_lifecycle_event(
+        &storage,
+        &config,
+        &cogz_dir,
+        &model,
+        &code_mod,
+        None,
+        &LifecycleInput {
+            event: LifecycleEvent::FileSave,
+            prompt: None,
+            tool_name: None,
+            tool_result: None,
+            file_path: Some(".cogz\\knowledge\\test\\win.md"),
+        },
+    )
+    .unwrap();
+
+    let summary = output.reindex_summary.unwrap();
+    assert!(
+        summary.synced && !summary.reindexed,
+        "backslash .cogz path must dispatch to file sync, got {summary:?}"
+    );
+    assert_eq!(summary.created, 1);
+}
+
+#[test]
 fn lifecycle_event_parse_roundtrip() {
     assert_eq!(
         LifecycleEvent::parse("session_start"),

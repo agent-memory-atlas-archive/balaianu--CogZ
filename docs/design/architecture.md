@@ -200,7 +200,9 @@ Agent calls get_context MCP tool
 cogz index
   → files::sync_all() — sync .cogz/ files to DB
     → scan_entity_files() — walk .cogz/knowledge/, rules/, observations/
-    → for each file: read, parse frontmatter, compute hash, sync to DB
+    → for each file: read, parse frontmatter, scan for secrets (reject — files also
+      arrive by hand edit or git pull, bypassing the MCP write-path scan), compute
+      hash, sync to DB
     → mark stale: DB entities whose file was deleted
   → index::index_code() — index source code
     → parse::parse_source_files() — read + tree-sitter extract (shared with reindex)
