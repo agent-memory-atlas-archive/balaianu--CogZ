@@ -4,7 +4,7 @@ title: Agent config divergences — event names, file shapes, and merge semantic
 type: knowledge
 status: active
 created_at: "2026-10-01T00:00:00Z"
-updated_at: "2026-10-01T00:00:00Z"
+updated_at: "2026-10-01T16:00:00Z"
 references: []
 category: gotchas
 tags: ["configure", "hooks", "mcp", "onboarding", "harnesses"]
@@ -12,9 +12,13 @@ tags: ["configure", "hooks", "mcp", "onboarding", "harnesses"]
 
 # Where the six agent configs diverge (src/configure/)
 
-The MCP payload is identical everywhere (`{"command":"cogz","args":["mcp-stdio"]}`);
-everything else differs. Verified against official docs during the 0.5.0 audit
-— the first draft assumed Claude's shape everywhere and was wrong on three
+The MCP entry is `{"command":"cogz","args":["mcp-stdio"]}` for most harnesses,
+but two require extra fields: **Cursor needs `"type": "stdio"`** (a missing or
+Copilot-style `local` type can fail registration silently) and **Copilot needs
+`"type": "local"` + `"tools": ["*"]`** (without `tools` nothing is exposed).
+Codex writes the entry as TOML instead. Everything else differs per harness.
+Verified against official docs during the 0.5.0 audit — the first draft assumed
+Claude's shape everywhere and was wrong on three
 harnesses:
 
 - **Codex MCP is TOML** (`config.toml` `[mcp_servers.cogz]`); hooks are

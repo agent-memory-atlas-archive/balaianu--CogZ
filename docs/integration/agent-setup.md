@@ -4,7 +4,7 @@ CogZ integrates with any AI coding agent that supports MCP servers or shell comm
 
 **Fast path:** `cogz init --configure auto` detects installed agents and writes both the MCP server entry and lifecycle hooks for all of them — project-scoped files by default, `--global` for user-level config. `cogz configure <harness>` does the same for already-initialized repos. Both merge into existing files (with `.cogz.bak` backups) and never clobber other tools' config. The rest of this page documents what gets written and the manual alternative.
 
-All 6 agents support both MCP and hooks, and all support global (user-level) and project-scoped config for both. The MCP server config is the same for all agents — only the file location and format differ. Hook config varies by agent; see [Hooks](hooks.md) for the full event reference and canonical hook JSON.
+All 6 agents support both MCP and hooks, and all support global (user-level) and project-scoped config for both. The MCP server entry is near-identical across agents — file location and a few required fields differ (Cursor needs `"type": "stdio"`, Copilot needs `"type": "local"` + a `tools` allowlist, Codex uses TOML). Hook config varies by agent; see [Hooks](hooks.md) for the full event reference and canonical hook JSON.
 
 ## MCP server configuration
 
@@ -81,7 +81,7 @@ Claude Code supports hooks via the `hooks` key in its settings JSON, using match
 
 Cursor supports both MCP servers and lifecycle hooks. `hooks.json` requires a top-level `"version": 1` and uses **flat** hook entries — `{"command": "...", "matcher"?, "timeout"?}` — not Claude's nested matcher-group shape. Event names are camelCase and differ from Claude's: `sessionStart`, `beforeSubmitPrompt`, `postToolUse`, `afterFileEdit`, `sessionEnd`, `stop`, `preCompact`. CogZ maps `file_save` onto the native `afterFileEdit` event (no tool matcher needed) and re-injects the session pack on `preCompact`.
 
-Cursor's context-injection stdout field is `additional_context` (snake_case), so `cogz configure` emits commands with `--hook-format cursor`. `beforeSubmitPrompt`'s output schema is only `continue`/`user_message` — it cannot inject context — so the prompt hook runs `--fts-only` (event still recorded). Cursor also auto-maps Claude Code hook names when loading Claude-format configs — see [Third Party Hooks](https://cursor.com/docs/reference/third-party-hooks.md).
+Cursor's MCP entries require an explicit `"type": "stdio"` field — a missing or Copilot-style `local` type can fail registration silently, so `configure` emits `{"type": "stdio", "command": "cogz", "args": ["mcp-stdio"]}`. Its context-injection stdout field is `additional_context` (snake_case), so `cogz configure` emits commands with `--hook-format cursor`. `beforeSubmitPrompt`'s output schema is only `continue`/`user_message` — it cannot inject context — so the prompt hook runs `--fts-only` (event still recorded). Cursor also auto-maps Claude Code hook names when loading Claude-format configs — see [Third Party Hooks](https://cursor.com/docs/reference/third-party-hooks.md).
 
 ### Codex (OpenAI)
 
@@ -126,6 +126,8 @@ Gemini CLI stores both MCP and hooks config in the same `settings.json` file. Th
 **Hooks config (project):** `.github/hooks/cogz.json` (one file per hook set in the hooks directory)
 
 **Hooks config (global):** `~/.copilot/hooks/cogz.json`
+
+Copilot's MCP entries differ from the common shape — `configure` emits `{"type": "local", "command": "cogz", "args": ["mcp-stdio"], "tools": ["*"]}`. `type` is `local` (not `stdio`), and without a `tools` allowlist the server's tools are not exposed.
 
 Copilot CLI loads hooks from JSON files in the hooks directory — each file is a separate hook set. The format uses a `version` field (`1`) and a `hooks` object with flat entries — `{"type": "command", "command"|"bash"|"powershell"|"exec", "cwd"?, "env"?, "timeoutSec"?}`; `command` is the cross-platform fallback Copilot copies to both `bash` and `powershell`.
 

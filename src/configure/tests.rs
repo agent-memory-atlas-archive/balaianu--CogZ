@@ -290,6 +290,32 @@ fn copilot_writes_versioned_hookset_file() {
     );
 }
 
+/// Cursor requires `"type": "stdio"` on stdio MCP servers — without it
+/// the server can fail to register silently.
+#[test]
+fn cursor_mcp_entry_declares_stdio_type() {
+    let (repo, home) = dirs();
+    run(repo.path(), "cursor", Scope::Project, home.path()).unwrap();
+    let mcp = read_json(&repo.path().join(".cursor/mcp.json"));
+    let entry = &mcp["mcpServers"]["cogz"];
+    assert_eq!(entry["type"], "stdio");
+    assert_eq!(entry["command"], "cogz");
+    assert_eq!(entry["args"], json!(["mcp-stdio"]));
+}
+
+/// Copilot's MCP shape is `type: "local"` + `tools` allowlist — without
+/// `tools` the server exposes nothing.
+#[test]
+fn copilot_mcp_entry_declares_local_type_and_tools() {
+    let (repo, home) = dirs();
+    run(repo.path(), "copilot", Scope::Project, home.path()).unwrap();
+    let mcp = read_json(&repo.path().join(".mcp.json"));
+    let entry = &mcp["mcpServers"]["cogz"];
+    assert_eq!(entry["type"], "local");
+    assert_eq!(entry["command"], "cogz");
+    assert_eq!(entry["tools"], json!(["*"]));
+}
+
 /// Codex clamps SessionEnd (and Interrupt) hooks to 3 seconds max —
 /// the canonical 30s would be rejected or truncate consolidation.
 #[test]

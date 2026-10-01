@@ -223,7 +223,29 @@ fn gemini_settings_patch(path: PathBuf, bin: &str) -> Patch {
 }
 
 fn mcp_json_patch(path: PathBuf) -> Patch {
-    Patch::Json(path, json!({"mcpServers": {"cogz": mcp_entry()}}))
+    mcp_json_patch_with(path, mcp_entry())
+}
+
+/// Cursor requires an explicit `type` on stdio servers — a missing or
+/// Copilot-style `local` type fails registration silently.
+fn cursor_mcp_patch(path: PathBuf) -> Patch {
+    mcp_json_patch_with(
+        path,
+        json!({"type": "stdio", "command": "cogz", "args": ["mcp-stdio"]}),
+    )
+}
+
+/// Copilot's MCP shape is `type: "local"` plus a `tools` allowlist —
+/// without `tools` the server's tools are not exposed.
+fn copilot_mcp_patch(path: PathBuf) -> Patch {
+    mcp_json_patch_with(
+        path,
+        json!({"type": "local", "command": "cogz", "args": ["mcp-stdio"], "tools": ["*"]}),
+    )
+}
+
+fn mcp_json_patch_with(path: PathBuf, entry: Value) -> Patch {
+    Patch::Json(path, json!({"mcpServers": {"cogz": entry}}))
 }
 
 fn codex_mcp_patch(path: PathBuf) -> Patch {
@@ -264,14 +286,14 @@ fn claude_user(home: &Path) -> Vec<Patch> {
 
 fn cursor_project(repo: &Path) -> Vec<Patch> {
     vec![
-        mcp_json_patch(repo.join(".cursor/mcp.json")),
+        cursor_mcp_patch(repo.join(".cursor/mcp.json")),
         cursor_hooks_patch(repo.join(".cursor/hooks.json"), "cogz"),
     ]
 }
 
 fn cursor_user(home: &Path) -> Vec<Patch> {
     vec![
-        mcp_json_patch(home.join(".cursor/mcp.json")),
+        cursor_mcp_patch(home.join(".cursor/mcp.json")),
         cursor_hooks_patch(home.join(".cursor/hooks.json"), "cogz"),
     ]
 }
@@ -313,14 +335,14 @@ fn gemini_user(home: &Path) -> Vec<Patch> {
 
 fn copilot_project(repo: &Path) -> Vec<Patch> {
     vec![
-        mcp_json_patch(repo.join(".mcp.json")),
+        copilot_mcp_patch(repo.join(".mcp.json")),
         copilot_hooks_patch(repo.join(".github/hooks/cogz.json"), "cogz"),
     ]
 }
 
 fn copilot_user(home: &Path) -> Vec<Patch> {
     vec![
-        mcp_json_patch(home.join(".copilot/mcp-config.json")),
+        copilot_mcp_patch(home.join(".copilot/mcp-config.json")),
         copilot_hooks_patch(home.join(".copilot/hooks/cogz.json"), "cogz"),
     ]
 }
