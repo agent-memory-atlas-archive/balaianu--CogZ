@@ -88,6 +88,11 @@ pub fn run(repo_root: &Path, local_only: bool) -> Result<String> {
     fs::write(&gitignore_path, gitignore_content)
         .with_context(|| format!("failed to write {}", gitignore_path.display()))?;
 
+    // Seed the first-contact corpus: ingestion protocol, authorship
+    // contract, memory mechanics. Files are canonical — the first
+    // index/hook sync picks them up.
+    let seed_paths = crate::seeds::write_seeds(&cogz_dir, local_only)?;
+
     let sharing_note = if local_only {
         "  sharing:  local-only (all of .cogz/ is gitignored)"
     } else {
@@ -97,11 +102,12 @@ pub fn run(repo_root: &Path, local_only: bool) -> Result<String> {
     };
 
     Ok(format!(
-        "Initialized CogZ in {}\n  project: {}\n  config:  {}\n  gitignore: {}\n{}",
+        "Initialized CogZ in {}\n  project: {}\n  config:  {}\n  gitignore: {}\n  seeded:   {} entries (ingestion protocol, authorship contract, memory mechanics)\n{}",
         cogz_dir.display(),
         project_name,
         config_path.display(),
         gitignore_path.display(),
+        seed_paths.len(),
         sharing_note
     ))
 }

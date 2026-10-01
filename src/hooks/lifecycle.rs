@@ -348,6 +348,29 @@ pub fn handle_lifecycle_event(
         None
     };
 
+    // Young-corpus nudge: when a repo has barely any recorded
+    // knowledge yet, session_start points the agent at the seeded
+    // ingestion protocol — and tells it to ask the user first, since
+    // ingestion writes corpus entries (committed in team mode).
+    // Corpus-state-driven, so it stops firing once real content lands.
+    let ingest_nudge = if input.event == LifecycleEvent::SessionStart {
+        let conn = storage.conn();
+        let active = with_busy_retry("count knowledge+rules", || {
+            crate::storage::crud::count_by_status_and_types(&conn, "active", &["knowledge", "rule"])
+        })
+        .unwrap_or(0);
+        (active < YOUNG_CORPUS_THRESHOLD).then(|| {
+            format!(
+                "**This repository's CogZ corpus is nearly empty** ({active} active \
+                 knowledge/rule entries). A scoped first-contact ingestion pass is \
+                 available — see the `First-contact ingestion protocol` rule. \
+                 Ask the user before running it; ingestion writes corpus entries."
+            )
+        })
+    } else {
+        None
+    };
+
     // Write-back nudge: mined candidates get pushed at the surfaces
     // where a learning moment just happened — saves, searches, prompt
     // boundaries, session edges. Fingerprint-deduped (once per
@@ -381,7 +404,7 @@ pub fn handle_lifecycle_event(
         None
     };
 
-    let notices = [drift_notice, write_nudge]
+    let notices = [drift_notice, ingest_nudge, write_nudge]
         .into_iter()
         .flatten()
         .collect::<Vec<_>>()
@@ -439,6 +462,12 @@ pub fn handle_lifecycle_event(
 /// Max drifted entities listed in a file_save notice — a signal, not
 /// a report. The full queue lives in `cogz doctor`.
 const DRIFT_NOTICE_LIMIT: usize = 5;
+
+/// Below this many active knowledge+rule entities the corpus is
+/// considered young and session_start nudges toward the seeded
+/// first-contact ingestion protocol. A fresh init seeds 3, so the
+/// nudge fires until ~7 real entries exist — then stays silent.
+const YOUNG_CORPUS_THRESHOLD: i64 = 10;
 
 /// Knowledge entities drifted on references to the saved file's code —
 /// the write-time verify cue. `entities_for_file` maps the path to its

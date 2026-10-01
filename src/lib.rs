@@ -17,5 +17,6 @@ pub mod mcp;
 pub mod net;
 pub mod search;
 pub mod security;
+pub mod seeds;
 pub mod storage;
 pub mod update;

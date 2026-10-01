@@ -252,6 +252,25 @@ pub fn count_by_type(conn: &Connection, entity_type: &str) -> Result<i64, Storag
     Ok(count)
 }
 
+/// Count entities matching a status across several types in one query.
+pub fn count_by_status_and_types(
+    conn: &Connection,
+    status: &str,
+    types: &[&str],
+) -> Result<i64, StorageError> {
+    if types.is_empty() {
+        return Ok(0);
+    }
+    let placeholders = types.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+    let sql =
+        format!("SELECT COUNT(*) FROM entities WHERE status = ?1 AND type IN ({placeholders})");
+    let mut params_vec: Vec<&dyn rusqlite::ToSql> = Vec::with_capacity(types.len() + 1);
+    params_vec.push(&status);
+    params_vec.extend(types.iter().map(|t| t as &dyn rusqlite::ToSql));
+    let count: i64 = conn.query_row(&sql, params_vec.as_slice(), |r| r.get(0))?;
+    Ok(count)
+}
+
 /// Count all entities.
 pub fn count_all(conn: &Connection) -> Result<i64, StorageError> {
     let count: i64 = conn.query_row("SELECT COUNT(*) FROM entities", [], |r| r.get(0))?;

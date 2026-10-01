@@ -87,6 +87,59 @@ fn session_start_records_event_and_returns_cold_start_pack() {
 }
 
 #[test]
+fn session_start_nudges_ingestion_on_young_corpus() {
+    use cogz::storage::crud::{Entity, insert_entity};
+    let (storage, config, cogz_dir, _dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    let fire = || {
+        handle_lifecycle_event(
+            &storage,
+            &config,
+            &cogz_dir,
+            &model,
+            &code_mod,
+            None,
+            &LifecycleInput {
+                event: LifecycleEvent::SessionStart,
+                prompt: None,
+                tool_name: None,
+                tool_result: None,
+                file_path: None,
+            },
+        )
+        .unwrap()
+    };
+
+    // Empty corpus → nudge present.
+    let out = fire();
+    let notice = out.notices.expect("young corpus should emit ingest nudge");
+    assert!(notice.contains("nearly empty"));
+    assert!(notice.contains("Ask the user"));
+
+    // Grow the corpus past the threshold → nudge stops.
+    for i in 0..10 {
+        let entity = Entity::new(
+            &uuid::Uuid::new_v4().to_string(),
+            "knowledge",
+            &format!("grown entry {i}"),
+            "content",
+        );
+        let conn = storage.conn();
+        insert_entity(&conn, &entity).unwrap();
+    }
+    let out = fire();
+    assert!(
+        !out.notices
+            .as_deref()
+            .unwrap_or("")
+            .contains("nearly empty"),
+        "grown corpus should not emit ingest nudge"
+    );
+}
+
+#[test]
 fn prompt_submit_records_event_and_returns_task_pack() {
     let (storage, config, cogz_dir, _dir) = setup();
     let model = query_model(&config);

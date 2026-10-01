@@ -16,7 +16,7 @@ cogz init [--repo <path>] [--local-only] [--configure <harnesses>] [--global]
 - `--configure <harnesses>` — also wire host-agent MCP + hook config (see `cogz configure`). Accepts comma-separated harness ids or `auto` for every detected agent.
 - `--global` — with `--configure`, write user-level agent config instead of project files.
 
-**Output:** Creates `.cogz/` with `config.toml`, `.gitignore`, and subdirectories (`knowledge/`, `rules/`, `observations/`). Refuses to run if `.cogz/` already exists — use `cogz reset` first. Without `--configure`, prints the detected agents and the `cogz configure` hint when any are found.
+**Output:** Creates `.cogz/` with `config.toml`, `.gitignore`, and subdirectories (`knowledge/`, `rules/`, `observations/`). Also writes three **seed entries** (tagged `cogz-seed`): the first-contact ingestion protocol rule, the entry-authorship contract rule, and a knowledge entry explaining how the repo's memory works — these land in the first `session_start` cold-start pack so an agent learns the corpus mechanics through CogZ itself. Refuses to run if `.cogz/` already exists — use `cogz reset` first. Without `--configure`, prints the detected agents and the `cogz configure` hint when any are found.
 
 ## `cogz configure`
 

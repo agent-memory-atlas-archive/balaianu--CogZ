@@ -168,6 +168,7 @@ Beyond context packs, events can append **notices** to the same `additionalConte
 
 - **Drift notice** — when entities in the pack carry drift flags (references changed since verification), a compact warning listing them.
 - **Write-back nudge** — when the mining pass finds a fresh candidate (a search that missed, an error→fix pair, a hot file, a zero-hit delivery, recurring reliance on one entity), a short drafted observation is appended with title, content, and candidate references. Each candidate is shown at most once per 24h per repo (fingerprint dedup); the same set is reviewable later via `cogz suggest` or the `suggest_observations` MCP tool. Nothing is written automatically — confirming a candidate is the agent's `create_entity` call.
+- **First-contact ingestion nudge** — `session_start` only. When a repo has fewer than 10 active knowledge/rule entries (a fresh `cogz init` seeds 3), a notice points at the seeded *First-contact ingestion protocol* rule and instructs the agent to ask the user before running a pass. It stops firing once the corpus grows — no repeat cadence needed.
 
 `pre_tool_use` and `stop` never produce output. `post_tool_use` emits output only when a nudge exists — silence is the normal case.
 
