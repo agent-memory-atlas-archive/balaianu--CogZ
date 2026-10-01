@@ -69,7 +69,7 @@ fn shown_fingerprints(conn: &Connection) -> std::collections::HashSet<String> {
     let mut stmt = match conn.prepare(
         "SELECT payload FROM events
          WHERE event_type = 'write_nudge_shown'
-           AND created_at > datetime('now', ?)",
+           AND datetime(created_at) > datetime('now', ?)",
     ) {
         Ok(s) => s,
         Err(e) => {

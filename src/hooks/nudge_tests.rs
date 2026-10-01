@@ -66,6 +66,35 @@ fn same_candidate_is_suppressed_within_window() {
 }
 
 #[test]
+fn expired_impression_stops_suppressing() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    seed_search_miss(&conn);
+    assert_eq!(fresh_suggestions(&conn, "file_save").len(), 1);
+
+    // Age the impression to just outside the 24h window but on the
+    // cutoff's calendar date, kept in production RFC3339 — a naive
+    // compare reads 'T' > ' ' and would hold the suppression past expiry.
+    let cutoff = chrono::Utc::now() - chrono::Duration::hours(24);
+    let stale = (cutoff - chrono::Duration::hours(1)).max(
+        cutoff.date_naive().and_hms_opt(0, 0, 0).unwrap().and_utc()
+            + chrono::Duration::milliseconds(1),
+    );
+    conn.execute(
+        "UPDATE events SET created_at = ?1 WHERE event_type = 'write_nudge_shown'",
+        rusqlite::params![stale.to_rfc3339()],
+    )
+    .unwrap();
+
+    let next = fresh_suggestions(&conn, "file_save");
+    assert_eq!(
+        next.len(),
+        1,
+        "expired impression must not suppress: {next:?}"
+    );
+}
+
+#[test]
 fn new_candidate_still_surfaces_after_dedup() {
     let s = Storage::open_memory().unwrap();
     let conn = s.conn();

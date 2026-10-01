@@ -70,10 +70,11 @@ pub fn record_delivery(
     kind: DeliveryKind,
     event_id: Option<i64>,
 ) -> Result<i64, StorageError> {
+    let now = chrono::Utc::now().to_rfc3339();
     conn.execute(
         "INSERT INTO deliveries (kind, event_id, closed, created_at) \
-         VALUES (?, ?, 0, datetime('now'))",
-        rusqlite::params![kind.as_str(), event_id],
+         VALUES (?, ?, 0, ?)",
+        rusqlite::params![kind.as_str(), event_id, now],
     )?;
     Ok(conn.last_insert_rowid())
 }
@@ -86,15 +87,16 @@ pub fn record_delivered(
     delivery_id: i64,
     entries: &[(String, DeliveryTier)],
 ) -> Result<(), StorageError> {
+    let now = chrono::Utc::now().to_rfc3339();
     let tx = conn.unchecked_transaction()?;
     {
         let mut stmt = tx.prepare(
             "INSERT OR IGNORE INTO entity_usage (delivery_id, entity_id, outcome, tier, created_at) \
-             SELECT ?, ?, 'pending', ?, datetime('now') \
+             SELECT ?, ?, 'pending', ?, ? \
              WHERE EXISTS (SELECT 1 FROM entities WHERE id = ?)",
         )?;
         for (id, tier) in entries {
-            stmt.execute(rusqlite::params![delivery_id, id, tier.as_str(), id])?;
+            stmt.execute(rusqlite::params![delivery_id, id, tier.as_str(), now, id])?;
         }
     }
     tx.commit()?;
@@ -295,7 +297,7 @@ pub fn never_delivered_since(conn: &Connection, since: &str) -> Result<Vec<Strin
         "SELECT id FROM entities WHERE status != 'pruned' \
          AND id NOT IN (SELECT DISTINCT u.entity_id FROM entity_usage u \
                         JOIN deliveries d ON d.id = u.delivery_id \
-                        WHERE d.created_at >= ?)",
+                        WHERE datetime(d.created_at) >= datetime(?))",
     )?;
     let rows = stmt.query_map(rusqlite::params![since], |r| r.get(0))?;
     let mut out = Vec::new();
@@ -316,18 +318,21 @@ pub fn never_delivered_since(conn: &Connection, since: &str) -> Result<Vec<Strin
 /// Order matters: entity_usage references deliveries, so usage rows
 /// for expired deliveries go first.
 pub fn sweep_old_telemetry(conn: &Connection, max_age_days: u32) -> Result<usize, StorageError> {
+    // datetime() both sides: rows written before the format unification
+    // carry 'YYYY-MM-DD HH:MM:SS' while the cutoff is RFC3339 — raw
+    // string compare makes same-day rows sort wrong (' ' < 'T').
     let cutoff = (chrono::Utc::now() - chrono::Duration::days(max_age_days as i64)).to_rfc3339();
     conn.execute(
         "DELETE FROM entity_usage WHERE delivery_id IN \
-         (SELECT id FROM deliveries WHERE created_at < ?1)",
+         (SELECT id FROM deliveries WHERE datetime(created_at) < datetime(?1))",
         rusqlite::params![cutoff],
     )?;
     conn.execute(
-        "DELETE FROM deliveries WHERE created_at < ?1",
+        "DELETE FROM deliveries WHERE datetime(created_at) < datetime(?1)",
         rusqlite::params![cutoff],
     )?;
     let events = conn.execute(
-        "DELETE FROM events WHERE created_at < ?1",
+        "DELETE FROM events WHERE datetime(created_at) < datetime(?1)",
         rusqlite::params![cutoff],
     )?;
     Ok(events)
@@ -571,5 +576,76 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM deliveries", [], |r| r.get(0))
             .unwrap();
         assert_eq!(deliveries, 1);
+    }
+
+    /// Same calendar date as the cutoff, `offset` later (or earlier
+    /// when negative) — clamped inside the cutoff's date so the ' ' vs
+    /// 'T' separator decides a naive string compare.
+    fn same_day_near(cutoff: chrono::DateTime<chrono::Utc>, offset: chrono::Duration) -> String {
+        let ms = chrono::Duration::milliseconds(1);
+        let bound = if offset >= chrono::Duration::zero() {
+            (cutoff.date_naive() + chrono::Duration::days(1))
+                .and_hms_opt(0, 0, 0)
+                .unwrap()
+                .and_utc()
+                - ms
+        } else {
+            cutoff.date_naive().and_hms_opt(0, 0, 0).unwrap().and_utc() + ms
+        };
+        let t = cutoff + offset;
+        let t = if offset >= chrono::Duration::zero() {
+            t.min(bound)
+        } else {
+            t.max(bound)
+        };
+        t.format("%Y-%m-%d %H:%M:%S%.3f").to_string()
+    }
+
+    #[test]
+    fn sweep_keeps_boundary_day_delivery() {
+        let storage = Storage::open_memory().unwrap();
+        let conn = storage.conn();
+        // Rows written before the format unification carry
+        // 'YYYY-MM-DD HH:MM:SS' — under a naive compare every same-day
+        // row sorts below an RFC3339 cutoff (' ' < 'T'), so the sweep
+        // ate rows still inside retention.
+        let did = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
+        let cutoff = chrono::Utc::now() - chrono::Duration::days(30);
+        conn.execute(
+            "UPDATE deliveries SET created_at = ? WHERE id = ?",
+            rusqlite::params![same_day_near(cutoff, chrono::Duration::hours(1)), did],
+        )
+        .unwrap();
+
+        sweep_old_telemetry(&conn, 30).unwrap();
+        let n: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM deliveries WHERE id = ?",
+                rusqlite::params![did],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(n, 1, "delivery inside retention must survive the sweep");
+    }
+
+    #[test]
+    fn never_delivered_counts_boundary_day_delivery() {
+        let storage = Storage::open_memory().unwrap();
+        let conn = storage.conn();
+        insert_entity(&conn, "e1", "knowledge/x.md");
+        let did = record_delivery(&conn, DeliveryKind::Pack, None).unwrap();
+        record_delivered(&conn, did, &[("e1".to_string(), DeliveryTier::Full)]).unwrap();
+        // Delivery one hour after `since`, same calendar date, legacy
+        // space format — naive compare reads it as older (' ' < 'T')
+        // and reports a delivered entity as dead weight.
+        let since = chrono::Utc::now() - chrono::Duration::hours(1);
+        conn.execute(
+            "UPDATE deliveries SET created_at = ? WHERE id = ?",
+            rusqlite::params![same_day_near(since, chrono::Duration::minutes(30)), did],
+        )
+        .unwrap();
+
+        let out = never_delivered_since(&conn, &since.to_rfc3339()).unwrap();
+        assert!(out.iter().all(|id| id != "e1"), "got: {out:?}");
     }
 }

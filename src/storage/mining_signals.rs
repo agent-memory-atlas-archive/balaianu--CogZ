@@ -25,7 +25,7 @@ pub(super) fn search_misses(
     let mut stmt = conn.prepare(
         "SELECT id, payload FROM events
          WHERE event_type = 'search_performed'
-           AND created_at > datetime('now', '-' || ? || ' days')
+           AND datetime(created_at) > datetime('now', '-' || ? || ' days')
          ORDER BY id DESC",
     )?;
     let searches: Vec<(i64, String, i64)> = stmt
@@ -92,7 +92,7 @@ pub(super) fn uncharted_edits(
          FROM deliveries d
          JOIN events e ON e.id = d.event_id
          WHERE d.kind = 'pack'
-           AND d.created_at > datetime('now', '-' || ? || ' days')
+           AND datetime(d.created_at) > datetime('now', '-' || ? || ' days')
            AND NOT EXISTS (
                SELECT 1 FROM entity_usage u
                WHERE u.delivery_id = d.id AND u.outcome = 'hit'
@@ -170,7 +170,7 @@ pub(super) fn recurring_use(
          FROM entity_usage u
          JOIN entities e ON e.id = u.entity_id
          WHERE u.outcome = 'hit'
-           AND u.created_at > datetime('now', '-' || ? || ' days')
+           AND datetime(u.created_at) > datetime('now', '-' || ? || ' days')
          GROUP BY u.entity_id
          HAVING hits >= ?
          ORDER BY hits DESC
@@ -234,7 +234,7 @@ pub(super) fn hot_files(
              COUNT(*), COUNT(DISTINCT date(created_at))
          FROM events
          WHERE event_type = 'file_save'
-           AND created_at > datetime('now', '-' || ? || ' days')
+           AND datetime(created_at) > datetime('now', '-' || ? || ' days')
          GROUP BY 1
          HAVING COUNT(*) >= ? AND COUNT(DISTINCT date(created_at)) >= 2
          ORDER BY 2 DESC
@@ -282,7 +282,7 @@ pub(super) fn error_fixes(
     let mut stmt = conn.prepare(
         "SELECT id, payload FROM events
          WHERE event_type = 'post_tool_use'
-           AND created_at > datetime('now', '-' || ? || ' days')
+           AND datetime(created_at) > datetime('now', '-' || ? || ' days')
          ORDER BY id",
     )?;
     let calls: Vec<(i64, String, String)> = stmt

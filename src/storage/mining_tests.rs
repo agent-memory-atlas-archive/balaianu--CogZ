@@ -274,6 +274,50 @@ fn error_fix_ignores_keywords_inside_file_contents() {
 }
 
 #[test]
+fn window_boundary_compares_instants_not_separators() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    // Events store RFC3339 ('T' separator) while the SQL cutoff is
+    // 'YYYY-MM-DD HH:MM:SS' — on the boundary day 'T' > ' ' makes a
+    // stale row compare as fresh unless both sides go through datetime().
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "bash", "tool_result": "error: missing flag"}),
+    )
+    .unwrap();
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "bash", "tool_result": "ok"}),
+    )
+    .unwrap();
+    // Just outside a 7-day window but on the cutoff's calendar date:
+    // clamp to a millisecond after day-start so wall-clock midnight
+    // can't flake the same-date precondition the bug needs.
+    let cutoff = chrono::Utc::now() - chrono::Duration::days(7);
+    let stale = (cutoff - chrono::Duration::hours(1)).max(
+        cutoff.date_naive().and_hms_opt(0, 0, 0).unwrap().and_utc()
+            + chrono::Duration::milliseconds(1),
+    );
+    conn.execute(
+        "UPDATE events SET created_at = ?1
+         WHERE event_type = 'post_tool_use'
+           AND json_extract(payload, '$.tool_result') LIKE 'error%'",
+        rusqlite::params![stale.to_rfc3339()],
+    )
+    .unwrap();
+
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    assert!(
+        out.iter().all(|s| s.signal != "error_fix"),
+        "error event older than the window must not pair with a fresh fix: {out:?}"
+    );
+}
+
+#[test]
 fn snippet_truncates_on_char_boundary() {
     // '✅' straddles the byte limit — naive &s[..max] panics, and this
     // runs inside hook processes where the panic kills all notices.
