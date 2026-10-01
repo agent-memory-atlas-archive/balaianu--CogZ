@@ -69,9 +69,28 @@ fn cache_hit_when_db_unchanged() {
     assert!(matches!(cache.get(&repo), Ok(Some(_))));
 }
 
+/// A cached state whose `db_identity` is minted from a real file on
+/// disk while the storage itself is in-memory. Holding a live SQLite
+/// handle on `db_path` would make delete/replace impossible on
+/// platforms without unlink-while-open (Windows) — the identity
+/// comparison under test doesn't depend on the handle being live.
+fn identity_fixture() -> (tempfile::TempDir, RepoCache, PathBuf, PathBuf) {
+    let dir = tempfile::tempdir().unwrap();
+    let repo = dir.path().canonicalize().unwrap();
+    let cogz_dir = repo.join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+    let db_path = cogz_dir.join("cogz.db");
+    std::fs::write(&db_path, b"placeholder db bytes").unwrap();
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let state = dummy_state(storage, &cogz_dir, Some(db_path.clone()));
+    let cache = RepoCache::new();
+    cache.insert_ready(repo.clone(), state);
+    (dir, cache, repo, db_path)
+}
+
 #[test]
 fn cache_evicts_when_db_deleted() {
-    let (_dir, cache, repo, db_path) = file_backed_fixture();
+    let (_dir, cache, repo, db_path) = identity_fixture();
     std::fs::remove_file(&db_path).unwrap();
     assert!(cache.get(&repo).is_err());
     // `get` signals staleness; the caller (resolve_repo) removes the
@@ -82,12 +101,12 @@ fn cache_evicts_when_db_deleted() {
 
 #[test]
 fn cache_evicts_when_db_replaced() {
-    let (_dir, cache, repo, db_path) = file_backed_fixture();
+    let (_dir, cache, repo, db_path) = identity_fixture();
     // The reset+reindex sequence: unlink, then a new file at the same
-    // path. Even if the filesystem recycles the inode, the birth time
-    // differs.
+    // path. Even if the filesystem recycles the inode/file index, the
+    // birth time differs.
     std::fs::remove_file(&db_path).unwrap();
-    drop(Storage::open(&db_path, 768).unwrap());
+    std::fs::write(&db_path, b"recreated db bytes").unwrap();
     assert!(cache.get(&repo).is_err());
 }
 
