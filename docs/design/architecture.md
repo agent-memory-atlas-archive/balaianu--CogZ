@@ -39,8 +39,11 @@ src/
   cli_events.rs        CLI event/mining surface (suggest, capture-event, mcp-stdio)
   net.rs               HTTP agents with bounded timeouts
   security/            Secret pattern scanning
+  seeds.rs             Init seed entries (ingestion protocol, authorship contract)
+  configure/           Agent MCP + hook config writer (claude-code, cursor,
+                       codex, gemini, copilot, devin) — semantic merge, backups
   commands/            CLI command implementations
-    mod.rs             index, reindex, status, reset, consolidate
+    mod.rs             index, reindex, status, reset, consolidate, verify, reject
     doctor.rs          doctor health check
     embed_bg.rs        background embedding process
     models.rs          models download/list/clean
