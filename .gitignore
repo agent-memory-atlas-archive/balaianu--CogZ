@@ -6,3 +6,4 @@ benchmark/nli_compare/**/*.onnx
 benchmark/nli_compare/*/config*.json
 benchmark/nli_compare/*/tokenizer*.json
 benchmark/rerank/*/
+.devin/mcp_config.local.json

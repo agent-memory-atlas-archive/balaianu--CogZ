@@ -73,6 +73,78 @@ fn rerun_is_idempotent_no_backup_no_duplicates() {
     assert!(!repo.path().join(".devin/hooks.v1.json.cogz.bak").exists());
 }
 
+/// Hand-written entries equivalent to ours — different flag order,
+/// `matcher: ""` instead of absent, absolute binary path, extra
+/// hooks sharing the group — must not be duplicated on configure.
+#[test]
+fn rerun_dedupes_handwritten_equivalents() {
+    let (repo, home) = dirs();
+    let cfg_dir = home.path().join(".config/devin");
+    fs::create_dir_all(&cfg_dir).unwrap();
+    let cfg = cfg_dir.join("config.json");
+    fs::write(
+        &cfg,
+        r#"{"hooks":{
+            "SessionStart":[
+                {"matcher":"","hooks":[
+                    {"type":"command","command":"/home/u/.local/bin/cogz capture-event session_start --hook-json","timeout":5},
+                    {"type":"command","command":"bash ~/hooks/other.sh","timeout":10}
+                ]}
+            ],
+            "PostToolUse":[
+                {"matcher":"","hooks":[{"type":"command","command":"cogz capture-event post_tool_use --hook-json --fts-only","timeout":10}]},
+                {"matcher":"edit|write|notebook_edit","hooks":[{"type":"command","command":"cogz capture-event file_save --hook-json --fts-only","timeout":20}]}
+            ],
+            "UserPromptSubmit":[
+                {"matcher":"","hooks":[{"type":"command","command":"cogz capture-event prompt_submit --hook-json --fts-only","timeout":15}]}
+            ],
+            "Stop":[
+                {"matcher":"","hooks":[{"type":"command","command":"cogz capture-event stop --hook-json --fts-only","timeout":5}]}
+            ],
+            "SessionEnd":[
+                {"matcher":"","hooks":[{"type":"command","command":"cogz capture-event session_end --hook-json --fts-only","timeout":30}]}
+            ],
+            "PostCompaction":[
+                {"matcher":"","hooks":[{"type":"command","command":"cogz capture-event session_start --hook-json --fts-only","timeout":15}]}
+            ]
+        }}"#,
+    )
+    .unwrap();
+
+    run(repo.path(), "devin", Scope::User, home.path()).unwrap();
+
+    let merged = read_json(&cfg);
+    let mut seen = std::collections::HashMap::new();
+    for (event, groups) in merged["hooks"].as_object().unwrap() {
+        for g in groups.as_array().unwrap() {
+            let matcher = g["matcher"].as_str().unwrap_or("");
+            for h in g["hooks"].as_array().unwrap() {
+                let cmd = h["command"].as_str().unwrap_or("");
+                if cmd.contains("cogz capture-event") {
+                    *seen
+                        .entry((event.as_str(), matcher, command_key(cmd)))
+                        .or_insert(0) += 1;
+                }
+            }
+        }
+    }
+    let dupes: Vec<_> = seen.iter().filter(|(_, n)| **n > 1).collect();
+    assert!(dupes.is_empty(), "duplicated hook entries: {dupes:?}");
+    // file_save under its own matcher still got wired (2 verbs total
+    // for PostToolUse), everything else one verb per event.
+    assert_eq!(seen.len(), 7, "expected one entry per (event, verb)");
+    // Foreign hook inside a shared group survives.
+    let starts = merged["hooks"]["SessionStart"].as_array().unwrap();
+    assert!(
+        starts.iter().any(|g| g["hooks"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|h| h["command"].as_str().unwrap().contains("other.sh"))),
+        "foreign hook in shared group must survive"
+    );
+}
+
 #[test]
 fn hooks_merge_keeps_other_tools_entries() {
     let (repo, home) = dirs();

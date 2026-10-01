@@ -75,9 +75,10 @@ fn resolve_targets(arg: &str, repo: &Path, home: &Path) -> Result<Vec<&'static H
 // ─── Merge machinery ──────────────────────────────────────────────
 
 /// Deep-merge `patch` into `base`. Objects merge per key; arrays
-/// append elements not already present (element-wise equality, so a
-/// hook entry already installed is skipped and other tools' entries
-/// survive untouched); scalars take the patch value.
+/// append elements not already present; scalars take the patch value.
+/// Hook entries dedupe semantically — see `covers` — so hand-written
+/// entries that differ only in flag order, binary path, matcher
+/// style, or hook grouping are recognized as already installed.
 fn merge_json(base: &mut Value, patch: Value) {
     match (base, patch) {
         (Value::Object(b), Value::Object(p)) => {
@@ -92,13 +93,87 @@ fn merge_json(base: &mut Value, patch: Value) {
         }
         (Value::Array(b), Value::Array(p)) => {
             for item in p {
-                if !b.contains(&item) {
+                if !b.iter().any(|x| covers(x, &item)) {
                     b.push(item);
                 }
             }
         }
         (b, p) => *b = p,
     }
+}
+
+/// Does `existing` already install `item`? Strict equality, or — for
+/// hook-shaped objects — an equivalent matcher (`""` ≡ absent) whose
+/// commands already include all of `item`'s commands.
+fn covers(existing: &Value, item: &Value) -> bool {
+    if existing == item {
+        return true;
+    }
+    match (hook_key(existing), hook_key(item)) {
+        (Some((matcher_e, cmds_e)), Some((matcher_i, cmds_i))) => {
+            matcher_e == matcher_i && cmds_i.iter().all(|c| cmds_e.contains(c))
+        }
+        _ => false,
+    }
+}
+
+/// Normalized identity of a hook element: its matcher plus the
+/// command keys it wires. Handles both the Claude-shape matcher
+/// group (`{"matcher"?, "hooks": [{"command", …}]}`) and flat entries
+/// (`{"command", "matcher"?, …}` used by Cursor and Copilot). Returns
+/// `None` for non-hook-shaped objects, which then compare strictly.
+fn hook_key(v: &Value) -> Option<(String, Vec<String>)> {
+    let obj = v.as_object()?;
+    let matcher = obj
+        .get("matcher")
+        .and_then(|m| m.as_str())
+        .unwrap_or("")
+        .to_string();
+    match obj.get("hooks") {
+        Some(Value::Array(hooks)) => {
+            if !obj.keys().all(|k| k == "matcher" || k == "hooks") {
+                return None;
+            }
+            let cmds: Option<Vec<String>> = hooks
+                .iter()
+                .map(|h| h.get("command").and_then(|c| c.as_str()).map(command_key))
+                .collect();
+            Some((matcher, cmds?))
+        }
+        _ => obj
+            .get("command")
+            .and_then(|c| c.as_str())
+            .map(|c| (matcher, vec![command_key(c)])),
+    }
+}
+
+/// Dedup identity of a command string. A `cogz capture-event <verb>`
+/// invocation reduces to its verb — flag variants (`--fts-only`,
+/// `--hook-format …`) are user customization, not a distinct hook —
+/// while argv[0] is basename-normalized (`cogz` ≡ `/usr/bin/cogz` ≡
+/// `cogz.exe`). Anything else compares as a sorted token multiset so
+/// flag order doesn't matter.
+fn command_key(cmd: &str) -> String {
+    let toks: Vec<&str> = cmd.split_whitespace().collect();
+    let bin = toks
+        .first()
+        .map(|t| t.rsplit(['/', '\\']).next().unwrap_or(t))
+        .map(|t| t.strip_suffix(".exe").unwrap_or(t));
+    if bin == Some("cogz")
+        && let Some(verb) = toks
+            .iter()
+            .position(|t| *t == "capture-event")
+            .and_then(|i| toks.get(i + 1))
+    {
+        return format!("cogz-event:{verb}");
+    }
+    let mut owned: Vec<String> = toks.iter().map(|t| t.to_string()).collect();
+    if let Some(first) = owned.first_mut() {
+        let base = first.rsplit(['/', '\\']).next().unwrap_or(first);
+        *first = base.strip_suffix(".exe").unwrap_or(base).to_string();
+    }
+    owned.sort();
+    owned.join(" ")
 }
 
 /// Same merge for TOML tables — arrays are absent from the payloads
