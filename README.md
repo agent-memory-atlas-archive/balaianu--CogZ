@@ -20,45 +20,49 @@ Real output from CogZ running on its own codebase:
 $ cogz context --mode task "token budget estimation and context pack compression"
 
 Context pack (mode: task)
+Query: token budget estimation and context pack compression
 Search mode: hybrid
-Sections: 50
-Token estimate: 5545
+Sections: 91
+Token estimate: 8188
+
+Dropped: 6 sections over token budget
 
 ---
 
-## 1. [function] get_context (relevance: 0.5000)
+## 1. [rule] New expansion channels: emit early, filter before seen-mark, sort deterministically, never displace directs (relevance: 0.5148)
 
-pub async fn get_context(
-    server: &CogzServer,
-    Parameters(params): Parameters<GetContextParams>,
-) -> Result<CallToolResult, McpError> {
-    let mode = parse_context_mode(mode_str, params.query.as_deref())?;
-    ...
-}
+Conventions proven across the sibling and co-change channels:
 
-## 2. [observation] Token budget truncation must account for title token cost (relevance: 0.5000)
+1. Emit before the generic expansion loops — candidates emitted
+   later get claimed-and-floored by graph traversal …
+2. Apply entity-type/test filters BEFORE `seen.insert` …
+…
 
-The initial `fit_budget` implementation truncated content to
-the remaining token budget without accounting for the title's
-token cost. A section with a long title could exceed the budget
-by `title_tokens` tokens.
+## 2. [rule] cfg-gated code must be typechecked per-target before release (relevance: 0.4690)
 
-Fix: subtract `estimate_tokens(&section.title)` from the
-remaining budget before calculating the content truncation.
+Code behind #[cfg(unix)]/cfg(target_os = ...) is invisible to host
+builds, tests, and clippy — a compile error in a cfg'd branch ships
+silently until a real target build sees it. The v0.5.0 Windows leg
+failure is the canonical example.
 
-## 3. [knowledge] Context assembly pipeline (relevance: 0.4633)
+## 3. [rule] Degradation must be loud, never silent (relevance: 0.3680)
 
-The context assembly layer sits on top of search and produces
-ContextPack — the primary output of CogZ for agent consumption.
+Every degraded or failed code path must surface a signal …
 
-Modules: context/mod.rs (types), context/modes.rs (cold_start,
-task, escalation), context/assemble.rs (orchestrator),
-context/compress.rs (token estimation, priority sorting, budget).
+## 4. [identity] CogZ (relevance: —)
 
-… 47 more sections …
+Project: CogZ
+
+## 5. [file] assemble.rs (relevance: 0.6993)
+
+//! Context pack assembly — the tiered-push pipeline.
+//! Tier 0 (baseline: identity + top rules) always ships for task and
+//! escalation packs …
+
+… 86 more sections …
 ```
 
-That's not a text chunk from a vector search. It's the actual function, a bug that was found and fixed during development, and the architecture that ties them together — ranked, traceable through the code graph.
+That's not a text chunk from a vector search. The pack leads with validated rules — one learned from a release failure on this very project — plus the identity baseline and the actual source file, all ranked, traceable, and budgeted.
 
 This repository already contains real dogfooding knowledge — CogZ has been used on its own codebase throughout development. You can clone it, install CogZ, and try the commands above against it directly.
 
@@ -132,7 +136,7 @@ CogZ runs as a stateless MCP server over stdio. Every tool call specifies which 
 
 The server exposes 15 tools: `create_entity`, `update_knowledge`, `verify_knowledge`, `reject_entity`, `query_entities`, `search`, `get_context`, `get_status`, `list_entities`, `consolidate`, `capture_event`, `get_callers`, `get_impact`, `find_orphans`, `suggest_observations`.
 
-See [MCP Tools](docs/integration/mcp-tools.md) for full parameter reference and example responses. See [Agent Setup](docs/integration/agent-setup.md) for configuration examples for Claude Code, Cursor, Devin, and other agents.
+See [MCP Tools](docs/integration/mcp-tools.md) for full parameter reference and example responses. See [Agent Setup](docs/integration/agent-setup.md) for per-agent config files, hook formats, and verified capability notes for all six supported agents — or just run `cogz configure auto`.
 
 ## Hook integration
 
@@ -171,6 +175,7 @@ Normal operation is automatic: hooks fire on lifecycle events, the agent drives 
 | `cogz consolidate [--dry-run]` | Run promotion and merge |
 | `cogz suggest [--days N]` | List mined observation candidates |
 | `cogz verify <entity-id>` | Re-stamp a drifted entity's provenance |
+| `cogz reject <entity-id>` | Mark an entity rejected (`--reason` stored) |
 | `cogz capture-event <type>` | Capture lifecycle event from hooks |
 | `cogz models <download\|list\|clean>` | Model management |
 | `cogz doctor [--prune-observations]` | Health check, policy violations, usage metrics |
@@ -248,9 +253,9 @@ Cross-platform team collaboration is supported: code entity UUIDs use forward-sl
 - [CLI Reference](docs/cli-reference.md) — every command and flag
 
 **Integration:**
-- [MCP Tools](docs/integration/mcp-tools.md) — 17 tool parameters and responses
+- [MCP Tools](docs/integration/mcp-tools.md) — all 15 tool signatures and response shapes
 - [Hooks](docs/integration/hooks.md) — lifecycle events and output format
-- [Agent Setup](docs/integration/agent-setup.md) — Claude Code, Cursor, Devin, generic MCP
+- [Agent Setup](docs/integration/agent-setup.md) — all six agents + generic MCP, with per-agent effect coverage
 
 **Design:**
 - [Architecture](docs/design/architecture.md) — system overview and module map
