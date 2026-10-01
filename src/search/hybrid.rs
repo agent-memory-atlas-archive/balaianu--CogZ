@@ -376,7 +376,14 @@ pub fn search(
     //     real matches) — strength is the check that nothing is close.
     //     FTS-only skips the gate: with no vector signal there is
     //     nothing to judge by.
+    //
+    //     The gate also yields to any FTS hit: lexical matches are
+    //     evidence the query is answerable — silencing them produced
+    //     "Results: 0" for literal title queries whose generic words
+    //     score weakly in embedding space. BM25-ranked loose matches
+    //     are still the system's best answer.
     if params.silence_gate
+        && fts_entities.is_empty()
         && let Some(s) = &signals
         && hybrid_helpers::should_silence(
             s,

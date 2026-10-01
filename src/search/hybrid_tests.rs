@@ -618,3 +618,50 @@ fn silence_gate_flag_controls_empty_results() {
         assert_eq!(results.results.is_empty(), want_empty, "gate={gate}");
     }
 }
+
+#[test]
+fn silence_gate_yields_to_fts_hits() {
+    // Field-reported failure: a literal title query ("System overview")
+    // returned zero results because generic words give weak embedding
+    // signals and the gate discarded the FTS leg's hits. FTS matches
+    // are lexical evidence — the gate must not silence them.
+    let conn = setup();
+    insert_entity(
+        &conn,
+        &Entity::new(
+            "k1",
+            "knowledge",
+            "System overview — Turnstile in Player Intelligence",
+            "Turnstile gates player actions through the pipeline.",
+        ),
+    )
+    .unwrap();
+    let mut v = vec![0.0_f32; 768];
+    v[1] = 1.0;
+    insert_embedding(&conn, "k1", "knowledge", &v).unwrap();
+
+    let mut qv = vec![0.0_f32; 768];
+    qv[0] = 1.0; // orthogonal to the stored embedding — weak signal
+    let config = SearchConfig {
+        silence_threshold: 0.02,
+        min_relevance: 0.0,
+        merge_strategy: "detect".to_string(),
+        ..default_config()
+    };
+    let params = SearchParams {
+        silence_gate: true,
+        ..Default::default()
+    };
+    let results = search(
+        &conn,
+        "System overview",
+        QueryEmbeddings::knowledge(&qv),
+        &params,
+        &config,
+    )
+    .unwrap();
+    assert!(
+        results.results.iter().any(|r| r.entity.id == "k1"),
+        "FTS hit must survive the silence gate"
+    );
+}
