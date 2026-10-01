@@ -5,7 +5,7 @@ type: observation
 status: active
 created_at: "2026-10-01T16:45:00+00:00"
 updated_at: "2026-10-01T16:45:00+00:00"
-references: ["src/storage/mining_signals.rs"]
+references: []
 source: field-report
 confidence: 0.9
 ---
