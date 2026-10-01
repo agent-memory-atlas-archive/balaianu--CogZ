@@ -4,7 +4,7 @@
 //!
 //! ```text
 //! active    → stale | rejected | superseded
-//! stale     → active
+//! stale     → active | rejected | superseded
 //! rejected  → pruned
 //! superseded→ pruned
 //! pruned    → (terminal)
@@ -16,7 +16,11 @@ use super::StorageError;
 pub fn transition_status(current: &str, next: &str) -> Result<(), StorageError> {
     let allowed: &[&str] = match current {
         "active" => &["stale", "rejected", "superseded"],
-        "stale" => &["active"],
+        // stale is a suspicion state, not terminal — a drifted entity can
+        // later be superseded by a merge or rejected on review. Forbidding
+        // those paths traps a file-written `superseded`/`rejected` status
+        // as a permanent file↔DB divergence that errors on every sync.
+        "stale" => &["active", "rejected", "superseded"],
         "rejected" => &["pruned"],
         "superseded" => &["pruned"],
         "pruned" => &[],
@@ -68,6 +72,14 @@ mod tests {
     #[test]
     fn stale_to_active() {
         assert!(transition_status("stale", "active").is_ok());
+    }
+
+    /// A stale entity can still be superseded by a merge or rejected on
+    /// review — both were blocked before, trapping file↔DB divergence.
+    #[test]
+    fn stale_terminal_paths_legal() {
+        assert!(transition_status("stale", "superseded").is_ok());
+        assert!(transition_status("stale", "rejected").is_ok());
     }
 
     #[test]

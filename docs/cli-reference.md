@@ -312,7 +312,7 @@ cogz reject <entity-id> [--reason <text>] [--repo <path>]
 - `--reason <text>` — why the entity is rejected; stored as `rejected_reason` in frontmatter and surfaced by dedup when a matching claim resurfaces
 - `--repo <path>` — repository root (default: `.`)
 
-Only `active` observations, rules, and knowledge can be rejected — code entities carry no verdict, and a `stale` entity must be verified (reactivated) or updated first. Rejected entities stay on record: retrieval filters them out, and they become eligible for pruning. Mirrors the `reject_entity` MCP tool.
+`active` and `stale` observations, rules, and knowledge can be rejected — code entities carry no verdict. Rejected entities stay on record: retrieval filters them out, and they become eligible for pruning. Mirrors the `reject_entity` MCP tool.
 
 ## `cogz update`
 

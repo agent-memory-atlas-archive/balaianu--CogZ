@@ -90,7 +90,7 @@ Despite the name, `verify_knowledge` accepts any file-backed knowledge-layer ent
 
 ### `reject_entity`
 
-Reject a knowledge-layer entity — writes `status: rejected` (and an optional `rejected_reason`) into its canonical file, then syncs so the status lattice validates the transition. Only `active` entities can be rejected; verify a stale one first if it must be ruled wrong. This is a verdict, not an edit — do not use it for content changes. Rejected entities stay on record: retrieval filters them out, and dedup can warn when a matching claim resurfaces.
+Reject a knowledge-layer entity — writes `status: rejected` (and an optional `rejected_reason`) into its canonical file, then syncs so the status lattice validates the transition. `active` and `stale` entities can be rejected. This is a verdict, not an edit — do not use it for content changes. Rejected entities stay on record: retrieval filters them out, and dedup can warn when a matching claim resurfaces.
 
 **Parameters:**
 | Name | Type | Required | Description |
@@ -99,7 +99,7 @@ Reject a knowledge-layer entity — writes `status: rejected` (and an optional `
 | `id` | string | yes | UUID of the entity to reject |
 | `reason` | string | no | Why the entity is rejected — stored as `rejected_reason` in the file's frontmatter |
 
-**Returns:** JSON with `id`, `file_path`, `status` (`"rejected"`), `reason`, and optionally `write_nudge` (see below). Errors: `entity_not_found`, `invalid_parameter` (non-epistemic type — code entities carry no verdict), `illegal_transition` (e.g. `stale → rejected`).
+**Returns:** JSON with `id`, `file_path`, `status` (`"rejected"`), `reason`, and optionally `write_nudge` (see below). Errors: `entity_not_found`, `invalid_parameter` (non-epistemic type — code entities carry no verdict), `illegal_transition` (e.g. `superseded → rejected` — verdicts apply to live entities).
 
 ## Query tools
 

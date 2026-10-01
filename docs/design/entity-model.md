@@ -72,11 +72,13 @@ Slugs are generated from the title: lowercase, spaces → hyphens, non-alphanume
 
 ```
 active    → stale | rejected | superseded
-stale     → active
+stale     → active | rejected | superseded
 rejected  → pruned
 superseded→ pruned
 pruned    → (terminal)
 ```
+
+`stale` is a suspicion state, not terminal — a drifted entity can still be superseded by a merge or rejected on review.
 
 | Status | Meaning |
 |---|---|

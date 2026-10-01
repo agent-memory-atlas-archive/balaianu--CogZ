@@ -77,27 +77,21 @@ fn rejects_active_entity_file_first() {
 }
 
 #[test]
-fn rejects_stale_entity_fails_before_touching_file() {
+fn rejects_stale_entity_succeeds() {
     let (dir, storage, cogz_dir) = fixture();
     add_observation(dir.path(), &storage, OBS_2);
 
-    // Drift the entity to stale through the lattice (stale → rejected
-    // is not a legal move).
+    // Stale is a suspicion state — rejecting it directly is legal
+    // (verdict on a drifted claim). Earlier the lattice refused this,
+    // trapping a file↔DB divergence.
     {
         let conn = storage.conn();
         crud::update_status(&conn, OBS_2, "stale").unwrap();
     }
 
-    let err = reject_entity_file(&storage, &cogz_dir, OBS_2, None).unwrap_err();
-    assert!(matches!(
-        err,
-        RejectError::Storage(StorageError::IllegalTransition { .. })
-    ));
-
-    // The canonical file must be untouched — still active, still the
-    // original content.
+    reject_entity_file(&storage, &cogz_dir, OBS_2, None).unwrap();
     let file = read_entity_file(&cogz_dir.join(format!("observations/{OBS_2}.md"))).unwrap();
-    assert_eq!(file.status, "active");
+    assert_eq!(file.status, "rejected");
 }
 
 #[test]
