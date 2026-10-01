@@ -241,11 +241,15 @@ pub(super) fn hot_files(
         })?
         .collect::<Result<Vec<_>, _>>()?;
 
+    // Churn on files the index cannot contain (docs, fixtures,
+    // generated state) is task noise, not a missing-knowledge signal —
+    // same filter uncharted_edit applies.
+    let mut indexable_stmt = conn.prepare("SELECT 1 FROM entities WHERE file_path = ? LIMIT 1")?;
     Ok(rows
         .into_iter()
         .filter_map(|(path, saves)| {
             let path = path?;
-            (!path.is_empty()).then(|| Suggestion {
+            (!path.is_empty() && is_indexed(&mut indexable_stmt, &path)).then(|| Suggestion {
                 signal: "hot_file",
                 evidence: serde_json::json!({ "file_path": path, "saves": saves }),
                 suggested_title: format!("Frequently edited: {path}"),

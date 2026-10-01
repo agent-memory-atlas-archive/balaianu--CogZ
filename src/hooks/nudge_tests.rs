@@ -117,6 +117,7 @@ fn no_signal_stays_silent() {
 fn fingerprint_is_stable_across_volatile_evidence() {
     let s = Storage::open_memory().unwrap();
     let conn = s.conn();
+    indexed_file(&conn, "src/hot.rs");
     for _ in 0..3 {
         record_event(
             &conn,

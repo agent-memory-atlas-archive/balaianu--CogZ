@@ -13,12 +13,32 @@ use crate::storage::usage::{
 fn hot_file_signal() {
     let s = Storage::open_memory().unwrap();
     let conn = s.conn();
+    // A hot file only signals when the index can see it — churn on
+    // docs/fixtures/generated paths is task noise, not missing
+    // knowledge.
+    insert_entity(
+        &conn,
+        &Entity {
+            file_path: Some("src/hot.rs".to_string()),
+            ..Entity::new("c1", "function", "hot_fn", "fn hot_fn() {}")
+        },
+    )
+    .unwrap();
     for _ in 0..4 {
         record_event(
             &conn,
             EventType::FileSave,
             None,
             &serde_json::json!({"file_path": "src/hot.rs"}),
+        )
+        .unwrap();
+    }
+    for _ in 0..4 {
+        record_event(
+            &conn,
+            EventType::FileSave,
+            None,
+            &serde_json::json!({"file_path": "docs/logging.md"}),
         )
         .unwrap();
     }

@@ -686,14 +686,14 @@ fn mcp_stdio_suggest_observations() {
     let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
     client.initialize();
 
-    // Seed the hot_file signal: three saves of the same file.
+    // Seed the hot_file signal: three saves of an indexed file.
     for _ in 0..3 {
         client.tool_text(
             "capture_event",
             serde_json::json!({
                 "repo": repo.path_str(),
                 "event_type": "file_save",
-                "file_path": "src/churn.rs",
+                "file_path": "src/main.rs",
             }),
         );
     }
@@ -709,8 +709,8 @@ fn mcp_stdio_suggest_observations() {
             .as_array()
             .unwrap()
             .iter()
-            .any(|s| s["signal"] == "hot_file" && s["evidence"]["file_path"] == "src/churn.rs"),
-        "expected a hot_file suggestion for src/churn.rs, got: {text}"
+            .any(|s| s["signal"] == "hot_file" && s["evidence"]["file_path"] == "src/main.rs"),
+        "expected a hot_file suggestion for src/main.rs, got: {text}"
     );
 
     child.kill().unwrap();
