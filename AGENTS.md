@@ -290,6 +290,22 @@ CLI code uses `println!` for user-facing output.
 
 ---
 
+## External and Dependency PRs
+
+Dependabot and external PRs are verified locally before any remote
+merge — the global rule applies, with CogZ's gate made concrete:
+
+- Fetch the PR ref, merge into a local integration branch, run
+  `cargo build --release`, `cargo test`, `cargo clippy -- -D
+  warnings`, `cargo fmt --check`.
+- Merge only after all gates pass **and** the user approves. Remote
+  CI green is not sufficient.
+- Major bumps (tree-sitter grammars, serde/toml, git2) get a
+  changelog skim and API-diff check before merging.
+- Stale PRs (superseded versions, e.g. a lower-version bump after
+  a manual upgrade) are reported for closing, not merged.
+- No push, release, or GitHub-side merge without explicit approval.
+
 ## Before Committing Any Phase
 
 - [ ] `cargo build --release` succeeds
