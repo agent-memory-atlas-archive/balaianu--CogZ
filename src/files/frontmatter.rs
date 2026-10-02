@@ -314,7 +314,9 @@ pub fn serialize(fm: &Frontmatter) -> String {
                 }
             }
             FmValue::Float(f) => {
-                let _ = writeln!(out, "{}: {}", key, f);
+                // {:?} always emits a decimal point ("1.0"), so a
+                // whole float reparses as Float rather than Int.
+                let _ = writeln!(out, "{}: {:?}", key, f);
             }
             FmValue::Int(i) => {
                 let _ = writeln!(out, "{}: {}", key, i);
@@ -364,6 +366,10 @@ fn needs_quotes(s: &str) -> bool {
         || s.contains('\'')
         || s.starts_with(' ')
         || s.ends_with(' ')
+        // Control chars (\n, \r, \t, NUL...) must be quoted+escaped:
+        // a raw \n would split the entry into two lines on serialize,
+        // and a trailing \r/\t is stripped by the parser's trim.
+        || s.chars().any(|c| c.is_control())
         || s == "true"
         || s == "false"
         || s == "null"
@@ -372,26 +378,41 @@ fn needs_quotes(s: &str) -> bool {
         || s.parse::<i64>().is_ok()
 }
 
-/// Escape double quotes and backslashes in a string for YAML output.
+/// Escape backslashes, double quotes, and the control characters
+/// YAML double-quoted style supports (\n, \r, \t). `\\` must be
+/// replaced first so the emitted `\n` sequences aren't re-escaped.
 fn escape_string(s: &str) -> String {
-    s.replace('\\', "\\\\").replace('"', "\\\"")
+    s.replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\n")
+        .replace('\r', "\\r")
+        .replace('\t', "\\t")
 }
 
-/// Unescape backslash sequences in a parsed quoted string: `\\` → `\`,
-/// `\"` → `"`. Reverses `escape_string` so round-tripping is stable.
+/// Unescape backslash sequences in a parsed quoted string.
+/// Reverses `escape_string` so round-tripping is stable.
 fn unescape_string(s: &str) -> String {
     let mut out = String::with_capacity(s.len());
     let mut chars = s.chars().peekable();
     while let Some(c) = chars.next() {
         if c == '\\'
             && let Some(&next) = chars.peek()
-            && (next == '\\' || next == '"')
+            && matches!(next, '\\' | '"' | 'n' | 'r' | 't')
         {
             chars.next();
-            out.push(next);
+            out.push(match next {
+                'n' => '\n',
+                'r' => '\r',
+                't' => '\t',
+                other => other,
+            });
             continue;
         }
         out.push(c);
     }
     out
 }
+
+#[cfg(test)]
+#[path = "frontmatter_tests.rs"]
+mod tests;

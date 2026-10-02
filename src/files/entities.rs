@@ -48,7 +48,7 @@ pub fn sanitize_category(category: &str) -> String {
     if slugified.is_empty() {
         "uncategorized".to_string()
     } else {
-        slugified
+        truncate_slug(&slugified)
     }
 }
 

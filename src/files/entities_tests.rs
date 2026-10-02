@@ -26,3 +26,10 @@ fn knowledge_file_path_stays_within_cogz_dir() {
             .any(|c| { matches!(c, std::path::Component::ParentDir) })
     );
 }
+
+#[test]
+fn sanitize_category_truncates_long_input() {
+    let long = "a".repeat(300);
+    let out = sanitize_category(&long);
+    assert!(out.len() <= MAX_SLUG_LEN, "got {} chars", out.len());
+}
