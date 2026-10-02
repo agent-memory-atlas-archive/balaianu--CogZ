@@ -1052,8 +1052,11 @@ fn real_repo_env() -> Vec<(String, String)> {
 
 /// Ensure the real repo has a built DB. On CI, the checkout has no
 /// `.cogz/cogz.db` — `cogz index --no-download` builds it from the
-/// canonical Markdown files.
+/// canonical Markdown files. Serialized across tests: two parallel
+/// tests indexing the same repo race on the SQLite writer lock.
 fn ensure_real_repo_indexed(env: &[(String, String)]) {
+    static INDEX_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    let _guard = INDEX_LOCK.lock().unwrap();
     let db_path = std::path::Path::new(REAL_REPO).join(".cogz/cogz.db");
     if db_path.exists() {
         return;
