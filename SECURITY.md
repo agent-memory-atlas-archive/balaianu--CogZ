@@ -7,9 +7,13 @@ releases ship fixes on the current minor line.
 
 ## Reporting a Vulnerability
 
-Please do not open public issues for security reports. Use GitHub's
-private vulnerability reporting on this repository: Security →
-Advisories → Report a vulnerability.
+Please do not open public issues for security reports. Report
+privately through GitHub Security Advisories:
+https://github.com/balaianu/CogZ/security/advisories/new
+(Repository → Security → Advisories → Report a vulnerability.)
+
+All vulnerability handling — reports, discussion, and coordinated
+disclosure — stays inside GitHub.
 
 Reports covering these areas are especially welcome:
 
