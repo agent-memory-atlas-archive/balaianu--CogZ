@@ -100,8 +100,14 @@ fn hooks_canonical(bin: &str, edit_matcher: &str) -> Map<String, Value> {
 /// PostCompaction and uses lowercase tool names in matchers.
 fn hooks_devin(bin: &str) -> Value {
     let mut hooks = hooks_canonical(bin, "edit|write|notebook_edit");
-    let post_compact = hooks.remove("PostCompact").unwrap();
-    hooks.insert("PostCompaction".into(), post_compact);
+    match hooks.remove("PostCompact") {
+        Some(post_compact) => {
+            hooks.insert("PostCompaction".into(), post_compact);
+        }
+        None => tracing::warn!(
+            "canonical hook map lost PostCompact; Devin config ships without PostCompaction"
+        ),
+    }
     Value::Object(hooks)
 }
 
