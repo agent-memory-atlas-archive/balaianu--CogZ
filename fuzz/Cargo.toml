@@ -1,0 +1,52 @@
+[package]
+name = "cogz-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+toml = "0.8"
+
+[dependencies.cogz]
+path = ".."
+
+[workspace]
+
+[[bin]]
+name = "frontmatter"
+path = "fuzz_targets/frontmatter.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "entity_file"
+path = "fuzz_targets/entity_file.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "slug_sanitize"
+path = "fuzz_targets/slug_sanitize.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "config_toml"
+path = "fuzz_targets/config_toml.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "paths"
+path = "fuzz_targets/paths.rs"
+test = false
+doc = false
+bench = false
