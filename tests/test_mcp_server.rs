@@ -35,8 +35,8 @@ fn setup() -> (CogzServer, tempfile::TempDir) {
 
 struct DummyClient;
 impl ClientHandler for DummyClient {
-    fn get_info(&self) -> rmcp::model::ClientInfo {
-        rmcp::model::ClientInfo::default()
+    fn get_info(&self) -> rmcp::model::ClientConfig {
+        rmcp::model::ClientConfig::default()
     }
 }
 

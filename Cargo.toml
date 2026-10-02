@@ -14,7 +14,7 @@ clap = { version = "4", features = ["derive"] }
 # Config / Serialization
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-toml = "0.8"
+toml = "1.1"
 
 # Embedding / ML
 ort = { version = "=2.0.0-rc.13", default-features = false, features = ["load-dynamic", "ndarray"] }
@@ -23,7 +23,7 @@ hf-hub = { version = "1.0", features = ["blocking"] }
 reqwest = "0.13"
 
 # MCP server
-rmcp = { version = "=3.1.4", features = ["transport-io"] }
+rmcp = { version = "=3.5.0", features = ["transport-io"] }
 tokio = { version = "1", features = ["rt", "macros", "io-util", "sync"] }
 schemars = "1"
 
@@ -34,7 +34,7 @@ slug = "0.1"
 ignore = "0.4"
 
 # Code parsing (Phase 8)
-tree-sitter = "0.25"
+tree-sitter = "0.26"
 tree-sitter-language = "0.1"
 tree-sitter-rust = "0.24"
 tree-sitter-python = "0.25"
@@ -57,7 +57,7 @@ thiserror = "2"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 zerocopy = "0.8"
-ndarray = "0.16"
+ndarray = "0.17"
 
 # Self-update (cogz update)
 ureq = { version = "3", features = ["rustls", "json"] }
@@ -72,7 +72,7 @@ libc = "0.2"
 # Windows-only: stable file identity via GetFileInformationByHandle
 # (std's volume_serial_number/file_index are still unstable)
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.59", features = [
+windows-sys = { version = "0.61", features = [
     "Win32_Foundation",
     "Win32_Storage_FileSystem",
 ] }
@@ -81,7 +81,7 @@ windows-sys = { version = "0.59", features = [
 tempfile = "3"
 pretty_assertions = "1"
 filetime = "0.2"
-rmcp = { version = "=3.1.4", features = ["transport-io", "client"] }
+rmcp = { version = "=3.5.0", features = ["transport-io", "client"] }
 
 [profile.release]
 opt-level = 3
