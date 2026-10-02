@@ -131,7 +131,7 @@ fn autodetect_project_name(repo_root: &Path) -> String {
 fn detect_from_git_remote(repo_root: &Path) -> Option<String> {
     let repo = git2::Repository::discover(repo_root).ok()?;
     let remote = repo.find_remote("origin").ok()?;
-    let url = remote.url()?;
+    let url = remote.url().ok()?;
 
     // Strip trailing .git
     let url = url.trim_end_matches(".git");

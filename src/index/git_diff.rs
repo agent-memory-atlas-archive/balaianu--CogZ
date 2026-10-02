@@ -92,7 +92,7 @@ pub fn changed_source_files(
     if let Ok(statuses) = repo.statuses(None) {
         for entry in statuses.iter() {
             if entry.status() == git2::Status::WT_NEW
-                && let Some(p) = entry.path()
+                && let Ok(p) = entry.path()
             {
                 let path = PathBuf::from(p);
                 if !is_source_file(&path) {
