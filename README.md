@@ -219,6 +219,10 @@ CogZ ships a self-contained retrieval benchmark (`benchmark/`) run against this 
 
 The vector channel lifts MRR ~60% over FTS alone; graph expansion adds +0.14 recall@20. Context packs reach 0.67 expected-entity recall at ~8K average tokens. Methodology, per-intent breakdowns, and the tuning sweep history are in [benchmark/README.md](benchmark/README.md).
 
+**What using it buys (measured):** in a 14-task agent replay, the seeded-knowledge arm finished ~2x faster than bare (871s vs 1748s average) and completed more runs (14/14 vs 10/14) at equal correctness. On unseen external corpora (httpx, cobra, clap; 768 to 4664 entities) seeded-knowledge recall@20 holds at 0.77 to 0.97, so the pipeline generalizes beyond its own repo. Consolidation machinery is precise: dedup precision/recall 1.0, NLI contradiction detection 4/4 with zero false alarms, drift marking exact.
+
+**Honest limits:** top-5 knowledge precision is weak on mixed corpora (P@5 <= 0.20; code entities outrank knowledge at the top of the ranking), commit-intent queries reach ~0.5 recall@20, and at n=14 tasks there is no measurable task-correctness lift yet. Full methodology, confidence intervals, and raw numbers: [version report card](benchmark/results/report-card.md) and [external corpus suite](benchmark/results/suite/REPORT.md).
+
 ## Architecture
 
 - **Single Rust binary** — no runtime dependencies except optional ONNX models for vector search.
