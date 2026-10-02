@@ -57,7 +57,7 @@ thiserror = "2"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 zerocopy = "0.8"
-ndarray = "0.16"
+ndarray = "0.17"
 
 # Self-update (cogz update)
 ureq = { version = "3", features = ["rustls", "json"] }
