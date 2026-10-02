@@ -72,7 +72,7 @@ libc = "0.2"
 # Windows-only: stable file identity via GetFileInformationByHandle
 # (std's volume_serial_number/file_index are still unstable)
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.59", features = [
+windows-sys = { version = "0.61", features = [
     "Win32_Foundation",
     "Win32_Storage_FileSystem",
 ] }
