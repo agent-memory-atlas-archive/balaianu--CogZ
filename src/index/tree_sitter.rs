@@ -264,7 +264,10 @@ where
 {
     let num_named = node.named_child_count();
     for i in 0..num_named {
-        if let Some(child) = node.named_child(i) {
+        // tree-sitter 0.26 indexes children with u32; child counts
+        // can't exceed u32::MAX in the underlying C API, so the
+        // cast can't truncate.
+        if let Some(child) = node.named_child(i as u32) {
             if !f(&child) {
                 return;
             }
