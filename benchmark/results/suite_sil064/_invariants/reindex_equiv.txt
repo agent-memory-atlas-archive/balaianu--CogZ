@@ -1,4 +1,0 @@
-  note: stale tombstone asymmetry (reindex-only: 1, rebuild-only: 0) — expected
-  note: reindex retains 1 embedding row(s) on stale entities (rebuild drops them) — dead weight
-  note: 10 embeddings differ by batch composition, cosine min=0.9669 max=0.9845
-EQUIVALENT: 14 entities, 16 edges, 14 embeddings identical across reindex and rebuild

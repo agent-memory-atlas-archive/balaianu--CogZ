@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/clap",
+ "corpus": "clap",
  "pack_tokens": 4096,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1802.2,
+    "cold_first_ms": 2135.0,
     "n": 15,
-    "p50_ms": 542.4,
-    "p95_ms": 902.1,
-    "p99_ms": 1004.3,
-    "mean_ms": 634.3,
+    "p50_ms": 724.1,
+    "p95_ms": 963.1,
+    "p99_ms": 1240.1,
+    "mean_ms": 767.7,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -43,26 +43,26 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "class/full": 41,
+      "class/full": 35,
       "module/full": 4,
-      "function/full": 28,
-      "file/full": 10,
+      "function/full": 32,
+      "file/full": 12,
       "knowledge/full": 1,
       "observation/full": 1
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 87,
-     "size_tokens": 4083,
+     "sections": 86,
+     "size_tokens": 4079,
      "budget": 4096,
-     "dropped": 10,
+     "dropped": 9,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 43,
+      "function/full": 41,
       "module/full": 2,
-      "class/full": 18,
+      "class/full": 19,
       "observation/full": 6,
       "knowledge/full": 2,
       "file/full": 11,
@@ -87,16 +87,16 @@
     },
     {
      "query": "how are requests processed",
-     "sections": 82,
-     "size_tokens": 4094,
+     "sections": 81,
+     "size_tokens": 4081,
      "budget": 4096,
-     "dropped": 5,
+     "dropped": 7,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "file/full": 13,
-      "class/full": 28,
-      "module/full": 6,
+      "file/full": 15,
+      "class/full": 24,
+      "module/full": 7,
       "function/full": 27,
       "knowledge/full": 2,
       "observation/full": 1,
@@ -108,12 +108,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 499.0,
+    "cold_first_ms": 381.2,
     "n": 15,
-    "p50_ms": 489.2,
-    "p95_ms": 1076.7,
-    "p99_ms": 1224.3,
-    "mean_ms": 553.4,
+    "p50_ms": 387.7,
+    "p95_ms": 933.4,
+    "p99_ms": 1114.6,
+    "mean_ms": 451.3,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -138,26 +138,26 @@
     },
     {
      "query": "error handling strategy",
-     "sections": 76,
+     "sections": 79,
      "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 18,
+     "dropped": 15,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "knowledge/full": 6,
+      "knowledge/full": 5,
       "function/full": 31,
       "observation/full": 1,
       "module/full": 8,
       "rule/full": 1,
-      "class/full": 11,
-      "file/full": 14
+      "class/full": 12,
+      "file/full": 17
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 81,
-     "size_tokens": 4093,
+     "sections": 80,
+     "size_tokens": 4087,
      "budget": 4096,
      "dropped": 17,
      "composition": {
@@ -167,7 +167,7 @@
       "observation/full": 5,
       "rule/full": 1,
       "knowledge/full": 4,
-      "file/full": 13,
+      "file/full": 12,
       "class/full": 7,
       "module/full": 1,
       "overflow_index/pointer": 1
@@ -193,20 +193,21 @@
     },
     {
      "query": "how are requests processed",
-     "sections": 69,
-     "size_tokens": 4074,
+     "sections": 68,
+     "size_tokens": 4088,
      "budget": 4096,
-     "dropped": 15,
+     "dropped": 18,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 3,
-      "file/full": 8,
+      "file/full": 11,
       "function/full": 27,
       "rule/full": 1,
       "module/full": 1,
       "observation/full": 1,
-      "class/full": 24
+      "class/full": 19,
+      "overflow_index/pointer": 1
      }
     }
    ]

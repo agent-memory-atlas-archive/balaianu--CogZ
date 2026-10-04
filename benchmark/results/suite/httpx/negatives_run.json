@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/httpx",
+  "corpus": "httpx",
   "corpus_ids": [
     "00cd4688-b64c-58d6-af4d-1d40a60b1b75",
     "0116b700-5f26-50f2-9756-3e7e927730eb",
@@ -1045,10 +1045,10 @@
     "fff5ceea-3769-5d77-a20e-a6d45f2f1043"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/httpx",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/httpx_negatives.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/httpx/negatives_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "httpx",
+    "queries": "httpx_negatives.json",
+    "out": "negatives_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": false,
     "no_expand": false,
@@ -1068,7 +1068,7 @@
         "knowledge_gradient": 0.028570437808667283,
         "knowledge_strength": 0.6823947483980639
       },
-      "latency_ms": 1971,
+      "latency_ms": 1870,
       "results": [
         {
           "id": "7f349bcf-d598-535d-a6c9-0f401576fabb",
@@ -1254,6 +1254,15 @@
           "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
           "type": "file",
           "title": "test_config.py",
+          "relevance": 0.16923362016677856,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
+          "type": "rule",
+          "title": "Always set an explicit timeout on Client",
           "relevance": 0.16923362016677856,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -1478,7 +1487,7 @@
         "knowledge_gradient": 0.007046198375549451,
         "knowledge_strength": 0.619073081707139
       },
-      "latency_ms": 324,
+      "latency_ms": 291,
       "results": []
     },
     {
@@ -1491,7 +1500,7 @@
         "knowledge_gradient": 0.02103785330726544,
         "knowledge_strength": 0.680380086346983
       },
-      "latency_ms": 561,
+      "latency_ms": 517,
       "results": [
         {
           "id": "280c3f8b-4512-583d-8c0a-629a15422769",
@@ -1674,42 +1683,6 @@
           "stale": null
         },
         {
-          "id": "0c07b7d4-00bd-5e67-9e94-cbe9bb0e16af",
-          "type": "function",
-          "title": "get",
-          "relevance": 0.17895755171775818,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a2aa8c00-0c99-5ef7-bbe2-06d229889703",
-          "type": "function",
-          "title": "patch",
-          "relevance": 0.17895755171775818,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ba2ba326-9405-56a6-a20f-0061be8db62b",
-          "type": "function",
-          "title": "put",
-          "relevance": 0.17895755171775818,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dee14cd2-0158-5630-97a3-18351bd4e1c4",
-          "type": "function",
-          "title": "post",
-          "relevance": 0.17895755171775818,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "17d8bee2-0409-58db-9104-76f63abd9d71",
           "type": "function",
           "title": "test_logging",
@@ -1854,6 +1827,42 @@
           "stale": null
         },
         {
+          "id": "20e60548-e5f4-48fe-80e7-2f781bfb4be6",
+          "type": "observation",
+          "title": "fix typo (#3519)",
+          "relevance": 0.06262031197547913,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
+          "type": "knowledge",
+          "title": "Public API is re-exported from underscore modules",
+          "relevance": 0.06262031197547913,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "383dbcee-97b8-4498-9d03-bff7e5093503",
+          "type": "observation",
+          "title": "add missing type hints to __init__(...) (#2938)",
+          "relevance": 0.06262031197547913,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "41fc8937-758d-4fa5-b514-15cb72864b6e",
+          "type": "observation",
+          "title": "Add `NetRCAuth()` class. (#2535)",
+          "relevance": 0.06262031197547913,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "bb07fce5-c0e3-5f33-ac9b-62eae36aae9e",
           "type": "function",
           "title": "_redirect_headers",
@@ -1910,7 +1919,7 @@
         "knowledge_gradient": 0.02472464556841303,
         "knowledge_strength": 0.6421964426663228
       },
-      "latency_ms": 559,
+      "latency_ms": 495,
       "results": [
         {
           "id": "970ba8ff-9e76-5e3e-b079-2cce3bec702f",
@@ -2093,9 +2102,36 @@
           "stale": null
         },
         {
+          "id": "2567c72c-9236-42b7-a2c4-23746ae23dee",
+          "type": "knowledge",
+          "title": "Mount patterns dispatch requests to transports",
+          "relevance": 0.20689333975315094,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
           "type": "function",
           "title": "test_mounted_transport",
+          "relevance": 0.20689333975315094,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "59fd4027-fcd8-53d0-8fe4-8e7eb29699f1",
+          "type": "function",
+          "title": "test_proxy_with_mounts",
+          "relevance": 0.20689333975315094,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5f57dcae-b6a8-567a-9350-edaf0c2d3f6e",
+          "type": "file",
+          "title": "_utils.py",
           "relevance": 0.20689333975315094,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -2111,18 +2147,9 @@
           "stale": null
         },
         {
-          "id": "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
+          "id": "f60e678d-2aec-5a2e-a2a4-b47b1c523d40",
           "type": "file",
-          "title": "test_client.py",
-          "relevance": 0.20689333975315094,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c46e98c3-65f9-593a-907e-58bfc98b3f55",
-          "type": "file",
-          "title": "test_async_client.py",
+          "title": "test_proxies.py",
           "relevance": 0.20689333975315094,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -2255,24 +2282,6 @@
           "stale": null
         },
         {
-          "id": "656f1e3e-701a-521c-92f2-20e26b5ce08e",
-          "type": "class",
-          "title": "WriteError",
-          "relevance": 0.10259240120649338,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "721b9414-2cd7-5d64-befc-601272e7178f",
-          "type": "class",
-          "title": "TooManyRedirects",
-          "relevance": 0.10259240120649338,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "280c3f8b-4512-583d-8c0a-629a15422769",
           "type": "class",
           "title": "WSGITransport",
@@ -2329,7 +2338,7 @@
         "knowledge_gradient": 0.012980228603951871,
         "knowledge_strength": 0.6162188750665525
       },
-      "latency_ms": 347,
+      "latency_ms": 331,
       "results": []
     }
   ]

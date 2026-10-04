@@ -123,9 +123,9 @@ def candidates(repo: Path, spec: dict, since: int = 600) -> list[dict]:
     return out
 
 
-REPLAY_TMP = Path.home() / "cogz_bench" / "replay_tmp"
+REPLAY_TMP = Path(os.environ.get("COGZ_REPLAY_TMP", tempfile.gettempdir())) / "cogz-replay"
 # shared target dir keeps Rust incremental artifacts off tmpfs
-CARGO_TARGET = Path.home() / ".cache" / "cogz-replay-target"
+CARGO_TARGET = Path(os.environ.get("COGZ_REPLAY_TARGET", tempfile.gettempdir())) / "cogz-replay-target"
 
 
 # Commits of history each worktree carries. The co-change channel
@@ -375,8 +375,12 @@ def main() -> None:
     import tomllib
     manifest = tomllib.loads((SUITE / "corpora.toml").read_text())
     entry = next(c for c in manifest["corpus"] if c["name"] == args.corpus)
-    repo = Path(args.repo or (entry["path"] if entry["source"] == "local"
-                 else Path(manifest["suite"]["corpora_dir"]) / entry["name"]))
+    corpora_dir = Path(os.environ.get(
+        "COGZ_BENCH_CORPORA", BENCH / manifest["suite"]["corpora_dir"]))
+    repo = Path(args.repo or
+                ((SUITE / entry["path"]).resolve()
+                 if entry["source"] == "local"
+                 else corpora_dir / entry["name"]))
 
     if args.tasks:
         tasks = json.loads(Path(args.tasks).read_text())

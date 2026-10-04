@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/cobra",
+  "corpus": "cobra",
   "corpus_ids": [
     "005cad92-2fc7-5ac9-bc6a-4bfbf7d4e872",
     "00d1fb20-f168-5c3b-b30d-8aa259ef09cd",
@@ -762,10 +762,10 @@
     "ffdb2d68-262c-4d43-8311-3721184547e9"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/cobra",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/cobra_seeded.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/cobra/seeded_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "cobra",
+    "queries": "cobra_seeded.json",
+    "out": "seeded_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": true,
     "no_expand": false,
@@ -785,7 +785,7 @@
         "knowledge_gradient": 0.08363638472662223,
         "knowledge_strength": 0.8606799418169827
       },
-      "latency_ms": 1902,
+      "latency_ms": 1827,
       "results": [
         {
           "id": "d11566fa-ec5b-549c-b2fa-d36a57cb666b",
@@ -1095,26 +1095,13 @@
         }
       ],
       "context": {
-        "latency_ms": 587,
+        "latency_ms": 523,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0763949155807495,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.068684697151184,
+            "relevance": 0.7557553052902222,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -1124,15 +1111,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0458440780639648,
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419402599334717,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
+            "source": "rule",
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7381662130355835,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
+            "graph_path": [
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
             ],
             "graph_path_description": ""
           },
@@ -1649,7 +1649,7 @@
             "relevance": 0.23017093539237976,
             "tier": "full",
             "drift_count": 0,
-            "content": "func genZshComp(buf io.StringWriter, name string, includeDesc bool) {\n\tcompCmd := ShellCompRequestCmd\n\tif !includeDesc {\n\t\tcompCmd = ShellCompNoDescRequestCmd\n\t}\n\tWriteStringAndCheck(buf, fmt.Sprintf(`#compdef %[1]s\ncompdef _%[1]s %[1]s\n\n# zsh completion for %-36[1]s -*- shell-script -*-\n\n__%[1]s_debug()\n{\n    local file=\"$BASH_COMP_DEBUG_FILE\"\n    if [[ -n ${file} ]]; then\n        echo \"$*\" >> \"${file}\"\n    fi\n}\n\n_%[...",
+            "content": "func genZshComp(buf io.StringWriter, name string, includeDesc bool) {\n\tcompCmd := ShellCompRequestCmd\n\tif !includeDesc {\n\t\tcompCmd = ShellCompNoDescRequestCmd\n\t}\n\tWriteStringAndCheck(buf, fmt.Sprintf(`#compdef %[1]s\ncompdef _%[1]s %[1]s\n\n# zsh completion for %-36[1]s -*- shell-script -*-\n\n__%[1]s_debug()\n{\n    local file=\"$BASH_COMP_DEBUG_FILE\"\n    if [[ -n ${file} ]]; then\n        echo \"$*\" >> \"${file}\"\n    fi\n}\n\n_%[1]s()\n{\n...",
             "graph_path": [
               "2079be6a-5493-5ed2-93c9-b32785852d16"
             ],
@@ -2024,6 +2024,7 @@
           "dropped_sources": [
             "file:flag_groups_test.go (duplicate content)",
             "file:bash_completions.go (duplicate content)",
+            "file:md_docs.go (duplicate content)",
             "file:flag_groups.go (duplicate content)",
             "function:*Command::MarkFlagsOneRequired (duplicate content)",
             "file:command.go (duplicate content)",
@@ -2060,7 +2061,7 @@
         "knowledge_gradient": 0.07253551684737518,
         "knowledge_strength": 0.8368581218489209
       },
-      "latency_ms": 500,
+      "latency_ms": 449,
       "results": [
         {
           "id": "785f5367-f893-43f3-a8e3-6f9b9c15622f",
@@ -2388,26 +2389,13 @@
         }
       ],
       "context": {
-        "latency_ms": 587,
+        "latency_ms": 529,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.07639479637146,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0686845779418945,
+            "relevance": 0.7557552456855774,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -2417,15 +2405,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0458440780639648,
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419402003288269,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
+            "source": "rule",
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7381661534309387,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
+            "graph_path": [
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
             ],
             "graph_path_description": ""
           },
@@ -3305,7 +3306,7 @@
             "relevance": 0.05946558341383934,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestHelpFuncExecuted(t *testing.T) {\n\thelpText := \"Long description\"\n\n\t// Create a context that will be unique, not just the background context\n\t//nolint:staticcheck // We can safely use a basic type as key in tests.\n\texecutionCtx := context.WithValue(context.Background(), \"testKey\", \"123\")\n\n\tch...",
+            "content": "func TestHelpFuncExecuted(t *testing.T) {\n\thelpText := \"Long description\"\n\n\t// Create a context that will be unique, not just the background context\n\t//nolint:staticcheck // We can safely use a basic type as key in tests.\n\texecutionCtx := context.WithValue(context.Background(), \"testKey\", \"123\")\n\n\tchild := &...",
             "graph_path": [
               "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
               "0b709961-c4a4-57fc-82e6-6682a9c6c001"
@@ -3427,7 +3428,7 @@
         "knowledge_gradient": 0.07109884537717426,
         "knowledge_strength": 0.7797233059021634
       },
-      "latency_ms": 510,
+      "latency_ms": 438,
       "results": [
         {
           "id": "f94e5fc4-8698-4bb9-8ef8-84c8010d65bb",
@@ -3836,26 +3837,13 @@
         }
       ],
       "context": {
-        "latency_ms": 576,
+        "latency_ms": 521,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0767474174499512,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.068684458732605,
+            "relevance": 0.7557551860809326,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -3865,15 +3853,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0460834503173828,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7455769181251526,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419401407241821,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -4058,6 +4059,19 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "source": "rule",
+            "title": "Active help must degrade cleanly without env support",
+            "relevance": 0.3707396388053894,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "graph_path": [
+              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
             "source": "rule",
             "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
@@ -4220,7 +4234,7 @@
             "relevance": 0.24528804421424866,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestArgsNotDetectedAsFlagsCompletionInGo(t *testing.T) {\n\t// Regression test that ensures the bug described in\n\t// https://github.com/spf13/cobra/issues/1816 does not occur anymore.\n\n\troot := Command{\n\t\tUse: \"root\",\n\t\tValidArgsFunction: func(cmd *Command, args []string, toComplete string) ([]string, ShellCompDirective) {\n\t\t\treturn []string{\"service\", \"1-123\", \"11-123\"}, ShellCompDirectiveNoFileComp\n\t\t},\n\t}\n\n\tcompletion := `service\n1-123\n11-123\n:4\nCompletion ended with directive: ShellCompDirectiveNoFileComp\n`\n\n\ttestcases := []struct {\n\t\tdesc           string\n\t\targs           []string\n\t\texpectedOutput string\n\t}{\n\t\t{\n\t\t\tdesc:           \"empty\",\n\t\t\targs:           []string{\"\"},\n\t\t\texpectedOutput: completion,\n\t\t},\n\t\t{\n\t\t\tdesc:           \"service only\",\n\t\t\targs:           []string{\"service\", \"\"},\n\t\t\texpectedOutput: completion,\n\t\t},\n\t\t{\n\t\t\tdesc:           \"service last\",\n\t\t\targs:           []string{\"1-123\", \"service\", \"\"},\n\t\t\texpectedOutput: completion,\n\t\t},\n\t\t{\n\t\t\tdesc:           \"two digit prefixed dash last\",\n... (23 more lines)",
+            "content": "func TestArgsNotDetectedAsFlagsCompletionInGo(t *testing.T) {\n\t// Regression test that ensures the bug described in\n\t// https://github.com/spf13/cobra/issues/1816 does not occur anymore.\n\n\troot := Command{\n\t\tUse: \"root\",\n\t\tValidArgsFunction: func(cmd *Command, args []string, toComplete string) ([]string, ShellCompDirective) {\n\t\t\treturn []string{\"service\", \"1-123\", \"11-123\"}, ShellCompDirectiveNoFileComp\n\t\t},\n\t}\n\n\tcompletion := `service\n1-123\n11-123\n:4\nCompletion ended with directive: ShellCompDirectiveNoFileComp\n`\n\n\ttestcases := []struct {\n\t\tdesc           string\n\t\targs           []string\n\t\texpectedOutput string\n\t}{\n\t\t{\n\t\t\tdesc:           \"empty\",\n\t\t\targs:           []string{\"\"},\n\t\t\texpectedOutput: completion,\n\t\t},\n\t\t{\n\t\t\tdesc:           \"service only\",\n\t\t\targs:           []string{\"service\", \"\"},\n\t\t\texpectedOutput: completion,\n\t\t},\n\t\t{\n\t\t\tdesc:           \"service last\",\n\t\t\targs:          ...",
             "graph_path": [
               "c9b8ee31-6746-5b7f-acd0-fbb9bba9d8a8"
             ],
@@ -4233,7 +4247,7 @@
             "relevance": 0.2421831339597702,
             "tier": "full",
             "drift_count": 0,
-            "content": "func getFlagNameCompletions(flag *pflag.Flag, toComplete string) []Completion {\n\tif nonCompletableFlag(flag) {\n\t\treturn []Completion{}\n\t}\n\n\tvar completions []Completion\n\tflagName := \"--\" + flag.Name\n\tif string...",
+            "content": "func getFlagNameCompletions(flag *pflag.Flag, toComplete string) []Completion {\n\tif nonCompletableFlag(flag) {\n\t\treturn []Completion{}\n\t}\n... (7 more lines)",
             "graph_path": [
               "5ab81763-b793-5be9-8d0e-01fe3ffb409e"
             ],
@@ -4964,7 +4978,6 @@
             "file:powershell_completions.go (duplicate content)",
             "file:zsh_completions.go (duplicate content)",
             "rule:Completion changes must cover bash, zsh, fish, powershell (duplicate content)",
-            "rule:Active help must degrade cleanly without env support (duplicate content)",
             "file:shell_completions.go (duplicate content)",
             "file:active_help_test.go (duplicate content)",
             "file:fish_completions_test.go (duplicate content)",
@@ -5008,7 +5021,7 @@
         "knowledge_gradient": 0.03883712770353316,
         "knowledge_strength": 0.7305583813310067
       },
-      "latency_ms": 505,
+      "latency_ms": 432,
       "results": [
         {
           "id": "3605f047-bd85-52ab-9a07-db5ecd3f234a",
@@ -5408,26 +5421,13 @@
         }
       ],
       "context": {
-        "latency_ms": 571,
+        "latency_ms": 524,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0769232511520386,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.068684458732605,
+            "relevance": 0.7557551264762878,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -5437,15 +5437,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0460833311080933,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7490859627723694,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419400811195374,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -6033,7 +6046,7 @@
             "relevance": 0.11352941393852234,
             "tier": "full",
             "drift_count": 0,
-            "content": "func (c *Command) UsageFunc() (f func(*Command) error) {\n\tif c.usageFunc != nil {\n\t\treturn c.usageFunc\n\t}\n\tif c.HasParent() {\n\t\treturn c.Parent().UsageFunc()\n\t}\n\treturn func(c *Command) error {\n\t\tc.mergePe...",
+            "content": "func (c *Command) UsageFunc() (f func(*Command) error) {\n\tif c.usageFunc != nil {\n\t\treturn c.usageFunc\n\t}\n\tif c.HasParent() {\n\t\treturn c.Parent().UsageFunc()\n\t}\n\treturn func(c *Command) error {\n\t\tc.mergePersistentFlags()\n\t\tfn := c.getUsageTemplateFunc()\n\t\terr := fn(c.OutOrStderr(), c)\n\t\tif err != nil {\n\t\t\tc.PrintErrln(err)\n\t\t}\n\t\treturn err\n\t}\n}",
             "graph_path": [
               "47a813ee-dede-5372-991f-3d363b1d6d51",
               "69cd0663-6079-5955-990b-dc76d494b70d"
@@ -6047,7 +6060,7 @@
             "relevance": 0.10372340679168701,
             "tier": "full",
             "drift_count": 0,
-            "content": "func (c *Command) getIn(def io.Reader) io.Reader {\n\tif c.inReader != nil {\n\t\treturn c.inReader\n\t}\n... (5 more lines)",
+            "content": "func (c *Command) getIn(def io.Reader) io.Reader {\n\tif c.inReader != nil {\n\t\treturn c.inReader\n\t}\n\tif c.HasParent() {\n\t\treturn c.parent.getIn(def)\n\t}\n\treturn def\n}",
             "graph_path": [
               "47a813ee-dede-5372-991f-3d363b1d6d51",
               "825540f0-0590-593e-b1e5-5cf51825d228"
@@ -6061,7 +6074,7 @@
             "relevance": 0.1023913025856018,
             "tier": "full",
             "drift_count": 0,
-            "content": "func (c *Command) getErr(def io.Writer) io.Writer {\n\tif c.errWriter != nil {\n\t\treturn c.errWriter\n\t}\n... (5 more lines)",
+            "content": "func (c *Command) getErr(def io.Writer) io.Writer {\n\tif c.errWriter != nil {\n\t\treturn c.errWriter\n\t}\n\tif c.HasParent() {\n\t\treturn c.paren...",
             "graph_path": [
               "47a813ee-dede-5372-991f-3d363b1d6d51",
               "cf0d1dad-e032-5057-aa07-4b5eb8cb48eb"
@@ -6151,20 +6164,6 @@
               "ab16838e-fba6-5da0-93c5-60270171256f"
             ],
             "graph_path_description": "co-change"
-          },
-          {
-            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
-            "source": "rule",
-            "title": "Use the provided Args validators before custom logic",
-            "relevance": 0.06654545664787292,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
-            "graph_path": [
-              "db8c5b96-5a68-5680-acc7-e767399f45a0",
-              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
-            ],
-            "graph_path_description": "args.go \u2192 auto references \u2192 Use the provided Args validators before custom logic"
           },
           {
             "entity_id": "4c876d3d-bebe-4d43-90bd-c07b6bb7d9ac",
@@ -6383,6 +6382,7 @@
             "file:command_test.go (duplicate content)",
             "file:powershell_completions.go (duplicate content)",
             "file:command_win.go (duplicate content)",
+            "rule:Use the provided Args validators before custom logic (duplicate content)",
             "file:bash_completions_test.go (duplicate content)"
           ],
           "pointer_ids": [],
@@ -6416,7 +6416,7 @@
         "knowledge_gradient": 0.049165304628373166,
         "knowledge_strength": 0.7320911018718371
       },
-      "latency_ms": 511,
+      "latency_ms": 440,
       "results": [
         {
           "id": "b5c2af04-c19c-5ef5-894a-d95187f9301c",
@@ -6735,26 +6735,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1006,
+        "latency_ms": 497,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0769232511520386,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0688749551773071,
+            "relevance": 0.7589299082756042,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -6764,15 +6751,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0460833311080933,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7490859031677246,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419400215148926,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -6807,7 +6807,7 @@
             "relevance": 0.5637058615684509,
             "tier": "full",
             "drift_count": 0,
-            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage cobra\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\n\tflag \"github.com/spf13/pflag\"\n)\n\nconst (\n\trequiredAsGroupAnnotation   = \"cobra_annotation_required_if_others_set\"\n\toneRequiredAnnotation       = \"cobra_annotation_one_required\"\n\tmutuallyExclusiveAnnotation = \"cobra_annotation_mutually_exclusive\"\n)\n\n... (260 more lines)",
+            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage cobra\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\n\tflag \"github.com/spf13/pflag\"\n)\n\nconst (\n\trequiredAsGroupAnnotation   = \"cobra_annotation_required_if_others_set\"\n\toneRequiredAnnotation       = \"cobra_annotation_one_required\"\n\tmutuallyExclusiveAnnotation = \"cobra_annotation_mutually_exclusive\"\n)\n\n// MarkFlagsRequiredTog...",
             "graph_path": [
               "65dafcb4-6d27-5dd2-b0b2-e7225aebd433"
             ],
@@ -7662,7 +7662,7 @@
         "knowledge_gradient": 0.09806194771412373,
         "knowledge_strength": 0.7585253499769268
       },
-      "latency_ms": 633,
+      "latency_ms": 450,
       "results": [
         {
           "id": "6f830dca-1005-5692-9c11-b3c782bd5513",
@@ -7841,6 +7841,15 @@
           "title": "Micro-optimizations (#1957)",
           "relevance": 0.24780534207820892,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.16563668847084045,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -8062,26 +8071,13 @@
         }
       ],
       "context": {
-        "latency_ms": 578,
+        "latency_ms": 521,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0769230127334595,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0688748359680176,
+            "relevance": 0.7589298486709595,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -8091,15 +8087,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0460830926895142,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7490858435630798,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419399619102478,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -8121,7 +8130,7 @@
             "relevance": 0.5933935642242432,
             "tier": "full",
             "drift_count": 0,
-            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage doc\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n\t\"time\"\n\n\t\"github.com/cpuguy83/go-md2man/v2/md2man\"\n\t\"github.com/spf13/cobra\"\n\t\"github.com/spf13/pflag\"\n)\n\n// GenManTree will generate a man page for this command and all descendants\n// in the directory given. The header may be nil. This function may not work\n// correctly if your command names have `-` in them. If you have `cmd` with two\n// subcmds, `sub` and `sub-third`, and `sub` has a subcommand called `third`\n// it is undefined which help output will be in the file `cmd-sub-third.1`.\nfunc GenManTree(cmd *cobra.Command, header *GenManHeader, dir string) error {\n\treturn GenManTreeFromOpts(cmd, GenManTreeOptions{\n\t\tHeader:           header,\n\t\tPath:             dir,\n\t\tCommandSeparator: \"-\",\n\t})\n}\n\n// GenManTreeFromOpts generates a man page for the command and all descendants.\n// The pages are written to the opts.Path directory.\nfunc GenManTreeFromOpts(cmd *cobra.Command, opts GenManTreeOptions) error {\n\theader := opts.Header\n\tif header == nil {\n\t\theader = &GenManHeader{}\n\t}\n\tfor _, c := range cmd.Commands() {\n\t\tif !c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand() {\n\t\t\tcontinue\n\t\t}\n\t\tif err := GenManTreeFromOpts(c, opts); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\tsection := \"1\"\n\tif header.Section != \"\" {\n\t\tsection = header.Section\n\t}\n\n\tseparator := \"_\"\n\tif opts.CommandSeparator != \"\" {\n\t\tseparator = opts.CommandSeparator\n\t}\n\tbasename := strings.ReplaceAll(cmd.CommandPath(), \" \", separator)\n\tfilename := filepath.Join(opts.Path, basename+\".\"+section)\n\tf, err := os.Create(filename)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer f.Close()\n\n\theaderCopy := *header\n\treturn GenMan(cmd, &headerCopy, f)\n}\n\n// GenManTreeOptions is the options for generating the man pages.\n// Used only in GenManTreeFromOpts.\ntype GenManTreeOptions struct {\n\tHeader           *GenManHeader\n\tPath             string\n\tCommandSeparator string\n}\n\n// GenManHeader is a lot like the .TH header at the start of man pages. These\n// include the title, section, date, source, and manual. We will use the\n// current time if Date is unset and will use \"Auto generated by spf13/cobra\"\n// if the Source is unset.\ntype GenManHeader struct {\n\tTitle   string\n\tSection string\n\tDate    *time.Time\n\tdate    string\n\tSource  string\n\tManual  string\n}\n\n// GenMan will generate a man page for the given command and write it to\n// w. The header argument may be nil, however obviously w may not.\nfunc GenMan(cmd *cobra.Command, header *GenManHeader, w io.Writer) error {\n\tif header == nil {\n\t\theader = &GenManHeader{}\n\t}\n\tif err := fillHeader(header, cmd.CommandPath(), cmd.DisableAutoGenTag); err != nil {\n\t\treturn err\n\t}\n\n\tb := genMan(cmd, header)\n\t_, err := w.Write(md2man.Render(b))\n\treturn err\n}\n\nfunc fillHeader(header *GenManHeader, name string, disableAutoGen bool) error {\n\tif header.Title == \"\" {\n\t\theader.Title = strings.ToUpper(strings.ReplaceAll(name, \" \", \"\\\\-\"))\n\t}\n\tif header.Section == \"\" {\n\t\theader.Section = \"1\"\n\t}\n\tif header.Date == nil {\n\t\tnow := time.Now()\n\t\tif epoch := os.Getenv(\"SOURCE_DATE_EPOCH\"); epoch != \"\" {\n\t\t\tunixEpoch, err := strconv.ParseInt(epoch, 10, 64)\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"invalid SOURCE_DATE_EPOCH: %v\", err)\n\t\t\t}\n\t\t\tnow = time.Unix(unixEpoch, 0)\n\t\t}\n\t\theader.Date = &now\n\t}\n\theader.date = header.Date.Format(\"Jan 2006\")\n\tif header.Source == \"\" && !disableAutoGen {\n\t\theader.Source = \"Auto generated by spf13/cobra\"\n\t}\n\treturn nil\n}\n\nfunc manPreamble(buf io.StringWriter, header *GenManHeader, cmd *cobra.Command, dashedName string) {\n\tdescription := cmd.Long\n\tif len(description) == 0 {\n\t\tdescription = cmd.Short\n\t}\n\n\tcobra.WriteStringAndCheck(buf, fmt.Sprintf(`%% \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\n# NAME\n`, header.Title, header.Section, header.date, header.Source, header.Manual))\n\tcobra.WriteStringAndCheck(buf, fmt.Sprintf(\"%s \\\\- %s\\n\\n\", dashedName, cmd.Short))\n\tcobra.WriteStringAndCheck(buf, \"# SYNOPSIS\\n\")\n\tcobra.WriteStringAndCheck(buf, fmt.Sprintf(\"**%s**\\n\\n\", cmd.UseLine()))\n\tcobra.WriteStringAndCheck(buf, \"# DESCRIPTION\\n\")\n\tcobra.WriteStringAndCheck(buf, description+\"\\n\\n\")\n}\n\nfunc manPrintFlags(buf io.StringWriter, flags *pflag.FlagSet) {\n\tflags.VisitAll(func(flag *pflag.Flag) {\n\t\tif len(flag.Deprecated) > 0 || flag.Hidden {\n\t\t\treturn\n\t\t}\n\t\tformat := \"\"\n\t\tif len(flag.Shorthand) > 0 && len(flag.ShorthandDeprecated) == 0 {\n\t\t\tformat = fmt.Sprintf(\"**-%s**, **--%s**\", flag.Shorthand, flag.Name)\n\t\t} else {\n\t\t\tformat = fmt.Sprintf(\"**--%s**\", flag.Name)\n\t\t}\n\t\tif len(flag.NoOptDefVal) > 0 {\n\t\t\tformat += \"[\"\n\t\t}\n\t\ti...",
+            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage doc\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n\t\"time\"\n\n\t\"github.com/cpuguy83/go-md2man/v2/md2man\"\n\t\"github.com/spf13/cobra\"\n\t\"github.com/spf13/pflag\"\n)\n\n// GenManTree will generate a man page for this command and all descendants\n// in the directory given. The header may be nil. This function may not work\n// correctly if your command names have `-` in them. If you have `cmd` with two\n// subcmds, `sub` and `sub-third`, and `sub` has a subcommand called `third`\n// it is undefined which help output will be in the file `cmd-sub-third.1`.\nfunc GenManTree(cmd *cobra.Command, header *GenManHeader, dir string) error {\n\treturn GenManTreeFromOpts(cmd, GenManTreeOptions{\n\t\tHeader:           header,\n\t\tPath:             dir,\n\t\tCommandSeparator: \"-\",\n\t})\n}\n\n// GenManTreeFromOpts generates a man page for the command and all descendants.\n// The pages are written to the opts.Path directory.\nfunc GenManTreeFromOpts(cmd *cobra.Command, opts GenManTreeOptions) error {\n\theader := opts.Header\n\tif header == nil {\n\t\theader = &GenManHeader{}\n\t}\n\tfor _, c := range cmd.Commands() {\n\t\tif !c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand() {\n\t\t\tcontinue\n\t\t}\n\t\tif err := GenManTreeFromOpts(c, opts); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\tsection := \"1\"\n\tif header.Section != \"\" {\n\t\tsection = header.Section\n\t}\n\n\tseparator := \"_\"\n\tif opts.CommandSeparator != \"\" {\n\t\tseparator = opts.CommandSeparator\n\t}\n\tbasename := strings.ReplaceAll(cmd.CommandPath(), \" \", separator)\n\tfilename := filepath.Join(opts.Path, basename+\".\"+section)\n\tf, err := os.Create(filename)\n\tif err != nil {\n\t\treturn err\n\t}\n\tdefer f.Close()\n\n\theaderCopy := *header\n\treturn GenMan(cmd, &headerCopy, f)\n}\n\n// GenManTreeOptions is the options for generating the man pages.\n// Used only in GenManTreeFromOpts.\ntype GenManTreeOptions struct {\n\tHeader           *GenManHeader\n\tPath             string\n\tCommandSeparator string\n}\n\n// GenManHeader is a lot like the .TH header at the start of man pages. These\n// include the title, section, date, source, and manual. We will use the\n// current time if Date is unset and will use \"Auto generated by spf13/cobra\"\n// if the Source is unset.\ntype GenManHeader struct {\n\tTitle   string\n\tSection string\n\tDate    *time.Time\n\tdate    string\n\tSource  string\n\tManual  string\n}\n\n// GenMan will generate a man page for the given command and write it to\n// w. The header argument may be nil, however obviously w may not.\nfunc GenMan(cmd *cobra.Command, header *GenManHeader, w io.Writer) error {\n\tif header == nil {\n\t\theader = &GenManHeader{}\n\t}\n\tif err := fillHeader(header, cmd.CommandPath(), cmd.DisableAutoGenTag); err != nil {\n\t\treturn err\n\t}\n\n\tb := genMan(cmd, header)\n\t_, err := w.Write(md2man.Render(b))\n\treturn err\n}\n\nfunc fillHeader(header *GenManHeader, name string, disableAutoGen bool) error {\n\tif header.Title == \"\" {\n\t\theader.Title = strings.ToUpper(strings.ReplaceAll(name, \" \", \"\\\\-\"))\n\t}\n\tif header.Section == \"\" {\n\t\theader.Section = \"1\"\n\t}\n\tif header.Date == nil {\n\t\tnow := time.Now()\n\t\tif epoch := os.Getenv(\"SOURCE_DATE_EPOCH\"); epoch != \"\" {\n\t\t\tunixEpoch, err := strconv.ParseInt(epoch, 10, 64)\n\t\t\tif err != nil {\n\t\t\t\treturn fmt.Errorf(\"invalid SOURCE_DATE_EPOCH: %v\", err)\n\t\t\t}\n\t\t\tnow = time.Unix(unixEpoch, 0)\n\t\t}\n\t\theader.Date = &now\n\t}\n\theader.date = header.Date.Format(\"Jan 2006\")\n\tif header.Source == \"\" && !disableAutoGen {\n\t\theader.Source = \"Auto generated by spf13/cobra\"\n\t}\n\treturn nil\n}\n\nfunc manPreamble(buf io.StringWriter, header *GenManHeader, cmd *cobra.Command, dashedName string) {\n\tdescription := cmd.Long\n\tif len(description) == 0 {\n\t\tdescription = cmd.Short\n\t}\n\n\tcobra.WriteStringAndCheck(buf, fmt.Sprintf(`%% \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"\n# NAME\n`, header.Title, header.Section, header.date, header.Source, header.Manual))\n\tcobra.WriteStringAndCheck(buf, fmt.Sprintf(\"%s \\\\- %s\\n\\n\", dashedName, cmd.Short))\n\tcobra.WriteStringAndCheck(buf, \"# SYNOPSIS\\n\")\n\tcobra.WriteStringAndCheck(buf, fmt.Sprintf(\"**%s**\\n\\n\", cmd.UseLine()))\n\tcobra.WriteStringAndCheck(buf, \"# DESCRIPTION\\n\")\n\tcobra.WriteStringAndCheck(buf, description+\"\\n\\n\")\n}\n\nfunc manPrintFlags(buf io.StringWriter, flags *pflag.FlagSet) {\n\tflags.VisitAll(func(flag *pflag.Flag) {\n\t\tif len(flag.Deprecated) > 0 || flag.Hidden {\n\t\t\treturn\n\t\t}\n\t\tformat := \"\"\n\t\tif len(flag.Shorthand) > 0 && len(flag.ShorthandDeprecated) == 0 {\n\t\t\tformat = fmt.Sprintf(\"**-%s**, **--%s**\", flag.Shorthand, flag.Name)\n\t\t} else {\n\t\t\tformat = fmt.Sprintf(\"**--%s**\", flag.Name)\n\t\t}\n\t\tif len(flag.NoOptDefVal) > 0 {\n\t\t\tformat += \"[\"\n\t\t}\n\t\tif flag.V...",
             "graph_path": [
               "6f830dca-1005-5692-9c11-b3c782bd5513"
             ],
@@ -8831,7 +8840,7 @@
             "relevance": 0.0,
             "tier": "pointer",
             "drift_count": 0,
-            "content": "- [file] md_docs_test.go \u2014 id 53a3f1dd-50b7-515c-bb73-b0892b591300\n- [file] man_examples_test.go \u2014 id 9404d5fc-9020-5643-9aae-3d6068a113b2\n- [file] rest_docs_test.go \u2014 id 661951e1-ab44-5445-82bb-d2c588e974e6\n- [file] yaml_docs_test.go \u2014 id fcec8fa8-186d-5680-97ef-2b5712bf0e7c\n- [file] md_docs.go \u2014 id ea69102a-6692-5faa-9ffd-fa7cacbe7c16\n- [file] man_docs_test.go \u2014 id 9f494797-ba0e-5262-86c5-4f63ec7630b0\n- [file] util.go \u2014 id 9c32dbae-bd69-5856-b837-c8bc66d6976c\n- [file] powershell_completions.go \u2014 id c8fe9ab9-9c92-5617-b2b3-82f76e7edb47\n- [file] yaml_docs.go \u2014 id 177f61cf-be0f-5f56-8c5d-5c656f03eef0\n- [function] ExampleGenManTree \u2014 id 93dfa622-219c-5d31-a774-9ecfac7495cd\n- [file] rest_docs.go \u2014 id 25b0ae34-9132-52cb-8e85-6207543c21a9\n- [file] completions.go \u2014 id bcfb6142-7ec5-5e03-9182-2ab8906e0d00\n- [function] BenchmarkGenReSTToFile \u2014 id 55b1354f-ad4e-5b32-8e79-9e763ca47f23\n- [function] TestGenRSTNoHiddenParents \u2014 id 63eeffde-e178-5029-a43f-02a2b029bebd\n- [file] bash_completionsV2.go \u2014 id 683b8800-8e49-562d-8ae7-4c9116933954\n- [file] cobra.go \u2014 id b7cebe98-abf2-5fc3-850f-d696b8d5ddad\n- [file] command.go \u2014 id 47a813ee-dede-5372-991f-3d363b1d6d51\n- [file] bash_completions.go \u2014 id c5657f13-c3a1-5a9f-8e5a-895ea142d2ab\n- [file] args.go \u2014 id db8c5b96-5a68-5680-acc7-e767399f45a0\n- [file] zsh_completions.go \u2014 id 0d790aa3-3d7a-54ae-8c1b-7d08e68e819c\n- [file] fish_completions.go \u2014 id 2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
+            "content": "- [file] md_docs_test.go \u2014 id 53a3f1dd-50b7-515c-bb73-b0892b591300\n- [file] man_examples_test.go \u2014 id 9404d5fc-9020-5643-9aae-3d6068a113b2\n- [file] rest_docs_test.go \u2014 id 661951e1-ab44-5445-82bb-d2c588e974e6\n- [file] yaml_docs_test.go \u2014 id fcec8fa8-186d-5680-97ef-2b5712bf0e7c\n- [file] md_docs.go \u2014 id ea69102a-6692-5faa-9ffd-fa7cacbe7c16\n- [file] man_docs_test.go \u2014 id 9f494797-ba0e-5262-86c5-4f63ec7630b0\n- [file] util.go \u2014 id 9c32dbae-bd69-5856-b837-c8bc66d6976c\n- [file] powershell_completions.go \u2014 id c8fe9ab9-9c92-5617-b2b3-82f76e7edb47\n- [file] shell_completions.go \u2014 id 28e1b49b-0f42-578a-9641-b85a4d0f4b97\n- [file] yaml_docs.go \u2014 id 177f61cf-be0f-5f56-8c5d-5c656f03eef0\n- [function] ExampleGenManTree \u2014 id 93dfa622-219c-5d31-a774-9ecfac7495cd\n- [file] rest_docs.go \u2014 id 25b0ae34-9132-52cb-8e85-6207543c21a9\n- [file] completions.go \u2014 id bcfb6142-7ec5-5e03-9182-2ab8906e0d00\n- [function] BenchmarkGenReSTToFile \u2014 id 55b1354f-ad4e-5b32-8e79-9e763ca47f23\n- [function] TestGenRSTNoHiddenParents \u2014 id 63eeffde-e178-5029-a43f-02a2b029bebd\n- [file] bash_completionsV2.go \u2014 id 683b8800-8e49-562d-8ae7-4c9116933954\n- [file] cobra.go \u2014 id b7cebe98-abf2-5fc3-850f-d696b8d5ddad\n- [file] command.go \u2014 id 47a813ee-dede-5372-991f-3d363b1d6d51\n- [file] bash_completions.go \u2014 id c5657f13-c3a1-5a9f-8e5a-895ea142d2ab\n- [file] args.go \u2014 id db8c5b96-5a68-5680-acc7-e767399f45a0\n- [file] zsh_completions.go \u2014 id 0d790aa3-3d7a-54ae-8c1b-7d08e68e819c\n- [file] fish_completions.go \u2014 id 2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
             "graph_path": [],
             "graph_path_description": ""
           }
@@ -8846,6 +8855,7 @@
             "file:man_docs_test.go (duplicate content)",
             "file:util.go (duplicate content)",
             "file:powershell_completions.go (duplicate content)",
+            "file:shell_completions.go (duplicate content)",
             "file:yaml_docs.go (duplicate content)",
             "function:ExampleGenManTree (duplicate content)",
             "file:rest_docs.go (duplicate content)",
@@ -8872,6 +8882,7 @@
             "9f494797-ba0e-5262-86c5-4f63ec7630b0",
             "9c32dbae-bd69-5856-b837-c8bc66d6976c",
             "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
+            "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
             "177f61cf-be0f-5f56-8c5d-5c656f03eef0",
             "93dfa622-219c-5d31-a774-9ecfac7495cd",
             "25b0ae34-9132-52cb-8e85-6207543c21a9",
@@ -8903,7 +8914,7 @@
             "knowledge_gradient": 0.09806194771412373,
             "knowledge_strength": 0.7585253499769268
           },
-          "size_tokens": 8037
+          "size_tokens": 8055
         }
       }
     },
@@ -8917,7 +8928,7 @@
         "knowledge_gradient": 0.09679573260808501,
         "knowledge_strength": 0.8265066176439421
       },
-      "latency_ms": 548,
+      "latency_ms": 501,
       "results": [
         {
           "id": "d52a9d9f-8462-4c7b-991d-7ab70f662767",
@@ -9100,15 +9111,6 @@
           "stale": null
         },
         {
-          "id": "4ef2fe66-ee66-5da4-94b2-c5c212bdcd4c",
-          "type": "function",
-          "title": "TestCompletionDoesNotMutateOsArgs",
-          "relevance": 0.15764275193214417,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "23de7846-f546-5fd1-a556-287c91126dd1",
           "type": "function",
           "title": "TestCompletionCobraFlags",
@@ -9245,26 +9247,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1014,
+        "latency_ms": 651,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0772738456726074,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.068874716758728,
+            "relevance": 0.7589297890663147,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -9274,15 +9263,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0465604066848755,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7557548880577087,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419398427009583,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -9356,7 +9358,7 @@
             "relevance": 0.4937886893749237,
             "tier": "full",
             "drift_count": 0,
-            "content": "func genZshComp(buf io.StringWriter, name string, includeDesc bool) {\n\tcompCmd := ShellCompRequestCmd\n\tif !includeDesc {\n\t\tcompCmd = ShellCompNoDescRequestCmd\n\t}\n\tWriteStringAndCheck(buf, fmt.Sprintf(`#compdef %[1]s\ncompdef _%[1]s %[1]s\n\n# zsh completion for %-36[1]s -*- shell-script -*-\n\n__%[1]s_debug()\n{\n    local file=\"$BASH_COMP_DEBUG_FILE\"\n    if [[ -n ${file} ]]; then\n        echo \"$*\" >> \"${file}\"\n    fi\n}\n\n_%[1]s()\n{\n    local shellCompDirectiveError=%[3]d\n    local shellCompDirectiveNoSpace=%[4]d\n    local shellCompDirectiveNoFileComp=%[5]d\n    local shellCompDirectiveFilterFileExt=%[6]d\n    local shellCompDirectiveFilterDirs=%[7]d\n    local shellCompDirectiveKeepOrder=%[8]d\n\n    local lastParam lastChar flagPrefix requestComp out directive comp lastComp noSpace keepOrder\n    local -a completions\n\n    __%[1]s_debug \"\\n========= starting completion logic ==========\"\n    __%[1]s_debug \"CURRENT: ${CURRENT}, words[*]: ${words[*]}\"\n\n    # The user could have moved the cursor backwards on the command-line.\n    # We need to trigger completion from the $CURRENT location, so we need\n    # to truncate the command-line ($words) up to the $CURRENT location.\n    # (We cannot use $CURSOR as its value does not work when a command is an alias.)\n    words=(\"${=words[1,CURRENT]}\")\n    __%[1]s_debug \"Truncated words[*]: ${words[*]},\"\n\n    lastParam=${words[-1]}\n    lastChar=${lastParam[-1]}\n    __%[1]s_debug \"lastParam: ${lastParam}, lastChar: ${lastChar}\"\n\n    # For zsh, when completing a flag with an = (e.g., %[1]s -n=<TAB>)\n    # completions must be prefixed with the flag\n    setopt local_options BASH_REMATCH\n    if [[ \"${lastParam}\" =~ '-.*=' ]]; then\n        # We are dealing with a flag with an =\n        flagPrefix=\"-P ${BASH_REMATCH}\"\n    fi\n\n    # Prepare the command to obtain completions\n    requestComp=\"${words[1]} %[2]s ${words[2,-1]}\"\n    if [ \"${lastChar}\" = \"\" ]; then\n        # If the last parameter is complete (there is a space following it)\n        # We add an extra empty parameter so we can indicate this to the go completion code.\n        __%[1]s_debug \"Adding extra empty parameter\"\n        requestComp=\"${requestComp} \\\"\\\"\"\n    fi\n\n    __%[1]s_debug \"About to call: eval ${requestComp}\"\n\n    # Use eval to handle any environment variables and such\n    out=$(eval ${requestComp} 2>/dev/null)\n    __%[1]s_debug \"completion output: ${out}\"\n\n    # Extract the directive integer following a : from the last line\n    local lastLine\n    while IFS='\\n' read -r line; do\n        lastLine=${line}\n    done < <(printf \"%%s\\n\" \"${out[@]}\")\n    __%[1]s_debug \"last line: ${lastLine}\"\n\n    if [ \"${lastLine[1]}\" = : ]; then\n        directive=${lastLine[2,-1]}\n        # Remove the directive including the : and the newline\n        local suffix\n        (( suffix=${#lastLine}+2))\n        out=${out[1,-$suffix]}\n    else\n        # There is no directive specified.  Leave $out as is.\n        __%[1]s_debug \"No directive found.  Setting do default\"\n        directive=0\n    fi\n\n    __%[1]s_debug \"directive: ${directive}\"\n    __%[1]s_debug \"completions: ${out}\"\n    __%[1]s_debug \"flagPrefix: ${flagPrefix}\"\n\n    if [ $((directive & shellCompDirectiveError)) -ne 0 ]; then\n        __%[1]s_debug \"Completion received error. Ignoring completions.\"\n        return\n    fi\n\n    local activeHelpMarker=\"%[9]s\"\n    local endIndex=${#activeHelpMarker}\n    local startIndex=$((${#activeHelpMarker}+1))\n    local hasActiveHelp=0\n    while IFS='\\n' read -r comp; do\n        # Check if this is an activeHelp statement (i.e., prefixed with $activeHelpMarker)\n        if [ \"${comp[1,$endIndex]}\" = \"$activeHelpMarker\" ];then\n            __%[1]s_debug \"ActiveHelp found: $comp\"\n            comp=\"${comp[$startIndex,-1]}\"\n            if [ -n \"$comp\" ]; then\n                compadd -x \"${comp}\"\n                __%[1]s_debug \"ActiveHelp will need delimiter\"\n                hasActiveHelp=1\n            fi\n\n            continue\n        fi\n\n        if [ -n \"$comp\" ]; then\n            # If requested, completions are returned with a description.\n            # The description is preceded by a TAB character.\n            # For zsh's _describe, we need to use a : instead of a TAB.\n            # We first need to escape any : as part of the complet...",
+            "content": "func genZshComp(buf io.StringWriter, name string, includeDesc bool) {\n\tcompCmd := ShellCompRequestCmd\n\tif !includeDesc {\n\t\tcompCmd = ShellCompNoDescRequestCmd\n\t}\n\tWriteStringAndCheck(buf, fmt.Sprintf(`#compdef %[1]s\ncompdef _%[1]s %[1]s\n\n# zsh completion for %-36[1]s -*- shell-script -*-\n\n__%[1]s_debug()\n{\n    local file=\"$BASH_COMP_DEBUG_FILE\"\n    if [[ -n ${file} ]]; then\n        echo \"$*\" >> \"${file}\"\n    fi\n}\n\n_%[1]s()\n{\n    local shellCompDirectiveError=%[3]d\n    local shellCompDirectiveNoSpace=%[4]d\n    local shellCompDirectiveNoFileComp=%[5]d\n    local shellCompDirectiveFilterFileExt=%[6]d\n    local shellCompDirectiveFilterDirs=%[7]d\n    local shellCompDirectiveKeepOrder=%[8]d\n\n    local lastParam lastChar flagPrefix requestComp out directive comp lastComp noSpace keepOrder\n    local -a completions\n\n    __%[1]s_debug \"\\n========= starting completion logic ==========\"\n    __%[1]s_debug \"CURRENT: ${CURRENT}, words[*]: ${words[*]}\"\n\n    # The user could have moved the cursor backwards on the command-line.\n    # We need to trigger completion from the $CURRENT location, so we need\n    # to truncate the command-line ($words) up to the $CURRENT location.\n    # (We cannot use $CURSOR as its value does not work when a command is an alias.)\n    words=(\"${=words[1,CURRENT]}\")\n    __%[1]s_debug \"Truncated words[*]: ${words[*]},\"\n\n    lastParam=${words[-1]}\n    lastChar=${lastParam[-1]}\n    __%[1]s_debug \"lastParam: ${lastParam}, lastChar: ${lastChar}\"\n\n    # For zsh, when completing a flag with an = (e.g., %[1]s -n=<TAB>)\n    # completions must be prefixed with the flag\n    setopt local_options BASH_REMATCH\n    if [[ \"${lastParam}\" =~ '-.*=' ]]; then\n        # We are dealing with a flag with an =\n        flagPrefix=\"-P ${BASH_REMATCH}\"\n    fi\n\n    # Prepare the command to obtain completions\n    requestComp=\"${words[1]} %[2]s ${words[2,-1]}\"\n    if [ \"${lastChar}\" = \"\" ]; then\n        # If the last parameter is complete (there is a space following it)\n        # We add an extra empty parameter so we can indicate this to the go completion code.\n        __%[1]s_debug \"Adding extra empty parameter\"\n        requestComp=\"${requestComp} \\\"\\\"\"\n    fi\n\n    __%[1]s_debug \"About to call: eval ${requestComp}\"\n\n    # Use eval to handle any environment variables and such\n    out=$(eval ${requestComp} 2>/dev/null)\n    __%[1]s_debug \"completion output: ${out}\"\n\n    # Extract the directive integer following a : from the last line\n    local lastLine\n    while IFS='\\n' read -r line; do\n        lastLine=${line}\n    done < <(printf \"%%s\\n\" \"${out[@]}\")\n    __%[1]s_debug \"last line: ${lastLine}\"\n\n    if [ \"${lastLine[1]}\" = : ]; then\n        directive=${lastLine[2,-1]}\n        # Remove the directive including the : and the newline\n        local suffix\n        (( suffix=${#lastLine}+2))\n        out=${out[1,-$suffix]}\n    else\n        # There is no directive specified.  Leave $out as is.\n        __%[1]s_debug \"No directive found.  Setting do default\"\n        directive=0\n    fi\n\n    __%[1]s_debug \"directive: ${directive}\"\n    __%[1]s_debug \"completions: ${out}\"\n    __%[1]s_debug \"flagPrefix: ${flagPrefix}\"\n\n    if [ $((directive & shellCompDirectiveError)) -ne 0 ]; then\n        __%[1]s_debug \"Completion received error. Ignoring completions.\"\n        return\n    fi\n\n    local activeHelpMarker=\"%[9]s\"\n    local endIndex=${#activeHelpMarker}\n    local startIndex=$((${#activeHelpMarker}+1))\n    local hasActiveHelp=0\n    while IFS='\\n' read -r comp; do\n        # Check if this is an activeHelp statement (i.e., prefixed with $activeHelpMarker)\n        if [ \"${comp[1,$endIndex]}\" = \"$activeHelpMarker\" ];then\n            __%[1]s_debug \"ActiveHelp found: $comp\"\n            comp=\"${comp[$startIndex,-1]}\"\n            if [ -n \"$comp\" ]; then\n                compadd -x \"${comp}\"\n                __%[1]s_debug \"ActiveHelp will need delimiter\"\n                hasActiveHelp=1\n            fi\n\n            continue\n        fi\n\n        if [ -n \"$comp\" ]; then\n            # If requested, completions are returned with a description.\n    ...",
             "graph_path": [
               "2079be6a-5493-5ed2-93c9-b32785852d16"
             ],
@@ -9398,6 +9400,19 @@
             "content": "active_help.go: programs set messages via GetActiveHelpConfig/ActiveHelp; the __complete machinery emits them as completion descriptions. Controlled by the COBRA_ACTIVE_HELP env var (0 disables, 'local' limits to local commands).\n",
             "graph_path": [
               "d52a9d9f-8462-4c7b-991d-7ab70f662767"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "source": "rule",
+            "title": "Active help must degrade cleanly without env support",
+            "relevance": 0.39730238914489746,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "graph_path": [
+              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
             ],
             "graph_path_description": ""
           },
@@ -9907,7 +9922,6 @@
             "function:TestFishCompletionNoActiveHelp (duplicate content)",
             "file:bash_completionsV2_test.go (duplicate content)",
             "file:active_help_test.go (duplicate content)",
-            "rule:Active help must degrade cleanly without env support (duplicate content)",
             "rule:Completion changes must cover bash, zsh, fish, powershell (duplicate content)",
             "file:shell_completions.go (duplicate content)",
             "function:TestMultiActiveHelp (duplicate content)",
@@ -9954,7 +9968,7 @@
         "knowledge_gradient": 0.09113253200570741,
         "knowledge_strength": 0.7521808287366915
       },
-      "latency_ms": 481,
+      "latency_ms": 432,
       "results": [
         {
           "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
@@ -10291,26 +10305,13 @@
         }
       ],
       "context": {
-        "latency_ms": 592,
+        "latency_ms": 537,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0772737264633179,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0688745975494385,
+            "relevance": 0.7589297294616699,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -10320,15 +10321,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.046560287475586,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.755754828453064,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419397830963135,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -10350,7 +10364,7 @@
             "relevance": 0.6534299850463867,
             "tier": "full",
             "drift_count": 0,
-            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage cobra\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype PositionalArgs func(cmd *Command, args []string) error\n\n// legacyArgs validation has the following behaviour:\n// - root commands with no subcommands can take arbitrary arguments\n// - root commands with subcommands will do subcommand validity checking\n// - subcommands will always accept arbitrary arguments\nfunc legacyArgs(cmd *Command, args []string) error {\n\t// no subcommand, always take args\n\tif !cmd.HasSubCommands() {\n\t\treturn nil\n\t}\n\n\t// root command with subcommands, do subcommand checking.\n\tif !cmd.HasParent() && len(args) > 0 {\n\t\treturn fmt.Errorf(\"unknown command %q for %q%s\", args[0], cmd.CommandPath(), cmd.findSuggestions(args[0]))\n\t}\n\treturn nil\n}\n\n// NoArgs returns an error if any args are included.\nfunc NoArgs(cmd *Command, args []string) error {\n\tif len(args) > 0 {\n\t\treturn fmt.Errorf(\"unknown command %q for %q\", args[0], cmd.CommandPath())\n\t}\n\treturn nil\n}\n\n// OnlyValidArgs returns an error if there are any positional args that are not in\n// the `ValidArgs` field of `Command`\nfunc OnlyValidArgs(cmd *Command, args []string) error {\n\tif len(cmd.ValidArgs) > 0 {\n\t\t// Remove any description that may be included in Vali...",
+            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage cobra\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype PositionalArgs func(cmd *Command, args []string) error\n\n// legacyArgs validation has the following behaviour:\n// - root commands with no subcommands can take arbitrary arguments\n// - root commands with subcommands will do subcommand validity checking\n// - subcommands will always accept arbitrary arguments\nfunc legacyArgs(cmd *Command, args []string) error {\n\t// no subcommand, always take args\n\tif !cmd.HasSubCommands() {\n\t\treturn nil\n\t}\n\n\t// root command with subcommands, do subcommand checking.\n\tif !cmd.HasParent() && len(args) > 0 {\n\t\treturn fmt.Errorf(\"unknown command %q for %q%s\", args[0], cmd.CommandPath(), cmd.findSuggestions(args[0]))\n\t}\n\treturn nil\n}\n\n// NoArgs returns an error if any args are included.\nfunc NoArgs(cmd *Command, args []string) error {\n\tif len(args) > 0 {\n\t\treturn fmt.Errorf(\"unknown command %q for %q\", args[0], cmd.CommandPath())\n\t}\n\treturn nil\n}\n\n// OnlyValidArgs returns an error if there are any positional args that are not in\n// the `ValidArgs` field of `Command`\nfunc OnlyValidArgs(cmd *Command, args []string) error {\n\tif len(cmd.ValidArgs) > 0 {\n\t\t// Remove any description that may be included in ValidArgs.\n\t\t// A description is following a tab character.\n\t\tvalidArgs := make([]string, 0, len(cmd.ValidArgs))\n\t\tfor _, v := range cmd.ValidArgs {\n\t\t\tvalidArgs = append(validArgs, strings.SplitN(v, \"\\t\", 2)...",
             "graph_path": [
               "db8c5b96-5a68-5680-acc7-e767399f45a0"
             ],
@@ -11036,20 +11050,6 @@
             "graph_path_description": "Positional arg validation runs between flag parsing and Run \u2192 auto references \u2192 ArbitraryArgs"
           },
           {
-            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
-            "source": "rule",
-            "title": "Use the provided Args validators before custom logic",
-            "relevance": 0.06349857151508331,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
-            "graph_path": [
-              "5896c8bc-0ec1-5efc-a236-c9dc384e7282",
-              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
-            ],
-            "graph_path_description": "MatchAll \u2192 auto references \u2192 Use the provided Args validators before custom logic"
-          },
-          {
             "entity_id": "f94e5fc4-8698-4bb9-8ef8-84c8010d65bb",
             "source": "knowledge",
             "title": "Shell completion runs through hidden __complete commands",
@@ -11426,6 +11426,7 @@
             "file:man_docs.go (duplicate content)",
             "file:completions.go (duplicate content)",
             "file:md_docs.go (duplicate content)",
+            "rule:Use the provided Args validators before custom logic (duplicate content)",
             "file:powershell_completions.go (duplicate content)"
           ],
           "pointer_ids": [],
@@ -11459,7 +11460,7 @@
         "knowledge_gradient": 0.04033800903406866,
         "knowledge_strength": 0.7708747671725243
       },
-      "latency_ms": 463,
+      "latency_ms": 510,
       "results": [
         {
           "id": "96101179-ac96-4283-95e7-2be5fbadc284",
@@ -11732,18 +11733,9 @@
           "stale": null
         },
         {
-          "id": "8df64f91-5782-58b8-856d-fd32b5463966",
-          "type": "function",
-          "title": "TestGetFlagCompletion",
-          "relevance": 0.16053973138332367,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
+          "id": "1fc0a961-1b8a-42f3-9a28-12bda648a8e6",
           "type": "knowledge",
-          "title": "Flag group constraints are declared then validated post-parse",
+          "title": "Test commands via SetArgs + SetOut/SetErr buffers",
           "relevance": 0.16053973138332367,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -11757,29 +11749,25 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
+        },
+        {
+          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
+          "type": "knowledge",
+          "title": "Flag group constraints are declared then validated post-parse",
+          "relevance": 0.16053973138332367,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
         }
       ],
       "context": {
-        "latency_ms": 538,
+        "latency_ms": 1019,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0772737264633179,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0688745975494385,
+            "relevance": 0.7589296698570251,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -11789,15 +11777,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0470353364944458,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7557547688484192,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419397234916687,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -12008,6 +12009,19 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "source": "rule",
+            "title": "Active help must degrade cleanly without env support",
+            "relevance": 0.38055023550987244,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "graph_path": [
+              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "bfcc7754-c1b3-4f91-b790-f9c19d6896bc",
             "source": "rule",
             "title": "Shared flags must be PersistentFlags on the root command",
@@ -12066,7 +12080,7 @@
             "relevance": 0.24514827132225037,
             "tier": "full",
             "drift_count": 0,
-            "content": "func preExecHook(c *Command) {\n\tif MousetrapHelpText != \"\" && mousetrap.StartedByExplorer() {\n\t\tc.Print(MousetrapHelpText)\n\t\tif MousetrapDisplayDuration > 0 {\n\t\t\ttime.Sleep(MousetrapDisplayDuration)\n\t\t} else {\n\t\t\tc.Println(\"Press return to continue...\")\n\t\t\tfmt.Scanln()\n\t\t}\n\t\tos.Exit(1)\n... (2 more lines)",
+            "content": "func preExecHook(c *Command) {\n\tif MousetrapHelpText != \"\" && mousetrap.StartedByExplorer() {\n\t\tc.Print(MousetrapHelpText)\n\t\tif MousetrapDisplayDuration > 0 {\n\t\t\ttime.Sleep(MousetrapDisplayDuration)\n\t\t} else {\n\t\t\tc.Println(\"Press return to continue...\")\n\t\t\tfmt.Scanln()\n\t\t}\n\t\tos.Exit(1)\n\t}\n}",
             "graph_path": [
               "96c39456-8a1d-51ae-90f8-84d1185601ba"
             ],
@@ -12255,6 +12269,34 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "1fc0a961-1b8a-42f3-9a28-12bda648a8e6",
+            "source": "knowledge",
+            "title": "Test commands via SetArgs + SetOut/SetErr buffers",
+            "relevance": 0.163968026638031,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "The idiom: cmd.SetArgs([]string{...}), cmd.SetOut(buf), cmd.SetErr(buf), then Execute(). Works without subprocess; assert on buf contents and the returned error. Remember a fresh command instance per test \u2014 flag state persists across Execute calls.\n",
+            "graph_path": [
+              "065ef67b-f4d4-521a-b854-450797f81672",
+              "1fc0a961-1b8a-42f3-9a28-12bda648a8e6"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+            "source": "knowledge",
+            "title": "Commands form a tree resolved by ExecuteC and find()",
+            "relevance": 0.163968026638031,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Command is a node: root.Execute() -> ExecuteC walks args via find() to resolve the target subcommand, then calls execute(). TraverseChildren controls whether args are parsed as flags during descent or treated strictly as command names until the target is found.\n",
+            "graph_path": [
+              "065ef67b-f4d4-521a-b854-450797f81672",
+              "5549f67c-69cf-4647-bee0-dc9a2eefbd12"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
             "source": "knowledge",
             "title": "Flag group constraints are declared then validated post-parse",
@@ -12297,16 +12339,16 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "315cf79d-a5f8-583c-949d-2136128bda7b",
-            "source": "function",
-            "title": "TestValidateFlagGroups",
+            "entity_id": "230fd1cc-8fd1-4e8b-afb6-4f88a53d21c4",
+            "source": "observation",
+            "title": "Add support for PowerShell 7.2+ (#1916)",
             "relevance": 0.163968026638031,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestValidateFlagGroups(t *testing.T) {\n\tgetCmd := func() *Command {\n\t\tc := &Command{\n\t\t\tUse: \"testcmd\",\n\t\t\tRun: func(cmd *Command, args []string) {\n\t\t\t}}\n\t\t// Define lots of flags to utilize for testing.\n\t\tfor _, v := range []string{\"a\", \"b\", \"c\", \"d\"} {\n\t\t\tc.Flags().String(v, \"\", \"\")\n\t\t}\n\t\tfor _, v := range []string{\"e\", \"f\", \"g\"} {\n\t\t\tc.PersistentFlags().String(v, \"\", \"\")\n\t\t}\n\t\tsubC := &Command{\n\t\t\tUse: \"subcmd\",\n\t\t\tRun: func(cmd *Command, args []string) {\n\t\t\t}}\n\t\tsubC.Flags().String(\"subonly\", \"\", \"\")\n\t\tc.AddCommand(subC)\n\t\treturn c\n\t}\n\n\t// Each test case uses a unique command from the function above.\n\ttestcases := []struct {\n\t\tdesc                        string\n\t\tflagGroupsRequired          []string\n\t\tflagGroupsOneRequired       []string\n\t\tflagGroupsExclusive         []string\n\t\tsubCmdFlagGroupsRequired    []string\n\t\tsubCmdFlagGroupsOneRequired []string\n\t\tsubCmdFlagGroupsExclusive   []string\n\t\targs                        []string\n\t\texpectErr                   string\n\t}{\n\t\t{\n\t\t\tdesc: \"No flags no problem\",\n\t\t}, {\n\t\t\tdesc:                \"No flags no problem even with conflicting groups\",\n\t\t\tflagGroupsRequired:  []string{\"a b\"},\n\t\t\tflagGroupsExclusive: []string{\"a b\"},\n... (134 more lines)",
+            "content": "PowerShell 7.2 has changed the way arguments are passed to executables. (from commit 567ea8ebc9; touches powershell_completions.go)\n",
             "graph_path": [
               "065ef67b-f4d4-521a-b854-450797f81672",
-              "315cf79d-a5f8-583c-949d-2136128bda7b"
+              "230fd1cc-8fd1-4e8b-afb6-4f88a53d21c4"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -12611,7 +12653,7 @@
             "relevance": 0.06175507977604866,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestFlagErrorFunc(t *testing.T) {\n\tc := &Command{Use: \"c\", Run: emptyRun}\n\n\texpectedFmt := \"This is expected: %v\"\n\tc.SetFlagErrorFunc(func(_ *Command, err error) error {\n\t\treturn fmt.Errorf(expectedFmt, err)\n\t})\n\n\t_, err := exec...",
+            "content": "func TestFlagErrorFunc(t *testing.T) {\n\tc := &Command{Use: \"c\", Run: emptyRun}\n\n\texpectedFmt := \"This is expected: %v\"\n\tc.SetFlagErrorFunc(func(_ *Command, err error) error {\n\t\treturn fmt.Errorf(expectedFmt, err)\n\t})\n\n\t_, err := executeCommand(c, \"--unknown-flag\")\n\n\tgot := err.Error()\n\texpected := fmt.Sprintf(expectedFmt, \"unknown flag: --unknown-flag\")\n\tif got != expected {\n\t\tt.Errorf(\"Expected %v, got %v\", expected, got)\n\t}\n}",
             "graph_path": [
               "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
               "1cac3341-fe28-59bc-aff3-923d2bd006e2"
@@ -12625,7 +12667,7 @@
             "relevance": 0.06175507977604866,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestEnableCommandSortingIsDisabled(t *testing.T) {\n\tEnableCommandSorting = false\n\n\toriginalNames := []string{\"middle\", \"zlast\", \"afirst\"}\n... (7 more lines)",
+            "content": "func TestEnableCommandSortingIsDisabled(t *testing.T) {\n\tEnableCommandSorting = false\n\n\toriginalNames := []string{\"middle\", \"zlast\", \"afirst\"}\n\n\tvar rootCmd = &Command{Use: \"root\"}\n\n\tfor _, name := range originalNames {\n\t\trootCmd.AddCommand(&Command{Use: name})\n\t}\n\n\tfor i, c := range rootCmd.Commands() {\n\t\tgot := c.Name()\n\t\tif originalNames[i] != got {\n\t\t\tt.Errorf(\"expected: %s, got: %s\", originalNames[i], got)\n\t\t}\n\t}\n\n\tEnableCommandSorting = defaultCommandSorting\n}",
             "graph_path": [
               "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
               "1ce4d1f4-99a6-54b6-b707-50b2d45c8d3b"
@@ -12639,7 +12681,7 @@
             "relevance": 0.06175507977604866,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestSetContextPreRunOverwrite(t *testing.T) {\n\ttype key struct{}\n\tval := \"blah\"\n\troot := &Command{\n... (7 more lines)",
+            "content": "func TestSetContextPreRunOverwrite(t *testing.T) {\n\ttype key struct{}\n\tval := \"blah\"\n\troot := &Command{\n\t\tUse: \"root\",\n\t\tRun: func(cmd *Command, args []string) {\n\t\t\tkey := cmd.Context().Value(key{})\n\t\t\t_, ok := key.(string)\n\t\t\tif ok {\n\t\t\t\tt.Error(\"key found in context when not expected\")\n\t\t\t}\n\t\t},\n\t}\n\tctx := context.WithValue(context.Background(), key{}, val)\n\troot.SetContext(ctx)\n\terr := root.ExecuteContext(context.Background())\n\tif err != nil {\n\t\tt.Error(err)\n\t}\n}",
             "graph_path": [
               "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
               "1ed80c31-0abd-50c4-be1f-5b9d1b3546a3"
@@ -12653,7 +12695,7 @@
             "relevance": 0.06175507977604866,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestWrongGroupForCompletion(t *testing.T) {\n\tvar rootCmd = &Command{Use: \"root\", Short: \"test\", Run: emptyRun}\n\tvar childCmd = &Command{Use: \"child\", Run: emptyRun}\n\trootCmd.AddCommand(childCmd)\n... (7 more lines)",
+            "content": "func TestWrongGroupForCompletion(t *testing.T) {\n\tvar rootCmd = &Command{Use: \"root\", Short: \"test\", Run: emptyRun}\n\tvar childCmd = &Command{Use: \"child\", Run: emptyRun}\n\trootCmd.AddCommand(childCmd)\n\n\trootCmd.AddGroup(&Group{ID: \"group\", Title: \"Test group\"})\n\t// Use the wrong group ID\n\trootCmd.SetCompletionCommandGroupID(\"wrong\")\n\n\tdefer func() {\n\t\tif recover() == nil {\n\t\t\tt.Errorf(\"The code should have panicked due to ...",
             "graph_path": [
               "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
               "20b0bd62-2aa6-5d85-a003-11bee844e232"
@@ -12743,72 +12785,17 @@
               "2bb8e0dd-f864-5e5e-8330-a98446ebffcb"
             ],
             "graph_path_description": "command_test.go \u2192 contains \u2192 TestHelpCommandExecutedWithoutVersionSet"
-          },
-          {
-            "entity_id": "2c5b0654-9d41-5b04-b3fc-814e99a48ce0",
-            "source": "function",
-            "title": "TestVersionFlagOnlyAddedToRoot",
-            "relevance": 0.06175507977604866,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "func TestVersionFlagOnlyAddedToRoot(t *testing.T) {\n\trootCmd := &Command{Use: \"root\", Version: \"1.0.0\", Run: emptyRun}\n\trootCmd.AddCommand(&Command{Use: \"sub\", Run: emptyRun})\n\n... (7 more lines)",
-            "graph_path": [
-              "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-              "2c5b0654-9d41-5b04-b3fc-814e99a48ce0"
-            ],
-            "graph_path_description": "command_test.go \u2192 contains \u2192 TestVersionFlagOnlyAddedToRoot"
-          },
-          {
-            "entity_id": "2d485d02-a660-509a-adb4-d046d3e8fab8",
-            "source": "function",
-            "title": "TestFlagErrorFuncHelp",
-            "relevance": 0.06175507977604866,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "func TestFlagErrorFuncHelp(t *testing.T) {\n\tc := &Command{Use: \"c\", Run: emptyRun}\n\tc.PersistentFlags().Bool(\"help\", false, \"help for c\")\n\tc.SetFlagErrorFunc(func(_ *Command, err error) error {\n... (7 more lines)",
-            "graph_path": [
-              "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-              "2d485d02-a660-509a-adb4-d046d3e8fab8"
-            ],
-            "graph_path_description": "command_test.go \u2192 contains \u2192 TestFlagErrorFuncHelp"
-          },
-          {
-            "entity_id": "2d95305b-27f2-5f67-afb0-7b2734134251",
-            "source": "function",
-            "title": "TestFlagInvalidInput",
-            "relevance": 0.06175507977604866,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "func TestFlagInvalidInput(t *testing.T) {\n\trootCmd := &Command{Use: \"root\", Run: emptyRun}\n\trootCmd.Flags().IntP(\"intf\", \"i\", -1, \"\")\n\n... (7 more lines)",
-            "graph_path": [
-              "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-              "2d95305b-27f2-5f67-afb0-7b2734134251"
-            ],
-            "graph_path_description": "command_test.go \u2192 contains \u2192 TestFlagInvalidInput"
-          },
-          {
-            "entity_id": "2ea26069-f58d-5d3f-8c4b-c3bb1ebdee6a",
-            "source": "function",
-            "title": "TestFParseErrWhitelistSiblingCommand",
-            "relevance": 0.06175507977604866,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "func TestFParseErrWhitelistSiblingCommand(t *testing.T) {\n\troot := &Command{\n\t\tUse: \"root\",\n\t\tRun: emptyRun,\n... (7 more lines)",
-            "graph_path": [
-              "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-              "2ea26069-f58d-5d3f-8c4b-c3bb1ebdee6a"
-            ],
-            "graph_path_description": "command_test.go \u2192 contains \u2192 TestFParseErrWhitelistSiblingCommand"
           }
         ],
         "metadata": {
           "dropped_sources": [
-            "rule:Active help must degrade cleanly without env support (duplicate content)",
             "file:command.go (duplicate content)",
             "file:command_win.go (duplicate content)",
             "file:cobra.go (duplicate content)",
             "file:args.go (duplicate content)",
             "file:completions.go (duplicate content)",
+            "file:flag_groups_test.go (duplicate content)",
+            "file:shell_completions.go (duplicate content)",
             "function:TestNoRootRunCommandExecutedWithoutVersionSet (duplicate content)"
           ],
           "pointer_ids": [],
@@ -12842,7 +12829,7 @@
         "knowledge_gradient": 0.021111674708994,
         "knowledge_strength": 0.7081340275724308
       },
-      "latency_ms": 503,
+      "latency_ms": 652,
       "results": [
         {
           "id": "0d68c9f7-c902-563b-afaf-4d0410e438cd",
@@ -13025,9 +13012,27 @@
           "stale": null
         },
         {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.16499952971935272,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "96101179-ac96-4283-95e7-2be5fbadc284",
           "type": "rule",
           "title": "Never ship a hook-only command",
+          "relevance": 0.16499952971935272,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
+          "type": "rule",
+          "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
           "relevance": 0.16499952971935272,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -13188,26 +13193,13 @@
         }
       ],
       "context": {
-        "latency_ms": 605,
+        "latency_ms": 1606,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0774486064910889,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.069064736366272,
+            "relevance": 0.7620067000389099,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -13217,15 +13209,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0475080013275146,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7589294910430908,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419396042823792,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -13289,6 +13294,19 @@
             "content": "Cobra is a library \u2014 renaming a flag or changing help text breaks downstream CLIs' tests. Treat command API and generated output as public contract.\n",
             "graph_path": [
               "a210b0f2-9ff6-450c-b470-3371f0cde32c"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "source": "rule",
+            "title": "Active help must degrade cleanly without env support",
+            "relevance": 0.37010711431503296,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "graph_path": [
+              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
             ],
             "graph_path_description": ""
           },
@@ -13494,7 +13512,7 @@
             "relevance": 0.31482115387916565,
             "tier": "full",
             "drift_count": 0,
-            "content": "func (c *Command) initCompleteCmd(args []string) {\n\tcompleteCmd := &Command{\n\t\tUse:                   fmt.Sprintf(\"%s [command-line]\", ShellCompRequestCmd),\n\t\tAliases:               []string{ShellCompNoDescRequestCmd},\n\t\tDisableFlagsInUseLine: true,\n\t\tHidden:                true,\n\t\tDisableFlagParsing:    true,\n\t\tArgs:                  MinimumNArgs(1),\n\t\tShort:                 \"Request shell completion choices for the specified command-line\",\n\t\tLong: fmt.Sprintf(\"%[2]s is a special command that is used by the shell completion logic\\n%[1]s\",\n\t\t\t\"to request completion choices for the specified command-line.\", ShellCompRequestCmd),\n\t\tRun: func(cmd *Command, args []string) {\n\t\t\tfinalCmd, completions, directive, err := cmd.getCompletions(args)\n\t\t\tif err != nil {\n\t\t\t\tCompErrorln(err.Error())\n\t\t\t\t// Keep going for multiple reasons:\n\t\t\t\t// 1- There could be some valid completions even though there was an error\n\t\t\t\t// 2- Even without completions, we need to print the directive\n\t\t\t}\n\n\t\t\tnoDescriptions := cmd.CalledAs() == ShellCompNoDescRequestCmd\n\t\t\tif !noDescriptions {\n\t\t\t\tif doDescriptions, err := strconv.ParseBool(getEnvConfig(cmd, configEnvVarSuffixDescriptions)); err == nil {\n\t\t\t\t\tnoDescriptions = !doDescriptions\n\t\t\t\t}\n\t\t\t}\n\t\t\tnoActiveHelp := GetActiveHelpConfig(finalCmd) == activeHelpGlobalDisable\n\t\t\tout := finalCmd.OutOrStdout()\n\t\t\tfor _, comp := range completions {\n\t\t\t\tif noActiveHelp && strings.HasPrefix(comp, activeHelpMarker) {\n\t\t\t\t\t// Remove all activeHelp entries if it's disabled.\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif noDescriptions {\n\t\t\t\t\t// Remove any description that may be included following a tab character.\n\t\t\t\t\tcomp = strings.SplitN(comp, \"\\t\", 2)[0]\n\t\t\t\t}\n\n\t\t\t\t// Make sure we only write the first line to the output.\n\t\t\t\t// This is needed if a description contains a linebreak.\n\t\t\t\t// Otherwise the shell scripts will interpret the other lines as new flags\n\t\t\t\t// and could therefore provide a wrong completion.\n\t\t\t\tcomp = strings.SplitN(comp, \"\\n\", 2)[0]\n\n\t\t\t\t// Finally trim the completion.  This is especially important to get rid\n\t\t\t\t// of a trailing tab when there are no description following it.\n\t\t\t\t// For example, a sub-command without a description should not be completed\n\t\t\t\t// with a tab at the end (or else zsh will show a -- following it\n\t\t\t\t// although there is no description).\n\t\t\t\tcomp = strings.TrimSpace(comp)\n\n\t\t\t\t// Print each possible completion to the output for the completion script to consume.\n\t\t\t\tfmt.Fprintln(out, comp)\n\t\t\t}\n\n\t\t\t// As the last printout, print the completion directive for the completion script to parse.\n\t\t\t// The directive integer must be that last character following a single colon (:).\n\t\t\t// The completion script expects :<directive>\n\t\t\tfmt.Fprintf(out, \":%d\\n\", directive)\n\n\t\t\t// Print some helpful info to stderr for the user to understand.\n\t\t\t// Output from stderr must be ignored by the completion script.\n\t\t\tfmt.Fprintf(finalCmd.ErrOrStderr(), \"Completion ended with directive: %s\\n\", directive.string())\n\t\t},\n\t}\n\tc.AddCommand(completeCmd)\n\tsubCmd, _, err := c.Find(args)\n\tif err != nil || subCmd.Name() != ShellCompRequestCmd {\n\t\t// Only create this special command if it is actually being called.\n\t\t// This reduces possible side-effects of creating such a command;\n\t\t// for example, having this command would cause problems to a\n\t\t// cobra program that only consists of the root command, since this\n\t\t// command would cause the root command to suddenly have a subcommand.\n\t\tc.RemoveCommand(completeCmd)\n\t}\n}",
+            "content": "func (c *Command) initCompleteCmd(args []string) {\n\tcompleteCmd := &Command{\n\t\tUse:                   fmt.Sprintf(\"%s [command-line]\", ShellCompRequestCmd),\n\t\tAliases:               []string{ShellCompNoDescRequestCmd},\n\t\tDisableFlagsInUseLine: true,\n\t\tHidden:                true,\n\t\tDisableFlagParsing:    true,\n\t\tArgs:                  MinimumNArgs(1),\n\t\tShort:                 \"Request shell completion choices for the specified command-line\",\n\t\tLong: fmt.Sprintf(\"%[2]s is a special command that is used by the shell completion logic\\n%[1]s\",\n\t\t\t\"to request completion choices for the specified command-line.\", ShellCompRequestCmd),\n\t\tRun: func(cmd *Command, args []string) {\n\t\t\tfinalCmd, completions, directive, err := cmd.getCompletions(args)\n\t\t\tif err != nil {\n\t\t\t\tCompErrorln(err.Error())\n\t\t\t\t// Keep going for multiple reasons:\n\t\t\t\t// 1- There could be some valid completions even though there was an error\n\t\t\t\t// 2- Even without completions, we need to print the directive\n\t\t\t}\n\n\t\t\tnoDescriptions := cmd.CalledAs() == ShellCompNoDescRequestCmd\n\t\t\tif !noDescriptions {\n\t\t\t\tif doDescriptions, err := strconv.ParseBool(getEnvConfig(cmd, configEnvVarSuffixDescriptions)); err == nil {\n\t\t\t\t\tnoDescriptions = !doDescriptions\n\t\t\t\t}\n\t\t\t}\n\t\t\tnoActiveHelp := GetActiveHelpConfig(finalCmd) == activeHelpGlobalDisable\n\t\t\tout := finalCmd.OutOrStdout()\n\t\t\tfor _, comp := range completions {\n\t\t\t\tif noActiveHelp && strings.HasPrefix(comp, activeHelpMarker) {\n\t\t\t\t\t// Remove all activeHelp entries if it's disabled.\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif noDescriptions {\n\t\t\t\t\t// Remove any description that may be included following a tab character.\n\t\t\t\t\tcomp = strings.SplitN(comp, \"\\t\", 2)[0]\n\t\t\t\t}\n\n\t\t\t\t// Make sure we only write the first line to the output.\n\t\t\t\t// This is needed if a description contains a linebreak.\n\t\t\t\t// Otherwise the shell scripts will interpret the other lines as new flags\n\t\t\t\t// and could therefore provide a wrong completion.\n\t\t\t\tcomp = strings.SplitN(comp, \"\\n\", 2)[0]\n\n\t\t\t\t// Finally trim the completion.  This is especially important to get rid\n\t\t\t\t// of a trailing tab when there are no description following it.\n\t\t\t\t// For example, a sub-command without a description should not be completed\n\t\t\t\t// with a tab at the end (or else zsh will show a -- following it\n\t\t\t\t// although there is no description).\n\t\t\t\tcomp = strings.TrimSpace(comp)\n\n\t\t\t\t// Print each possible completion to the output for the completion script to consume.\n\t\t\t\tfmt.Fprintln(out, comp)\n\t\t\t}\n\n\t\t\t// As the last printout, print the completion directive for the completion script to parse.\n\t\t\t// The directive integer must be that last character following a single colon (:).\n\t\t\t// The completion script expects :<directive>\n\t\t\tfmt.Fprintf(out, \":%d\\n\", directive)\n\n\t\t\t// Print some helpful info to stderr for the user to understand.\n\t\t\t// Output from stderr must be ignored by the completion script.\n\t\t\tfmt.Fprintf(finalCmd.ErrOrStderr(), \"Completion ended with directive: %s\\n\", directive.string())\n\t\t},\n\t}\n\tc.AddCommand(completeCmd)\n\tsubCmd, _, err := c.Find(args)\n\tif err != nil || subCmd.Name() != ShellCompRequestCmd {\n\t\t// Only create this special command if it is actually being called.\n\t\t// This reduces possible side-effects of creating such a command;\n\t\t// for example, having this command would cause problems to a\n\t\t// cobra program that only consists of the root command, sin...",
             "graph_path": [
               "b88f77cf-8fb0-55b9-afa0-cfb13231c4ae"
             ],
@@ -13507,7 +13525,7 @@
             "relevance": 0.31482115387916565,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestDefaultCompletionCmd(t *testing.T) {\n\trootCmd := &Command{\n\t\tUse:  \"root\",\n\t\tArgs: NoArgs,\n\t\tRun:  emptyRun,\n\t}\n\n\t// Test that when there are no sub-commands, the completion command is not created if it is not called directly.\n\tassertNoErr(t, rootCmd.Execute())\n\tfor _, cmd := range rootCmd.commands {\n\t\tif cmd.Name() == compCmdName {\n\t\t\tt.Errorf(\"Should not have a 'completion' command when there are no other sub-commands of root\")\n\t\t\tbreak\n\t\t}\n\t}\n\n\t// Test that when there are no sub-commands, the completion command is created when it is called directly.\n\t_, err := executeCommand(rootCmd, compCmdName)\n\tif err != nil {\n\t\tt.Errorf(\"Unexpected error: %v\", err)\n\t}\n\t// Reset the arguments\n\trootCmd.args = nil\n\t// Remove completion command for the next test\n\tremoveCompCmd(rootCmd)\n\n\t// Add a sub-command\n\tsubCmd := &Command{\n\t\tUse: \"sub\",\n\t\tRun: emptyRun,\n\t}\n\trootCmd.AddCommand(subCmd)\n\n\t// Test that a completion command is created if there are other sub-commands\n\tfound := false\n\tassertNoErr(t, rootCmd.Execute())\n\tfor _, cmd := range rootCmd.commands {\n\t\tif cmd.Name() == compCmdName {\n\t\t\tfound = true\n\t\t\tbreak\n\t\t}\n\t}\n\tif !found {\n\t\tt.Errorf(\"Should have a 'completion' command when there are other sub-commands of root\")\n\t}\n\t// Remove completion command for the next test\n\tremoveCompCmd(rootCmd)\n\n\t// Test that the default completion command can be disabled\n\trootCmd.CompletionOptions.DisableDefaultCmd = true\n\tassertNoErr(t, rootCmd.Execute())\n...",
+            "content": "func TestDefaultCompletionCmd(t *testing.T) {\n\trootCmd := &Command{\n\t\tUse:  \"root\",\n\t\tArgs: NoArgs,\n\t\tRun:  emptyRun,\n\t}\n\n\t// Test that when there are no sub-commands, the completion command is not created if it is not called directly.\n\tassertNoErr(t, rootCmd.Execute())\n\tfor _, cmd := range rootCmd.commands {\n\t\tif cmd.Name() == compCmdName {\n\t\t\tt.Errorf(\"Should not have a 'completion' command when there are no other sub-commands of root\")\n\t\t\tbreak\n\t\t}\n\t}\n\n\t// Test that when there are no sub-commands, the completion command is created when it is called directly.\n\t_, err := executeCommand(rootCmd, compCmdName)\n\tif err != nil {\n\t\tt.Errorf(\"Unexpected error: %v\", err)\n\t}\n\t// Reset the arguments\n\trootCmd.args = nil\n\t// Remove completion command for the next test\n\tremoveCompCmd(rootCmd)\n\n\t// Add a sub-command\n\tsubCmd := &Command{\n\t\tUse: \"sub\",\n\t\tRun: emptyRun,\n\t}\n\trootCmd.AddCommand(subCmd)\n\n\t// Test that a completion command is created if there are other sub-commands\n\tfound := false\n\tassertNoErr(t, rootCmd.Execute())\n\tfor _, cmd := range rootCmd.commands {\n\t\tif cmd.Name() == compCmdName {\n\t\t\tfound = true\n\t\t\tbreak\n... (105 more lines)",
             "graph_path": [
               "f36b832a-0c69-5bfd-b9e9-f3e5f043d26a"
             ],
@@ -13658,6 +13676,20 @@
             "graph_path": [
               "3d6c6830-0dac-57cf-8c39-737e727aa1d4",
               "bfcc7754-c1b3-4f91-b790-f9c19d6896bc"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
+            "source": "rule",
+            "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
+            "relevance": 0.18460606038570404,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Cleanup shared across subcommands belongs in each command's own PostRun or a wrapper around Execute \u2014 PersistentPostRun on root does not reliably cover children.\n",
+            "graph_path": [
+              "3d6c6830-0dac-57cf-8c39-737e727aa1d4",
+              "e3713664-16e5-421e-8cb3-daa363d1cb6e"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -13874,7 +13906,6 @@
         ],
         "metadata": {
           "dropped_sources": [
-            "rule:Active help must degrade cleanly without env support (duplicate content)",
             "file:man_examples_test.go (duplicate content)",
             "file:util.go (duplicate content)",
             "file:command_notwin.go (duplicate content)",
@@ -13915,8 +13946,7 @@
             "file:cobra.go (duplicate content)",
             "file:bash_completionsV2.go (duplicate content)",
             "file:command.go (duplicate content)",
-            "file:completions.go (duplicate content)",
-            "function:ExampleGenManTree (duplicate content)"
+            "file:completions.go (duplicate content)"
           ],
           "pointer_ids": [],
           "search_mode": "hybrid",
@@ -13950,7 +13980,7 @@
         "knowledge_gradient": 0.06363017783197022,
         "knowledge_strength": 0.7307398342393151
       },
-      "latency_ms": 954,
+      "latency_ms": 422,
       "results": [
         {
           "id": "ebf1fcb6-4528-5cb3-8758-031afaedd86e",
@@ -14129,6 +14159,15 @@
           "title": "E-suffixed hooks return errors; plain variants do not",
           "relevance": 0.15769362449645996,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.2144964635372162,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -14341,26 +14380,13 @@
         }
       ],
       "context": {
-        "latency_ms": 570,
+        "latency_ms": 509,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0774483680725098,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0690646171569824,
+            "relevance": 0.7620065808296204,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -14370,15 +14396,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.047507882118225,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7589293718338013,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419394850730896,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -14816,7 +14855,7 @@
             "relevance": 0.22432959079742432,
             "tier": "full",
             "drift_count": 0,
-            "content": "func TestValidateFlagGroups(t *testing.T) {\n\tgetCmd := func() *Command {\n\t\tc := &Command{\n\t\t\tUse: \"testcmd\",\n\t\t\tRun: func(cmd *Command, args []string) {\n\t\t\t}}\n\t\t// Define lots of flags to utilize for testing.\n\t\tfor _, v := range []string{\"a\", \"b\", \"c\", \"d\"} {\n\t\t\tc.Flags().String(v, \"\", \"\")\n\t\t}\n\t\tfor _, v := range []string{\"e\", \"f\", \"g\"} {\n\t\t\tc.PersistentFlags().String(v, \"\", \"\")\n\t\t}\n\t\tsubC := &Command{\n\t\t\tUse: \"subcmd\",\n\t\t\tRun: func(cmd *Command, args []string) {\n\t\t\t}}\n\t\tsubC.Flags().String(\"subonly\", \"\", \"\")\n\t\tc.Ad...",
+            "content": "func TestValidateFlagGroups(t *testing.T) {\n\tgetCmd := func() *Command {\n\t\tc := &Command{\n\t\t\tUse: \"testcmd\",\n\t\t\tRun: func(cmd *Command, args []string) {\n\t\t\t}}\n\t\t// Define lots of flags to utilize for testing.\n\t\tfor _, v := range []string{\"a\", \"b\", \"c\", \"d\"} {\n\t\t\tc.Flags().String(v, \"\", \"\")\n\t\t}\n\t\tfor _, v := range []string{\"e\", \"f\", \"g\"} {\n\t\t\tc.PersistentFlags().String(v, \"\", \"\")\n\t\t}\n\t\tsubC := &Command{\n\t\t\tUse: \"subcmd\",\n\t\t\tRun: func(cmd *Command, args []string) {\n\t\t\t}}\n\t\tsubC.Flags().String(\"subonly\", \"\", \"\")\n\t\tc.AddCommand...",
             "graph_path": [
               "315cf79d-a5f8-583c-949d-2136128bda7b"
             ],
@@ -15565,7 +15604,7 @@
         "knowledge_gradient": 0.05953223503900418,
         "knowledge_strength": 0.6991311338977825
       },
-      "latency_ms": 487,
+      "latency_ms": 431,
       "results": [
         {
           "id": "84b0cd89-e918-5b9a-a4f3-4817dbf1bbfa",
@@ -15766,27 +15805,18 @@
           "stale": null
         },
         {
-          "id": "8d544208-0c84-48c7-82ac-619a50663e2d",
-          "type": "observation",
-          "title": "Print ActiveHelp for bash along other completions (#2076)",
+          "id": "86c7a0cc-cdc4-55ac-878b-49d1f2057e33",
+          "type": "function",
+          "title": "check",
           "relevance": 0.20088008046150208,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "933a9b1c-5db9-576e-aef8-42d30dd6b51c",
+          "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
           "type": "file",
-          "title": "cobra_test.go",
-          "relevance": 0.20088008046150208,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e202e232-6e78-5ac3-97ac-ee2349651793",
-          "type": "file",
-          "title": "cmd_test.go",
+          "title": "fish_completions_test.go",
           "relevance": 0.20088008046150208,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -15902,26 +15932,13 @@
         }
       ],
       "context": {
-        "latency_ms": 571,
+        "latency_ms": 536,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0774483680725098,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0690644979476929,
+            "relevance": 0.7620064616203308,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -15931,15 +15948,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.0475077629089355,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7589293122291565,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419394254684448,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -16091,7 +16121,7 @@
             "relevance": 0.33982789516448975,
             "tier": "full",
             "drift_count": 0,
-            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage doc\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n\n\t\"github.com/spf13/cobra\"\n)\n\nfunc TestGenYamlDoc(t *testing.T) {\n\t// We generate on s subcommand so we have both subcommands and parents\n\tbuf := new(bytes.Buffer)\n\tif err := GenYaml(echoCmd, buf); err != nil {\n\t\tt.Fatal(err)\n\t}\n\toutput := buf.String()\n\n\tcheckStringContains(t, output, echoCmd.Long)\n\tcheckStringContains(t, output, echoCmd.Example)\n\tcheckStringContains(t, output, \"boolone\")\n\tcheckStringContains(t, output, \"rootflag\")\n\tcheckStringContains(t, output, rootCmd.Short)\n\tcheckStringContains(t, output, echoSubCmd.Short)\n\tcheckStringContains(t, output, fmt.Sprintf(\"- %s - %s\", echoSubCmd.CommandPath(), echoSubCmd.Short))\n}\n\nfunc TestGenYamlNoTag(t *testing.T) {\n\trootCmd.DisableAutoGenTag = true\n\tdefer func() { rootCmd.DisableAutoGenTag = false }()\n\n\tbuf := new(bytes.Buffer)\n\tif err := GenYaml(rootCmd, buf); err != nil {\n\t\tt.Fatal(err)\n\t}\n\toutput := buf.String()\n\n\tcheckStringOmits(t, output, \"Auto generated\")\n}\n\nfunc TestGenYamlTree(t *testing.T) {\n\tc := &cobra.Command{Use: \"do [OPTIONS] arg1 arg2\"}\n\n\ttmpdir, err := os.MkdirTemp(\"\", \"test-gen-yaml-tree\")\n\tif err != nil {\n\t\tt.Fatalf(\"Failed to create tmpdir: %s\", err.Error())\n\t}\n\tdefer os.RemoveAll(tmpdir)\n\n\tif err := GenYamlTree(c, tmpdir); err != nil {\n\t\tt.Fatalf(\"GenYamlTree failed: %s\", err.Error())\n\t}\n\n\tif _, err := os.Stat(filepath.Join(tmpdir, \"do.yaml\")); err != nil {\n\t\tt.Fatalf(\"Expected file 'do.yaml' to exist\")\n\t}\n}\n\nfunc TestGenYamlDocRunnable(t *testing.T) {\n\t// Testing a runnable command: should contain the \"usage\" field\n\tbuf := new(bytes.Buffer)\n\tif err := GenYaml(rootCmd, buf); err != nil {\n\t\tt.Fatal(err)\n\t}\n\toutput := buf.String()\n\n\tcheckStringContains(t, output, \"usage: \"+rootCmd.Use)\n}\n\nfunc BenchmarkGenYamlToFile(b *testing.B) {\n\tfile, err := os.CreateTemp(\"\", \"\")\n\tif err != nil {\n\t\tb.Fatal(err)\n\t}\n\tdefer os.Remove(file.Name())\n\tdefer file.Close()\n\n\tb.ResetTimer()\n\tfor i := 0; i < b.N; i++ {\n\t\tif err := GenYaml(rootCmd, file); err != nil {\n\t\t\tb.Fatal(err)\n\t\t}\n\t}\n}\n",
+            "content": "// Copyright 2013-2023 The Cobra Authors\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//      http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\npackage doc\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n\n\t\"github.com/spf13/cobra\"\n)\n\nfunc TestGenYamlDoc(t *testing.T) {\n\t// We generate on s subcommand so we have both subcommands and parents\n\tbuf := new(bytes.Buffer)\n\tif err := GenYaml(echoCmd, buf); err != nil {\n\t\tt.Fatal(err)\n\t}\n\toutput := buf.String()\n\n\tcheckStringContains(t, output, echoCmd.Long)\n\tcheckStringContains(t, output, echoCmd.Example)\n\tcheckStringContains(t, output, \"boolone\")\n\tcheckStringContains(t, output, \"rootflag\")\n\tcheckStringContains(t, output, rootCmd.Short)\n\tcheckStringContains(t, output, echoSubCmd.Short)\n\tcheckStringContains(t, output, fmt.Sprintf(\"- %s - %s\", echoSubCmd.CommandPath(), echoSubCmd.Short))\n}\n\nfunc TestGenYamlNoTag(t *testing.T) {\n\trootCmd.DisableAutoGenTag = true\n\tdefer func() { rootCmd.DisableAutoGenTag = false }()\n\n\tbuf := new(bytes.Buffer)\n\tif err := GenYaml(rootCmd, buf); err != nil {\n\t\tt.Fatal(err)\n\t}\n\toutput := buf.String()\n\n\tcheckStringOmits(t, output, \"Auto generated\")\n}\n\nfunc TestGenYamlTree(t *testing.T) {\n\tc := &cobra.Command{Use: \"do [OPTIONS] arg1 arg2\"}\n\n\ttmpdir, err := os.MkdirTemp(\"\", \"test-gen-yaml-tree\")\n\tif err != nil {\n\t\tt.Fatalf(\"Failed to create tmpdir: %s\", err.Error())\n\t}\n\tdefer os.RemoveAll(tmpdir)\n\n\tif err := GenYamlTree(c, tmpdir); err != nil {\n\t\tt.Fatalf(\"GenYamlTree failed: %s\", err.Error())\n\t}\n\n\tif _, err := os.Stat(filepath.Join(tmpdir, \"do.yaml\")); err != nil {\n\t\tt.Fatalf(\"Expected file 'do.yaml' to exist\")\n\t}\n}\n\nfunc TestGenYamlDocRunnable(t *testing.T) {\n\t// Testing a runnable command: should contain the \"usage\" field\n\tbuf := new(bytes.Buffer)\n\tif err := GenYaml(rootCmd, buf); err != nil {\n\t\tt.Fatal(err)\n\t}\n\toutput := buf.String()\n\n\tcheck...",
             "graph_path": [
               "fcec8fa8-186d-5680-97ef-2b5712bf0e7c"
             ],
@@ -16143,7 +16173,7 @@
             "relevance": 0.32505276799201965,
             "tier": "full",
             "drift_count": 0,
-            "content": "func (c *Command) enforceFlagGroupsForCompletion() {\n\tif c.DisableFlagParsing {\n\t\treturn\n\t}\n\n\tflags := c.Flags()\n\tgroupStatus := map[string]map[string]bool{}\n\toneRequiredGroupStatus := map[string]map[string]bool{}\n\tmutuallyExclusiveGroupStatus := map[string]map[string]bool{}\n\tc.Flags().VisitAll(func(pflag *flag.Flag) {\n\t\tprocessFlagForGroupAnnotation(flags, pflag, requiredAsGroupAnnotation, groupStatus)\n\t\tprocessFlagForGroupAnnotation(flags, pflag, oneRequiredAnnotation, oneRequiredGroupStatus)\n\t\tprocessFlagForGroupAnnotation(flags, pflag, mutuallyExclusiveAnnotation, mutuallyExclusiveGroupStatus)\n\t})\n\n\t// If a flag that is part of a group is present, we make all the other flags\n\t// of that group required so that the shell completion suggests them automatically\n\tfor flagList, flagnameAndStatus := range groupStatus {\n\t\tfor _, isSet := range flagnameAndStatus {\n\t\t\tif isSet {\n\t\t\t\t// One of the flags of the group is set, mark the other ones as required\n\t\t\t\tfor _, fName := range strings.Split(flagList, \" \") {\n\t\t\t\t\t_ = c.MarkFlagRequired(fName)\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\t// If none of the flags of a one-required group are present, we make all the flags\n\t// of that group required so that the shell completion suggests them automatically\n\tfor flagList, flagnameAndStatus := range oneRequiredGroupStatus {\n\t\tisSet := false\n\n\t\tfor _, isSet = range flagnameAndStatus {\n\t\t\tif isSet {\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\n\t\t// None of the flags of the group are set, mark all flags in the group\n\t\t// as required\n\t\tif !isSet {\n\t\t\tfor _, fName := range strings.Split(flagList, \" \") {\n\t\t\t\t_ = c.MarkFlagRequired(fName)\n\t\t\t}\n\t\t}\n\t}\n\n\t// If a flag that is mutually exclusive to others is present, we hide the other\n\t// flags of that group so the shell completion does not suggest them\n\tfor flagList, flagnameAndStatus := range mutuallyExclusiveGroupStatus {\n\t\tfor flagName, isSet := range flagnameAndStatus {\n\t\t\tif isSet {\n\t\t\t\t// One of the flags of the mutually exclusive group is set, mark the other ones as hidden\n\t\t\t...",
+            "content": "func (c *Command) enforceFlagGroupsForCompletion() {\n\tif c.DisableFlagParsing {\n\t\treturn\n\t}\n\n\tflags := c.Flags()\n\tgroupStatus := map[string]map[string]bool{}\n\toneRequiredGroupStatus := map[string]map[string]bool{}\n\tmutuallyExclusiveGroupStatus := map[string]map[string]bool{}\n\tc.Flags().VisitAll(func(pflag *flag.Flag) {\n\t\tprocessFlagForGroupAnnotation(flags, pflag, requiredAsGroupAnnotation, groupStatus)\n\t\tprocessFlagForGroupAnnotation(flags, pflag, oneRequiredAnnotation, oneRequiredGroupStatus)\n\t\tprocessFlagForGroupAnnotation(flags, pflag, mutuallyExclusiveAnnotation, mutuallyExclusiveGroupStatus)\n\t})\n\n\t// If a flag that is part of a group is present, we make all the other flags\n\t// of that group required so that the shell completion suggests them automatically\n\tfor flagList, flagnameAndStatus := range groupStatus {\n\t\tfor _, isSet := range flagnameAndStatus {\n\t\t\tif isSet {\n\t\t\t\t// One of the flags of the group is set, mark the other ones as required\n\t\t\t\tfor _, fName := range strings.Split(flagList, \" \") {\n\t\t\t\t\t_ = c.MarkFlagRequired(fName)\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\n\t// If none of the flags of a one-required group are present, we make all the flags\n\t// of that group required so that the shell completion suggests them automatically\n\tfor flagList, flagnameAndStatus := range oneRequiredGroupStatus {\n\t\tisSet := false\n\n\t\tfor _, isSet = range flagnameAndStatus {\n\t\t\tif isSet {\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\n\t\t// None of the flags of the group are set, mark all flags in the group\n... (26 more lines)",
             "graph_path": [
               "68aa933b-0bba-59a4-aaa7-8248e0c7f105"
             ],
@@ -16449,16 +16479,58 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "8d544208-0c84-48c7-82ac-619a50663e2d",
-            "source": "observation",
-            "title": "Print ActiveHelp for bash along other completions (#2076)",
+            "entity_id": "4451da44-25f8-467c-9100-b22c62e7c89f",
+            "source": "rule",
+            "title": "Test commands with SetArgs + buffers, never subprocess",
             "relevance": 0.21365995705127716,
             "tier": "full",
             "drift_count": 0,
-            "content": "In the bash shell we used to print ActiveHelp messages on every (from commit 41b26ec8bb; touches bash_completionsV2.go)\n",
+            "content": "cmd.SetArgs, cmd.SetOut/SetErr(bytes.Buffer), then Execute(). Fresh Command instance per test \u2014 flag state persists across Execute calls on the same instance.\n",
             "graph_path": [
               "84b0cd89-e918-5b9a-a4f3-4817dbf1bbfa",
-              "8d544208-0c84-48c7-82ac-619a50663e2d"
+              "4451da44-25f8-467c-9100-b22c62e7c89f"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
+            "source": "rule",
+            "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
+            "relevance": 0.21365995705127716,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "Cleanup shared across subcommands belongs in each command's own PostRun or a wrapper around Execute \u2014 PersistentPostRun on root does not reliably cover children.\n",
+            "graph_path": [
+              "84b0cd89-e918-5b9a-a4f3-4817dbf1bbfa",
+              "e3713664-16e5-421e-8cb3-daa363d1cb6e"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "1fc0a961-1b8a-42f3-9a28-12bda648a8e6",
+            "source": "knowledge",
+            "title": "Test commands via SetArgs + SetOut/SetErr buffers",
+            "relevance": 0.21365995705127716,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "The idiom: cmd.SetArgs([]string{...}), cmd.SetOut(buf), cmd.SetErr(buf), then Execute(). Works without subprocess; assert on buf contents and the returned error. Remember a fresh command instance per test \u2014 flag state persists across Execute calls.\n",
+            "graph_path": [
+              "84b0cd89-e918-5b9a-a4f3-4817dbf1bbfa",
+              "1fc0a961-1b8a-42f3-9a28-12bda648a8e6"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "5550c532-4af9-47cd-8e7d-02ab54f39f0d",
+            "source": "knowledge",
+            "title": "SetContext flows ctx through ExecuteC to every hook",
+            "relevance": 0.21365995705127716,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "root.SetContext(ctx) before Execute; every Command.Context() returns it inside Run/hooks. ExecuteContext is the all-in-one entry. Cancellation propagates to command execution \u2014 the right way to wire signal handling into a cobra app.\n",
+            "graph_path": [
+              "84b0cd89-e918-5b9a-a4f3-4817dbf1bbfa",
+              "5550c532-4af9-47cd-8e7d-02ab54f39f0d"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -17042,7 +17114,6 @@
             "file:yaml_docs.go (duplicate content)",
             "file:command_test.go (duplicate content)",
             "file:cobra_test.go (duplicate content)",
-            "file:cmd_test.go (duplicate content)",
             "file:powershell_completions_test.go (duplicate content)",
             "file:args_test.go (duplicate content)"
           ],
@@ -17054,8 +17125,7 @@
             "function",
             "file",
             "class",
-            "knowledge",
-            "observation"
+            "knowledge"
           ],
           "signals": {
             "code_gradient": 0.015978620089419148,
@@ -17077,7 +17147,7 @@
         "knowledge_gradient": 0.02512402684844619,
         "knowledge_strength": 0.707238806561938
       },
-      "latency_ms": 510,
+      "latency_ms": 682,
       "results": [
         {
           "id": "a2178c0d-c3f2-5e31-8e96-601d7730b2c8",
@@ -17260,15 +17330,6 @@
           "stale": null
         },
         {
-          "id": "c1495da1-c743-588a-aea2-fe2c54cd3fd5",
-          "type": "function",
-          "title": "TestValidArgsFuncCmdContext",
-          "relevance": 0.16395682096481323,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "0aa3b659-190c-417c-9573-06298fb239a4",
           "type": "rule",
           "title": "Prefer stdlib + pflag; dependencies need justification",
@@ -17438,29 +17499,25 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
+        },
+        {
+          "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
+          "type": "file",
+          "title": "zsh_completions.go",
+          "relevance": 0.08203617483377457,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
         }
       ],
       "context": {
-        "latency_ms": 590,
+        "latency_ms": 947,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0774482488632202,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0690644979476929,
+            "relevance": 0.762006402015686,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -17470,15 +17527,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
-            "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.047507643699646,
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7589292526245117,
             "tier": "baseline",
             "drift_count": 0,
-            "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
             "graph_path": [
-              "18f9928e-1c17-4f7c-89a5-ecd5a3b65392"
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+            "source": "rule",
+            "title": "Use the provided Args validators before custom logic",
+            "relevance": 0.7419393658638,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
+            "graph_path": [
+              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
             ],
             "graph_path_description": ""
           },
@@ -17747,7 +17817,7 @@
             "relevance": 0.28079190850257874,
             "tier": "full",
             "drift_count": 0,
-            "content": "func (c *Command) execute(a []string) (err error) {\n\tif c == nil {\n\t\treturn fmt.Errorf(\"called Execute() on a nil Command\")\n\t}\n\n\tif len(c.Deprecated) > 0 {\n\t\tc.Printf(\"Command %q is deprecated, %s\\n\", c.Name(), c.Deprecated)\n\t}\n\n\t// initialize help and version flag at the last point possible to allow for user\n\t// overriding\n\tc.InitDefaultHelpFlag()\n\tc.InitDefaultVersionFlag()\n\n\terr = c.ParseFlags(a)\n\tif err != nil {\n\t\treturn c.FlagErrorFunc()(c, err)\n\t}\n\n\t// If help is called, regardless of other flags, return we want help.\n\t// Also say we need help if the command isn't runnable.\n\thelpVal, err := c.Flags().GetBool(helpFlagName)\n\tif err != nil {\n\t\t// should be impossible to get here as we always declare a help\n\t\t// flag in InitDefaultHelpFlag()\n\t\tc.Println(\"\\\"help\\\" flag declared as non-bool. Please correct your code\")\n\t\treturn err\n\t}\n\n\tif helpVal {\n\t\treturn flag.ErrHelp\n\t}\n\n\t// for back-compat, only add version flag behavior if version is defined\n\tif c.Version != \"\" {\n\t\tversionVal, err := c.Flags().GetBool(\"version\")\n\t\tif err != nil {\n\t\t\tc.Println(\"\\\"version\\\" flag declared as non-bool. Please correct your code\")\n\t\t\treturn err\n\t\t}\n\t\tif versionVal {\n\t\t\tfn := c.getVersionTemplateFunc()\n\t\t\terr := fn(c.OutOrStdout(), c)\n\t\t\tif err != nil {\n\t\t\t\tc.Println(err)\n\t\t\t}\n\t\t\treturn err\n\t\t}\n\t}\n\n\tif !c.Runnable() {\n\t\treturn flag.ErrHelp\n\t}\n\n\tc.preRun()\n\n\tdefer c.postRun()\n\n\targWoFlags := c.Flags().Args()\n\tif c.Dis...",
+            "content": "func (c *Command) execute(a []string) (err error) {\n\tif c == nil {\n\t\treturn fmt.Errorf(\"called Execute() on a nil Command\")\n\t}\n\n\tif len(c.Deprecated) > 0 {\n\t\tc.Printf(\"Command %q is deprecated, %s\\n\", c.Name(), c.Deprecated)\n\t}\n\n\t// initialize help and version flag at the last point possible to allow for user\n\t// overriding\n\tc.InitDefaultHelpFlag()\n\tc.InitDefaultVersionFlag()\n\n\terr = c.ParseFlags(a)\n\tif err != nil {\n\t\treturn c.FlagErrorFunc()(c, err)\n\t}\n\n\t// If help is called, regardless of other flags, return we want help.\n\t// Also say we need help if the command isn't runnable.\n\thelpVal, err := c.Flags().GetBool(helpFlagName)\n\tif err != nil {\n\t\t// should be impossible to get here as we always declare a help\n\t\t// flag in InitDefaultHelpFlag()\n\t\tc.Println(\"\\\"help\\\" flag declared as non-bool. Please correct your code\")\n\t\treturn err\n\t}\n\n\tif helpVal {\n\t\treturn flag.ErrHelp\n\t}\n\n\t// for back-compat, only add version flag behavior if version is defined\n\tif c.Version != \"\" {\n\t\tversionVal, err := c.Flags().GetBool(\"version\")\n\t\tif err != nil {\n\t\t\tc.Println(\"\\\"version\\\" flag declared as non-bool. Please correct your code\")\n\t\t\treturn err\n\t\t}\n\t\tif versionVal {\n\t\t\tfn := c.getVersionTemplateFunc()\n\t\t\terr := fn(c.OutOrStdout(), c)\n\t\t\tif err != nil {\n\t\t\t\tc.Println(err)\n\t\t\t}\n\t\t\treturn err\n\t\t}\n\t}\n\n\tif !c.Runnable() {\n\t\treturn flag.ErrHelp\n\t}\n\n\tc.preRun()\n\n\tdefer c.postRun()\n\n\targWoFlags := c.Flags().Args()\n\tif c.DisableFlagParsing {\n\t\targWoFlags = a\n\t}\n\n\tif err := c.ValidateArgs(argWoFlags); err != nil {\n\t\treturn err\n\t}\n\n\tparents := make([]*Command, 0, 5)\n\tfor p := c; p != nil; p = p.Parent() {\n\t\tif EnableTraverseRu...",
             "graph_path": [
               "a3f54462-21a9-5ceb-b1a7-f2040dfa4d67"
             ],
@@ -18213,20 +18283,6 @@
             "graph_path_description": "same file"
           },
           {
-            "entity_id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
-            "source": "rule",
-            "title": "Use the provided Args validators before custom logic",
-            "relevance": 0.06379960477352142,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "args.go has the standard validators (NoArgs, MinimumNArgs, RangeArgs, OnlyValidArgs, MatchAll). Compose them rather than re-validating inside Run.\n",
-            "graph_path": [
-              "a951e14b-502c-5d80-a7b7-25abc9601daf",
-              "7518939f-aee3-4fcf-94bd-ea6073ad24e3"
-            ],
-            "graph_path_description": "RangeArgs \u2192 auto references \u2192 Use the provided Args validators before custom logic"
-          },
-          {
             "entity_id": "84657187-5760-437e-99a1-37e099c6916a",
             "source": "observation",
             "title": "Micro-optimizations (#1957)",
@@ -18297,7 +18353,8 @@
             "file:fish_completions.go (duplicate content)",
             "file:completions.go (duplicate content)",
             "file:powershell_completions.go (duplicate content)",
-            "file:completions_test.go (duplicate content)"
+            "file:completions_test.go (duplicate content)",
+            "rule:Use the provided Args validators before custom logic (duplicate content)"
           ],
           "pointer_ids": [],
           "search_mode": "hybrid",
@@ -18330,7 +18387,7 @@
         "knowledge_gradient": 0.06594800787852848,
         "knowledge_strength": 0.826137555185798
       },
-      "latency_ms": 496,
+      "latency_ms": 1001,
       "results": [
         {
           "id": "68d7dd4f-8bb5-5084-a798-211d2691a8a7",
@@ -18739,13 +18796,13 @@
         }
       ],
       "context": {
-        "latency_ms": 579,
+        "latency_ms": 500,
         "sections": [
           {
             "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
             "source": "rule",
             "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0777971744537354,
+            "relevance": 0.7649915814399719,
             "tier": "baseline",
             "drift_count": 0,
             "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
@@ -18758,7 +18815,7 @@
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0690643787384033,
+            "relevance": 0.7620062828063965,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -18771,7 +18828,7 @@
             "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
             "source": "rule",
             "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.047978162765503,
+            "relevance": 0.7455759644508362,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
@@ -19790,7 +19847,6 @@
             "rule:Active help must degrade cleanly without env support (duplicate content)",
             "file:completions.go (duplicate content)",
             "file:shell_completions.go (duplicate content)",
-            "file:active_help_test.go (duplicate content)",
             "file:zsh_completions_test.go (duplicate content)",
             "function:*Command::genZshCompletionFile (duplicate content)",
             "file:bash_completionsV2.go (duplicate content)",
@@ -19830,7 +19886,7 @@
         "knowledge_gradient": 0.06946510553606852,
         "knowledge_strength": 0.7657733186358792
       },
-      "latency_ms": 503,
+      "latency_ms": 454,
       "results": [
         {
           "id": "6f830dca-1005-5692-9c11-b3c782bd5513",
@@ -20009,6 +20065,15 @@
           "title": "Prefer stdlib + pflag; dependencies need justification",
           "relevance": 0.23447422683238983,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6e76d174-a7b5-5c20-ada5-49783831717d",
+          "type": "function",
+          "title": "TestBashCompletions",
+          "relevance": 0.17286500334739685,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -20212,26 +20277,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1039,
+        "latency_ms": 555,
         "sections": [
-          {
-            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-            "source": "rule",
-            "title": "Completion changes must cover bash, zsh, fish, powershell",
-            "relevance": 1.0777970552444458,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
-            "graph_path": [
-              "1a078f19-6d25-451a-b169-22733ee0bbde"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "0aa3b659-190c-417c-9573-06298fb239a4",
             "source": "rule",
             "title": "Prefer stdlib + pflag; dependencies need justification",
-            "relevance": 1.0692542791366577,
+            "relevance": 0.7649915218353271,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Cobra's only hard deps are pflag (flags) and mousetrap (windows). New dependencies bloat every downstream CLI \u2014 additions need maintainer sign-off.\n",
@@ -20241,10 +20293,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "1a078f19-6d25-451a-b169-22733ee0bbde",
+            "source": "rule",
+            "title": "Completion changes must cover bash, zsh, fish, powershell",
+            "relevance": 0.7649915218353271,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The four *_completions.go generators plus the hidden __complete machinery must stay in sync \u2014 a fix in one shell's output without the others is a regression.\n",
+            "graph_path": [
+              "1a078f19-6d25-451a-b169-22733ee0bbde"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
             "source": "rule",
             "title": "Active help must degrade cleanly without env support",
-            "relevance": 1.047978162765503,
+            "relevance": 0.7455759048461914,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Active help emits via completion machinery; it must no-op when COBRA_ACTIVE_HELP=0 or the shell lacks support \u2014 never break completion to deliver hints.\n",
@@ -21253,6 +21318,7 @@
             "file:active_help.go (duplicate content)",
             "file:completions.go (duplicate content)",
             "file:zsh_completions.go (duplicate content)",
+            "file:command_test.go (duplicate content)",
             "function:ExampleGenMan (duplicate content)",
             "file:yaml_docs.go (duplicate content)",
             "file:fish_completions.go (duplicate content)",

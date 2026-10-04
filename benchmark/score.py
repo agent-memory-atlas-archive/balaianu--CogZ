@@ -230,7 +230,7 @@ def main():
     text = json.dumps(report, indent=2)
     if args.out:
         Path(args.out).write_text(text)
-        print(f"wrote {args.out}", file=sys.stderr)
+        print(f"wrote {Path(args.out).name}", file=sys.stderr)
 
     o = report["overall"]
     print(f"\n=== CogZ benchmark — {report['total_queries']} queries ===")

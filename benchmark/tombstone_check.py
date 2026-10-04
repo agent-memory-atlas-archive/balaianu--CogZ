@@ -27,7 +27,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-COGZ = "/home/andy/dev/personal/CogZ/target/release/cogz"
+COGZ = str(Path(__file__).resolve().parents[1] / "target" / "release" / "cogz")
 
 MAIN_RS = """//! Fixture.
 

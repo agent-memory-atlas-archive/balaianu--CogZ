@@ -1,0 +1,6 @@
+{
+ "corpus": "cogz",
+ "reindex_noop_s": 58.6,
+ "reindex_add_file_s": 19.1,
+ "reindex_remove_file_s": 14.3
+}

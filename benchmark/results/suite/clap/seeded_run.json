@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/clap",
+  "corpus": "clap",
   "corpus_ids": [
     "00473cfe-f6f7-5948-8eee-a407940eef65",
     "004a5029-c7e3-5d34-90be-b2b7d19d4ae2",
@@ -4658,10 +4658,10 @@
     "ffeebb29-27c1-54f8-814b-d314ee6e26cd"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/clap",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/clap_seeded.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/clap/seeded_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "clap",
+    "queries": "clap_seeded.json",
+    "out": "seeded_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": true,
     "no_expand": false,
@@ -4681,7 +4681,7 @@
         "knowledge_gradient": 0.07348506042911387,
         "knowledge_strength": 0.8177320060668496
       },
-      "latency_ms": 2291,
+      "latency_ms": 3592,
       "results": [
         {
           "id": "49f15a0d-090b-5eb5-8799-a39056525973",
@@ -5000,26 +5000,13 @@
         }
       ],
       "context": {
-        "latency_ms": 893,
+        "latency_ms": 906,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.091482400894165,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899510383605957,
+            "relevance": 1.0645140409469604,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -5029,10 +5016,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622835159301758,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0500965118408203,
+            "relevance": 1.0249916315078735,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -5521,20 +5521,6 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "07d85142-bfbb-554f-a02c-e0070bccdfff",
-            "source": "function",
-            "title": "custom_group_id",
-            "relevance": 0.189076766371727,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn custom_group_id() {\n    #[derive(Parser, Debug, PartialEq, Eq)]\n    struct Opt {\n        #[command(flatten)]\n        source: Option<Source>,\n    }\n\n    #[derive(clap::Args, Debug, PartialEq, Eq)]\n    #[group(id = \"source\")]\n    struct Source {\n        crates: Vec<String>,\n        #[arg(long)]\n        path: Option<std::path::PathBuf>,\n        #[arg(long)]\n        git: Option<String>,\n    }\n\n    assert_eq!(Opt { source: None }, Opt::try_parse_from([\"test\"]).unwrap());\n    assert_eq!(\n        Opt {\n            source: Some(Source {\n                crates: vec![\"serde\".to_owned()],\n                path: None,\n                git: None,\n            }),\n        },\n        Opt::try_parse_from([\"test\", \"serde\"]).unwrap()\n    );\n    assert_eq!(\n        Opt {\n            source: Some(Source {\n                crates: Vec::new(),\n                path: Some(\"./\".into()),\n                git: None,\n            }),\n        },\n        Opt::try_parse_from([\"test\", \"--path=./\"]).unwrap()\n    );\n}",
-            "graph_path": [
-              "49f15a0d-090b-5eb5-8799-a39056525973",
-              "07d85142-bfbb-554f-a02c-e0070bccdfff"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
             "entity_id": "095e119a-efa8-5be9-85d7-ba3e562350df",
             "source": "file",
             "title": "value_parser_unsupported.rs",
@@ -5545,6 +5531,34 @@
             "graph_path": [
               "49f15a0d-090b-5eb5-8799-a39056525973",
               "095e119a-efa8-5be9-85d7-ba3e562350df"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "289cb776-99b9-5df5-b1f1-e7dece0a54ca",
+            "source": "function",
+            "title": "custom_version_flag",
+            "relevance": 0.189076766371727,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "fn custom_version_flag() {\n    #[derive(Debug, Clone, Parser)]\n    #[command(disable_version_flag = true, version = \"2.0.0\")]\n    struct CliOptions {\n        #[arg(short = 'V', long = \"verbose-version\", action = ArgAction::Version, value_parser = clap::value_parser!(bool))]\n        version: (),\n    }\n\n    let result = CliOptions::try_parse_from([\"cmd\", \"--verbose-version\"]);\n    let err = result.unwrap_err();\n    assert_eq!(err.kind(), clap::error::ErrorKind::DisplayVersion);\n\n    CliOptions::try_parse_from([\"cmd\"]).unwrap();\n}",
+            "graph_path": [
+              "49f15a0d-090b-5eb5-8799-a39056525973",
+              "289cb776-99b9-5df5-b1f1-e7dece0a54ca"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "46f022f1-7d5a-530d-9542-321102f9404b",
+            "source": "function",
+            "title": "custom_help_flag",
+            "relevance": 0.189076766371727,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "fn custom_help_flag() {\n    #[derive(Debug, Clone, Parser)]\n    #[command(disable_help_flag = true)]\n    struct CliOptions {\n        #[arg(short = 'h', long = \"verbose-help\", action = ArgAction::Help, value_parser = clap::value_parser!(bool))]\n        help: (),\n    }\n\n    let result = CliOptions::try_parse_from([\"cmd\", \"--verbose-help\"]);\n    let err = result.unwrap_err();\n    assert_eq!(err.kind(), clap::error::ErrorKind::DisplayHelp);\n\n    CliOptions::try_parse_from([\"cmd\"]).unwrap();\n}",
+            "graph_path": [
+              "49f15a0d-090b-5eb5-8799-a39056525973",
+              "46f022f1-7d5a-530d-9542-321102f9404b"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -5723,7 +5737,7 @@
             "relevance": 0.11846113950014114,
             "tier": "full",
             "drift_count": 0,
-            "content": "pub(crate) fn gen_for_enum(\n    item: &Item,\n    item_name: &Ident,\n    generics: &Generics,\n) -> Result<TokenStream, syn::Error> {\n    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();\n\n    let name = item.cased_name();\n    let app_var = Ident::new(\"__clap_app\", Span::call_site());\n\n    Ok(quote! {\n        #[allow(\n            dead_code,\n            unreachable_code,\n            unused_variables,\n            unused_braces,\n            unused_qualifications,\n        )]\n        #[allow(\n            clippy::style,\n            clippy::complexity,\n            clippy::pedantic,\n            clippy::restriction,\n            clippy::perf,\n            clippy::deprecated,\n            clippy::nursery,\n            clippy::cargo,\n            clippy::suspicious_else_formatting,\n            clippy::almost_swapped,\n            clippy::redundant_locals,\n        )]\n        #[automatically_derived]\n        impl #impl_generics clap::CommandFactory for #item_name #ty_generics #where_clause {\n            fn command<'b>() -> clap::Command {\n                let #app_var = clap::Command::new(#name)\n                    .subcommand_required(true)\n                    .arg_required...",
+            "content": "pub(crate) fn gen_for_enum(\n    item: &Item,\n    item_name: &Ident,\n    generics: &Generics,\n) -> Result<TokenStream, syn::Error> {\n    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();\n\n    let name = item.cased_name();\n    let app_var = Ident::new(\"__clap_app\", Span::call_site());\n\n    Ok(quote! {\n        #[allow(\n            dead_code,\n            unreachable_code,\n            unused_variables,\n            unused_braces,\n            unused_qualifications,\n        )]\n        #[allow(\n            clippy::style,\n            clippy::complexity,\n            clippy::pedantic,\n            clippy::restriction,\n            clippy::perf,\n            clippy::deprecated,\n            clippy::nursery,\n            clippy::cargo,\n            clippy::suspicious_else_formatting,\n            clippy::almost_swapped,\n            clippy::redundant_locals,\n        )]\n        #[automatically_derived]\n        impl #impl_generics clap::CommandFactory for #item_name #ty_generics #where_clause {\n            fn command<'b>() -> clap::Command {\n                let #app_var = clap::Command::new(#name)\n                    .subcommand_...",
             "graph_path": [
               "781c03bd-ca7e-56fa-970e-448bc3a22eb9",
               "7e4da344-3470-52eb-a9ae-6cf1abd75774"
@@ -5913,7 +5927,7 @@
         "knowledge_gradient": 0.04566851239886176,
         "knowledge_strength": 0.6727913787359677
       },
-      "latency_ms": 838,
+      "latency_ms": 920,
       "results": [
         {
           "id": "561bf493-cfd1-5e09-bf43-290a9148b6ee",
@@ -6096,15 +6110,6 @@
           "stale": null
         },
         {
-          "id": "26a925e6-5df1-5d85-89d8-f3ef79895016",
-          "type": "class",
-          "title": "impl ArgGroup",
-          "relevance": 0.23407350480556488,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "51fa560c-3052-5d7a-88f0-a568ab12723e",
           "type": "file",
           "title": "arg_matches.rs",
@@ -6276,6 +6281,15 @@
           "stale": null
         },
         {
+          "id": "18abf566-ad05-5575-9628-1575890fc5e2",
+          "type": "class",
+          "title": "impl Default for Command",
+          "relevance": 0.061789412051439285,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "16ad6619-e79a-5cdb-a534-023357961c7d",
           "type": "function",
           "title": "multiple_occurrences_of_after_env",
@@ -6322,26 +6336,13 @@
         }
       ],
       "context": {
-        "latency_ms": 924,
+        "latency_ms": 933,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914822816848755,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899507999420166,
+            "relevance": 1.064513921737671,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -6351,10 +6352,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622832775115967,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0500963926315308,
+            "relevance": 1.024991512298584,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -7582,7 +7596,7 @@
         "knowledge_gradient": 0.06424184238355216,
         "knowledge_strength": 0.7634829925514772
       },
-      "latency_ms": 867,
+      "latency_ms": 821,
       "results": [
         {
           "id": "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
@@ -7765,6 +7779,33 @@
           "stale": null
         },
         {
+          "id": "061ea4aa-2cf8-553e-a423-8447856b0d12",
+          "type": "function",
+          "title": "get_arg",
+          "relevance": 0.2302476018667221,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2dd99149-c337-54e7-9873-d655bbb4760f",
+          "type": "function",
+          "title": "parse_long_arg",
+          "relevance": 0.2302476018667221,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+          "type": "function",
+          "title": "verify_arg",
+          "relevance": 0.2302476018667221,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "e0adfa3c-d3be-553c-9719-1ab8e816970b",
           "type": "function",
           "title": "new",
@@ -7918,33 +7959,6 @@
           "stale": null
         },
         {
-          "id": "33d88eae-49c8-57e0-a083-05eec6caf48d",
-          "type": "class",
-          "title": "FlatSet",
-          "relevance": 0.062201257795095444,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "44cc456e-5e45-57e5-8270-e2c838a5a9b3",
-          "type": "function",
-          "title": "gather_direct_conflicts",
-          "relevance": 0.062201257795095444,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4ea402ee-bcf6-5112-b53b-d75e7f77d8c2",
-          "type": "function",
-          "title": "get_direct_conflicts",
-          "relevance": 0.062201257795095444,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "06b1fdbc-54a9-5bbf-adcb-6dade23be0ad",
           "type": "function",
           "title": "exclusive_with_required_unless_present",
@@ -7994,23 +8008,10 @@
         "latency_ms": 890,
         "sections": [
           {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.091482162475586,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899507999420166,
+            "relevance": 1.0645138025283813,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -8020,10 +8021,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622832775115967,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0500962734222412,
+            "relevance": 1.024991512298584,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -8388,7 +8402,7 @@
             "relevance": 0.3704906105995178,
             "tier": "full",
             "drift_count": 0,
-            "content": "pub(crate) fn get_required_usage_from(\n        &self,\n        incls: &[Id],\n        matcher: Option<&ArgMatcher>,\n        incl_last: bool,\n    ) -> Vec<StyledStr> {\n        debug!(\n            \"Usage::get_required_usage_from: incls={:?}, matcher={:?}, incl_last={:?}\",\n            incls,\n            matcher.is_some(),\n            incl_last\n        );\n\n        let required_owned;\n        let required = if let Some(required) = self.required {\n            required\n        } else {\n            required_owned = self.cmd.required_graph();\n            &required_owned\n        };\n\n        let mut unrolled_reqs = Vec::new();\n        for a in required.iter() {\n            let is_relevant = |(val, req_arg): &(ArgPredicate, Id)| -> Option<Id> {\n                let required = match val {\n                    ArgPredicate::Equals(_) => {\n                        if let Some(matcher) = matcher {\n                            matcher.check_explicit(a, val)\n        ...",
+            "content": "pub(crate) fn get_required_usage_from(\n        &self,\n        incls: &[Id],\n        matcher: Option<&ArgMatcher>,\n        incl_last: bool,\n    ) -> Vec<StyledStr> {\n        debug!(\n            \"Usage::get_required_usage_from: incls={:?}, matcher={:?}, incl_last={:?}\",\n            incls,\n            matcher.is_some(),\n            incl_last\n        );\n\n        let required_owned;\n        let required = if let Some(required) = self.required {\n            required\n        } else {\n            required_owned = self.cmd.required_graph();\n            &required_owned\n        };\n\n        let mut unrolled_reqs = Vec::new();\n        for a in required.iter() {\n            let is_relevant = |(val, req_arg): &(ArgPredicate, Id)| -> Option<Id> {\n                let requ...",
             "graph_path": [
               "724ab337-c6e0-5669-ac50-f7c87166a0b7"
             ],
@@ -8579,6 +8593,20 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
+            "entity_id": "37310b27-711b-5714-ae25-427c72173f0b",
+            "source": "file",
+            "title": "04_02_validate.rs",
+            "relevance": 0.24000000953674316,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "use std::ops::RangeInclusive;\n\nuse clap::{arg, command};\n\nfn main() {\n    let matches = command!() // requires `cargo` feature\n        .arg(\n            arg!(<PORT>)\n... (8 more lines)",
+            "graph_path": [
+              "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
+              "37310b27-711b-5714-ae25-427c72173f0b"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "60b4ca39-de13-5140-b498-5c4586a75c78",
             "source": "function",
             "title": "start_custom_arg",
@@ -8589,20 +8617,6 @@
             "graph_path": [
               "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
               "60b4ca39-de13-5140-b498-5c4586a75c78"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "9212f1a7-7ab7-5d5a-b6c4-7a64e3aabea8",
-            "source": "class",
-            "title": "impl fmt::Debug for Arg",
-            "relevance": 0.24000000953674316,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "impl fmt::Debug for Arg {\n    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), fmt::Error> {\n        let mut ds = f.debug_struct(\"Arg\");\n\n... (7 more lines)",
-            "graph_path": [
-              "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
-              "9212f1a7-7ab7-5d5a-b6c4-7a64e3aabea8"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -8621,6 +8635,20 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
+            "entity_id": "da352b7a-312c-588f-a92f-8f7dc0e4c6e1",
+            "source": "function",
+            "title": "parse_short_arg",
+            "relevance": 0.24000000953674316,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "fn parse_short_arg(\n        &mut self,\n        matcher: &mut ArgMatcher,\n        mut short_arg: clap_lex::ShortFlags<'_>,\n... (7 more lines)",
+            "graph_path": [
+              "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
+              "da352b7a-312c-588f-a92f-8f7dc0e4c6e1"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "e0adfa3c-d3be-553c-9719-1ab8e816970b",
             "source": "function",
             "title": "new",
@@ -8631,6 +8659,20 @@
             "graph_path": [
               "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
               "e0adfa3c-d3be-553c-9719-1ab8e816970b"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "febe31b7-b81c-5bad-8ede-6e05f00c1b9e",
+            "source": "function",
+            "title": "is_valid_subcommand",
+            "relevance": 0.24000000953674316,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "pub fn is_valid_subcommand(&self, _name: &str) -> bool {\n        #[cfg(debug_assertions)]\n        {\n            _name.is_empty() || self.valid_subcommands.iter().any(|s| *s == _name)\n... (6 more lines)",
+            "graph_path": [
+              "20da1dcc-02db-59bc-abe6-7c1af6d0712f",
+              "febe31b7-b81c-5bad-8ede-6e05f00c1b9e"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -9152,34 +9194,6 @@
             "graph_path_description": "validator.rs \u2192 contains \u2192 gather_requires"
           },
           {
-            "entity_id": "2c69d9f5-ef3f-5ea2-bcfb-f9359dd46f72",
-            "source": "function",
-            "title": "build_conflict_err_usage",
-            "relevance": 0.06483586132526398,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn build_conflict_err_usage(\n        &self,\n        matcher: &ArgMatcher,\n        conflicting_keys: &[Id],\n... (7 more lines)",
-            "graph_path": [
-              "61c713a0-6c4e-5fdb-b772-1f83cd111e0a",
-              "2c69d9f5-ef3f-5ea2-bcfb-f9359dd46f72"
-            ],
-            "graph_path_description": "validator.rs \u2192 contains \u2192 build_conflict_err_usage"
-          },
-          {
-            "entity_id": "33d88eae-49c8-57e0-a083-05eec6caf48d",
-            "source": "class",
-            "title": "FlatSet",
-            "relevance": 0.06483586132526398,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "pub(crate) struct FlatSet<T> {\n    inner: Vec<T>,\n}",
-            "graph_path": [
-              "61c713a0-6c4e-5fdb-b772-1f83cd111e0a",
-              "33d88eae-49c8-57e0-a083-05eec6caf48d"
-            ],
-            "graph_path_description": "validator.rs \u2192 imports \u2192 FlatSet"
-          },
-          {
             "entity_id": "db44ff83-ab3a-507c-9aab-4675058e549f",
             "source": "function",
             "title": "no_default_if_arg_present_no_arg_with_value_with_default",
@@ -9235,7 +9249,7 @@
         "knowledge_gradient": 0.0619830256517709,
         "knowledge_strength": 0.7497543104202613
       },
-      "latency_ms": 835,
+      "latency_ms": 938,
       "results": [
         {
           "id": "89667e24-39d2-53da-b6a8-2edb6a3bcc09",
@@ -9644,26 +9658,13 @@
         }
       ],
       "context": {
-        "latency_ms": 975,
+        "latency_ms": 920,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914820432662964,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899505615234375,
+            "relevance": 1.0645136833190918,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -9673,10 +9674,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622831583023071,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0500961542129517,
+            "relevance": 1.0249913930892944,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -10697,7 +10711,7 @@
         "knowledge_gradient": 0.04537443865252577,
         "knowledge_strength": 0.7387524639163807
       },
-      "latency_ms": 1241,
+      "latency_ms": 874,
       "results": [
         {
           "id": "74e9d519-c66b-5214-be88-0f0c70fef781",
@@ -10925,24 +10939,6 @@
           "stale": null
         },
         {
-          "id": "45e84252-c50a-5eb7-b50d-844fd8c35003",
-          "type": "function",
-          "title": "did_you_mean_flag",
-          "relevance": 0.2339792400598526,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "50c8fa0d-0c6e-582a-9381-cd37d720b9be",
-          "type": "file",
-          "title": "suggestions.rs",
-          "relevance": 0.2339792400598526,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "5866d375-e33e-557f-8e33-d4fa91beb91a",
           "type": "class",
           "title": "impl FromArgMatches for ()",
@@ -10955,15 +10951,6 @@
           "id": "5d06dd2f-a9e8-5514-a05c-6823522431b2",
           "type": "class",
           "title": "impl AppExt for MaxTermWidth",
-          "relevance": 0.2339792400598526,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8271cd87-57d7-5d57-be77-9ee089b7f810",
-          "type": "function",
-          "title": "invalid_subcommand",
           "relevance": 0.2339792400598526,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -11060,6 +11047,33 @@
           "stale": null
         },
         {
+          "id": "a6653930-cc99-552f-9da2-8ae9b066ac3c",
+          "type": "file",
+          "title": "03_04_subcommands.rs",
+          "relevance": 0.19498269259929657,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3eb25f45-ae89-4651-9658-97280026cefc",
+          "type": "observation",
+          "title": "fix(clap_complete_nushell): Set argument type to `directory` for `ValueHint::DirPath`",
+          "relevance": 0.153706356883049,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e3ac3284-94c4-4c0b-b79c-7e340a70194e",
+          "type": "observation",
+          "title": "fix(docs): Typo in `ValueHint` docs 'anther' -> 'another'",
+          "relevance": 0.153706356883049,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "aaba137b-d995-50ab-93f0-b57f7762b189",
           "type": "class",
           "title": "impl TypedValueParser for UnknownArgumentValueParser",
@@ -11106,26 +11120,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1535,
+        "latency_ms": 1702,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914819240570068,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.089950442314148,
+            "relevance": 1.0645135641098022,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -11135,10 +11136,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622830390930176,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.050096035003662,
+            "relevance": 1.0249912738800049,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -11620,7 +11634,7 @@
             "relevance": 0.28317463397979736,
             "tier": "full",
             "drift_count": 0,
-            "content": "impl FromArgMatches for CliSub {\n    fn from_arg_matches(matches: &ArgMatches) -> Result<Self, Error> {\n        match matches.subcommand() {\n            Some((\"add\", args)) => Ok(Self::Add(AddArgs::from_arg_matches(args)?)),\n            Some((\"remove\", args)) => Ok(Self::Remove(RemoveArgs::from_arg_matches(args)?)),\n            Some((_, _)) => Err(Error::raw(\n                ErrorKind::InvalidSubcommand,\n                \"Valid subcommands are `add` and `remove`\",\n            )),\n            None => Err(Error::raw(\n                ErrorKind::MissingSubcommand,\n                \"Valid subcommands are `add` an...",
+            "content": "impl FromArgMatches for CliSub {\n    fn from_arg_matches(matches: &ArgMatches) -> Result<Self, Error> {\n        match matches.subcommand() {\n            Some((\"add\", args)) => Ok(Self::Add(AddArgs::from_arg_matches(args)?)),\n            Some((\"remove\", args)) => Ok(Self::Remove(RemoveArgs::from_arg_matches(args)?)),\n            Some((_, _)) => Err(Error::raw(\n                ErrorKind::InvalidSubcommand,\n                \"Valid subcommands are `add` and `remove`\",\n            )),\n            None => Err(Error::raw(\n                ErrorKind::MissingSubcommand,\n                \"Valid subcommands are `add` and `remove`\",\n            )),\n        }\n    }\n    fn update_from_arg_matches(&mut self, matches: &ArgMatches) -> Result<(), Error> {\n        match matches.subcommand() {\n       ...",
             "graph_path": [
               "52262d89-4552-58de-ba84-1f1e3fa2f023",
               "2b748f45-f74f-5a05-aab6-357049f3df31"
@@ -11628,44 +11642,44 @@
             "graph_path_description": "same file"
           },
           {
-            "entity_id": "45e84252-c50a-5eb7-b50d-844fd8c35003",
-            "source": "function",
-            "title": "did_you_mean_flag",
+            "entity_id": "6a65be6a-021a-525f-9570-69ba680e2785",
+            "source": "class",
+            "title": "ValueHintOpt",
             "relevance": 0.24000000953674316,
             "tier": "full",
             "drift_count": 0,
-            "content": "pub(crate) fn did_you_mean_flag<'a, 'help, I, T>(\n    arg: &str,\n    remaining_args: &[&std::ffi::OsStr],\n    longs: I,\n... (7 more lines)",
+            "content": "struct ValueHintOpt {\n    // Showcasing all possible ValueHints:\n    #[arg(long, value_hint = ValueHint::Unknown)]\n    unknown: Option<String>,\n... (7 more lines)",
             "graph_path": [
               "65141a8b-5fe1-5379-9c9b-42be40fc9827",
-              "45e84252-c50a-5eb7-b50d-844fd8c35003"
+              "6a65be6a-021a-525f-9570-69ba680e2785"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "50c8fa0d-0c6e-582a-9381-cd37d720b9be",
-            "source": "file",
-            "title": "suggestions.rs",
+            "entity_id": "7a86974d-89f1-59d5-8366-7429d95d14ec",
+            "source": "function",
+            "title": "value_hint_command",
             "relevance": 0.24000000953674316,
             "tier": "full",
             "drift_count": 0,
-            "content": "// Internal\nuse crate::builder::Command;\n\n/// Find strings from an iterable of `possible_values` similar to a given value `v`\n/// Returns a Vec of all possible values that exceed a similarity threshold\n/// sorted by ascending similarity, most similar comes last\n#[cfg(feature = \"suggestions\")]\npub(crate) fn did_you_mean<T, I>(v: &str, possible_values: I) -> Vec<String>\n... (8 more lines)",
+            "content": "pub(crate) fn value_hint_command(name: &'static str) -> Command {\n    Command::new(name)\n        .arg(\n            Arg::new(\"choice\")\n... (7 more lines)",
             "graph_path": [
               "65141a8b-5fe1-5379-9c9b-42be40fc9827",
-              "50c8fa0d-0c6e-582a-9381-cd37d720b9be"
+              "7a86974d-89f1-59d5-8366-7429d95d14ec"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "8271cd87-57d7-5d57-be77-9ee089b7f810",
+            "entity_id": "eab8274f-2d1d-53b9-8a84-03de13fb38d7",
             "source": "function",
-            "title": "invalid_subcommand",
+            "title": "value_hint_command",
             "relevance": 0.24000000953674316,
             "tier": "full",
             "drift_count": 0,
-            "content": "pub(crate) fn invalid_subcommand(\n        cmd: &Command,\n        subcmd: String,\n        did_you_mean: Vec<String>,\n... (7 more lines)",
+            "content": "pub(crate) fn value_hint_command(name: &'static str) -> clap::Command {\n    clap::Command::new(name)\n        .arg(\n            clap::Arg::new(\"choice\")\n... (7 more lines)",
             "graph_path": [
               "65141a8b-5fe1-5379-9c9b-42be40fc9827",
-              "8271cd87-57d7-5d57-be77-9ee089b7f810"
+              "eab8274f-2d1d-53b9-8a84-03de13fb38d7"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -12294,7 +12308,7 @@
         "knowledge_gradient": 0.047690320457292754,
         "knowledge_strength": 0.7391554439055543
       },
-      "latency_ms": 892,
+      "latency_ms": 967,
       "results": [
         {
           "id": "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
@@ -12477,33 +12491,6 @@
           "stale": null
         },
         {
-          "id": "4eb3de53-6280-5035-8060-f655bb289618",
-          "type": "file",
-          "title": "version.rs",
-          "relevance": 0.1749267727136612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a8c8ddca-6983-56a7-ba87-6e52e0ddefd1",
-          "type": "function",
-          "title": "override_version_long_with_user_flag",
-          "relevance": 0.1749267727136612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "adc019ef-dbda-5aaf-bac8-f4116156081f",
-          "type": "function",
-          "title": "override_version_short_with_user_flag",
-          "relevance": 0.1749267727136612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "1109b55b-4c7a-4055-8e7b-ae465a0c47bd",
           "type": "rule",
           "title": "Completion engine changes need clap_complete tests for all shells",
@@ -12631,26 +12618,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1285,
+        "latency_ms": 1075,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914815664291382,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899502038955688,
+            "relevance": 1.0645134449005127,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -12660,10 +12634,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622828006744385,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0500956773757935,
+            "relevance": 1.0249910354614258,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -13106,7 +13093,7 @@
             "relevance": 0.2670442461967468,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn issue_1050_num_vals_and_defaults() {\n    let res = Command::new(\"hello\")\n        .arg(\n            Arg::new(\"exit-code\")\n                .long(\"exit-c...",
+            "content": "fn issue_1050_num_vals_and_defaults() {\n    let res = Command::new(\"hello\")\n        .arg(\n            Arg::new(\"exit-code\")\n                .long(\"exit-code\")\n                .action(ArgAction::Set)\n                .num_args(1)\n                .default_value(\"0\"),\n        )\n        .try_get_matches_from(vec![\"hello\", \"--exit-code=1\"]);\n    assert!(res...",
             "graph_path": [
               "34c37b49-47a9-53b4-9045-7b04b0083fcb"
             ],
@@ -13204,6 +13191,20 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "226b954d-de0d-5c24-83d5-dff30a1959a6",
+            "source": "file",
+            "title": "groups.rs",
+            "relevance": 0.19758374989032745,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "use clap::{arg, error::ErrorKind, Arg, ArgAction, ArgGroup, Command, Id};\nuse snapbox::str;\n\nuse super::utils;\n\n#[test]\nfn required_group_missing_arg() {\n    let result = Command::new(\"group\")\n... (8 more lines)",
+            "graph_path": [
+              "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
+              "226b954d-de0d-5c24-83d5-dff30a1959a6"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "4eb3de53-6280-5035-8060-f655bb289618",
             "source": "file",
             "title": "version.rs",
@@ -13232,44 +13233,30 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "5fa76222-6ba2-5e77-a944-a8f231aff2e2",
+            "entity_id": "69e6a345-5456-562c-806f-3b2d09b5156f",
+            "source": "class",
+            "title": "impl Arg",
+            "relevance": 0.19758374989032745,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl Arg {\n    /// Create a new [`Arg`] with a unique name.\n    ///\n    /// The name is used to check whether or not the argument was used at\n... (7 more lines)",
+            "graph_path": [
+              "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
+              "69e6a345-5456-562c-806f-3b2d09b5156f"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "ff6c5e2b-0b05-5f71-ab09-d2c26c25f47c",
             "source": "file",
-            "title": "_features.rs",
+            "title": "require.rs",
             "relevance": 0.19758374989032745,
             "tier": "full",
             "drift_count": 0,
-            "content": "//! ## Documentation: Feature Flags\n//!\n//! Available [compile-time feature flags](https://doc.rust-lang.org/cargo/reference/features.html#dependency-features)\n//!\n//! #### Default Features\n//!\n//! * `std`: _Not Currently Used._ Placeholder for supporting `no_std` environments in a backwards compatible manner.\n//! * `color`: Turns on terminal styling of help and error messages.  See\n... (8 more lines)",
+            "content": "use clap::builder::ArgPredicate;\nuse clap::{arg, error::ErrorKind, Arg, ArgAction, ArgGroup, Command};\n\n#[cfg(feature = \"error-context\")]\nuse super::utils;\n\n#[test]\nfn flag_required() {\n... (8 more lines)",
             "graph_path": [
               "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
-              "5fa76222-6ba2-5e77-a944-a8f231aff2e2"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "a8c8ddca-6983-56a7-ba87-6e52e0ddefd1",
-            "source": "function",
-            "title": "override_version_long_with_user_flag",
-            "relevance": 0.19758374989032745,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn override_version_long_with_user_flag() {\n    with_version()\n        .arg(\n            clap::Arg::new(\"ver\")\n... (5 more lines)",
-            "graph_path": [
-              "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
-              "a8c8ddca-6983-56a7-ba87-6e52e0ddefd1"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "adc019ef-dbda-5aaf-bac8-f4116156081f",
-            "source": "function",
-            "title": "override_version_short_with_user_flag",
-            "relevance": 0.19758374989032745,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn override_version_short_with_user_flag() {\n    with_version()\n        .arg(clap::Arg::new(\"ver\").short('V').action(ArgAction::SetTrue))\n        .debug_assert();\n... (1 more lines)",
-            "graph_path": [
-              "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
-              "adc019ef-dbda-5aaf-bac8-f4116156081f"
+              "ff6c5e2b-0b05-5f71-ab09-d2c26c25f47c"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -13765,9 +13752,7 @@
           }
         ],
         "metadata": {
-          "dropped_sources": [
-            "rule:Help/error output changes are user-visible breaking (duplicate content)"
-          ],
+          "dropped_sources": [],
           "pointer_ids": [],
           "search_mode": "hybrid",
           "selected_sources": [
@@ -13798,7 +13783,7 @@
         "knowledge_gradient": 0.051284519619381144,
         "knowledge_strength": 0.7652662419518238
       },
-      "latency_ms": 1043,
+      "latency_ms": 811,
       "results": [
         {
           "id": "c3ff8016-1e57-5f3c-a99b-feeb7d751797",
@@ -14207,26 +14192,13 @@
         }
       ],
       "context": {
-        "latency_ms": 957,
+        "latency_ms": 997,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914814472198486,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899500846862793,
+            "relevance": 1.0645132064819336,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -14236,10 +14208,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.062282681465149,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.050095558166504,
+            "relevance": 1.0249909162521362,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -15446,7 +15431,7 @@
         "knowledge_gradient": 0.10070097335889538,
         "knowledge_strength": 0.8049662547005164
       },
-      "latency_ms": 927,
+      "latency_ms": 804,
       "results": [
         {
           "id": "9c676bb4-86c7-5b60-baac-ba7e86b203c8",
@@ -15638,15 +15623,6 @@
           "stale": null
         },
         {
-          "id": "5092334d-3d00-5673-be16-37b9f25634e6",
-          "type": "function",
-          "title": "test_safely_nest_parser",
-          "relevance": 0.20660880208015442,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "51d9fbb2-b719-5e18-b752-d90eeb5ce606",
           "type": "file",
           "title": "defer_field.rs",
@@ -15809,6 +15785,15 @@
           "stale": null
         },
         {
+          "id": "155171d4-002d-5a48-93b7-42526ba48226",
+          "type": "file",
+          "title": "args.rs",
+          "relevance": 0.06317087262868881,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "10f1c4fc-87a6-50c7-9c02-3b64b80e9758",
           "type": "function",
           "title": "from_subcommand_variant",
@@ -15855,26 +15840,13 @@
         }
       ],
       "context": {
-        "latency_ms": 934,
+        "latency_ms": 904,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.091481328010559,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899498462677002,
+            "relevance": 1.0645132064819336,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -15884,10 +15856,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622825622558594,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0503250360488892,
+            "relevance": 1.0252089500427246,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -17038,7 +17023,7 @@
         "knowledge_gradient": 0.07357794052135325,
         "knowledge_strength": 0.7623614096500558
       },
-      "latency_ms": 815,
+      "latency_ms": 859,
       "results": [
         {
           "id": "acd99e18-4005-579c-a710-2dd8c7bd472e",
@@ -17447,26 +17432,13 @@
         }
       ],
       "context": {
-        "latency_ms": 885,
+        "latency_ms": 810,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.09148108959198,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899497270584106,
+            "relevance": 1.064513087272644,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -17476,10 +17448,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622824430465698,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0503249168395996,
+            "relevance": 1.025208830833435,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -17922,7 +17907,7 @@
             "relevance": 0.24326176941394806,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn gen_fish_inner(\n    root_command: &str,\n    parent_commands: &[&str],\n    cmd: &Command,\n    buffer: &mut String,\n    needs_fn_name: &str,\n    using_fn_name: &str,\n) {\n    debug!(\"gen_fish_inner\");\n    // example :\n    //\n    // complete\n    //      -c {command}\n    //      -d \"{description}\"\n    //      -s {short}\n    //      -l {long}\n    //      -a \"{possible_arguments}\"\n    //      -r # if require parameter\n    //      -f # don't use file completion\n    //      -n \"{needs_fn_name}\"            # complete for command \"myprog\"\n    //      -n \"{using_fn_name} subcmd1\"    # complete for command \"myprog subcmd1\"\n\n    let mut basic_template = format!(\"complete -c {root_command}\");\n\n    if parent_commands.is_empty() {\n        if cmd.has_subcommands() {\n            basic_template.push_str(&format!(\" -n \\\"{needs_fn_name}\\\"\"));\n        }\n    } else {\n        let mut ou...",
+            "content": "fn gen_fish_inner(\n    root_command: &str,\n    parent_commands: &[&str],\n    cmd: &Command,\n    buffer: &mut String,\n    needs_fn_name: &str,\n    using_fn_name: &str,\n) {\n    debug!(\"gen_fish_inner\");\n    // example :\n    //\n    // complete\n    //      -c {command}\n    //      -d \"{description}\"\n    //      -s {short}\n    //      -l {long}\n    //      -a \"{possible_arguments}\"\n    //      -r # if require parameter\n    //      -f # don't use file completion\n    //      -n \"{needs_fn_name}\"            # complete for command \"myprog\"\n    //      -n \"{using_fn_name} subcmd1\"    # complete for command \"myprog subcmd1\"\n\n    let mut basic_template = format!(\"complete -c {root_command}\");\n\n    if parent_commands.is_empty() {\n        if cmd.has_subcommands() {\n            basic_template.push_str(&format!(\" -n \\\"{needs_fn_name}\\\"\"));\n        }\n    } else {\n  ...",
             "graph_path": [
               "d682bfb6-b74c-5d31-b7db-0bdde12ee33d"
             ],
@@ -17966,6 +17951,34 @@
               "e69533dd-6da1-529b-810a-ecd9c0be390a"
             ],
             "graph_path_description": ""
+          },
+          {
+            "entity_id": "450f5732-34a0-5d96-98a3-e6e9ee6946fc",
+            "source": "class",
+            "title": "impl Generator for Bash",
+            "relevance": 0.20648951828479767,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl Generator for Bash {\n    fn file_name(&self, name: &str) -> String {\n        format!(\"{name}.bash\")\n    }\n... (7 more lines)",
+            "graph_path": [
+              "acd99e18-4005-579c-a710-2dd8c7bd472e",
+              "450f5732-34a0-5d96-98a3-e6e9ee6946fc"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "6ef36548-c1e2-48cf-83b7-05e3ed733dee",
+            "source": "observation",
+            "title": "fix(complete): Name the function after fn_name",
+            "relevance": 0.20648951828479767,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "`fn_name` already holds the bin name with hyphens replaced, and the (from commit ecee8a4f86; touches clap_complete/src/aot/shells/bash.rs)\n",
+            "graph_path": [
+              "acd99e18-4005-579c-a710-2dd8c7bd472e",
+              "6ef36548-c1e2-48cf-83b7-05e3ed733dee"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
           },
           {
             "entity_id": "50341462-8d41-500d-814a-17268a548538",
@@ -18556,20 +18569,6 @@
             "graph_path_description": "zsh.rs \u2192 contains \u2192 sub_subcommands"
           },
           {
-            "entity_id": "1de49fc6-cc96-5040-9081-022526aa4709",
-            "source": "function",
-            "title": "external_subcommands",
-            "relevance": 0.0885215550661087,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn external_subcommands() {\n    let name = \"my-app\";\n    let cmd = common::external_subcommand(name);\n    common::assert_matches(\n... (6 more lines)",
-            "graph_path": [
-              "521ba3fd-a33f-5850-9aba-fbf385fb6925",
-              "1de49fc6-cc96-5040-9081-022526aa4709"
-            ],
-            "graph_path_description": "zsh.rs \u2192 contains \u2192 external_subcommands"
-          },
-          {
             "entity_id": "92fdf5c4-4ba2-5f83-81bd-583b047c4f0b",
             "source": "function",
             "title": "write_registration",
@@ -18603,7 +18602,7 @@
             "relevance": 0.0,
             "tier": "pointer",
             "drift_count": 0,
-            "content": "- [function] complete_dynamic_env_quoted_value \u2014 id cd608b03-a260-5581-90ab-3604e93806e4\n- [function] complete_dynamic_env_quoted_value \u2014 id 79ca5b34-eac3-5265-a616-193f7744b470\n- [function] complete_dynamic_env_quoted_value \u2014 id 209a611b-324c-563e-80bc-0023016fe349\n- [class] Zsh \u2014 id 06a0c987-ac1d-51c1-9d03-538f797730e7\n- [function] default_values_if_arg_present_no_arg_with_value_with_default_user_override_fail \u2014 id 28de1de3-a31a-5462-9532-a24ee6a22559\n- [function] register_completion \u2014 id df00bd55-248b-5c7b-8121-689195a493d5\n- [function] escape_help \u2014 id c00d8ee3-8a7d-5c21-aa97-075611cfb94e\n- [class] Fish \u2014 id d7bf60f5-9ed3-5aaf-a5a7-f3bd4961b0a6\n- [function] complete_dynamic_env_quoted_help \u2014 id 23510b53-971c-58a8-a32d-ee2001a43325",
+            "content": "- [function] complete_dynamic_env_quoted_value \u2014 id cd608b03-a260-5581-90ab-3604e93806e4\n- [function] complete_dynamic_env_quoted_value \u2014 id 79ca5b34-eac3-5265-a616-193f7744b470\n- [function] complete_dynamic_env_quoted_value \u2014 id 209a611b-324c-563e-80bc-0023016fe349\n- [class] Zsh \u2014 id 06a0c987-ac1d-51c1-9d03-538f797730e7\n- [function] default_values_if_arg_present_no_arg_with_value_with_default_user_override_fail \u2014 id 28de1de3-a31a-5462-9532-a24ee6a22559\n- [function] register_completion \u2014 id df00bd55-248b-5c7b-8121-689195a493d5\n- [function] escape_help \u2014 id c00d8ee3-8a7d-5c21-aa97-075611cfb94e\n- [class] Fish \u2014 id d7bf60f5-9ed3-5aaf-a5a7-f3bd4961b0a6",
             "graph_path": [],
             "graph_path_description": ""
           }
@@ -18619,8 +18618,7 @@
             "function:escape_help (duplicate content)",
             "class:Fish (duplicate content)",
             "function:write_registration (duplicate content)",
-            "function:complete (duplicate content)",
-            "function:complete_dynamic_env_quoted_help (duplicate content)"
+            "function:complete (duplicate content)"
           ],
           "pointer_ids": [
             "cd608b03-a260-5581-90ab-3604e93806e4",
@@ -18630,8 +18628,7 @@
             "28de1de3-a31a-5462-9532-a24ee6a22559",
             "df00bd55-248b-5c7b-8121-689195a493d5",
             "c00d8ee3-8a7d-5c21-aa97-075611cfb94e",
-            "d7bf60f5-9ed3-5aaf-a5a7-f3bd4961b0a6",
-            "23510b53-971c-58a8-a32d-ee2001a43325"
+            "d7bf60f5-9ed3-5aaf-a5a7-f3bd4961b0a6"
           ],
           "search_mode": "hybrid",
           "selected_sources": [
@@ -18649,7 +18646,7 @@
             "knowledge_gradient": 0.07357794052135325,
             "knowledge_strength": 0.7623614096500558
           },
-          "size_tokens": 8028
+          "size_tokens": 8042
         }
       }
     },
@@ -18663,7 +18660,7 @@
         "knowledge_gradient": 0.07545853742630478,
         "knowledge_strength": 0.7389327118914105
       },
-      "latency_ms": 874,
+      "latency_ms": 808,
       "results": [
         {
           "id": "7a600c57-eede-5051-9482-e73c6935798d",
@@ -18846,9 +18843,9 @@
           "stale": null
         },
         {
-          "id": "e6b40bcf-c19b-5ab3-9381-4dd0768bff24",
-          "type": "function",
-          "title": "detect_os_variant",
+          "id": "624a8615-b003-5366-85ef-8e7591dc842e",
+          "type": "file",
+          "title": "subcommand.rs",
           "relevance": 0.17761729657649994,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -19072,26 +19069,13 @@
         }
       ],
       "context": {
-        "latency_ms": 2067,
+        "latency_ms": 1415,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914809703826904,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899494886398315,
+            "relevance": 1.0645129680633545,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -19101,10 +19085,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622823238372803,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0503246784210205,
+            "relevance": 1.0252087116241455,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -19599,7 +19596,7 @@
             "relevance": 0.26754364371299744,
             "tier": "full",
             "drift_count": 0,
-            "content": "pub(crate) fn did_you_mean_flag<'a, 'help, I, T>(\n    arg: &str,\n    remaining_args: &[&std::ffi::OsStr],\n    longs: I,\n    subcommands: impl IntoIterator<Item = &'a mut Command>,\n) -> Option<(String, Option<String>)>\nwhere\n    'help: 'a,\n    T: AsRef<str>,...",
+            "content": "pub(crate) fn did_you_mean_flag<'a, 'help, I, T>(\n    arg: &str,\n    remaining_args: &[&std::ffi::OsStr],\n    longs: I,\n    subcommands: impl IntoIterator<Item = &'a mut Command>,\n) -> Option<(String, Option<String>)>\nwhere\n    'help: 'a,\n  ...",
             "graph_path": [
               "45e84252-c50a-5eb7-b50d-844fd8c35003"
             ],
@@ -19669,6 +19666,20 @@
             "graph_path": [
               "7a600c57-eede-5051-9482-e73c6935798d",
               "7e4da344-3470-52eb-a9ae-6cf1abd75774"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "457bdadd-1511-48f6-b574-9d53dc751c44",
+            "source": "observation",
+            "title": "refactor(complete): Pull out subcommand separator",
+            "relevance": 0.203046515583992,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "(from commit a49fadbf4a; touches clap_complete/src/aot/shells/bash.rs, clap_complete/src/aot/shells/zsh.rs)\n",
+            "graph_path": [
+              "7a600c57-eede-5051-9482-e73c6935798d",
+              "457bdadd-1511-48f6-b574-9d53dc751c44"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -20259,20 +20270,6 @@
               "bef1be5b-90db-5839-8c70-3d1fac5e54e6"
             ],
             "graph_path_description": "lib.rs \u2192 imports \u2192 PathCompleter"
-          },
-          {
-            "entity_id": "eb3ae34f-3001-580d-bed7-bfbc3cd83773",
-            "source": "class",
-            "title": "CompletionCandidate",
-            "relevance": 0.05592101067304611,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "pub struct CompletionCandidate {\n    value: OsString,\n    help: Option<StyledStr>,\n    id: Option<String>,\n... (4 more lines)",
-            "graph_path": [
-              "da718775-d829-5f7a-a6fe-f22eaec8f890",
-              "eb3ae34f-3001-580d-bed7-bfbc3cd83773"
-            ],
-            "graph_path_description": "lib.rs \u2192 imports \u2192 CompletionCandidate"
           }
         ],
         "metadata": {
@@ -20314,7 +20311,7 @@
         "knowledge_gradient": 0.07048273603230067,
         "knowledge_strength": 0.7405773386521896
       },
-      "latency_ms": 849,
+      "latency_ms": 883,
       "results": [
         {
           "id": "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
@@ -20497,6 +20494,15 @@
           "stale": null
         },
         {
+          "id": "097c666a-be73-5c31-869a-2d84d88689e4",
+          "type": "file",
+          "title": "mod.rs",
+          "relevance": 0.178309366106987,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "485e603e-8755-5aa1-840a-96a632d3d2f6",
           "type": "file",
           "title": "conflicts.rs",
@@ -20588,26 +20594,13 @@
         }
       ],
       "context": {
-        "latency_ms": 993,
+        "latency_ms": 1018,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914807319641113,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899492502212524,
+            "relevance": 1.064512848854065,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -20617,10 +20610,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0622822046279907,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0503244400024414,
+            "relevance": 1.025208592414856,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -21161,13 +21167,69 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0314e35f-b6e3-5010-a8b1-0f57a19fe561",
+            "source": "file",
+            "title": "01_quick.rs",
+            "relevance": 0.19788239896297455,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "use std::path::PathBuf;\n\nuse clap::{ArgAction, Command, arg, command, value_parser};\n\nfn main() {\n    let matches = command!() // requires `cargo` feature\n        .arg(arg!([name] \"Optional name to operate on\"))\n        .arg(\n            arg!(\n                -c --config <FILE> \"Sets a custom config file\"\n            )\n            // We don't have syntax yet for optional options, so manually calling `required`\n            .required(false)\n            .value_parser(value_parser!(PathBuf)),\n        )\n        .arg(arg!(\n            -d --debug ... \"Turn debugging information on\"\n        ))\n        .subcommand(\n            Command::new(\"test\")\n                .about(\"does testing things\")\n                .arg(arg!(-l --list \"lists test values\").action(ArgAction::SetTrue)),\n        )\n        .get_matches();\n\n    // You can check the value provided by positional arguments, or option arguments\n    if let Some(name) = matches.get_one::<String>(\"name\") {\n        println!(\"Value for name: {name}\");\n    }\n\n... (30 more lines)",
+            "graph_path": [
+              "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
+              "0314e35f-b6e3-5010-a8b1-0f57a19fe561"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "0601e91b-1c37-581e-88b0-670de6395f4b",
+            "source": "file",
+            "title": "command.rs",
+            "relevance": 0.19788239896297455,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "#![cfg(feature = \"cargo\")]\n\nuse clap::{command, error::ErrorKind};\n\nuse crate::utils;\n\nstatic EVERYTHING: &str = \"clap {{version}}\nA simple to use, efficient, and full-featured Command Line Argument Parser\n\nUsage: clap\n\nOptions:\n  -h, --help     Print help\n  -V, --version  Print version\n\";\n\n#[test]\nfn command() {\n    let res = command!()\n        .help_template(utils::FULL_TEMPLATE)\n        .try_get_matches_from(vec![\"clap\", \"--help\"]);\n\n    assert!(res.is_err());\n    let err = res.unwrap_err();\n    assert_eq!(err.kind(), ErrorKind::DisplayHelp);\n    assert_eq!(\n        err.to_string(),\n        EVERYTHING.replace(\"{{version}}\", env!(\"CARGO_PKG_VERSION\"))\n    );\n}\n",
+            "graph_path": [
+              "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
+              "0601e91b-1c37-581e-88b0-670de6395f4b"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "097c666a-be73-5c31-869a-2d84d88689e4",
+            "source": "file",
+            "title": "mod.rs",
+            "relevance": 0.19788239896297455,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "// Contributing\n//\n// New examples:\n// - Building: They must be added to `Cargo.toml` with the appropriate `required-features`.\n// - Testing: Ensure there is a markdown file with [trycmd](https://docs.rs/trycmd) syntax\n// - Link the `.md` file from here\n\n//! # Documentation: Cookbook\n//!\n//! Typed arguments: [derive][typed_derive]\n//! - Topics:\n//!   - Custom `parse()`\n//!\n//! Custom cargo command: [builder][cargo_example], [derive][cargo_example_derive]\n//! - Topics:\n//!   - Subcommands\n//!   - Cargo plugins\n//!   - custom terminal [styles][crate::Command::styles] (colors)\n//!\n//! find-like interface: [builder][f...",
+            "graph_path": [
+              "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
+              "097c666a-be73-5c31-869a-2d84d88689e4"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "3240e90d-c8a8-50bd-9dc3-9425e59f3f7c",
+            "source": "function",
+            "title": "main",
+            "relevance": 0.19788239896297455,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "fn main() {\n    let matches = command!() // requires `cargo` feature\n        .arg(\n            arg!([PORT])\n... (7 more lines)",
+            "graph_path": [
+              "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
+              "3240e90d-c8a8-50bd-9dc3-9425e59f3f7c"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "1bf0c5c4-1e7e-54e7-b4d4-5f59cd541dc4",
             "source": "file",
             "title": "flags.rs",
             "relevance": 0.1649019867181778,
             "tier": "full",
             "drift_count": 0,
-            "content": "use clap::{arg, Arg, ArgAction, Command};\n\n#[cfg(feature = \"error-context\")]\nuse super::utils;\n\n#[test]\nfn flag_using_short() {\n    let m = Command::new(\"flag\")\n        .args([\n            arg!(-f --flag \"some flag\").action(ArgAction::SetTrue),\n            arg!(-c --color \"some other flag\").action(ArgAction::SetTrue),\n        ])\n        .try_get_matches_from(vec![\"\", \"-f\", \"-c\"])\n        .unwrap();\n    assert!(*m.get_one::<bool>(\"flag\").expect(\"defaulted by clap\"));\n    assert!(*m.get_one::<bool>(\"color\").expect(\"defaulted by clap\"));\n}\n\n#[test]\nfn lots_o_flags_sep() {\n    let r = Command::new(\"opts\")\n        .args_override_self(true)\n        .arg(arg!(o: -o ... \"some flag\").action(ArgAction::SetTrue))\n        .try_get_matches_from(vec![\n            \"\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\",\n            \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\",\n            \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\",\n            \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\",\n            \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\",\n            \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\", \"-o\",\n... (219 more lines)",
+            "content": "use clap::{arg, Arg, ArgAction, Command};\n\n#[cfg(feature = \"error-context\")]\nuse super::utils;\n\n#[test]\nfn flag_using_short() {\n    let m = Command::new(\"flag\")\n... (8 more lines)",
             "graph_path": [
               "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
               "1bf0c5c4-1e7e-54e7-b4d4-5f59cd541dc4"
@@ -21181,7 +21243,7 @@
             "relevance": 0.1649019867181778,
             "tier": "full",
             "drift_count": 0,
-            "content": "pub fn flags(p: &Command) -> Vec<Arg> {\n    debug!(\"flags: name={}\", p.get_name());\n    p.get_arguments()\n        .filter(|a| !a.get_num_args().expect(\"built\").takes_values() && !a.is_positional())\n        .cloned()\n        .collect()\n}",
+            "content": "pub fn flags(p: &Command) -> Vec<Arg> {\n    debug!(\"flags: name={}\", p.get_name());\n    p.get_arguments()\n        .filter(|a| !a.get_num_args().expect(\"built\").takes_values() && !a.is_positional())\n... (3 more lines)",
             "graph_path": [
               "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
               "96c97b80-ed60-5245-92ab-9ec2b1a2f05b"
@@ -21195,7 +21257,7 @@
             "relevance": 0.1649019867181778,
             "tier": "full",
             "drift_count": 0,
-            "content": "use clap::{Arg, ArgAction, command};\n\nfn main() {\n    let matches = command!() // requires `cargo` feature\n        .arg(\n            Arg::new(\"verbose\")\n                .short('v')\n                .long(\"verbose\")\n                .action(ArgAction::SetTrue),\n        )\n        .get_matches();\n\n    println!(\"verbose: {:?}\", matches.get_flag(\"verbose\"));\n}\n",
+            "content": "use clap::{Arg, ArgAction, command};\n\nfn main() {\n    let matches = command!() // requires `cargo` feature\n        .arg(\n            Arg::new(\"verbose\")\n                .short('v')\n                .long(\"verbose\")\n... (6 more lines)",
             "graph_path": [
               "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
               "fa6fa2e8-649a-516a-8ac9-a76764e4c688"
@@ -21209,7 +21271,7 @@
             "relevance": 0.14666013419628143,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn issue_1284_argument_in_flag_style() {\n    const USE_FLAG_AS_ARGUMENT: &str = \"\\\nerror: unexpected argument '--another-flag' found\n\n  tip: to pass '--another-flag' as a value, use '-- --another-flag'\n\nUs...",
+            "content": "fn issue_1284_argument_in_flag_style() {\n    const USE_FLAG_AS_ARGUMENT: &str = \"\\\nerror: unexpected argument '--another-flag' found\n\n... (7 more lines)",
             "graph_path": [
               "1bf0c5c4-1e7e-54e7-b4d4-5f59cd541dc4",
               "12c91162-f868-556b-92ca-adcdeb4fe64a"
@@ -21677,47 +21739,17 @@
               "edd53f22-39f7-53e3-9fad-11aea984c322"
             ],
             "graph_path_description": "lib.rs \u2192 contains \u2192 ReadmeDoctests"
-          },
-          {
-            "entity_id": "0eccc3d6-f97e-5a73-ab7a-17f61a52b00c",
-            "source": "file",
-            "title": "pacman.rs",
-            "relevance": 0.19788239896297455,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "use clap::{Arg, ArgAction, Command};\n\nfn cli() -> Command {\n    Command::new(\"pacman\")\n... (27 more lines)",
-            "graph_path": [
-              "309ab5a7-3b09-5494-8c00-49df4d60ae0b",
-              "0eccc3d6-f97e-5a73-ab7a-17f61a52b00c"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "index",
-            "source": "overflow_index",
-            "title": "Also relevant",
-            "relevance": 0.0,
-            "tier": "pointer",
-            "drift_count": 0,
-            "content": "- [function] example_tests \u2014 id 3d3e6cb1-3660-5e85-9c70-7904ab6fe509\n- [function] from_syn_ty \u2014 id c700b7fe-7f80-5b67-8877-22696c586af5\n- [class] Action \u2014 id fc2adebe-21fa-525f-becc-33ceb7ad6784\n- [file] examples.rs \u2014 id 5fa3cd57-b9bf-50ec-9bf9-19d089b48c93",
-            "graph_path": [],
-            "graph_path_description": ""
           }
         ],
         "metadata": {
           "dropped_sources": [
+            "file:03_05_default_values.rs (duplicate content)",
             "function:example_tests (duplicate content)",
             "function:from_syn_ty (duplicate content)",
             "class:Action (duplicate content)",
-            "file:examples.rs (duplicate content)",
-            "file:pacman.rs (duplicate content)"
+            "file:examples.rs (duplicate content)"
           ],
-          "pointer_ids": [
-            "3d3e6cb1-3660-5e85-9c70-7904ab6fe509",
-            "c700b7fe-7f80-5b67-8877-22696c586af5",
-            "fc2adebe-21fa-525f-becc-33ceb7ad6784",
-            "5fa3cd57-b9bf-50ec-9bf9-19d089b48c93"
-          ],
+          "pointer_ids": [],
           "search_mode": "hybrid",
           "selected_sources": [
             "rule",
@@ -21735,43 +21767,391 @@
             "knowledge_gradient": 0.07048273603230067,
             "knowledge_strength": 0.7405773386521896
           },
-          "size_tokens": 8013
+          "size_tokens": 8192
         }
       }
     },
     {
       "id": "lk12",
       "search_mode": "hybrid",
-      "filtered_count": 100,
+      "filtered_count": 1218,
       "signals": {
         "code_gradient": 0.016068918797721477,
         "code_strength": 0.2897507287185661,
         "knowledge_gradient": 0.014244598940147669,
         "knowledge_strength": 0.5839150252601796
       },
-      "latency_ms": 521,
-      "results": [],
+      "latency_ms": 841,
+      "results": [
+        {
+          "id": "36946eec-5250-5fd8-a72a-8647866b70d6",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "93b4579b-7688-5310-91d6-d56ec037a55a",
+          "type": "function",
+          "title": "multiple_custom_help_headers",
+          "relevance": 0.7746031880378723,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "11a4effe-f16b-5892-a701-54d0e66df178",
+          "type": "class",
+          "title": "impl Ord for Inner",
+          "relevance": 0.7283582091331482,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1c487d6d-da23-5c54-94e2-87a7638eacc6",
+          "type": "file",
+          "title": "_faq.rs",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "da5fe68a-1967-407b-96ee-ee985e28a636",
+          "type": "knowledge",
+          "title": "clap is a workspace: builder, derive, lex, complete, mangen",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4b441831-46cb-5cba-9e4c-c2ddb348eb70",
+          "type": "class",
+          "title": "Powershell",
+          "relevance": 0.739393949508667,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d83fac91-20c0-581c-88dc-3c062dbf5554",
+          "type": "function",
+          "title": "issue_777_wrap_all_things",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "52746ad3-ba78-5287-a375-1d75a47e1963",
+          "type": "function",
+          "title": "write_args",
+          "relevance": 0.7283582091331482,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c4c07517-057c-552a-bb1d-1aa8c0b61d24",
+          "type": "function",
+          "title": "issue_418",
+          "relevance": 0.762499988079071,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "57665e78-f763-554e-8581-d3d8af3792d2",
+          "type": "function",
+          "title": "generic_struct_flatten_w_where_clause",
+          "relevance": 0.7176470756530762,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2c64dad2-d44b-5f30-b09e-5e13843ee449",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.7507692575454712,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7be55f97-cdf5-5feb-9668-d7217f132d2a",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "57015b09-47b4-5544-a3f6-677df5c160f7",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.739393949508667,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c308e06b-49f3-5ca3-b0f7-f901663855fe",
+          "type": "class",
+          "title": "KindFormatter",
+          "relevance": 0.6873239278793335,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5bec0ca9-ffd9-5860-b545-e3a15c6ca7fd",
+          "type": "function",
+          "title": "load_runtime",
+          "relevance": 0.6506666541099548,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "db694c7f-1efd-52f7-9c6e-2368d77b2130",
+          "type": "class",
+          "title": "Method",
+          "relevance": 0.6506666541099548,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cc357fa5-c678-52d3-add8-3201f37038bb",
+          "type": "function",
+          "title": "grouped_interleaved_positional_occurrences",
+          "relevance": 0.6256410479545593,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "28201c90-981c-4e55-acd3-67b833bfdf76",
+          "type": "rule",
+          "title": "Every user-facing PR gets its own patch release",
+          "relevance": 0.09138024598360062,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+          "type": "rule",
+          "title": "Verify with make test-full, make clippy-full, make doc",
+          "relevance": 0.09638738632202148,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2bc01033-335d-4a5e-8f75-8e40ce283d92",
+          "type": "observation",
+          "title": "fix(complete): Detect pwsh for PowerShell",
+          "relevance": 0.1082504466176033,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "08da2063-ce3e-5937-8eb7-ce14cd9cbdd5",
+          "type": "file",
+          "title": "doc_comments_help.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "097c666a-be73-5c31-869a-2d84d88689e4",
+          "type": "file",
+          "title": "mod.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "23260848-db70-5793-9844-3c24f5a831ce",
+          "type": "file",
+          "title": "_tutorial.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "57af4452-b472-59b0-ac2f-47c88d678c32",
+          "type": "file",
+          "title": "03_04_subcommands_alt.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "637c1fe7-e234-56ea-893d-67947f6a7a92",
+          "type": "function",
+          "title": "derive_generated_error_has_full_context",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6790f38e-fc7f-51ab-ac4a-39511389daf1",
+          "type": "file",
+          "title": "sub_subcommands.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8cf18b97-1868-510d-8487-49c029748cdd",
+          "type": "file",
+          "title": "kind.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a6653930-cc99-552f-9da2-8ae9b066ac3c",
+          "type": "file",
+          "title": "03_04_subcommands.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ca86dc58-4c5d-5666-ad85-3cbb7ebe6637",
+          "type": "function",
+          "title": "docstrings_ordering_with_multiple_clap_partial",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e47d3ee7-b439-513c-bb15-629ca9335bc3",
+          "type": "file",
+          "title": "_tutorial.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f366b79-35c3-5a2d-9bed-9f8860f586e2",
+          "type": "file",
+          "title": "_concepts.rs",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a065cb8e-f978-5a34-ba02-9da29c22783e",
+          "type": "function",
+          "title": "docstrings_ordering_with_multiple_command",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "48e771e5-6df9-5dc7-aa55-ccd3c1f73b5d",
+          "type": "file",
+          "title": "04_01_enum.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a60410fc-96cb-51d4-a8da-dfa455d9c31d",
+          "type": "class",
+          "title": "Mode",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "dbf43da7-605d-5337-87f4-6ed98927fc2b",
+          "type": "file",
+          "title": "flatten_hand_args.rs",
+          "relevance": 0.1180645227432251,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3107c89-a7b6-541b-b960-0680e5f9fb90",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3ecdbf5-2f4e-5495-8d61-a57bcf7bd10a",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d7906d41-ec93-53e3-be46-a9c448cfaf67",
+          "type": "file",
+          "title": "help.rs",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "74b3e6f9-915d-52e9-b820-b8a4301411aa",
+          "type": "file",
+          "title": "issues.rs",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6a9b6702-8022-5899-896a-c491d3806951",
+          "type": "file",
+          "title": "01_quick.rs",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ],
       "context": {
-        "latency_ms": 946,
+        "latency_ms": 950,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914806127548218,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899492502212524,
+            "relevance": 1.0645127296447754,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -21781,10 +22161,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0624324083328247,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0503243207931519,
+            "relevance": 1.0252084732055664,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -22871,7 +23264,7 @@
         "knowledge_gradient": 0.03434743478023376,
         "knowledge_strength": 0.7019250372988962
       },
-      "latency_ms": 811,
+      "latency_ms": 774,
       "results": [
         {
           "id": "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
@@ -23280,26 +23673,13 @@
         }
       ],
       "context": {
-        "latency_ms": 997,
+        "latency_ms": 927,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914804935455322,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0899490118026733,
+            "relevance": 1.0645126104354858,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -23309,10 +23689,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0624322891235352,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0503242015838623,
+            "relevance": 1.0252082347869873,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -23853,20 +24246,6 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "16c3f544-dbf9-502e-a244-4964a3a6d9b3",
-            "source": "function",
-            "title": "vec_for_default_values_t",
-            "relevance": 0.22628289461135864,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn vec_for_default_values_t() {\n    #[derive(clap::ValueEnum, PartialEq, Debug, Clone)]\n    enum ArgChoice {\n        Foo,\n        Bar,\n    }\n\n    #[derive(Parser, PartialEq, Debug)]\n    struct Opt {\n        #[arg(value_enum, default_values_t = vec![ArgChoice::Foo, ArgChoice::Bar])]\n        arg1: Vec<ArgChoice>,\n\n        #[arg(\n            long,\n            value_enum,\n            default_values_t = clap::ValueEnum::value_variants()\n        )]\n        arg2: Vec<ArgChoice>,\n    }\n\n    assert_eq!(\n        Opt {\n            arg1: vec![ArgChoice::Foo],\n            arg2: vec![ArgChoice::Foo, ArgChoice::Bar]\n        },\n        Opt::try_parse_from([\"\", \"foo\"]).unwrap()\n    );\n    assert_eq!(\n        Opt {\n            arg1: vec![ArgChoice::Bar],\n            arg2: vec![ArgChoice::Foo, ArgChoice::Bar]\n        },\n        Opt::try_parse_from([\"\", \"bar\"]).unwrap()\n    );\n    assert_eq!(\n        Opt {\n            arg1: vec![ArgChoice::Foo, ArgChoice::Bar],\n            arg2: vec![ArgChoice::Foo, ArgChoice::Bar]\n        },\n        Opt::try_parse_from([\"\"]).unwrap()\n... (9 more lines)",
-            "graph_path": [
-              "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
-              "16c3f544-dbf9-502e-a244-4964a3a6d9b3"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
             "entity_id": "16d531a6-77ed-5ac7-9b6f-d5e910175f1d",
             "source": "function",
             "title": "default_value_t",
@@ -23887,7 +24266,7 @@
             "relevance": 0.22628289461135864,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn default_value_t_string_expr() {\n    #[derive(Parser, PartialEq, Eq, Debug)]\n    #[command(author = \"David Lynch\", about = \"3d modelling but epic\")]\n    struct Args {\n        #[arg(short, long, help = \"source file\", default_value_t = \"./tests/cube/main.kda\".to_string())]\n        source: String,\n        #[arg(short, long, help = \"...",
+            "content": "fn default_value_t_string_expr() {\n    #[derive(Parser, PartialEq, Eq, Debug)]\n    #[command(author = \"David Lynch\", about = \"3d modelling but epic\")]\n    struct Args {\n        #[arg(short, long, help = \"source file\", default_value_t = \"./tests/cube/main.kda\".to_string())]\n        source: String,\n        #[arg(short, long, help = \"output file\", default_value_t = \"output.obj\".to_string())]\n        output: String,\n    }\n\n    assert_eq!(\n        Args {\n            source: \"./tests/cube/main.kda\".to_owned(),\n            output: \"output.obj\".to_owned(),\n        },\n        Args::try_parse_from([\"test\"]).unwrap()\n    );\n    assert_eq!(\n        Args {\n            source: \"input.kda\".to_owned(),\n            output: \"mesh.obj\".to_owned(),\n        },\n        Args::try_parse_from([\"test\", \"--source\", \"input.kda\", \"--output\", \"mesh.obj\"])\n            .unwrap()\n    );\n\n    let help = utils::get_long_help::<Args>();\n    assert!(help.conta...",
             "graph_path": [
               "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
               "224c6d23-a33b-59e2-b27c-7b940d9ef522"
@@ -23895,16 +24274,16 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "7b19d6d7-325f-57b3-8f80-6ed455d93bab",
-            "source": "function",
-            "title": "test_custom_long_overwrites_default_name",
+            "entity_id": "7d46526a-03f9-507f-8202-eabd27bdec53",
+            "source": "file",
+            "title": "default_values_t_invalid.rs",
             "relevance": 0.22628289461135864,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn test_custom_long_overwrites_default_name() {\n    #[derive(Parser, Debug, PartialEq)]\n    struct Opt {\n        #[arg(long = \"foo\")]\n... (7 more lines)",
+            "content": "use clap::Parser;\n\n#[derive(Parser, Debug)]\n#[command(name = \"basic\")]\nstruct Opt {\n    #[arg(default_values_t = [1, 2, 3])]\n    value: u32,\n}\n... (5 more lines)",
             "graph_path": [
               "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
-              "7b19d6d7-325f-57b3-8f80-6ed455d93bab"
+              "7d46526a-03f9-507f-8202-eabd27bdec53"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -23923,16 +24302,16 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "ad29cbaf-5422-5956-9a69-95094f5eb433",
-            "source": "file",
-            "title": "rename_all_non_literal_expr.rs",
+            "entity_id": "b334f953-3c57-558d-a4a9-7b12619c4e1a",
+            "source": "function",
+            "title": "default_value_os_t",
             "relevance": 0.22628289461135864,
             "tier": "full",
             "drift_count": 0,
-            "content": "use clap::Parser;\n\n#[derive(Parser, Debug)]\n#[command(name = \"basic\", rename_all = \"snake_case\".to_owned())]\nstruct Opt {\n    #[arg(short)]\n    s: String,\n}\n... (5 more lines)",
+            "content": "fn default_value_os_t() {\n    #[derive(Parser, PartialEq, Debug)]\n    struct Opt {\n        #[arg(default_value_os_t = PathBuf::from(\"abc.def\"))]\n... (7 more lines)",
             "graph_path": [
               "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
-              "ad29cbaf-5422-5956-9a69-95094f5eb433"
+              "b334f953-3c57-558d-a4a9-7b12619c4e1a"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -24329,6 +24708,20 @@
             "graph_path_description": "same file"
           },
           {
+            "entity_id": "b8812e7b-1bd0-51d9-b3cd-59094cd1baa1",
+            "source": "class",
+            "title": "ValueParser",
+            "relevance": 0.09265588223934174,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "enum ValueParser {\n    Explicit(Method),\n    Implicit(Ident),\n}",
+            "graph_path": [
+              "c8207e88-62f9-5bce-93c3-63b925133d1d",
+              "b8812e7b-1bd0-51d9-b3cd-59094cd1baa1"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
             "entity_id": "2e01b4fa-2035-5f5b-98cc-34bea6ffc8d6",
             "source": "class",
             "title": "Cli",
@@ -24427,6 +24820,20 @@
             "graph_path_description": "co-change"
           },
           {
+            "entity_id": "ade200c4-eb4a-5056-beb8-47fb8b89d032",
+            "source": "file",
+            "title": "arguments.rs",
+            "relevance": 0.22628289461135864,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "// Copyright 2018 Guillaume Pinot (@TeXitoi) <texitoi@texitoi.eu>,\n// Kevin Knapp (@kbknapp) <kbknapp@gmail.com>, and\n// Ana Hobden (@hoverbear) <operator@hoverbear.org>\n//\n... (5 more lines)",
+            "graph_path": [
+              "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
+              "ade200c4-eb4a-5056-beb8-47fb8b89d032"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "d7602b76-c188-52ee-911b-a2c87ad15661",
             "source": "function",
             "title": "derive_args",
@@ -24453,21 +24860,36 @@
               "df64767c-106c-590f-930c-5e29b93144cd"
             ],
             "graph_path_description": "co-change"
+          },
+          {
+            "entity_id": "index",
+            "source": "overflow_index",
+            "title": "Also relevant",
+            "relevance": 0.0,
+            "tier": "pointer",
+            "drift_count": 0,
+            "content": "- [function] auto_default_value_t \u2014 id 847d6a7d-92c6-519a-b84d-44397231d9d2\n- [file] rename_all_non_literal_expr.rs \u2014 id ad29cbaf-5422-5956-9a69-95094f5eb433\n- [function] default_value \u2014 id ba29737b-f0dc-5b05-89df-bd07b593f2bf",
+            "graph_path": [],
+            "graph_path_description": ""
           }
         ],
         "metadata": {
           "dropped_sources": [
             "function:auto_default_value_t (duplicate content)",
+            "file:rename_all_non_literal_expr.rs (duplicate content)",
             "function:default_value (duplicate content)",
-            "function:vec_type_default_value (duplicate content)",
-            "function:vec_for_default_values_os_t (duplicate content)",
             "function:issue_1105_empty_value_short_explicit_no_space (duplicate content)",
             "class:impl ToTokens for Method (duplicate content)",
             "function:gen_for_enum (duplicate content)",
+            "file:arguments.rs (duplicate content)",
             "function:derive_args (duplicate content)",
             "function:gen_for_struct (duplicate content)"
           ],
-          "pointer_ids": [],
+          "pointer_ids": [
+            "847d6a7d-92c6-519a-b84d-44397231d9d2",
+            "ad29cbaf-5422-5956-9a69-95094f5eb433",
+            "ba29737b-f0dc-5b05-89df-bd07b593f2bf"
+          ],
           "search_mode": "hybrid",
           "selected_sources": [
             "rule",
@@ -24484,7 +24906,7 @@
             "knowledge_gradient": 0.03434743478023376,
             "knowledge_strength": 0.7019250372988962
           },
-          "size_tokens": 8192
+          "size_tokens": 8185
         }
       }
     },
@@ -24498,7 +24920,7 @@
         "knowledge_gradient": 0.014131060431239528,
         "knowledge_strength": 0.681488648187664
       },
-      "latency_ms": 866,
+      "latency_ms": 931,
       "results": [
         {
           "id": "5868d590-71da-534b-b7e3-5d86f756817a",
@@ -24681,60 +25103,6 @@
           "stale": null
         },
         {
-          "id": "1959e74c-788a-59fc-a6cc-0128afb32163",
-          "type": "file",
-          "title": "utils.rs",
-          "relevance": 0.18076369166374207,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "637c1fe7-e234-56ea-893d-67947f6a7a92",
-          "type": "function",
-          "title": "derive_generated_error_has_full_context",
-          "relevance": 0.18076369166374207,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "95543f74-ab85-55eb-a536-e22af318eea0",
-          "type": "file",
-          "title": "bash.rs",
-          "relevance": 0.18076369166374207,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c48e0a30-5445-5e49-a5ca-4fd74e2f1976",
-          "type": "file",
-          "title": "utils.rs",
-          "relevance": 0.18076369166374207,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ca0a2119-db69-5a13-bf98-f7d5a8276074",
-          "type": "function",
-          "title": "assert_output",
-          "relevance": 0.18076369166374207,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "eb860160-672e-5112-ba6f-5d0b76036d39",
-          "type": "module",
-          "title": "arg_impl",
-          "relevance": 0.18076369166374207,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "ce8dba3e-a443-5a65-a538-fe6ba1762a6f",
           "type": "function",
           "title": "append_val",
@@ -24861,6 +25229,60 @@
           "stale": null
         },
         {
+          "id": "3b7ad3b8-7960-5013-8934-1816eb52fc7f",
+          "type": "class",
+          "title": "OccurrenceValues",
+          "relevance": 0.0861775204539299,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3dbf82f3-b008-57d1-b62d-65a066abe398",
+          "type": "class",
+          "title": "Values",
+          "relevance": 0.0861775204539299,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3e147b45-9e0e-546d-a07c-b771b04fbe69",
+          "type": "class",
+          "title": "impl Iterator for OccurrenceValues<T>",
+          "relevance": 0.0861775204539299,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3f024a17-0b67-567a-b6e2-32d49a3698f9",
+          "type": "class",
+          "title": "impl Default for RawValues<'_>",
+          "relevance": 0.0861775204539299,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "437074ac-a50b-5685-8dc4-927d61d214dc",
+          "type": "class",
+          "title": "impl DoubleEndedIterator for OccurrencesRef<'a, T>",
+          "relevance": 0.0861775204539299,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "48af8848-27fd-53d6-86ac-b9140408d15b",
+          "type": "class",
+          "title": "impl DoubleEndedIterator for RawOccurrenceValues<'a>",
+          "relevance": 0.0861775204539299,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "6590b3c1-0ace-51a1-8565-38980c518d3b",
           "type": "function",
           "title": "sources_under_posix_mode_bash",
@@ -24907,26 +25329,13 @@
         }
       ],
       "context": {
-        "latency_ms": 910,
+        "latency_ms": 889,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914803743362427,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.0902570486068726,
+            "relevance": 1.0648061037063599,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -24936,10 +25345,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.0624321699142456,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0505532026290894,
+            "relevance": 1.0254257917404175,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -25031,7 +25453,7 @@
             "relevance": 0.6254136562347412,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn verify_num_args(&self, arg: &Arg, raw_vals: &[OsString]) -> ClapResult<()> {\n        if self.cmd.is_ignore_errors_set() {\n            return Ok(());\n        }\n\n        let actual = raw_vals.len();\n        let expected = arg.get_num_args().expect(INTERNAL_ERROR_MSG);\n\n        if 0 < expected.min_values() && actual == 0 {\n            // Issue 665 (https://github.com/clap-rs/clap/issues/665)\n            // Issue 1105 (https://github.com/clap-rs/clap/issues/1105)\n            return Err(ClapError::empty_value(\n                self.cmd,\n                &super::get_possible_values_cli(arg)\n                    .iter()\n                    .filter(|pv| !pv.is_hide_set())\n                    .map(|n| n.get_name().to_owned())\n                    .collect::<Vec<_>>(),\n                arg.to_string(),\n            ));\n        } else if let Some(expected) = expected.num_values() {\n            if expected != actual {\n                debug!(\"Validator::validate_arg_num_vals: Sending error WrongNumberOfValues\");\n                return Err(ClapError::wrong_number_of_values(\n                    self.cmd,\n                    arg.to_string(),\n                    expected,\n                    actual,\n                    Usage::new(self.cmd).create_usage_with_title(&[]),\n                ));\n            }\n        } else if actual < expected.min_values() {\n            return Err(ClapError::too_few_values(\n                self.cmd,\n                arg.to_string(),\n                expected.min_values(),\n                actual,\n                Usage::new(self.cmd).create_usage_with_title(&[]),\n            ));\n        } else if expected.max_values() < actual {\n... (15 more lines)",
+            "content": "fn verify_num_args(&self, arg: &Arg, raw_vals: &[OsString]) -> ClapResult<()> {\n        if self.cmd.is_ignore_errors_set() {\n            return Ok(());\n        }\n\n        let actual = raw_vals.len();\n        let expected = arg.get_num_args().expect(INTERNAL_ERROR_MSG);\n\n        if 0 < expected.min_values() && actual == 0 {\n            // Issue 665 (https://github.com/clap-rs/clap/issues/665)\n            // Issue 1105 (https://github.com/clap-rs/clap/issues/1105)\n            return Err(ClapError::empty_value(\n                self.cmd,\n                &super::get_possible_values_cli(arg)\n                    .iter()\n                    .filter(|pv| !pv.is_hide_set())\n                    .map(|n| n.get_name().to_owned())\n                    .collect::<Vec<_>>(),\n                arg.to_string(),\n            ));\n        } else if let Some(expected) = expected.num_values() {\n            if expected != actual {\n                debug!(\"Validator::validate_arg_num_vals: Sending error WrongNumberOfValues\");\n                return Err(ClapError::wrong_number_of_values(\n                    self.cmd,\n                    arg.to_string(),\n                    expected,\n                    actual,\n                    Usage::new(self.cmd).create_usage_with_title(&[]),\n                ));\n            }\n        } else if actual < expected.min_values() {\n            return Err(ClapError::too_few_values(\n                self.cmd,\n                arg.to_string(),\n                expected.min_values(),\n                actual,\n                Usage::new(self.cmd).create_usage_with_title(&[]),\n            ));\n        } else if expected.max_values() < actual {\n            debug!(\"Validator::validate_arg_num_vals: Sending error TooManyValues\");\n            return Err(ClapError::too_many_values(\n                self.cmd,\n                raw_vals\n                    .last()\n                    .expect(INTERNAL_ERROR_MSG)\n                    .to_string_lossy()\n                    .into_owned(),\n                arg.to_string(),\n                Usage::new(self.cmd).create_usage_with_title(&[]),\n            ));\n        }\n\n        Ok(())\n    }",
             "graph_path": [
               "85ba31db-b861-5daa-b2c4-b5c5915944fe"
             ],
@@ -25044,7 +25466,7 @@
             "relevance": 0.5622268915176392,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn _verify_positionals(cmd: &Command) -> bool {\n    debug!(\"Command::_verify_positionals\");\n    // Because you must wait until all arguments have been supplied, this is the first chance\n    // to make assertions on positional argument indexes\n    //\n    // First we verify that the index highest supplied index, is equal to the number of\n    // positional arguments to verify there are no gaps (i.e. supplying an index of 1 and 3\n    // but no 2)\n\n    let highest_idx = cmd\n        .get_keymap()\n        .keys()\n        .filter_map(|x| {\n            if let KeyType::Position(n) = x {\n                Some(*n)\n            } else {\n                None\n            }\n        })\n        .max()\n        .unwrap_or(0);\n\n    let num_p = cmd.get_keymap().keys().filter(|x| x.is_position()).count();\n\n    assert!(\n        highest_idx == num_p,\n        \"Found positional argument whose index is {highest_idx} but there \\\n             are only {num_p} positional arguments defined\",\n    );\n\n    for arg in cmd.get_arguments() {\n        if arg.index.unwrap_or(0) == highest_idx {\n            assert!(\n                !arg.is_trailing_var_arg_set() || !arg.is_last_set(),\n                \"{}:{}: `Arg::trailing_var_arg` and `Arg::last` cannot be used together\",\n                cmd.get_name(),\n                arg.get_id()\n            );\n\n            if arg.is_trailing_var_arg_set() {\n... (145 more lines)",
+            "content": "fn _verify_positionals(cmd: &Command) -> bool {\n    debug!(\"Command::_verify_positionals\");\n    // Because you must wait until all arguments have been supplied, this is the first chance\n    // to make assertions on positional argument indexes\n    //\n    // First we verify that the index highest supplied index, is equal to the number of\n    // positional arguments to verify there are no gaps (i.e. supplying an index of 1 and 3\n    // but no 2)\n\n    let highest_idx = cmd\n        .get_keymap()\n        .keys()\n        .filter_map(|x| {\n            if let KeyType::Position(n) = x {\n                Some(*n)\n            } else {\n                None\n            }\n        })\n        .max()\n        .unwrap_or(0);\n\n    let num_p = cmd.get_keymap().keys().filter(|x| x.is_position()).count();\n\n    assert!(\n        highest_idx == num_p,\n        \"Found positional argument whose index is {highest_idx} but there \\\n             are only {num_p} positional arguments defined\",\n    );\n\n    for arg in cmd.get_arguments() {\n        if arg.index.unwrap_or(0) == highest_idx {\n            assert!(\n                !arg.is_trailing_var_arg_set() || !arg.is_last_set(),\n                \"{}:{}: `Arg::trailing_var_arg` and `Arg::last` cannot be used together\",\n                cmd.get_name(),\n                arg.get_id()\n            );\n\n            if arg.is_trailing_var_arg_set() {\n                assert!(\n                    arg.is_multiple(),\n                    \"{}:{}: `Arg::trailing_var_arg` must accept multiple values\",\n                    cmd.get_name(),\n                    arg.get_id()\n                );\n            }\n        } else {\n            assert!(\n                !arg.is_trailing_var_arg_set(),\n                \"{}:{}: `Arg::trailing_var_arg` can only apply to last positional\",\n                cmd.get_name(),\n                arg.get_id()\n            );\n        }\n    }\n\n    // Next we verify that only the highest index has takes multiple arguments (if any)\n    let only_highest = |a: &Arg| a.is_multiple() && (a.get_index().unwrap_or(0) != highest_idx);\n    if cmd.get_positionals().any(only_highest) {\n        // First we make sure if there is a positional that allows multiple values\n        // the one before it (second to last) has one of these:\n        //  * a value terminator\n        //  * ArgSettings::Last\n        //  * The last arg is Required\n\n        // We can't pass the closure (it.next()) to the macro directly because each call to\n        // find() (iterator, not macro) gets called repeatedly.\n        let last = &cmd.get_keymap()[&KeyType::Position(highest_idx)];\n        let second_to_last = &cmd.get_keymap()[&KeyType::Position(highest_idx - 1)];\n\n        // Either the final positional is required\n        // Or the second to last has a terminator or .last(true) set\n        let ok = last.is_required_set()\n            || (second_to_last.terminator.is_some() || second_to_last.is_last_set())\n            || last.is_last_set();\n        assert!(\n            ok,\n            \"Positional argument `{last}` *must* have `required(true)` or `last(true)` set \\\n            because a prior positional argument (`{second_to_last}`) has `num_args(1..)`\"\n        );\n\n        // We make sure if the second to last is Multiple the last is ArgSettings::Last\n        let ok = second_to_last.is_multiple() || last.is_last_set();\n        assert!(\n            ok,\n            \"Only the last positional argument, or second to la...",
             "graph_path": [
               "2c29c193-6d5b-5432-9da5-bcdc21e51221"
             ],
@@ -25467,146 +25889,6 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "05d7279b-5dda-53fa-b969-01092d146854",
-            "source": "function",
-            "title": "needs_more_vals",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "pub(crate) fn needs_more_vals(&self, o: &Arg) -> bool {\n        let num_pending = self\n            .pending\n            .as_ref()\n            .and_then(|p| (p.id == *o.get_id()).then_some(p.raw_vals.len()))\n            .unwrap_or(0);\n        debug!(\n            \"ArgMatcher::needs_more_vals: o={}, pending={}\",\n            o.get_id(),\n            num_pending\n        );\n        let expected = o.get_num_args().expect(INTERNAL_ERROR_MSG);\n        debug!(\"ArgMatcher::needs_more_vals: expected={expected}, actual={num_pending}\");\n        expected.accepts_more(num_pending)\n    }",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "05d7279b-5dda-53fa-b969-01092d146854"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "37a06d17-fc25-5a83-b327-45f0b5ac46a7",
-            "source": "file",
-            "title": "elvish.rs",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "use crate::common;\n#[allow(unused_imports)]\nuse snapbox::assert_data_eq;\n\n#[cfg(unix)]\n#[cfg(feature = \"unstable-shell-tests\")]\nconst CMD: &str = \"elvish\";\n#[cfg(unix)]\n#[cfg(feature = \"unstable-shell-tests\")]\ntype RuntimeBuilder = completest_pty::ElvishRuntimeBuilder;\n\n#[test]\nfn basic() {\n    let name = \"my-app\";\n    let cmd = common::basic_command(name);\n    common::assert_matches(\n        snapbox::file![\"../snapshots/basic.elvish\"],\n        clap_complete::shells::Elvish,\n        cmd,\n        name,\n    );\n}\n\n#[test]\nfn feature_sample() {\n    let name = \"my-app\";\n    let cmd = common::feature_sample_command(name);\n    common::assert_matches(\n        snapbox::file![\"../snapshots/feature_sample.elvish\"],\n        clap_complete::shells::Elvish,\n... (371 more lines)",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "37a06d17-fc25-5a83-b327-45f0b5ac46a7"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "419f973f-fe60-5fe6-9ac3-70b78f6f9f24",
-            "source": "function",
-            "title": "complete_dynamic_env_option_value",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn complete_dynamic_env_option_value() {\n    if !common::has_command(CMD) {\n        return;\n    }\n\n    let term = completest::Term::new();\n    let mut runtime = common::load_runtime::<RuntimeBuilder>(\"dynamic-env\", \"exhaustive\");\n\n    let input = \"exhaustive action --choice=\\t\\t\";\n    let expected = snapbox::str![[r#\"\n% exhaustive action --choice=first \n--choice=first  --choice=second\n\"#]];\n    let actual = runtime.complete(input, &term).unwrap();\n    assert_data_eq!(actual, expected);\n\n    let input = \"exhaustive action --choice=f\\t\";\n    let expected = snapbox::str![\"% exhaustive action --choice=first \"];\n    let actual = runtime.complete(input, &term).unwrap();\n    assert_data_eq!(actual, expected);\n}",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "419f973f-fe60-5fe6-9ac3-70b78f6f9f24"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "4d7ba73c-05c6-5ec4-97c7-33dde71946ad",
-            "source": "function",
-            "title": "use_env",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn use_env() {\n    #[derive(Parser, PartialEq, Debug)]\n    #[command(author, about, version)]\n    #[command(help_template = utils::FULL_TEMPLATE)]\n    struct Opt {}\n\n    let output = utils::get_long_help::<Opt>();\n    assert_data_eq!(\n        output,\n        str![[r#\"\nclap [..]\nA simple to use, efficient, and full-featured Command Line Argument Parser\n\nUsage: clap\n\nOptions:\n  -h, --help\n          Print help\n\n  -V, --version\n          Print version\n\n\"#]]\n    );\n}",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "4d7ba73c-05c6-5ec4-97c7-33dde71946ad"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "637c1fe7-e234-56ea-893d-67947f6a7a92",
-            "source": "function",
-            "title": "derive_generated_error_has_full_context",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn derive_generated_error_has_full_context() {\n    #[derive(Debug, Parser)]\n    #[command(subcommand_negates_reqs = true)]\n    struct Opts {\n        #[arg(long)]\n        req_str: String,\n\n        #[command(subcommand)]\n        cmd: Option<SubCommands>,\n    }\n\n    #[derive(Debug, Parser)]\n    enum SubCommands {\n        Sub {\n            #[arg(short, long, action = clap::ArgAction::Count)]\n            verbose: u8,\n        },\n    }\n\n    let result = Opts::try_parse_from([\"test\", \"sub\"]);\n    assert!(\n        result.is_err(),\n        \"`SubcommandsNegateReqs` with non-optional `req_str` should fail: {:?}\",\n        result.unwrap()\n    );\n\n    let expected = str![[r#\"\nerror: the following required argument was not provided: req_str\n\nUsage: clap --req-str <REQ_STR>\n       clap <COMMAND>\n\nFor more information, try '--help'.\n\n\"#]];\n    assert_data_eq!(result.unwrap_err().to_string(), expected);\n}",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "637c1fe7-e234-56ea-893d-67947f6a7a92"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "79ca5b34-eac3-5265-a616-193f7744b470",
-            "source": "function",
-            "title": "complete_dynamic_env_quoted_value",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "fn complete_dynamic_env_quoted_value() {\n    if !common::has_command(CMD) {\n        return;\n    }\n\n    let term = completest::Term::new();\n    let mut runtime = common::load_runtime::<RuntimeBuilder>(\"dynamic-env\", \"exhaustive\");\n\n    let input = \"exhaustive quote --choice \\t\\t\";\n    let expected = snapbox::str![[r#\"\n% \nanother shell  bash           fish           zsh            \n\"#]];\n    let actual = runtime.complete(input, &term).unwrap();\n    assert_data_eq!(actual, expected);\n\n    let input = \"exhaustive quote --choice an\\t\";\n    let expected =\n        snapbox::str![\"exhaustive quote --choice an    % exhaustive quote --choice another shell \"];\n    let actual = runtime.complete(input, &term).unwrap();\n    assert_data_eq!(actual, expected);\n}",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "79ca5b34-eac3-5265-a616-193f7744b470"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "ac2285d5-0b85-5c0e-a5af-1b5b741818cd",
-            "source": "file",
-            "title": "author_version_about.rs",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "// Copyright 2018 Guillaume Pinot (@TeXitoi) <texitoi@texitoi.eu>,\n// Kevin Knapp (@kbknapp) <kbknapp@gmail.com>, and\n// Ana Hobden (@hoverbear) <operator@hoverbear.org>\n//\n// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or\n// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license\n// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your\n// option. This file may not be copied, modified, or distributed\n// except according to those terms.\n//\n// This work was derived from Structopt (https://github.com/TeXitoi/structopt)\n// commit#ea76fa1b1b273e65e3b0b1046643715b49bec51f which is licensed under the\n// MIT/Apache 2.0 license.\n\nuse clap::Parser;\nuse snapbox::assert_data_eq;\nuse snapbox::prelude::*;\nuse snapbox::str;\n\nuse crate::utils;\n\n#[test]\nfn no_author_version_about() {\n    #[derive(Parser, PartialEq, Debug)]\n    #[command(name = \"foo\")]\n    #[command(help_template = utils::FULL_TEMPLATE)]\n    struct Opt {}\n\n    let output = utils::get_long_help::<Opt>();\n    assert!(output.starts_with(\"foo \\n\\nUsage:\"));\n... (57 more lines)",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "ac2285d5-0b85-5c0e-a5af-1b5b741818cd"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "c4a0c36b-e8e3-5a6d-9c15-50b28f56b8d3",
-            "source": "function",
-            "title": "assert_error",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "pub(crate) fn assert_error<F: clap::error::ErrorFormatter>(\n    err: Error<F>,\n    expected_kind: ErrorKind,\n    expected_output: impl snapbox::data::IntoData,\n    stderr: bool,\n) {\n    let actual_output = err.to_string();\n    assert_eq!(\n        stderr,\n        err.use_stderr(),\n        \"Should Use STDERR failed. Should be {} but is {}\",\n        stderr,\n        err.use_stderr()\n    );\n    assert_eq!(expected_kind, err.kind());\n    #[cfg(feature = \"error-context\")]\n    assert_data_eq!(actual_output, expected_output);\n}",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "c4a0c36b-e8e3-5a6d-9c15-50b28f56b8d3"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "ca0a2119-db69-5a13-bf98-f7d5a8276074",
-            "source": "function",
-            "title": "assert_output",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "pub(crate) fn assert_output<P: clap::Parser + std::fmt::Debug>(\n    args: &str,\n    expected: impl snapbox::IntoData,\n    stderr: bool,\n) {\n    let res = P::try_parse_from(args.split(' ').collect::<Vec<_>>());\n    let err = res.unwrap_err();\n    let actual = err.render().to_string();\n    assert_eq!(\n        stderr,\n        err.use_stderr(),\n        \"Should Use STDERR failed. Should be {} but is {}\",\n        stderr,\n        err.use_stderr()\n    );\n    assert_data_eq!(actual, expected.raw());\n}",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "ca0a2119-db69-5a13-bf98-f7d5a8276074"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "eb860160-672e-5112-ba6f-5d0b76036d39",
-            "source": "module",
-            "title": "arg_impl",
-            "relevance": 0.20981153845787048,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "mod arg_impl {\n    #[test]\n    fn string_ident() {\n... (79 more lines)",
-            "graph_path": [
-              "5868d590-71da-534b-b7e3-5d86f756817a",
-              "eb860160-672e-5112-ba6f-5d0b76036d39"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
             "entity_id": "c48e0a30-5445-5e49-a5ca-4fd74e2f1976",
             "source": "file",
             "title": "utils.rs",
@@ -25901,6 +26183,160 @@
             "graph_path_description": "same file"
           },
           {
+            "entity_id": "61b7e356-3903-57e5-8e33-110e724b0b4f",
+            "source": "class",
+            "title": "impl ExactSizeIterator for RawOccurrences<'_>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl ExactSizeIterator for RawOccurrences<'_> {}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "61b7e356-3903-57e5-8e33-110e724b0b4f"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "6961d713-87bb-59e7-82bf-fd6093b99fd0",
+            "source": "class",
+            "title": "impl Default for Occurrences<T>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl<T> Default for Occurrences<T> {\n    fn default() -> Self {\n        let empty: Vec<Vec<AnyValue>> = Default::default();\n        Self {\n            iter: empty.into_iter().map(|_| unreachable!()),\n        }\n    }\n}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "6961d713-87bb-59e7-82bf-fd6093b99fd0"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "6e1bf6bb-7f46-5b66-af7c-9dea8d5f732b",
+            "source": "class",
+            "title": "impl Iterator for Indices<'_>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl Iterator for Indices<'_> {\n    type Item = usize;\n\n    fn next(&mut self) -> Option<usize> {\n        if let Some(next) = self.iter.next() {\n            self.len -= 1;\n            Some(next)\n        } else {\n            None\n        }\n    }\n    fn size_hint(&self) -> (usize, Option<usize>) {\n        (self.len, Some(self.len))\n    }\n}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "6e1bf6bb-7f46-5b66-af7c-9dea8d5f732b"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "792c156d-cc02-5ee8-b1e9-26ba68f08401",
+            "source": "class",
+            "title": "impl ExactSizeIterator for RawOccurrenceValues<'_>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl ExactSizeIterator for RawOccurrenceValues<'_> {}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "792c156d-cc02-5ee8-b1e9-26ba68f08401"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "7b2cbb6d-1975-5721-9727-360895fc3412",
+            "source": "class",
+            "title": "impl DoubleEndedIterator for ValuesRef<'a, T>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl<'a, T: 'a> DoubleEndedIterator for ValuesRef<'a, T> {\n    fn next_back(&mut self) -> Option<Self::Item> {\n        if let Some(next) = self.iter.next_back() {\n            self.len -= 1;\n            Some(next)\n        } else {\n            None\n        }\n    }\n}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "7b2cbb6d-1975-5721-9727-360895fc3412"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "80aee14b-e583-51d0-ac18-8032e29dc102",
+            "source": "class",
+            "title": "impl Iterator for IdsRef<'a>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl<'a> Iterator for IdsRef<'a> {\n    type Item = &'a Id;\n\n    fn next(&mut self) -> Option<&'a Id> {\n        self.iter.next()\n    }\n    fn size_hint(&self) -> (usize, Option<usize>) {\n        self.iter.size_hint()\n    }\n}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "80aee14b-e583-51d0-ac18-8032e29dc102"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "8475428d-0222-5d4e-9d3d-f5e55a6455fa",
+            "source": "class",
+            "title": "SubCommand",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "pub(crate) struct SubCommand {\n    pub(crate) name: String,\n    pub(crate) matches: ArgMatches,\n}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "8475428d-0222-5d4e-9d3d-f5e55a6455fa"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "8be433b2-2a39-56bc-9c91-bec5b722dd86",
+            "source": "class",
+            "title": "impl ExactSizeIterator for RawValues<'_>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl ExactSizeIterator for RawValues<'_> {}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "8be433b2-2a39-56bc-9c91-bec5b722dd86"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "97dc299a-ae16-52f3-913c-7d74fa8e4204",
+            "source": "class",
+            "title": "impl ExactSizeIterator for ValuesRef<'a, T>",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "impl<'a, T: 'a> ExactSizeIterator for ValuesRef<'a, T> {}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "97dc299a-ae16-52f3-913c-7d74fa8e4204"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "9fa7243c-8955-5f5b-9975-cf5352708f75",
+            "source": "class",
+            "title": "OccurrencesRef",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "pub struct OccurrencesRef<'a, T> {\n    #[allow(clippy::type_complexity)]\n    iter: Map<Iter<'a, Vec<AnyValue>>, fn(&Vec<AnyValue>) -> OccurrenceValuesRef<'_, T>>,\n}",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "9fa7243c-8955-5f5b-9975-cf5352708f75"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "a17de836-f019-59c8-aba4-1af260396cdf",
+            "source": "class",
+            "title": "ValuesRef",
+            "relevance": 0.10002582520246506,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "pub struct ValuesRef<'a, T> {\n    #[allow(clippy::type_complexity)]\n    iter: Map<Flatten<Iter<'a, Vec<AnyValue>>>, fn(&AnyValue) -> &T>,\n    len: usize,\n... (1 more lines)",
+            "graph_path": [
+              "5fddff02-a6c1-5bdb-9edc-b7ee18021a05",
+              "a17de836-f019-59c8-aba4-1af260396cdf"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
             "entity_id": "6590b3c1-0ace-51a1-8565-38980c518d3b",
             "source": "function",
             "title": "sources_under_posix_mode_bash",
@@ -25963,7 +26399,7 @@
             "relevance": 0.08300000429153442,
             "tier": "full",
             "drift_count": 0,
-            "content": "_my__app() {\n    local i cur prev opts cmd\n    COMPREPLY=()\n    if [[ \"${BASH_VERSINFO[0]}\" -ge 4 ]]; then\n        cur=\"$2\"\n    else\n        cur=\"${COMP_WORDS[COMP_CWORD]}\"\n    fi\n    prev=\"$3\"\n    cmd=\"\"\n    opts=\"\"\n\n    for i in \"${COMP_WORDS[@]:0:COMP_CWORD}\"\n    do\n        case \"${cmd},${i}\" in\n            \",$1\")\n                cmd=\"my__app\"\n                ;;\n            my__app,bar)\n                cmd=\"my__app__subcmd__bar\"\n                ;;\n            my__app,foo)\n                cmd=\"my__app__subcmd__foo\"\n                ;;\n            my__app,help)\n                cmd=\"my__app__subcmd__help\"\n                ;;\n            my__app__subcmd__help,bar)\n                cmd=\"my__app__subcmd__help__subcmd__bar\"\n                ;;\n            my__app__subcmd__help,foo)\n    ...",
+            "content": "_my__app() {\n    local i cur prev opts cmd\n    COMPREPLY=()\n    if [[ \"${BASH_VERSINFO[0]}\" -ge 4 ]]; then\n        cur=\"$2\"\n    else\n        cur=\"${COMP_WORDS[COMP_CWORD]}\"\n    fi\n    prev=\"$3\"\n    cmd=\"\"\n    opts=\"\"\n\n    for i in \"${COMP_WORDS[@]:0:COMP_CWORD}\"\n    do\n        case \"${cmd},${i}\" in\n            \",$1\")\n                cmd=\"my__app\"\n                ;;\n            my__app,bar)\n                cmd=\"my__app__subcmd__bar\"\n                ;;\n            my__app,foo)\n                cmd=\"my__app__subcmd__foo\"\n                ;;\n            my__app,help)\n                cmd=\"my__app__subcmd__help\"\n                ;;\n            my__app__subcmd__help,bar)\n                cmd=\"my__app__subcmd__help__subcmd__bar\"\n                ;;\n            my__app__subcmd__help,foo)\n                cmd=\"my__app__subcmd__help__subcmd__foo\"\n                ;;\n            my__app__subcmd__help,help)\n                cmd=\"my__app__subcmd__help__subcmd__help\"\n                ;;\n            *)\n                ;;\n        esac\n    done\n... (102 more lines)",
             "graph_path": [
               "a81d599c-bc0b-58bc-8156-31b621e3d0d7",
               "01fcc2d6-19c2-5b40-aa37-2e8751f00ec8"
@@ -25977,7 +26413,7 @@
             "relevance": 0.08300000429153442,
             "tier": "full",
             "drift_count": 0,
-            "content": "impl Generator for Bash {\n    fn file_name(&self, name: &str) -> String {\n        format!(\"{name}.bash\")\n    }\n... (7 more lines)",
+            "content": "impl Generator for Bash {\n    fn file_name(&self, name: &str) -> String {\n        format!(\"{name}.bash\")\n    }\n\n    fn generate(&self, cmd: &Command, buf: &mut dyn Write) {\n        self.try_generate(cmd, buf)\n            .expect(\"failed to write completion file\");\n    }\n\n    fn try_generate(&self, cmd: &Command, buf: &mut dyn Write) -> Result<(), Error> {\n        let bin_name = cmd\n            .get_bin_name()\n            .expect(\"crate::generate should have set the bin_name\");\n\n        let fn_name = bin_name.replace('-', \"__\");\n\n        write!(\n            buf,\n            \"_{fn_name}() {{\n    local i cur prev opts cmd\n    COMPREPLY=()\n    if [[ \\\"${{BASH_VERSINFO[0]}}\\\" -ge 4 ]]; then\n        cur=\\\"$2\\\"\n    else\n        cur=\\\"${{COMP_WORDS[COMP_CWORD]}}\\\"\n    fi\n    prev=\\\"$3\\\"\n    cmd=\\\"\\\"\n    opts=\\\"\\\"\n\n    for i in \\\"${{COMP_WORDS[@]:0:COMP_CWORD}}\\\"\n    do\n        case \\\"${{cmd}},${{i}}\\\" in\n            \\\",$1\\\")\n                cmd=\\\"{cmd}\\\"\n                ;;{subcmds}\n            *)\n                ;;\n        esac\n... (36 more lines)",
             "graph_path": [
               "d2b72103-59b1-5d20-8020-01241eda2b44",
               "450f5732-34a0-5d96-98a3-e6e9ee6946fc"
@@ -25991,7 +26427,7 @@
             "relevance": 0.08300000429153442,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn app_help_heading_flattened() {\n    // Used to help track the cause in tests\n    #![allow(clippy::enum_variant_names)]\n\n... (7 more lines)",
+            "content": "fn app_help_heading_flattened() {\n    // Used to help track the cause in tests\n    #![allow(clippy::enum_variant_names)]\n\n    #[derive(Debug, Clone, Parser)]\n    struct CliOptions {\n        #[command(flatten)]\n        options_a: OptionsA,\n\n        #[command(flatten)]\n        options_b: OptionsB,\n\n        #[command(subcommand)]\n        sub_a: SubA,\n\n        #[arg(long)]\n        should_be_in_default_section: u32,\n    }\n\n    #[derive(Debug, Clone, Args)]\n    #[command(next_help_heading = \"HEADING A\")]\n    struct OptionsA {\n        #[arg(long)]\n        should_be_in_section_a: u32,\n    }\n\n    #[derive(Debug, Clone, Args)]\n    #[command(next_help_heading = \"HEADING B\")]\n    struct OptionsB {\n        #[arg(long)]\n        should_be_in_section_b: u32,\n    }\n\n    #[derive(Debug, Clone, Subcommand)]\n    enum SubA {\n        #[command(flatten)]\n        SubB(SubB),\n        #[command(subcommand)]\n        SubC(SubC),\n        SubAOne,\n... (70 more lines)",
             "graph_path": [
               "0f262301-1ad5-56e0-844c-a586ffcce6d4",
               "488d67e0-f569-5a91-b299-f47295ccfe9c"
@@ -26002,15 +26438,14 @@
         "metadata": {
           "dropped_sources": [
             "rule:Help/error output changes are user-visible breaking (duplicate content)",
-            "file:zsh.rs (duplicate content)",
-            "file:bash.rs (duplicate content)",
-            "file:fish.rs (duplicate content)",
-            "function:complete_dynamic_env_option_value (duplicate content)",
-            "function:complete_dynamic_env_option_value (duplicate content)",
             "class:impl DoubleEndedIterator for RawOccurrences<'_> (duplicate content)",
             "class:impl DoubleEndedIterator for RawOccurrenceValues<'a> (duplicate content)",
             "class:impl Iterator for OccurrenceValuesRef<'a, T> (duplicate content)",
             "class:impl DoubleEndedIterator for OccurrenceValuesRef<'a, T> (duplicate content)",
+            "class:impl DoubleEndedIterator for Occurrences<T> (duplicate content)",
+            "class:impl Iterator for Occurrences<T> (duplicate content)",
+            "class:impl Iterator for ValuesRef<'a, T> (duplicate content)",
+            "class:impl DoubleEndedIterator for RawValues<'a> (duplicate content)",
             "function:_bin__name (duplicate content)",
             "function:_my__app (duplicate content)",
             "function:_my__app (duplicate content)"
@@ -26045,7 +26480,7 @@
         "knowledge_gradient": 0.02601230403308701,
         "knowledge_strength": 0.6981941299537718
       },
-      "latency_ms": 1149,
+      "latency_ms": 764,
       "results": [
         {
           "id": "36946eec-5250-5fd8-a72a-8647866b70d6",
@@ -26237,9 +26672,9 @@
           "stale": null
         },
         {
-          "id": "21753dc2-2678-5945-b29d-8641ed1912a7",
-          "type": "file",
-          "title": "elvish.rs",
+          "id": "42e5a2d1-5e25-5620-a9eb-e07411242f18",
+          "type": "function",
+          "title": "main",
           "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -26267,15 +26702,6 @@
           "id": "683c7329-f72e-56ee-bd45-6e1c1d6b16c1",
           "type": "function",
           "title": "main",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fc10bd05-49e9-5d83-82c8-e12e40609ffb",
-          "type": "class",
-          "title": "Opt",
           "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -26408,6 +26834,15 @@
           "stale": null
         },
         {
+          "id": "2222640c-1d03-5c76-90f0-b3c736f5d259",
+          "type": "file",
+          "title": "completion.rs",
+          "relevance": 0.06037790700793266,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "465537a5-204d-5e3e-b963-d9e8c09d6637",
           "type": "function",
           "title": "_my__app",
@@ -26436,26 +26871,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1426,
+        "latency_ms": 1309,
         "sections": [
-          {
-            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
-            "source": "rule",
-            "title": "Verify with make test-full, make clippy-full, make doc",
-            "relevance": 1.0914801359176636,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
-            "graph_path": [
-              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
-            ],
-            "graph_path_description": ""
-          },
           {
             "entity_id": "35c3a65e-df91-4bb2-8efc-68340bf25c67",
             "source": "rule",
             "title": "Help/error output changes are user-visible breaking",
-            "relevance": 1.090256929397583,
+            "relevance": 1.0648061037063599,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Help text is a contract \u2014 downstream golden tests depend on it. Output changes that create inconsistencies need the minor-release path.\n",
@@ -26465,10 +26887,23 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+            "source": "rule",
+            "title": "Verify with make test-full, make clippy-full, make doc",
+            "relevance": 1.062432050704956,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "The Makefile trio is the CI gate. cargo test alone misses feature-combination and UI tests.\n",
+            "graph_path": [
+              "0d0d4879-a5fe-46d3-a07b-a0075fff8f13"
+            ],
+            "graph_path_description": ""
+          },
+          {
             "entity_id": "12aa901e-0902-4c05-92ee-651ce6d938e5",
             "source": "rule",
             "title": "Derive macro changes need trybuild UI tests",
-            "relevance": 1.0505529642105103,
+            "relevance": 1.025425672531128,
             "tier": "baseline",
             "drift_count": 0,
             "content": "clap_derive compile-fail cases live under tests/derive_ui*; new attributes or validation must add a .rs/.stderr pair and bless with TRYBUILD=overwrite.\n",
@@ -26985,6 +27420,20 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
+            "entity_id": "42e5a2d1-5e25-5620-a9eb-e07411242f18",
+            "source": "function",
+            "title": "main",
+            "relevance": 0.24000000953674316,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "fn main() {\n    let opt = Opt::parse();\n\n    if let Some(generator) = opt.generator {\n        let mut cmd = Opt::command();\n        eprintln!(\"Generating completion file for {generator:?}...\");\n        print_completions(generator, &mut cmd);\n    } else {\n        println!(\"{opt:#?}\");\n    }\n}",
+            "graph_path": [
+              "36946eec-5250-5fd8-a72a-8647866b70d6",
+              "42e5a2d1-5e25-5620-a9eb-e07411242f18"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "46cc333e-9af7-5e6d-a29d-aabc8907e3ff",
             "source": "file",
             "title": "general.rs",
@@ -27158,7 +27607,7 @@
             "relevance": 0.20000000298023224,
             "tier": "full",
             "drift_count": 0,
-            "content": "fn cli() -> Command {\n    command!()\n        .group(ArgGroup::new(\"tests\").multiple(true))\n        .next_help_heading(\"TESTS\")\n        .args([\n            position_sensitive_flag(Arg::new(\"empty\"))\n                .long(\"empty\")\n                .action(ArgAction::Append)\n                .help(\"File is empty and is either a regular file or a directory\")\n                .group(\"tests\"),\n            Arg::new(...",
+            "content": "fn cli() -> Command {\n    command!()\n        .group(ArgGroup::new(\"tests\").multiple(true))\n        .next_help_heading(\"TESTS\")\n        .args([\n            position_sensitive_flag(Arg::new(\"empty\"))\n                .long(\"empty\")\n                .action(ArgAction::Append)\n                .help(\"File is empty and is either a regular file or a directory\")\n                .group(\"tests\"),\n            Arg::new(\"name\")\n                .long(\"name\")\n                .action(ArgAction::Append)\n                .help(\"Base of file name (the path with the leading directories removed) matches shell pattern pattern\")\n                .group(\"tests\")\n        ])\n        .group(ArgGroup::new(\"operators\").multiple(true))\n        .next_help_heading(\"OPERATORS\")\n        .args([\n            position_sensitive_flag(Arg::new(\"or\"))\n                .short('o')\n                .long(\"or\")\n                .action(ArgAction::Append)\n                .help(\"expr2 is not evaluate if exp1 is tr...",
             "graph_path": [
               "36946eec-5250-5fd8-a72a-8647866b70d6",
               "8c4bd152-1e23-5cdd-9e51-96411f26d13c"
@@ -27474,20 +27923,6 @@
             "graph_path_description": "Cli \u2192 contains \u2192 defer_flatten.rs"
           },
           {
-            "entity_id": "27b5b54e-6706-5634-b03e-8bf8ce2a614c",
-            "source": "file",
-            "title": "powershell.rs",
-            "relevance": 0.24000000953674316,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "use std::io::{Error, Write};\n\nuse clap::builder::StyledStr;\nuse clap::{Arg, Command};\n... (27 more lines)",
-            "graph_path": [
-              "36946eec-5250-5fd8-a72a-8647866b70d6",
-              "27b5b54e-6706-5634-b03e-8bf8ce2a614c"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
             "entity_id": "5ae3efa9-8211-56d7-955c-7709bee85569",
             "source": "file",
             "title": "simple.rs",
@@ -27508,7 +27943,7 @@
             "relevance": 0.0,
             "tier": "pointer",
             "drift_count": 0,
-            "content": "- [file] 02_app_settings.rs \u2014 id 348fd7e4-84e2-5934-bba1-f8b4a3d6684a\n- [function] build \u2014 id 3a76cfee-2e79-5e8b-ac2d-d0461018758c\n- [function] build \u2014 id 2ca2bb53-2fb0-5d67-9e87-2df6604db7c8\n- [file] exhaustive.rs \u2014 id c5d4915d-f5d2-5988-b940-a59d4def87e5\n- [class] Cli \u2014 id 9294c0da-3a3d-51d0-8d57-b2fbc47f424c\n- [class] Cli \u2014 id 45454de2-6352-5a04-b0e7-02532fc7c95f\n- [function] main \u2014 id ca043a02-001d-50d3-b413-ab1ecc17e10e\n- [file] 03_06_optional.rs \u2014 id 53737fb4-0124-5f8e-be02-fee36aa1e7db",
+            "content": "- [file] 02_app_settings.rs \u2014 id 348fd7e4-84e2-5934-bba1-f8b4a3d6684a",
             "graph_path": [],
             "graph_path_description": ""
           }
@@ -27523,18 +27958,10 @@
             "class:Cli (duplicate content)",
             "function:main (duplicate content)",
             "file:03_06_optional.rs (duplicate content)",
-            "file:powershell.rs (duplicate content)",
             "file:simple.rs (duplicate content)"
           ],
           "pointer_ids": [
-            "348fd7e4-84e2-5934-bba1-f8b4a3d6684a",
-            "3a76cfee-2e79-5e8b-ac2d-d0461018758c",
-            "2ca2bb53-2fb0-5d67-9e87-2df6604db7c8",
-            "c5d4915d-f5d2-5988-b940-a59d4def87e5",
-            "9294c0da-3a3d-51d0-8d57-b2fbc47f424c",
-            "45454de2-6352-5a04-b0e7-02532fc7c95f",
-            "ca043a02-001d-50d3-b413-ab1ecc17e10e",
-            "53737fb4-0124-5f8e-be02-fee36aa1e7db"
+            "348fd7e4-84e2-5934-bba1-f8b4a3d6684a"
           ],
           "search_mode": "hybrid",
           "selected_sources": [
@@ -27552,7 +27979,7 @@
             "knowledge_gradient": 0.02601230403308701,
             "knowledge_strength": 0.6981941299537718
           },
-          "size_tokens": 8106
+          "size_tokens": 8186
         }
       }
     }

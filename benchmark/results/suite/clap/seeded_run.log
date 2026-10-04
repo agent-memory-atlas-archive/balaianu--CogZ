@@ -1,18 +1,18 @@
 collecting corpus ids...
 corpus: 4655 entities
-  lk01: 35 results, 2291ms
-  lk02: 45 results, 838ms
-  lk03: 45 results, 867ms
-  lk04: 45 results, 835ms
-  lk05: 45 results, 1241ms
-  lk06: 37 results, 892ms
-  lk07: 45 results, 1043ms
-  lk08: 45 results, 927ms
-  lk09: 45 results, 815ms
-  lk10: 45 results, 874ms
-  lk11: 30 results, 849ms
-  lk12: 0 results, 521ms
-  lk13: 45 results, 811ms
-  lk14: 45 results, 866ms
-  lk15: 43 results, 1149ms
-wrote /home/andy/dev/personal/CogZ/benchmark/results/suite/clap/seeded_run.json
+  lk01: 35 results, 3592ms
+  lk02: 45 results, 920ms
+  lk03: 45 results, 821ms
+  lk04: 45 results, 938ms
+  lk05: 45 results, 874ms
+  lk06: 34 results, 967ms
+  lk07: 45 results, 811ms
+  lk08: 45 results, 804ms
+  lk09: 45 results, 859ms
+  lk10: 45 results, 808ms
+  lk11: 31 results, 883ms
+  lk12: 40 results, 841ms
+  lk13: 45 results, 774ms
+  lk14: 45 results, 931ms
+  lk15: 43 results, 764ms
+wrote seeded_run.json

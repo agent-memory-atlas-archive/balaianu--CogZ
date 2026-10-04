@@ -1,8 +1,0 @@
-collecting corpus ids...
-corpus: 4655 entities
-  ln01: 40 results, 2151ms
-  ln02: 40 results, 771ms
-  ln03: 0 results, 437ms
-  ln04: 0 results, 451ms
-  ln05: 0 results, 475ms
-wrote /home/andy/dev/personal/CogZ/benchmark/results/suite/clap/negatives_run.json

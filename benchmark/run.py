@@ -124,7 +124,17 @@ def main():
         corpus_ids = collect_corpus_ids(sess, repo)
         print(f"corpus: {len(corpus_ids)} entities", file=sys.stderr)
 
-        raw = {"repo": repo, "corpus_ids": sorted(corpus_ids), "args": vars(args), "results": []}
+        # Results identify the corpus by name only — never record absolute
+        # paths, which leak machine layout into committed artifacts.
+        def clean_arg(k, v):
+            if k == "repo":
+                return Path(v).resolve().name.lower()
+            if k in {"queries", "out", "cogz"}:
+                return Path(v).resolve().name
+            return v
+        clean_args = {k: clean_arg(k, v) for k, v in vars(args).items()}
+        raw = {"corpus": Path(repo).name.lower(), "corpus_ids": sorted(corpus_ids),
+               "args": clean_args, "results": []}
         ts_cache = {}
         for q in qset["queries"]:
             t0 = time.monotonic()
@@ -203,7 +213,7 @@ def main():
 
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(raw, indent=2))
-    print(f"wrote {args.out}", file=sys.stderr)
+    print(f"wrote {Path(args.out).name}", file=sys.stderr)
 
 
 if __name__ == "__main__":

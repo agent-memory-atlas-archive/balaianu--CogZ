@@ -11,6 +11,7 @@ Usage: python3 mine_observations.py [--corpus NAME] [--limit N]
 """
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -67,7 +68,9 @@ def main() -> None:
             continue
         if args.corpus and c["name"] != args.corpus:
             continue
-        repo = Path(manifest["suite"]["corpora_dir"]) / c["name"]
+        corpora_dir = Path(os.environ.get(
+            "COGZ_BENCH_CORPORA", SUITE.parent / manifest["suite"]["corpora_dir"]))
+        repo = corpora_dir / c["name"]
         if not repo.is_dir():
             sys.exit(f"{c['name']}: not fetched")
         cands = []

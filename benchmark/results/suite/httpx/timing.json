@@ -1,0 +1,7 @@
+{
+ "corpus": "httpx",
+ "reindex_noop_s": 2.7,
+ "reindex_add_file_s": 5.0,
+ "reindex_remove_file_s": 1.9,
+ "full_index_s": 58.6
+}

@@ -4,8 +4,9 @@ catch rate vs false alarms, observation->rule promotion thresholds.
 Drives create_entity/consolidate over mcp-stdio in a fresh fixture repo.
 Usage: consolidation_suite.py [--out out.json]"""
 import argparse, json, os, shutil, subprocess, sys, tempfile, time
+from pathlib import Path
 
-COGZ = "/home/andy/dev/personal/CogZ/target/release/cogz"
+COGZ = str(Path(__file__).resolve().parents[1] / "target" / "release" / "cogz")
 
 def rpc(proc, method, params, rid):
     proc.stdin.write(json.dumps({"jsonrpc": "2.0", "id": rid, "method": method, "params": params}) + "\n")
@@ -235,7 +236,7 @@ def main():
     finally:
         mcp.close()
     report = {
-        "repo": repo, "elapsed_s": round(elapsed, 1),
+        "repo": Path(repo).name, "elapsed_s": round(elapsed, 1),
         "dedup": {"score": score_dedup(dedup),
                   "detail": {k: v for k, v in dedup.items() if k != "ids"}},
         "contradiction": {"score": score_contra(contra),

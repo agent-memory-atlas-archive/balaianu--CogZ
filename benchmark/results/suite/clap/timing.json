@@ -1,0 +1,7 @@
+{
+ "corpus": "clap",
+ "reindex_noop_s": 16.5,
+ "reindex_add_file_s": 16.5,
+ "reindex_remove_file_s": 10.3,
+ "full_index_s": 91.7
+}

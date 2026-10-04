@@ -1,18 +1,18 @@
 collecting corpus ids...
 corpus: 1042 entities
-  hk01: 39 results, 2121ms
-  hk02: 45 results, 584ms
-  hk03: 41 results, 579ms
-  hk04: 45 results, 605ms
-  hk05: 45 results, 567ms
-  hk06: 45 results, 701ms
-  hk07: 45 results, 496ms
-  hk08: 45 results, 558ms
-  hk09: 45 results, 539ms
-  hk10: 40 results, 521ms
-  hk11: 45 results, 543ms
-  hk12: 44 results, 557ms
-  hk13: 45 results, 1194ms
-  hk14: 45 results, 545ms
-  hk15: 45 results, 1135ms
-wrote /home/andy/dev/personal/CogZ/benchmark/results/suite/httpx/seeded_run.json
+  hk01: 39 results, 2781ms
+  hk02: 45 results, 633ms
+  hk03: 43 results, 606ms
+  hk04: 45 results, 630ms
+  hk05: 45 results, 641ms
+  hk06: 45 results, 825ms
+  hk07: 45 results, 561ms
+  hk08: 45 results, 500ms
+  hk09: 45 results, 581ms
+  hk10: 42 results, 1040ms
+  hk11: 45 results, 509ms
+  hk12: 45 results, 519ms
+  hk13: 45 results, 485ms
+  hk14: 45 results, 561ms
+  hk15: 45 results, 619ms
+wrote seeded_run.json

@@ -1,1 +1,0 @@
-TOMBSTONE OK: pruned excluded from search/FTS/embeddings, edges + status survive rebuild

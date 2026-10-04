@@ -1,6 +1,6 @@
 {
  "version": "commit-gt-v1",
- "corpus": "/home/andy/cogz_bench/corpora/cobra",
+ "corpus": "cobra",
  "queries": [
   {
    "id": "cad460ea8",

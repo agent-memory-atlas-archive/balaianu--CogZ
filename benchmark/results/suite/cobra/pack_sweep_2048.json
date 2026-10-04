@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/cobra",
+ "corpus": "cobra",
  "pack_tokens": 2048,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 2517.7,
+    "cold_first_ms": 1933.9,
     "n": 15,
-    "p50_ms": 518.3,
-    "p95_ms": 563.0,
-    "p99_ms": 596.3,
-    "mean_ms": 451.2,
+    "p50_ms": 542.7,
+    "p95_ms": 1181.0,
+    "p99_ms": 1545.7,
+    "mean_ms": 642.4,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -19,18 +19,17 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 24,
+     "sections": 23,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 69,
+     "dropped": 70,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "function/full": 16,
       "file/full": 1,
       "class/full": 1,
-      "knowledge/full": 1,
-      "rule/full": 1
+      "knowledge/full": 1
      }
     },
     {
@@ -52,7 +51,7 @@
      "sections": 37,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 31,
+     "dropped": 32,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -65,16 +64,15 @@
     },
     {
      "query": "data validation logic",
-     "sections": 33,
+     "sections": 32,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 61,
+     "dropped": 62,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "function/full": 27,
-      "file/full": 1,
-      "rule/full": 1
+      "file/full": 1
      }
     },
     {
@@ -99,12 +97,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 349.0,
+    "cold_first_ms": 256.4,
     "n": 15,
-    "p50_ms": 370.3,
-    "p95_ms": 543.2,
-    "p99_ms": 786.8,
-    "mean_ms": 392.4,
+    "p50_ms": 272.3,
+    "p95_ms": 394.8,
+    "p99_ms": 544.3,
+    "mean_ms": 293.7,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -113,16 +111,16 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 26,
+     "sections": 25,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 68,
+     "dropped": 69,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 2,
       "function/full": 13,
-      "rule/full": 3,
+      "rule/full": 2,
       "file/full": 1,
       "class/full": 1,
       "observation/full": 2
@@ -162,14 +160,13 @@
     },
     {
      "query": "data validation logic",
-     "sections": 27,
+     "sections": 26,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 62,
+     "dropped": 63,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "rule/full": 1,
       "file/full": 1,
       "knowledge/full": 2,
       "function/full": 17,

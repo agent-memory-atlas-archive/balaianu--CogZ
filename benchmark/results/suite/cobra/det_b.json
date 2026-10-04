@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/cobra",
+  "corpus": "cobra",
   "corpus_ids": [
     "005cad92-2fc7-5ac9-bc6a-4bfbf7d4e872",
     "00d1fb20-f168-5c3b-b30d-8aa259ef09cd",
@@ -762,10 +762,10 @@
     "ffdb2d68-262c-4d43-8311-3721184547e9"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/cobra",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/cobra_seeded.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/cobra/det_b.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "cobra",
+    "queries": "cobra_seeded.json",
+    "out": "det_b.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": false,
     "no_expand": false,
@@ -785,7 +785,7 @@
         "knowledge_gradient": 0.08363638472662223,
         "knowledge_strength": 0.8606799418169827
       },
-      "latency_ms": 1856,
+      "latency_ms": 1803,
       "results": [
         {
           "id": "d11566fa-ec5b-549c-b2fa-d36a57cb666b",
@@ -1105,7 +1105,7 @@
         "knowledge_gradient": 0.07253551684737518,
         "knowledge_strength": 0.8368581218489209
       },
-      "latency_ms": 582,
+      "latency_ms": 492,
       "results": [
         {
           "id": "785f5367-f893-43f3-a8e3-6f9b9c15622f",
@@ -1443,7 +1443,7 @@
         "knowledge_gradient": 0.07109884537717426,
         "knowledge_strength": 0.7797233059021634
       },
-      "latency_ms": 574,
+      "latency_ms": 507,
       "results": [
         {
           "id": "f94e5fc4-8698-4bb9-8ef8-84c8010d65bb",
@@ -1862,7 +1862,7 @@
         "knowledge_gradient": 0.03883712770353316,
         "knowledge_strength": 0.7305583813310067
       },
-      "latency_ms": 593,
+      "latency_ms": 502,
       "results": [
         {
           "id": "3605f047-bd85-52ab-9a07-db5ecd3f234a",
@@ -2272,7 +2272,7 @@
         "knowledge_gradient": 0.049165304628373166,
         "knowledge_strength": 0.7320911018718371
       },
-      "latency_ms": 555,
+      "latency_ms": 755,
       "results": [
         {
           "id": "b5c2af04-c19c-5ef5-894a-d95187f9301c",
@@ -2601,7 +2601,7 @@
         "knowledge_gradient": 0.09806194771412373,
         "knowledge_strength": 0.7585253499769268
       },
-      "latency_ms": 572,
+      "latency_ms": 677,
       "results": [
         {
           "id": "6f830dca-1005-5692-9c11-b3c782bd5513",
@@ -2780,6 +2780,15 @@
           "title": "Micro-optimizations (#1957)",
           "relevance": 0.24780534207820892,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.16563668847084045,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -3011,7 +3020,7 @@
         "knowledge_gradient": 0.09679573260808501,
         "knowledge_strength": 0.8265066176439421
       },
-      "latency_ms": 642,
+      "latency_ms": 630,
       "results": [
         {
           "id": "d52a9d9f-8462-4c7b-991d-7ab70f662767",
@@ -3194,15 +3203,6 @@
           "stale": null
         },
         {
-          "id": "4ef2fe66-ee66-5da4-94b2-c5c212bdcd4c",
-          "type": "function",
-          "title": "TestCompletionDoesNotMutateOsArgs",
-          "relevance": 0.15764275193214417,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "23de7846-f546-5fd1-a556-287c91126dd1",
           "type": "function",
           "title": "TestCompletionCobraFlags",
@@ -3349,7 +3349,7 @@
         "knowledge_gradient": 0.09113253200570741,
         "knowledge_strength": 0.7521808287366915
       },
-      "latency_ms": 561,
+      "latency_ms": 1044,
       "results": [
         {
           "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
@@ -3696,7 +3696,7 @@
         "knowledge_gradient": 0.04033800903406866,
         "knowledge_strength": 0.7708747671725243
       },
-      "latency_ms": 522,
+      "latency_ms": 521,
       "results": [
         {
           "id": "96101179-ac96-4283-95e7-2be5fbadc284",
@@ -3969,18 +3969,9 @@
           "stale": null
         },
         {
-          "id": "8df64f91-5782-58b8-856d-fd32b5463966",
-          "type": "function",
-          "title": "TestGetFlagCompletion",
-          "relevance": 0.16053973138332367,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
+          "id": "1fc0a961-1b8a-42f3-9a28-12bda648a8e6",
           "type": "knowledge",
-          "title": "Flag group constraints are declared then validated post-parse",
+          "title": "Test commands via SetArgs + SetOut/SetErr buffers",
           "relevance": 0.16053973138332367,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -3990,6 +3981,15 @@
           "id": "5f9ac011-e857-4a68-b74b-e3b69db9fda2",
           "type": "knowledge",
           "title": "SilenceUsage and SilenceErrors control post-error output",
+          "relevance": 0.16053973138332367,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
+          "type": "knowledge",
+          "title": "Flag group constraints are declared then validated post-parse",
           "relevance": 0.16053973138332367,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -4007,7 +4007,7 @@
         "knowledge_gradient": 0.021111674708994,
         "knowledge_strength": 0.7081340275724308
       },
-      "latency_ms": 564,
+      "latency_ms": 549,
       "results": [
         {
           "id": "0d68c9f7-c902-563b-afaf-4d0410e438cd",
@@ -4190,9 +4190,27 @@
           "stale": null
         },
         {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.16499952971935272,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "96101179-ac96-4283-95e7-2be5fbadc284",
           "type": "rule",
           "title": "Never ship a hook-only command",
+          "relevance": 0.16499952971935272,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
+          "type": "rule",
+          "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
           "relevance": 0.16499952971935272,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -4363,7 +4381,7 @@
         "knowledge_gradient": 0.06363017783197022,
         "knowledge_strength": 0.7307398342393151
       },
-      "latency_ms": 550,
+      "latency_ms": 551,
       "results": [
         {
           "id": "ebf1fcb6-4528-5cb3-8758-031afaedd86e",
@@ -4542,6 +4560,15 @@
           "title": "E-suffixed hooks return errors; plain variants do not",
           "relevance": 0.15769362449645996,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.2144964635372162,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -4764,7 +4791,7 @@
         "knowledge_gradient": 0.05953223503900418,
         "knowledge_strength": 0.6991311338977825
       },
-      "latency_ms": 567,
+      "latency_ms": 1099,
       "results": [
         {
           "id": "84b0cd89-e918-5b9a-a4f3-4817dbf1bbfa",
@@ -4965,27 +4992,18 @@
           "stale": null
         },
         {
-          "id": "8d544208-0c84-48c7-82ac-619a50663e2d",
-          "type": "observation",
-          "title": "Print ActiveHelp for bash along other completions (#2076)",
+          "id": "86c7a0cc-cdc4-55ac-878b-49d1f2057e33",
+          "type": "function",
+          "title": "check",
           "relevance": 0.20088008046150208,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "933a9b1c-5db9-576e-aef8-42d30dd6b51c",
+          "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
           "type": "file",
-          "title": "cobra_test.go",
-          "relevance": 0.20088008046150208,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e202e232-6e78-5ac3-97ac-ee2349651793",
-          "type": "file",
-          "title": "cmd_test.go",
+          "title": "fish_completions_test.go",
           "relevance": 0.20088008046150208,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -5111,7 +5129,7 @@
         "knowledge_gradient": 0.02512402684844619,
         "knowledge_strength": 0.707238806561938
       },
-      "latency_ms": 1115,
+      "latency_ms": 518,
       "results": [
         {
           "id": "a2178c0d-c3f2-5e31-8e96-601d7730b2c8",
@@ -5294,15 +5312,6 @@
           "stale": null
         },
         {
-          "id": "c1495da1-c743-588a-aea2-fe2c54cd3fd5",
-          "type": "function",
-          "title": "TestValidArgsFuncCmdContext",
-          "relevance": 0.16395682096481323,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "0aa3b659-190c-417c-9573-06298fb239a4",
           "type": "rule",
           "title": "Prefer stdlib + pflag; dependencies need justification",
@@ -5472,6 +5481,15 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
+        },
+        {
+          "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
+          "type": "file",
+          "title": "zsh_completions.go",
+          "relevance": 0.08203617483377457,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
         }
       ]
     },
@@ -5485,7 +5503,7 @@
         "knowledge_gradient": 0.06594800787852848,
         "knowledge_strength": 0.826137555185798
       },
-      "latency_ms": 643,
+      "latency_ms": 489,
       "results": [
         {
           "id": "68d7dd4f-8bb5-5084-a798-211d2691a8a7",
@@ -5904,7 +5922,7 @@
         "knowledge_gradient": 0.06946510553606852,
         "knowledge_strength": 0.7657733186358792
       },
-      "latency_ms": 575,
+      "latency_ms": 552,
       "results": [
         {
           "id": "6f830dca-1005-5692-9c11-b3c782bd5513",
@@ -6083,6 +6101,15 @@
           "title": "Prefer stdlib + pflag; dependencies need justification",
           "relevance": 0.23447422683238983,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6e76d174-a7b5-5c20-ada5-49783831717d",
+          "type": "function",
+          "title": "TestBashCompletions",
+          "relevance": 0.17286500334739685,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },

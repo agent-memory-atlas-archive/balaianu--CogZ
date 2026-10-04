@@ -1,2 +1,2 @@
-httpx: 60 files, 17753 LOC, 1051 entities, 1318 edges, 1051 embeddings, db=50660KB
-wrote /home/andy/dev/personal/CogZ/benchmark/results/corpus_metrics.json
+httpx: 60 files, 17753 LOC, 1051 entities, 1318 edges, 1051 embeddings, db=53948KB
+wrote corpus_metrics.json

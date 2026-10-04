@@ -7,7 +7,7 @@ Only measures *ordering* benefit — a production reranker could also
 widen the candidate pool (fetch 40, rerank, return 20), which this
 cannot see.
 """
-import argparse, json, sqlite3, sys, time
+import argparse, json, os, sqlite3, sys, time
 from pathlib import Path
 
 import numpy as np
@@ -86,7 +86,9 @@ def main():
                     help="direct-results cutoff for metrics")
     args = ap.parse_args()
 
-    repo = Path(f"/home/andy/cogz_bench/corpora/{args.corpus}")
+    corpora = Path(os.environ.get("COGZ_BENCH_CORPORA",
+                                  BENCH / "corpora"))
+    repo = corpora / args.corpus
     run_path = (Path(args.run) if args.run
                 else BENCH / f"results/suite/{args.corpus}/{args.phase}_run.json")
     raw = json.loads(run_path.read_text())

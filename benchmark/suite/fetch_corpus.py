@@ -11,6 +11,7 @@ Usage:
         [--skip-index] [--corpora-dir DIR]
 """
 import argparse
+import os
 import shutil
 import subprocess
 import sys
@@ -38,7 +39,8 @@ def main() -> None:
     args = ap.parse_args()
 
     manifest = tomllib.loads((SUITE / "corpora.toml").read_text())
-    corpora_dir = Path(args.corpora_dir or manifest["suite"]["corpora_dir"])
+    corpora_dir = Path(args.corpora_dir or os.environ.get(
+        "COGZ_BENCH_CORPORA", SUITE.parent / manifest["suite"]["corpora_dir"]))
     corpora_dir.mkdir(parents=True, exist_ok=True)
     template = (SUITE / manifest["suite"]["config_template"]).read_text()
 
@@ -46,7 +48,7 @@ def main() -> None:
         if args.corpus and c["name"] != args.corpus:
             continue
         if c["source"] == "local":
-            repo = Path(c["path"])
+            repo = (SUITE / c["path"]).resolve()
             if not repo.is_dir():
                 sys.exit(f"{c['name']}: local path missing: {repo}")
             sha = sh(

@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/cobra",
+ "corpus": "cobra",
  "pack_tokens": 1024,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1809.9,
+    "cold_first_ms": 1833.3,
     "n": 15,
-    "p50_ms": 510.1,
-    "p95_ms": 566.3,
-    "p99_ms": 583.9,
-    "mean_ms": 453.0,
+    "p50_ms": 475.6,
+    "p95_ms": 978.3,
+    "p99_ms": 1047.4,
+    "mean_ms": 582.3,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -49,7 +49,7 @@
      "sections": 19,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 49,
+     "dropped": 50,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -74,7 +74,7 @@
     {
      "query": "how are requests processed",
      "sections": 14,
-     "size_tokens": 1033,
+     "size_tokens": 1024,
      "budget": 1024,
      "dropped": 70,
      "composition": {
@@ -92,12 +92,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 336.2,
+    "cold_first_ms": 243.6,
     "n": 15,
-    "p50_ms": 375.1,
-    "p95_ms": 626.8,
-    "p99_ms": 936.4,
-    "mean_ms": 425.1,
+    "p50_ms": 336.2,
+    "p95_ms": 886.3,
+    "p99_ms": 943.7,
+    "mean_ms": 410.3,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -106,18 +106,19 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 13,
+     "sections": 14,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 81,
+     "dropped": 80,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 2,
-      "function/full": 3,
-      "rule/full": 2,
+      "function/full": 4,
+      "rule/full": 1,
       "file/full": 1,
-      "class/full": 1
+      "class/full": 1,
+      "observation/full": 1
      }
     },
     {
@@ -152,14 +153,13 @@
     },
     {
      "query": "data validation logic",
-     "sections": 16,
+     "sections": 15,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 73,
+     "dropped": 74,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "rule/full": 1,
       "file/full": 1,
       "knowledge/full": 2,
       "function/full": 7,

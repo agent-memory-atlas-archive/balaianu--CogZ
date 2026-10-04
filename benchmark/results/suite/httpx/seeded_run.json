@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/httpx",
+  "corpus": "httpx",
   "corpus_ids": [
     "00cd4688-b64c-58d6-af4d-1d40a60b1b75",
     "0116b700-5f26-50f2-9756-3e7e927730eb",
@@ -1045,10 +1045,10 @@
     "fff5ceea-3769-5d77-a20e-a6d45f2f1043"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/httpx",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/httpx_seeded.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/httpx/seeded_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "httpx",
+    "queries": "httpx_seeded.json",
+    "out": "seeded_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": true,
     "no_expand": false,
@@ -1068,7 +1068,7 @@
         "knowledge_gradient": 0.11664483783203212,
         "knowledge_strength": 0.7952635012200009
       },
-      "latency_ms": 2121,
+      "latency_ms": 2781,
       "results": [
         {
           "id": "a16dd97c-f2b9-5909-bf50-691376f00511",
@@ -1423,13 +1423,13 @@
         }
       ],
       "context": {
-        "latency_ms": 653,
+        "latency_ms": 726,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0700569152832031,
+            "relevance": 1.0456593036651611,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -1439,28 +1439,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.062225103378296,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0574275255203247,
+            "relevance": 1.0369421243667603,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365537405014038,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -2467,7 +2467,7 @@
         "knowledge_gradient": 0.08585022412424133,
         "knowledge_strength": 0.7390531967049458
       },
-      "latency_ms": 584,
+      "latency_ms": 633,
       "results": [
         {
           "id": "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
@@ -2650,24 +2650,6 @@
           "stale": null
         },
         {
-          "id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
-          "type": "function",
-          "title": "test_mounted_transport",
-          "relevance": 0.18773438036441803,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "89bcc448-d44c-530c-a246-1e1e8c894a4c",
-          "type": "function",
-          "title": "test_all_mounted_transport",
-          "relevance": 0.18773438036441803,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "1a7cdd8f-905a-4925-8746-0fa148513595",
           "type": "rule",
           "title": "New implementation goes in underscore modules",
@@ -2830,6 +2812,24 @@
           "stale": null
         },
         {
+          "id": "b4f8eb3b-be9f-5f6a-8592-aaf0f276a24f",
+          "type": "function",
+          "title": "__init__",
+          "relevance": 0.08212910592556,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c349c913-fd61-5a0a-8859-762377f381a5",
+          "type": "function",
+          "title": "peek_filelike_length",
+          "relevance": 0.08212910592556,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "f23757fc-a095-5c52-a85f-befb301ec97c",
           "type": "function",
           "title": "test_socks_proxy",
@@ -2876,13 +2876,13 @@
         }
       ],
       "context": {
-        "latency_ms": 612,
+        "latency_ms": 1002,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0700567960739136,
+            "relevance": 1.0456591844558716,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -2892,28 +2892,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622249841690063,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0574274063110352,
+            "relevance": 1.0369420051574707,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365536212921143,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -3364,7 +3364,7 @@
             "relevance": 0.24691644310951233,
             "tier": "full",
             "drift_count": 0,
-            "content": "def handle_request(self, request: Request) -> Response:\n        request.read()\n        wsgi_input = io.BytesIO(request.content)\n\n        port = request.url.port or {\"http\": 80, \"https\": 443}[request.url.scheme]\n        environ = {\n            \"wsgi.version\": (1, 0),\n            \"wsgi.url_scheme\": request.url.scheme,\n            \"wsgi.input\": wsgi_input,\n            \"wsgi.errors\": self.wsgi_errors or sys.stderr,\n            \"wsgi.multithread\": True,\n            \"wsgi.multiprocess\": False,\n            \"wsgi.run_once\": False,\n            \"REQUEST_METHOD\": request.method,\n            \"SCRIPT_NAME\": self.script_name,\n            \"PATH_INFO\": request.url.path,\n            \"QUERY_STRING\": request.url.query.decode(\"ascii\"),\n            \"SERVER_NAME\": request.url.host,\n            \"SERVER_PORT\": str(port),\n            \"SERVER_PROTOCOL\": \"HTTP/1.1\",\n            \"REMOTE_ADDR\": self.remote_addr,\n        }\n        for header_key, header_value in request.headers.raw:\n            key = header_key.decode(\"ascii\").upper().replace(\"-\", \"_\")\n            if key not in (\"CONTENT_TYPE\", \"CONTENT_LENGTH\"):\n                key ...",
+            "content": "def handle_request(self, request: Request) -> Response:\n        request.read()\n        wsgi_input = io.BytesIO(request.content)\n\n        port = request.url.port or {\"http\": 80, \"https\": 443}[request.url.scheme]\n        environ = {\n            \"wsgi.version\": (1, 0),\n            \"wsgi.url_scheme\": request.url.scheme,\n            \"wsgi.input\": wsgi_input,\n            \"wsgi.errors\": self.wsgi_errors or sys.stderr,\n            \"wsgi.multithread\": True,\n            \"wsgi.multiprocess\": False,\n            \"wsgi.run_once\": False,\n            \"REQUEST_METHOD\": request.method,\n            \"SCRIPT_NAME\": self.script_name,\n            \"PATH_INFO\": request.url.path,\n            \"QUERY_STRING\": request.url.query.decode(\"ascii\"),\n            \"SERVER_NAME\": request.url.host,\n            \"SERVER_PORT\": str(port),\n            \"SERVER_PROTOCOL\": \"HTTP/1.1\",\n            \"REMOTE_ADDR\": self.remote_addr,\n        }\n        for header_key, header_value in request.headers.raw:\n            key = header_key.decode(\"ascii\").upper().replace(\"-\", \"_\")\n            if key not in (\"CONTENT_TYPE\", \"CONTENT_LENGTH\"):\n                key = \"HTTP_\" + key\n            environ[key] = header_value.decode(\"ascii\")\n\n        seen_status = None\n        seen_response_headers = None\n        seen_exc_info = None\n\n        def start_response(\n            status: str,\n            response_headers: list[tuple[str, str]],\n            exc_info: OptExcInfo | None = None,\n        ) -> typing.Callable[[bytes], typing.Any]:\n            nonlocal seen_status, seen_response_head...",
             "graph_path": [
               "577cfe9d-c9eb-5b99-8e91-2e9ad29e415b"
             ],
@@ -3421,62 +3421,6 @@
               "dbc2a0ae-85ee-5fe2-a18a-dd509423f4a5"
             ],
             "graph_path_description": ""
-          },
-          {
-            "entity_id": "01b10bfc-1da0-54cf-a395-4b51754a0ed6",
-            "source": "file",
-            "title": "test_wsgi.py",
-            "relevance": 0.19255495071411133,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "from __future__ import annotations\n\nimport sys\nimport typing\nimport wsgiref.validate\nfrom functools import partial\nfrom io import StringIO\n\n... (8 more lines)",
-            "graph_path": [
-              "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
-              "01b10bfc-1da0-54cf-a395-4b51754a0ed6"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "2e997642-807c-53da-baad-a95d0049a21a",
-            "source": "function",
-            "title": "test_context_managed_transport_and_mount",
-            "relevance": 0.19255495071411133,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def test_context_managed_transport_and_mount():\n    class Transport(httpx.BaseTransport):\n        def __init__(self, name: str) -> None:\n            self.name: str = name\n... (7 more lines)",
-            "graph_path": [
-              "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
-              "2e997642-807c-53da-baad-a95d0049a21a"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
-            "source": "function",
-            "title": "test_mounted_transport",
-            "relevance": 0.19255495071411133,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def test_mounted_transport():\n    transport = httpx.MockTransport(unmounted)\n    mounts = {\"custom://\": httpx.MockTransport(mounted)}\n\n... (7 more lines)",
-            "graph_path": [
-              "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
-              "524672ef-a41d-51cf-b0a3-c96372ff7756"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "89bcc448-d44c-530c-a246-1e1e8c894a4c",
-            "source": "function",
-            "title": "test_all_mounted_transport",
-            "relevance": 0.19255495071411133,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def test_all_mounted_transport():\n    mounts = {\"all://\": httpx.MockTransport(mounted)}\n\n    client = httpx.Client(mounts=mounts)\n... (4 more lines)",
-            "graph_path": [
-              "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
-              "89bcc448-d44c-530c-a246-1e1e8c894a4c"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
           },
           {
             "entity_id": "61f43403-b3bb-5d29-8e89-3b59cc32e2d7",
@@ -3997,6 +3941,48 @@
             "graph_path_description": "same file"
           },
           {
+            "entity_id": "a7fe0389-9c6c-5c51-94e7-b8bec7d635e5",
+            "source": "function",
+            "title": "is_ipv4_hostname",
+            "relevance": 0.08039979636669159,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "def is_ipv4_hostname(hostname: str) -> bool:\n    try:\n        ipaddress.IPv4Address(hostname.split(\"/\")[0])\n    except Exception:\n... (2 more lines)",
+            "graph_path": [
+              "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
+              "a7fe0389-9c6c-5c51-94e7-b8bec7d635e5"
+            ],
+            "graph_path_description": "get_environment_proxies \u2192 calls \u2192 is_ipv4_hostname"
+          },
+          {
+            "entity_id": "4b08c630-801d-5de3-9c4e-b846ad295daa",
+            "source": "class",
+            "title": "UnsetType",
+            "relevance": 0.07787547260522842,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "class UnsetType:\n    pass  # pragma: no cover",
+            "graph_path": [
+              "b71d7ccf-90e3-55c0-81b6-97339919b0a8",
+              "4b08c630-801d-5de3-9c4e-b846ad295daa"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
+            "entity_id": "5c552d62-90f0-5749-8d26-0745114a7ceb",
+            "source": "class",
+            "title": "Limits",
+            "relevance": 0.07787547260522842,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "class Limits:\n    \"\"\"\n    Configuration for limits to various client behaviors.\n\n... (7 more lines)",
+            "graph_path": [
+              "b71d7ccf-90e3-55c0-81b6-97339919b0a8",
+              "5c552d62-90f0-5749-8d26-0745114a7ceb"
+            ],
+            "graph_path_description": "same file"
+          },
+          {
             "entity_id": "f23757fc-a095-5c52-a85f-befb301ec97c",
             "source": "function",
             "title": "test_socks_proxy",
@@ -4058,6 +4044,7 @@
             "class:HTTPTransport (duplicate content)",
             "function:__init__ (duplicate content)",
             "function:__init__ (duplicate content)",
+            "function:is_ipv6_hostname (duplicate content)",
             "function:test_socks_proxy (duplicate content)",
             "file:test_api.py (duplicate content)",
             "function:__init__ (duplicate content)",
@@ -4103,7 +4090,7 @@
         "knowledge_gradient": 0.06324126294261949,
         "knowledge_strength": 0.7036365854686893
       },
-      "latency_ms": 579,
+      "latency_ms": 606,
       "results": [
         {
           "id": "2f22d141-1a82-5f71-8f07-2a8475316b66",
@@ -4295,9 +4282,18 @@
           "stale": null
         },
         {
-          "id": "9e03f519-1bfc-585c-85eb-283bb0360501",
+          "id": "9534b2b0-3da1-5293-8e38-790a31a5cb1c",
           "type": "function",
-          "title": "test_digest_auth_setting_cookie_in_request",
+          "title": "test_digest_auth_rfc_7616_sha_256",
+          "relevance": 0.18021510541439056,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b5a1618d-451e-543f-98cf-717f219d5017",
+          "type": "function",
+          "title": "test_digest_auth_rfc_7616_md5",
           "relevance": 0.18021510541439056,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -4307,6 +4303,15 @@
           "id": "bd1e01bf-84fd-5c30-8977-d8f61947722e",
           "type": "class",
           "title": "App",
+          "relevance": 0.18021510541439056,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "efef6557-9f70-5702-83bd-0ae45540ff48",
+          "type": "file",
+          "title": "test_auth.py",
           "relevance": 0.18021510541439056,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -4476,13 +4481,13 @@
         }
       ],
       "context": {
-        "latency_ms": 678,
+        "latency_ms": 760,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.070056676864624,
+            "relevance": 1.0456591844558716,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -4492,28 +4497,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622248649597168,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0574272871017456,
+            "relevance": 1.0369418859481812,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365535020828247,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -5063,20 +5068,6 @@
             "graph_path_description": "same file"
           },
           {
-            "entity_id": "6563f9c6-9845-51f5-87bc-334c8f57aa53",
-            "source": "file",
-            "title": "test_cookies.py",
-            "relevance": 0.19436031579971313,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "from http.cookiejar import Cookie, CookieJar\n\nimport pytest\n\nimport httpx\n\n\ndef get_and_set_cookies(request: httpx.Request) -> httpx.Response:\n    if request.url.path == \"/echo_cookies\":\n        data = {\"cookies\": request.headers.get(\"cookie\")}\n        return httpx.Response(200, json=data)\n    elif request.url.path == \"/set_cookie\":\n        return httpx.Response(200, headers={\"set-cookie\": \"example-name=example-value\"})\n    else:\n        raise NotImplementedError()  # pragma: no cover\n\n\ndef test_set_cookie() -> None:\n    \"\"\"\n    Send a request including a cookie.\n    \"\"\"\n    url = \"http://example.org/echo_cookies\"\n    cookies = {\"example-name\": \"example-value\"}\n\n    client = httpx.Client(\n        cookies=cookies, transport=httpx.MockTransport(get_and_set_cookies)\n    )\n    response = client.get(url)\n\n    assert response.status_code == 200\n... (138 more lines)",
-            "graph_path": [
-              "2f22d141-1a82-5f71-8f07-2a8475316b66",
-              "6563f9c6-9845-51f5-87bc-334c8f57aa53"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
             "entity_id": "9e03f519-1bfc-585c-85eb-283bb0360501",
             "source": "function",
             "title": "test_digest_auth_setting_cookie_in_request",
@@ -5209,7 +5200,7 @@
             "relevance": 0.1368604600429535,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_complete_url():\n    url = httpx.URL(\"https://example.org:123/path/to/somewhere?abc=123#anchor\")\n    assert url.scheme == \"https\"\n    assert url.host == \"example.org\"\n    assert url.port == 123\n    assert url.path == \"/path/to/somewhere\"\n    assert url.query == b\"abc=123\"\n    assert url.raw_path == b\"/path/to/somewhere?abc=123\"\n    assert ...",
+            "content": "def test_complete_url():\n    url = httpx.URL(\"https://example.org:123/path/to/somewhere?abc=123#anchor\")\n    assert url.scheme == \"https\"\n    assert url.host == \"example.org\"\n    assert url.port == 123\n    assert url.path == \"/path/to/somewhere\"\n    assert url.query == b\"abc=123\"\n    assert url.raw_path == b\"/path/to/somewhere?abc=123\"\n    assert url.fragment == \"anchor\"\n\n    assert str(url) == \"https://example.org:123/path/to/somewhere?abc=123#anchor\"\n    assert (\n        repr(url) == \"URL('https://example.org:123/path/to/somewhere?abc=123#anchor')\"\n    )",
             "graph_path": [
               "7b1615d2-b825-5fd3-aac6-27e51d5ac61d",
               "f4226ab9-fc80-53f1-b71c-618c49e7b55e"
@@ -5223,7 +5214,7 @@
             "relevance": 0.136428564786911,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_logging_request(server, caplog):\n    caplog.set_level(logging.INFO)\n    with httpx.Client() as client:\n        response = client.get(server.url)\n... (7 more lines)",
+            "content": "def test_logging_request(server, caplog):\n    caplog.set_level(logging.INFO)\n    with httpx.Client() as client:\n        response = client.get(server.url)\n        assert response.status_code == 200\n\n    assert caplog.record_tuples == [\n        (\n            \"httpx\",\n            logging.INFO,\n            'HTTP Request: GET http://127.0.0.1:8000/ \"HTTP/1.1 200 OK\"',\n        )\n    ]",
             "graph_path": [
               "26d41b12-096f-5d44-a5d4-3d6d15a809a9",
               "236110e0-803b-58eb-91ea-7d49be30ec49"
@@ -5237,7 +5228,7 @@
             "relevance": 0.13125000894069672,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_multiple_redirects():\n    client = httpx.Client(transport=httpx.MockTransport(redirects))\n    response = client.get(\n        \"https://example.org/multiple_redirects?count=20\", follow_redirects=True\n... (7 more lines)",
+            "content": "def test_multiple_redirects():\n    client = httpx.Client(transport=httpx.MockTransport(redirects))\n    response = client.get(\n        \"https://example.org/multiple_redirects?count=20\", follow_redirects=True\n    )\n    assert response.status_code == httpx.codes.OK\n    assert response.url == \"https://example.org/multiple_redirects\"\n    assert len(response.history) == 20\n    assert response.history[0].url == \"https://example.org/multiple_redirects?count=20\"\n    assert response.history[1].url == \"https://example.org/multiple_redirects?count=19\"\n    assert len(response.history[0].history) == 0\n    assert len(response.history[1].history) == 1",
             "graph_path": [
               "d6524b7e-85e4-5dc0-8aea-64330a49c4fe",
               "069e8b9f-5152-5a3d-8879-a4df22e9771d"
@@ -5251,7 +5242,7 @@
             "relevance": 0.13125000894069672,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_malformed_redirect():\n    # https://github.com/encode/httpx/issues/771\n    client = httpx.Client(transport=httpx.MockTransport(redirects))\n    response = client.get(\n... (5 more lines)",
+            "content": "def test_malformed_redirect():\n    # https://github.com/encode/httpx/issues/771\n    client = httpx.Client(transport=httpx.MockTransport(redirects))\n    response = client.get(\n        \"http://example.org/malformed_redirect\", follow_redire...",
             "graph_path": [
               "d6524b7e-85e4-5dc0-8aea-64330a49c4fe",
               "0c9b2302-bd1a-549d-89d1-f10f87afd5f8"
@@ -5532,7 +5523,7 @@
         "knowledge_gradient": 0.042962373075754456,
         "knowledge_strength": 0.6610099219911684
       },
-      "latency_ms": 605,
+      "latency_ms": 630,
       "results": [
         {
           "id": "c4492efd-60d7-5d35-bedf-2930b2e72e8a",
@@ -5715,6 +5706,33 @@
           "stale": null
         },
         {
+          "id": "203bbb1b-e36f-5321-863c-8fa9bc66f7df",
+          "type": "function",
+          "title": "test_limits_repr",
+          "relevance": 0.1591942012310028,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.1591942012310028,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "aa7d3067-678b-5558-96ed-902180071f05",
+          "type": "file",
+          "title": "__init__.py",
+          "relevance": 0.1591942012310028,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "271077d5-ecd4-533f-b75c-04c2bc7bc119",
           "type": "class",
           "title": "ConnectError",
@@ -5868,33 +5886,6 @@
           "stale": null
         },
         {
-          "id": "1c6c1d3d-185a-5c27-a00e-fdae5fd655be",
-          "type": "function",
-          "title": "__init__",
-          "relevance": 0.0795971006155014,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "49452ca8-bb33-5bd2-8166-9292e1659ddf",
-          "type": "function",
-          "title": "__aenter__",
-          "relevance": 0.0795971006155014,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4a239e6f-4900-5fa2-9f98-e75e443cffdb",
-          "type": "function",
-          "title": "__iter__",
-          "relevance": 0.0795971006155014,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "4b79d26d-bf77-5e29-a372-a1a636361d42",
           "type": "function",
           "title": "test_raise_for_status",
@@ -5941,13 +5932,13 @@
         }
       ],
       "context": {
-        "latency_ms": 688,
+        "latency_ms": 671,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0700565576553345,
+            "relevance": 1.045659065246582,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -5957,28 +5948,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622247457504272,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.057427167892456,
+            "relevance": 1.0369417667388916,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365533828735352,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -6514,6 +6505,20 @@
             "graph_path_description": ""
           },
           {
+            "entity_id": "ea79b776-451f-5fa1-8ad9-ca0c70454189",
+            "source": "file",
+            "title": "test_timeouts.py",
+            "relevance": 0.1667020320892334,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "import pytest\n\nimport httpx\n\n\n@pytest.mark.anyio\nasync def test_read_timeout(server):\n    timeout = httpx.Timeout(None, read=1e-6)\n\n    async with httpx.AsyncClient(timeout=timeout) as client:\n        with pytest.raises(httpx.ReadTimeout):\n            await client.get(server.url.copy_with(path=\"/slow_response\"))\n\n\n@pytest.mark.anyio\nasync def test_write_timeout(server):\n    timeout = httpx.Timeout(None, write=1e-6)\n\n    async with httpx.AsyncClient(timeout=timeout) as client:\n        with pytest.raises(httpx.WriteTimeout):\n            data = b\"*\" * 1024 * 1024 * 100\n            await client.put(server.url.copy_with(path=\"/slow_response\"), content=data)\n\n\n@pytest.mark.anyio\n@pytest.mark.network\nasync def test_connect_timeout(server):\n    timeout = httpx.Timeout(None, connect=1e-6)\n\n    async with httpx.AsyncClient(timeout=timeout) as client:\n... (25 more lines)",
+            "graph_path": [
+              "75c41635-9361-5bc7-9f7a-b1dff57f6b56",
+              "ea79b776-451f-5fa1-8ad9-ca0c70454189"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "03ce7613-1159-404b-b437-3272268e87fc",
             "source": "rule",
             "title": "Streaming responses must be closed or fully consumed",
@@ -6534,7 +6539,7 @@
             "relevance": 0.13891835510730743,
             "tier": "full",
             "drift_count": 0,
-            "content": "def trace(\n    name: str, info: typing.Mapping[str, typing.Any], verbose: bool = False\n) -> None:\n    console = rich.console.Console()\n    if name == \"connection.connect_tcp.started\" and verbose:\n        host = info[\"host\"]\n        console.print(f\"* Connecting to {host!r}\")\n    elif name == \"connection.connect_tcp.complete\" and verbose:\n        stream = info[\"return_value\"]\n        server_addr = stream.get_extra_info(\"server_addr\")\n        console.print(f\"* Connected to {server_addr[0]!r} on port {server_addr[1]}\")\n    elif name == \"connection.start_tls.complete\" and verbose:  # pragma: no cover\n        stream = info[\"return_value\"]\n        ssl_object = stream.get_extra_info(\"ssl_object\")\n        version = ssl_object.version()\n        cipher = ssl_object.cipher()\n        server_cert = ssl_object.getpeercert()\n        alpn = ssl_object.selected_alpn_protocol()\n        console.print(f\"* SSL established using {version!r} / {cipher[0]!r}\")\n        console.print(f\"* Selected ALPN protocol: {alpn!r}\")\n        if server_cert:\n            console.print(\"* Server certificate:\")\n            console.print(format_certificate(server_cert))\n    elif name == \"http11.send_request_headers.started\" and verbose:\n        request = info[\"request\"]\n        print_request_headers(request, http2=False)\n    elif name == \"http2.send_request_headers.started\" and verbose:  # pragma: no cover\n        request = info[\"request\"]\n        print_request_headers(request, http2=True)\n    elif name == \"http11.receive_response_headers.complete\":\n        http_version, status, reason_phrase, headers = info[\"return_value\"]\n        print_response_headers(http_version, status, reason_phrase, headers)\n    elif name == \"http2.receive_response_headers.complete\":  # pragma: no cover\n        status, headers = info[\"return_value\"]\n        http_version = b\"HTTP/2\"\n        reason_phrase = None\n        print_response_headers(http_version, status, reason_phrase, headers)",
+            "content": "def trace(\n    name: str, info: typing.Mapping[str, typing.Any], verbose: bool = False\n) -> None:\n    console = rich.console.Console()\n    if name == \"connection.connect_tcp.started\" and verbose:\n        host = info[\"host\"]\n        console.print(f\"* Connecting to {host!r}\")\n    elif name == \"connection.connect_tcp.complete\" and verbose:\n        stream = info[\"return_value\"]\n        server_addr = stream.get_extra_info(\"server_addr\")\n        console.print(f\"* Connected to {server_addr[0]!r} on port {server_addr[1]}\")\n    elif name == \"connection.start_tls.complete\" and verbose:  # pragma: no cover\n        stream = info[\"return_value\"]\n        ssl_object = stream.get_extra_info(\"ssl_object\")\n        version = ssl_object.version()\n        cipher = ssl_object.cipher()\n        server_cert = ssl_object.getpeercert()\n        alpn = ssl_object.selected_alpn_protocol()\n        console.print(f\"* SSL established using {version!r} / {cipher[0]!r}\")\n        console.print(f\"* Selected ALPN protocol: {alpn!r}\")\n        if server_cert:\n            console.print(\"* Server certificate:\")\n            console.print(format_certificate(server_cert))\n    elif name == \"http11.send_request_headers.started\" and verbose:\n        request = info[\"request\"]\n        print_request_headers(request, http2=False)\n    elif name == \"http2.send_request_headers.started\" and verbose:  # pragma: no cover\n        request = info[\"request\"]\n        print_request_headers(request, http2=True)\n    elif name == \"http11.receive_response_headers.complete\":\n        http_version, status, reason_phrase, headers = info[\"return_value\"]\n        print_response_headers(http_version, status, reason_phrase, headers)\n    elif name == \"http2.receive_response_headers.complete\":  # pragma: no cover\n        status, headers = info[\"return_value\"]\n        http_...",
             "graph_path": [
               "75c41635-9361-5bc7-9f7a-b1dff57f6b56",
               "dfac47c0-08ae-554f-8d31-fd5fe15c31fb"
@@ -6548,7 +6553,7 @@
             "relevance": 0.1119999960064888,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_raise_for_status(server):\n    with httpx.Client() as client:\n        for status_code in (200, 400, 404, 500, 505):\n            response = client.request(\n                \"GET\", server.url.copy_with(path=f\"/status/{status_code}\")\n            )\n            if 400 <= status_code < 600:\n                with pytest.raises(httpx.HTTPStatusError) as exc_info:\n                    response.raise_for_status()\n                assert exc_info.value.response == response\n                assert exc_info.value.request.url.path == f\"/status/{status_code}\"\n            else:\n                assert response.raise_for_status() is response",
+            "content": "def test_raise_for_status(server):\n    with httpx.Client() as client:\n        for status_code in (200, 400, 404, 500, 505):\n            response = client.request(\n... (7 more lines)",
             "graph_path": [
               "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
               "4b79d26d-bf77-5e29-a372-a1a636361d42"
@@ -6562,7 +6567,7 @@
             "relevance": 0.1119999960064888,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_options(server):\n    with httpx.Client() as client:\n        response = client.options(server.url)\n    assert response.status_code == 200\n    assert response.reason_phrase == \"OK\"",
+            "content": "def test_options(server):\n    with httpx.Client() as client:\n        response = client.options(server.url)\n    assert response.status_code == 200\n... (1 more lines)",
             "graph_path": [
               "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
               "61f43403-b3bb-5d29-8e89-3b59cc32e2d7"
@@ -6604,7 +6609,7 @@
             "relevance": 0.09330859780311584,
             "tier": "full",
             "drift_count": 0,
-            "content": "class Client(BaseClient):\n    \"\"\"\n    An HTTP client, with connection pooling, HTTP/2, redirects, cookie persistence, etc.\n\n    It can be shared between threads.\n\n    Usage:\n\n    ```python\n    >>> client = httpx.Client()\n    >>> response = client.get('https://example.org')\n    ```\n\n    **Parameters:**\n\n    * **auth** - *(optional)* An authentication class to use when sending\n    requests.\n    * **params** - *(optional)* Query par...",
+            "content": "class Client(BaseClient):\n    \"\"\"\n    An HTTP client, with connection pooling, HTTP/2, redirects, cookie persistence, etc.\n\n... (7 more lines)",
             "graph_path": [
               "dbe38e41-7d8f-4771-86e0-402375bc92d2",
               "7520683c-d7a1-5c7a-90f0-be48715a2f5c"
@@ -6955,7 +6960,7 @@
         "knowledge_gradient": 0.04308226711400929,
         "knowledge_strength": 0.6693415891678912
       },
-      "latency_ms": 567,
+      "latency_ms": 641,
       "results": [
         {
           "id": "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
@@ -7147,6 +7152,15 @@
           "stale": null
         },
         {
+          "id": "33a367ec-5843-59ee-9274-7d7239eec80b",
+          "type": "function",
+          "title": "__init__",
+          "relevance": 0.19310343265533447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "72f080f7-8871-594b-ba64-42d4ce237dcb",
           "type": "class",
           "title": "RequestError",
@@ -7156,18 +7170,9 @@
           "stale": null
         },
         {
-          "id": "aa7d3067-678b-5558-96ed-902180071f05",
-          "type": "file",
-          "title": "__init__.py",
-          "relevance": 0.19310343265533447,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ea79b776-451f-5fa1-8ad9-ca0c70454189",
-          "type": "file",
-          "title": "test_timeouts.py",
+          "id": "fba282e2-48bb-5b82-906f-c95bb38f84fa",
+          "type": "function",
+          "title": "__repr__",
           "relevance": 0.19310343265533447,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -7364,13 +7369,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1226,
+        "latency_ms": 1735,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.070056438446045,
+            "relevance": 1.0456589460372925,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -7380,28 +7385,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622246265411377,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0574270486831665,
+            "relevance": 1.036941647529602,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365533828735352,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -7966,16 +7971,44 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "aa7d3067-678b-5558-96ed-902180071f05",
-            "source": "file",
-            "title": "__init__.py",
+            "entity_id": "36830c29-0438-54e3-9a6a-d205777eccce",
+            "source": "function",
+            "title": "url_to_origin",
             "relevance": 0.20375771820545197,
             "tier": "full",
             "drift_count": 0,
-            "content": "from .__version__ import __description__, __title__, __version__\nfrom ._api import *\nfrom ._auth import *\nfrom ._client import *\nfrom ._config import *\nfrom ._content import *\nfrom ._exceptions import *\nfrom ._models import *\nfrom ._status_codes import *\nfrom ._transports import *\nfrom ._types import *\nfrom ._urls import *\n\ntry:\n    from ._main import main\nexcept ImportError:  # pragma: no cover\n\n    def main() -> None:  # type: ignore\n        import sys\n\n        print(\n            \"The httpx command line client could not run because the required \"\n            \"dependencies were not installed.\\nMake sure you've installed \"\n            \"everything with: pip install 'httpx[cli]'\"\n        )\n        sys.exit(1)\n\n\n__all__ = [\n    \"__description__\",\n... (76 more lines)",
+            "content": "def url_to_origin(url: str) -> httpcore.URL:\n    \"\"\"\n    Given a URL string, return the origin in the raw tuple format that\n    `httpcore` uses for it's representation.\n    \"\"\"\n    u = httpx.URL(url)\n    return httpcore.URL(scheme=u.raw_scheme, host=u.raw_host, port=u.port, target=\"/\")",
             "graph_path": [
               "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
-              "aa7d3067-678b-5558-96ed-902180071f05"
+              "36830c29-0438-54e3-9a6a-d205777eccce"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "5f57dcae-b6a8-567a-9350-edaf0c2d3f6e",
+            "source": "file",
+            "title": "_utils.py",
+            "relevance": 0.20375771820545197,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "from __future__ import annotations\n\nimport ipaddress\nimport os\nimport re\nimport typing\nfrom urllib.request import getproxies\n\nfrom ._types import PrimitiveData\n\nif typing.TYPE_CHECKING:  # pragma: no cover\n    from ._urls import URL\n\n\ndef primitive_value_to_str(value: PrimitiveData) -> str:\n    \"\"\"\n    Coerce a primitive data type into a string value.\n\n    Note that we prefer JSON-style 'true'/'false' for boolean values here.\n    \"\"\"\n    if value is True:\n        return \"true\"\n    elif value is False:\n        return \"false\"\n    elif value is None:\n        return \"\"\n    return str(value)\n\n\ndef get_environment_proxies() -> dict[str, str | None]:\n... (212 more lines)",
+            "graph_path": [
+              "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
+              "5f57dcae-b6a8-567a-9350-edaf0c2d3f6e"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "b71d7ccf-90e3-55c0-81b6-97339919b0a8",
+            "source": "function",
+            "title": "__init__",
+            "relevance": 0.20375771820545197,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "def __init__(\n        self,\n        url: URL | str,\n        *,\n        ssl_context: ssl.SSLContext | None = None,\n        auth: tuple[str, str] | None = None,\n        headers: HeaderTypes | None = None,\n    ) -> None:\n        url = URL(url)\n        headers = Headers(headers)\n\n        if url.scheme not in (\"http\", \"https\", \"socks5\", \"socks5h\"):\n            raise ValueError(f\"Unknown scheme for proxy URL {url!r}\")\n\n        if url.username or url.password:\n            # Remove any auth credentials from the URL.\n            auth = (url.username, url.password)\n            url = url.copy_with(username=None, password=None)\n\n        self.url = url\n        self.auth = auth\n        self.headers = headers\n        self.ssl_context = ssl_context",
+            "graph_path": [
+              "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
+              "b71d7ccf-90e3-55c0-81b6-97339919b0a8"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -8004,20 +8037,6 @@
             "graph_path": [
               "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
               "ea79b776-451f-5fa1-8ad9-ca0c70454189"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "f60e678d-2aec-5a2e-a2a4-b47b1c523d40",
-            "source": "file",
-            "title": "test_proxies.py",
-            "relevance": 0.20375771820545197,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "import httpcore\nimport pytest\n\nimport httpx\n\n\ndef url_to_origin(url: str) -> httpcore.URL:\n    \"\"\"\n    Given a URL string, return the origin in the raw tuple format that\n    `httpcore` uses for it's representation.\n    \"\"\"\n    u = httpx.URL(url)\n    return httpcore.URL(scheme=u.raw_scheme, host=u.raw_host, port=u.port, target=\"/\")\n\n\ndef test_socks_proxy():\n    url = httpx.URL(\"http://www.example.com\")\n\n    for proxy in (\"socks5://localhost/\", \"socks5h://localhost/\"):\n        client = httpx.Client(proxy=proxy)\n        transport = client._transport_for_url(url)\n        assert isinstance(transport, httpx.HTTPTransport)\n        assert isinstance(transport._pool, httpcore.SOCKSProxy)\n\n        async_client = httpx.AsyncClient(proxy=proxy)\n        async_transport = async_client._transport_for_url(url)\n        assert isinstance(async_transport, httpx.AsyncHTTPTransport)\n        assert isinstance(async_transport._pool, httpcore.AsyncSOCKSProxy)\n\n\n... (235 more lines)",
-            "graph_path": [
-              "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
-              "f60e678d-2aec-5a2e-a2a4-b47b1c523d40"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -8294,7 +8313,7 @@
             "relevance": 0.10187885910272598,
             "tier": "full",
             "drift_count": 0,
-            "content": "class StreamError(RuntimeError):\n    \"\"\"\n    The base class for stream exceptions.\n\n    The developer made an error in accessing the request stream in\n    an invalid way.\n    \"\"\"\n\n    def __init__(self, message: str) -> None:\n   ...",
+            "content": "class StreamError(RuntimeError):\n    \"\"\"\n    The base class for stream exceptions.\n\n    The developer made an error in accessing the request stream in\n    an invalid way.\n    \"\"\"\n\n    def __init__(self, message: str) -> None:\n        super().__init__(message)",
             "graph_path": [
               "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
               "56db3f51-a44d-5642-a9c3-b4207734cd3a"
@@ -8350,7 +8369,7 @@
             "relevance": 0.10187885910272598,
             "tier": "full",
             "drift_count": 0,
-            "content": "class UnsupportedProtocol(TransportError):\n    \"\"\"\n    Attempted to make a request to an unsupported protocol.\n\n... (2 more lines)",
+            "content": "class UnsupportedProtocol(TransportError):\n    \"\"\"\n    Attempted to make a request to an unsupported protocol.\n\n    For example issuing a req...",
             "graph_path": [
               "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
               "9048cdd1-d98e-5bf8-8247-f999a5df25eb"
@@ -8518,7 +8537,7 @@
             "relevance": 0.0,
             "tier": "pointer",
             "drift_count": 0,
-            "content": "- [function] __init__ \u2014 id e996bd70-adca-5e1c-a399-a4a8b27ff07d\n- [function] request \u2014 id b85449bc-0ea6-5183-8aa4-297ad63c56a9\n- [function] build_request \u2014 id 5b584db0-75dd-555d-8ed8-82779c8cce74\n- [function] request \u2014 id ea94e9df-22d2-5f91-8686-58a9246522b8\n- [function] __init__ \u2014 id 03117f42-b731-5d7f-9593-85e3bb30ba57\n- [function] __init__ \u2014 id 2f28af41-f254-5b78-a907-3387c37e97d5\n- [function] __init__ \u2014 id 6b76d6ea-ff01-5f8a-9771-fb5003985163\n- [function] __init__ \u2014 id a0f37ec2-4cf2-5373-bcf0-71185a1591eb\n- [function] __init__ \u2014 id b0c73d10-e071-57c4-ba14-9f40705febd0",
+            "content": "- [function] __init__ \u2014 id e996bd70-adca-5e1c-a399-a4a8b27ff07d\n- [file] test_proxies.py \u2014 id f60e678d-2aec-5a2e-a2a4-b47b1c523d40\n- [function] request \u2014 id b85449bc-0ea6-5183-8aa4-297ad63c56a9\n- [function] build_request \u2014 id 5b584db0-75dd-555d-8ed8-82779c8cce74\n- [function] request \u2014 id ea94e9df-22d2-5f91-8686-58a9246522b8\n- [function] __init__ \u2014 id 03117f42-b731-5d7f-9593-85e3bb30ba57\n- [function] __init__ \u2014 id 2f28af41-f254-5b78-a907-3387c37e97d5\n- [function] __init__ \u2014 id 6b76d6ea-ff01-5f8a-9771-fb5003985163",
             "graph_path": [],
             "graph_path_description": ""
           }
@@ -8526,11 +8545,10 @@
         "metadata": {
           "dropped_sources": [
             "function:__init__ (duplicate content)",
+            "file:test_proxies.py (duplicate content)",
             "function:request (duplicate content)",
             "function:build_request (duplicate content)",
             "function:request (duplicate content)",
-            "function:__init__ (duplicate content)",
-            "function:__init__ (duplicate content)",
             "function:__init__ (duplicate content)",
             "function:__init__ (duplicate content)",
             "function:__init__ (duplicate content)",
@@ -8539,14 +8557,13 @@
           ],
           "pointer_ids": [
             "e996bd70-adca-5e1c-a399-a4a8b27ff07d",
+            "f60e678d-2aec-5a2e-a2a4-b47b1c523d40",
             "b85449bc-0ea6-5183-8aa4-297ad63c56a9",
             "5b584db0-75dd-555d-8ed8-82779c8cce74",
             "ea94e9df-22d2-5f91-8686-58a9246522b8",
             "03117f42-b731-5d7f-9593-85e3bb30ba57",
             "2f28af41-f254-5b78-a907-3387c37e97d5",
-            "6b76d6ea-ff01-5f8a-9771-fb5003985163",
-            "a0f37ec2-4cf2-5373-bcf0-71185a1591eb",
-            "b0c73d10-e071-57c4-ba14-9f40705febd0"
+            "6b76d6ea-ff01-5f8a-9771-fb5003985163"
           ],
           "search_mode": "hybrid",
           "selected_sources": [
@@ -8564,7 +8581,7 @@
             "knowledge_gradient": 0.04308226711400929,
             "knowledge_strength": 0.6693415891678912
           },
-          "size_tokens": 7985
+          "size_tokens": 7970
         }
       }
     },
@@ -8578,7 +8595,7 @@
         "knowledge_gradient": 0.1446127123708142,
         "knowledge_strength": 0.8024992045691239
       },
-      "latency_ms": 701,
+      "latency_ms": 825,
       "results": [
         {
           "id": "4b387de0-b846-5474-a7fd-35dfedad1b6e",
@@ -8987,13 +9004,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1150,
+        "latency_ms": 759,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0700563192367554,
+            "relevance": 1.045658826828003,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -9003,28 +9020,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622245073318481,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.057426929473877,
+            "relevance": 1.0369415283203125,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.036553144454956,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -10232,7 +10249,7 @@
         "knowledge_gradient": 0.09590471868339139,
         "knowledge_strength": 0.7267297468084047
       },
-      "latency_ms": 496,
+      "latency_ms": 561,
       "results": [
         {
           "id": "87ff763a-526e-5d8b-888b-38a6c34364a2",
@@ -10641,13 +10658,13 @@
         }
       ],
       "context": {
-        "latency_ms": 587,
+        "latency_ms": 580,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0700562000274658,
+            "relevance": 1.0456587076187134,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -10657,28 +10674,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622243881225586,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0576403141021729,
+            "relevance": 1.0371350049972534,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365530252456665,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -11877,7 +11894,7 @@
         "knowledge_gradient": 0.0608857823064358,
         "knowledge_strength": 0.7306826827920118
       },
-      "latency_ms": 558,
+      "latency_ms": 500,
       "results": [
         {
           "id": "6563f9c6-9845-51f5-87bc-334c8f57aa53",
@@ -12286,13 +12303,13 @@
         }
       ],
       "context": {
-        "latency_ms": 630,
+        "latency_ms": 766,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0700560808181763,
+            "relevance": 1.0456587076187134,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -12302,28 +12319,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.062224268913269,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0576400756835938,
+            "relevance": 1.0371350049972534,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365530252456665,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -13403,7 +13420,7 @@
         "knowledge_gradient": 0.013654316661042864,
         "knowledge_strength": 0.6992488079935425
       },
-      "latency_ms": 539,
+      "latency_ms": 581,
       "results": [
         {
           "id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
@@ -13586,9 +13603,27 @@
           "stale": null
         },
         {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.18961641192436218,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "88e1ed7b-e45f-5761-8170-97e2b5ebcc83",
           "type": "file",
           "title": "test_properties.py",
+          "relevance": 0.18961641192436218,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
+          "type": "rule",
+          "title": "Always set an explicit timeout on Client",
           "relevance": 0.18961641192436218,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -13748,24 +13783,6 @@
           "stale": null
         },
         {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
-          "relevance": 0.055907174944877625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "baa0b9c2-9aaa-418a-9128-cc057c219c16",
-          "type": "observation",
-          "title": "Use standard logging style (#2547)",
-          "relevance": 0.055907174944877625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "d0bbbe05-ff75-5755-b61e-422fde2ce8d7",
           "type": "class",
           "title": "MockTransport",
@@ -13812,13 +13829,13 @@
         }
       ],
       "context": {
-        "latency_ms": 599,
+        "latency_ms": 619,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0702440738677979,
+            "relevance": 1.045836091041565,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -13828,28 +13845,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622241497039795,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0576400756835938,
+            "relevance": 1.0371348857879639,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.036552906036377,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -14373,6 +14390,20 @@
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
+            "entity_id": "87b67156-3138-4ac1-b2e7-0b33691b336c",
+            "source": "knowledge",
+            "title": "Top-level calls create a fresh connection pool every time",
+            "relevance": 0.1991209238767624,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "httpx.get() in a loop opens and closes a pool per call \u2014 no keep-alive, no cookie persistence, TLS handshake each time. Client as context manager is the correct pattern for >1 request; AsyncClient likewise.\n",
+            "graph_path": [
+              "524672ef-a41d-51cf-b0a3-c96372ff7756",
+              "87b67156-3138-4ac1-b2e7-0b33691b336c"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
             "entity_id": "12e0532c-b45d-523c-a96b-c86360f10057",
             "source": "file",
             "title": "test_asgi.py",
@@ -14449,7 +14480,7 @@
             "relevance": 0.10513512790203094,
             "tier": "full",
             "drift_count": 0,
-            "content": "def redirects(request: httpx.Request) -> httpx.Response:\n    if request.url.scheme not in (\"http\", \"https\"):\n        raise httpx.UnsupportedProtocol(f\"Scheme {request.url.scheme!r} not supported.\")\n\n    if request.url.path == \"/redirect_301\":\n        status_code = httpx.codes.MOVED_PERMANENTLY\n        content = b\"<a href='https://example.org/'>here</a>\"\n        headers = {\"location\": \"https://example.org/\"}\n        return httpx.Response(status_code, headers=headers, content=content)\n\n    elif request.url.path == \"/redirect_302\":\n        status_code = httpx.codes.FOUND\n        headers = {\"location\": \"https://example.org/\"}\n        return httpx.Response(status_code, headers=headers)\n\n    elif request.url.path == \"/redirect_303\":\n        status_code = httpx.codes.SEE_OTHER\n        headers = {\"location\": \"https://example.org/\"}\n        return httpx.Response(status_code, headers=headers)\n\n    elif request.url.path == \"/relative_redirect\":\n        status_code = httpx.codes.SEE_OTHER\n        headers = {\"location\": \"/\"}\n ...",
+            "content": "def redirects(request: httpx.Request) -> httpx.Response:\n    if request.url.scheme not in (\"http\", \"https\"):\n        raise httpx.UnsupportedProtocol(f\"Scheme {request.url.scheme!r} not supported.\")\n\n    if request.url.path == \"/redirect_301\":\n        status_code = httpx.codes.MOVED_PERMANENTLY\n        content = b\"<a href='https://example.org/'>here</a>\"\n        headers = {\"location\": \"https://example.org/\"}\n        return httpx.Response(status_code, headers=headers, content=content)\n\n    elif request.url.path == \"/redirect_302\":\n        status_code = httpx.codes.FOUND\n        headers = {\"location\": \"https://example.org/\"}\n        return httpx.Response(status_code, headers=headers)\n\n    elif request.url.path == \"/redirect_303\":\n        status_code = httpx.code...",
             "graph_path": [
               "d6524b7e-85e4-5dc0-8aea-64330a49c4fe",
               "9b77c770-6911-5323-9aee-6dfd54ec24b3"
@@ -14899,7 +14930,7 @@
         "knowledge_gradient": 0.03741320292447516,
         "knowledge_strength": 0.7185625092826786
       },
-      "latency_ms": 521,
+      "latency_ms": 1040,
       "results": [
         {
           "id": "07f42890-4874-571b-8e9b-eee727148812",
@@ -15082,9 +15113,27 @@
           "stale": null
         },
         {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
+          "id": "0c07b7d4-00bd-5e67-9e94-cbe9bb0e16af",
+          "type": "function",
+          "title": "get",
+          "relevance": 0.2180192917585373,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.2180192917585373,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ba092867-4aa1-52b7-a50b-c313b03dc4bb",
+          "type": "file",
+          "title": "_config.py",
           "relevance": 0.2180192917585373,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -15263,13 +15312,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1162,
+        "latency_ms": 628,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0702440738677979,
+            "relevance": 1.0458359718322754,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -15279,28 +15328,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.06222403049469,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0576399564743042,
+            "relevance": 1.0371347665786743,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365527868270874,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -15784,20 +15833,6 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "2567c72c-9236-42b7-a2c4-23746ae23dee",
-            "source": "knowledge",
-            "title": "Mount patterns dispatch requests to transports",
-            "relevance": 0.23228111863136292,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "self._mounts maps URLPattern to transport; _transport_for_url iterates sorted patterns. Proxies and test transports plug in through the same dict.\n",
-            "graph_path": [
-              "07f42890-4874-571b-8e9b-eee727148812",
-              "2567c72c-9236-42b7-a2c4-23746ae23dee"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
             "entity_id": "59fd4027-fcd8-53d0-8fe4-8e7eb29699f1",
             "source": "function",
             "title": "test_proxy_with_mounts",
@@ -15901,7 +15936,7 @@
             "relevance": 0.0939725711941719,
             "tier": "full",
             "drift_count": 0,
-            "content": "def print_response_headers(\n    http_version: bytes,\n    status: int,\n    reason_phrase: bytes | None,\n    headers: list[tuple[bytes, bytes]],\n) -> None:\n    console = rich.console.Console()\n    http_text = format_response_headers(http_version, status, reason_phrase, headers)\n    syntax = rich.syntax.Syntax(http_text, \"...",
+            "content": "def print_response_headers(\n    http_version: bytes,\n    status: int,\n    reason_phrase: bytes | None,\n    headers: list[tuple[bytes, bytes]],\n) -> None:\n    console = rich.console.Console()\n    http_text = format_response_headers(http_version, status, reason_phrase, headers)\n    syntax = rich.syntax.Syntax(http_text, \"http\", theme=\"ansi_d...",
             "graph_path": [
               "b39481af-2598-53bb-8016-3030bc767634",
               "56a90db0-d232-507c-9836-d0d5fa30d5fe"
@@ -16315,6 +16350,20 @@
             "graph_path_description": "test_client.py \u2192 contains \u2192 test_client_closed_state_using_with_block"
           },
           {
+            "entity_id": "9ede007c-57f5-5617-9c72-6d3c64b227df",
+            "source": "function",
+            "title": "test_build_post_request",
+            "relevance": 0.09164546430110931,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "def test_build_post_request(server):\n    url = server.url.copy_with(path=\"/echo_headers\")\n    headers = {\"Custom-header\": \"value\"}\n\n... (7 more lines)",
+            "graph_path": [
+              "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
+              "9ede007c-57f5-5617-9c72-6d3c64b227df"
+            ],
+            "graph_path_description": "test_client.py \u2192 contains \u2192 test_build_post_request"
+          },
+          {
             "entity_id": "d1d1655b-314d-546a-b512-210ebe44402a",
             "source": "function",
             "title": "_redirect_url",
@@ -16514,7 +16563,7 @@
         "knowledge_gradient": 0.06621892729816985,
         "knowledge_strength": 0.7218885109394962
       },
-      "latency_ms": 543,
+      "latency_ms": 509,
       "results": [
         {
           "id": "bde8c574-043d-5b62-b474-002fb7f1fbfb",
@@ -16923,13 +16972,13 @@
         }
       ],
       "context": {
-        "latency_ms": 617,
+        "latency_ms": 666,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0702438354492188,
+            "relevance": 1.0458358526229858,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -16939,28 +16988,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622239112854004,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0576398372650146,
+            "relevance": 1.0371347665786743,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365527868270874,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -18132,7 +18181,7 @@
         "knowledge_gradient": 0.02456938835798601,
         "knowledge_strength": 0.683820739530472
       },
-      "latency_ms": 557,
+      "latency_ms": 519,
       "results": [
         {
           "id": "cb3b1a5c-f513-5263-88e4-e618f75bee28",
@@ -18315,9 +18364,18 @@
           "stale": null
         },
         {
-          "id": "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
-          "type": "file",
-          "title": "test_client.py",
+          "id": "2e997642-807c-53da-baad-a95d0049a21a",
+          "type": "function",
+          "title": "test_context_managed_transport_and_mount",
+          "relevance": 0.15462012588977814,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
+          "type": "rule",
+          "title": "Always set an explicit timeout on Client",
           "relevance": 0.15462012588977814,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -18532,13 +18590,13 @@
         }
       ],
       "context": {
-        "latency_ms": 691,
+        "latency_ms": 665,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0704315900802612,
+            "relevance": 1.0460129976272583,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -18548,28 +18606,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622237920761108,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0580652952194214,
+            "relevance": 1.0375207662582397,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365526676177979,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -19066,30 +19124,58 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "01b10bfc-1da0-54cf-a395-4b51754a0ed6",
-            "source": "file",
-            "title": "test_wsgi.py",
+            "entity_id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
+            "source": "rule",
+            "title": "Always set an explicit timeout on Client",
             "relevance": 0.18631857633590698,
             "tier": "full",
             "drift_count": 0,
-            "content": "from __future__ import annotations\n\nimport sys\nimport typing\nimport wsgiref.validate\nfrom functools import partial\nfrom io import StringIO\n\nimport pytest\n\nimport httpx\n\nif typing.TYPE_CHECKING:  # pragma: no cover\n    from _typeshed.wsgi import StartResponse, WSGIApplication, WSGIEnvironment\n\n\ndef application_factory(output: typing.Iterable[bytes]) -> WSGIApplication:\n    def application(environ, start_response):\n        status = \"200 OK\"\n\n        response_headers = [\n            (\"Content-type\", \"text/plain\"),\n        ]\n\n        start_response(status, response_headers)\n\n        for item in output:\n            yield item\n\n    return wsgiref.validate.validator(application)\n... (173 more lines)",
+            "content": "Do not rely on the implicit 5s default in production paths \u2014 declare timeout= on the Client so pool/read behavior is deliberate.\n",
             "graph_path": [
               "cb3b1a5c-f513-5263-88e4-e618f75bee28",
-              "01b10bfc-1da0-54cf-a395-4b51754a0ed6"
+              "8f05c692-3d8a-4b44-8490-20a3265dd6a9"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
           {
-            "entity_id": "edc9215f-7843-58c1-ba64-46427758444c",
-            "source": "function",
-            "title": "test_server_extensions",
+            "entity_id": "6bd4b3fe-b46c-4762-87f5-32135de6a963",
+            "source": "knowledge",
+            "title": "Timeout behavior is four separate phases",
             "relevance": 0.18631857633590698,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_server_extensions(server):\n    url = server.url.copy_with(path=\"/http_version_2\")\n    with httpx.Client(http2=True) as client:\n        response = client.get(url)\n    assert response.status_code == 200\n    assert response.extensions[\"http_version\"] == b\"HTTP/1.1\"",
+            "content": "connect, read, write and pool timeouts each have their own limit \u2014 the Timeout value object in _config.py holds all four. Defaults are 5 seconds each.\n",
             "graph_path": [
               "cb3b1a5c-f513-5263-88e4-e618f75bee28",
-              "edc9215f-7843-58c1-ba64-46427758444c"
+              "6bd4b3fe-b46c-4762-87f5-32135de6a963"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "2e997642-807c-53da-baad-a95d0049a21a",
+            "source": "function",
+            "title": "test_context_managed_transport_and_mount",
+            "relevance": 0.18631857633590698,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "def test_context_managed_transport_and_mount():\n    class Transport(httpx.BaseTransport):\n        def __init__(self, name: str) -> None:\n            self.name: str = name\n            self.events: list[str] = []\n\n        def close(self):\n            # The base implementation of httpx.BaseTransport just\n            # calls into `.close`, so simple transport cases can just override\n            # this method for any cleanup, where more complex cases\n            # might want to additionally override `__enter__`/`__exit__`.\n            self.events.append(f\"{self.name}.close\")\n\n        def __enter__(self):\n            super().__enter__()\n            self.events.append(f\"{self.name}.__enter__\")\n\n        def __exit__(self, *args):\n            super().__exit__(*args)\n            self.events.append(f\"{self.name}.__exit__\")\n\n    transport = Transport(name=\"transport\")\n    mounted = Transport(name=\"mounted\")\n    with httpx.Client(transport=transport, mounts={\"http://www.example.org\": mounted}):\n        pass\n\n    assert transport.events == [\n        \"transport.__enter__\",\n        \"transport.close\",\n        \"transport.__exit__\",\n    ]\n    assert mounted.events == [\n        \"mounted.__enter__\",\n        \"mounted.close\",\n        \"mounted.__exit__\",\n    ]",
+            "graph_path": [
+              "cb3b1a5c-f513-5263-88e4-e618f75bee28",
+              "2e997642-807c-53da-baad-a95d0049a21a"
+            ],
+            "graph_path_description": "shares vocabulary with top hit"
+          },
+          {
+            "entity_id": "69503557-6aec-5ade-8ef6-e7bca56393ca",
+            "source": "function",
+            "title": "test_context_managed_transport",
+            "relevance": 0.18631857633590698,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "def test_context_managed_transport():\n    class Transport(httpx.BaseTransport):\n        def __init__(self) -> None:\n            self.events: list[str] = []\n\n        def close(self):\n            # The base implementation of httpx.BaseTransport just\n            # calls into `.close`, so simple transport cases can just override\n            # this method for any cleanup, where more complex cases\n            # might want to additionally override `__enter__`/`__exit__`.\n            self.events.append(\"transport.close\")\n\n        def __enter__(self):\n            super().__enter__()\n            self.events.append(\"transport.__enter__\")\n\n        def __exit__(self, *args):\n            super().__exit__(*args)\n            self.events.append(\"transport.__exit__\")\n\n    transport = Transport()\n    with httpx.Client(transport=transport):\n        pass\n\n    assert transport.events == [\n        \"transport.__enter__\",\n        \"transport.close\",\n        \"transport.__exit__\",\n    ]",
+            "graph_path": [
+              "cb3b1a5c-f513-5263-88e4-e618f75bee28",
+              "69503557-6aec-5ade-8ef6-e7bca56393ca"
             ],
             "graph_path_description": "shares vocabulary with top hit"
           },
@@ -19128,7 +19214,7 @@
             "relevance": 0.15574073791503906,
             "tier": "full",
             "drift_count": 0,
-            "content": "class Request:\n    def __init__(\n        self,\n        method: str,\n        url: URL | str,\n        *,\n        params: QueryParamTypes | None = None,\n        headers: HeaderTypes | None = None,\n        cookies: CookieTypes | None = None,\n        content: RequestContent | None = None,\n        data: RequestData | None = None,\n        files: RequestFiles | None = None,\n        json: typing.Any | None = None,\n        stream: SyncByteStream | AsyncByteStream | None = None,\n        extensions: RequestExtensions | None = None,\n    ) -> None:\n        self.method = method.upper()\n        self.url = URL(url) if params is None else URL(url, params=params)\n        self.headers = Headers(headers)\n        self.extensions = {} if extensions is None else dict(extensions)\n\n        if cookies:\n            Cookies(cookies).set_cookie_header(self)\n\n        if stream is None:\n            content_type: str | None = self.headers.get(\"content-type\")\n            headers, stream = encode_request(\n                content=content,\n                data=data,\n                files=files,\n                json=json,\n                boundary=get_multipart_boundary_from_content_type(\n                    content_type=content_type.encode(self.headers.encoding)\n                    if content_type\n                    else None\n                ),\n            )\n            self._prepare(headers)\n            self.stream = stream\n            # Load the request body, except for streaming content.\n... (91 more lines)",
+            "content": "class Request:\n    def __init__(\n        self,\n        method: str,\n        url: URL | str,\n        *,\n        params: QueryParamTypes | None = None,\n        headers: HeaderTypes | None = None,\n        cookies: CookieTypes | None = None,\n        content: RequestContent | None = None,\n        data: RequestData | None = None,\n        files: RequestFiles | None = None,\n        json: typing.Any | None = None,\n        stream: SyncByteStream | AsyncByteStream | None = None,\n        extensions: RequestExtensions | None = None,\n    ) -> None:\n        self.method = method.upper()\n        self.url = URL(url) if params is None else URL(url, params=params)\n        self.headers = Headers(headers)\n        self.extensi...",
             "graph_path": [
               "8540b017-3037-5780-b092-2c5df6fdb837",
               "2e19fed6-5402-5986-b04e-c191b1b594e8"
@@ -19156,7 +19242,7 @@
             "relevance": 0.15526548027992249,
             "tier": "full",
             "drift_count": 0,
-            "content": "#!/usr/bin/env python3\n\nimport pytest\n\nimport httpx\n\n\ndef echo_headers(request: httpx.Request) -> httpx.Response:\n    data = {\"headers\": dict(request.headers)}\n    return httpx.Response(200, json=data)\n\n\ndef echo_repeated_headers_multi_items(request: httpx.Request) -> httpx.Response:\n    data = {\"headers\": list(request.headers.multi_items())}\n    return httpx.Response(200, json=data)\n\n\ndef echo_repeated_headers_items(request: httpx.Request) -> httpx.Response:\n    data = {\"headers\": list(request.headers.items())}\n    return httpx.Response(200, json=data)\n\n\ndef test_client_header():\n    \"\"\"\n    Set a header in the Client.\n    \"\"\"\n    url = \"http://example.org/echo_headers\"\n    headers = {\"Example-Header\": \"example-value\"}\n\n    client = httpx.Client(transport=httpx.MockTransport(echo_headers), headers=headers)\n... (263 more lines)",
+            "content": "#!/usr/bin/env python3\n\nimport pytest\n\nimport httpx\n\n\ndef echo_headers(request: httpx.Request) -> httpx.Response:\n... (8 more lines)",
             "graph_path": [
               "cb3b1a5c-f513-5263-88e4-e618f75bee28",
               "93ea0c80-6431-5e84-a4ab-587ca7328c66"
@@ -19170,7 +19256,7 @@
             "relevance": 0.1538095325231552,
             "tier": "full",
             "drift_count": 0,
-            "content": "def test_response_force_encoding():\n    response = httpx.Response(\n        200,\n        content=\"Snowman: \u2603\".encode(\"utf-8\"),\n    )\n    response.encoding = \"iso-8859-1\"\n    assert response.status_code == 200\n    assert response.reason_phrase == \"OK\"\n    assert response.text == \"Snowman: \u00e2\\x98\\x83\"\n    assert...",
+            "content": "def test_response_force_encoding():\n    response = httpx.Response(\n        200,\n        content=\"Snowman: \u2603\".encode(\"utf-8\"),\n... (6 more lines)",
             "graph_path": [
               "3ef8b134-b2b4-5ca3-81f4-c1d17fc1bf73",
               "152a69ba-d2f0-50e7-b9db-d894ef8bf31a"
@@ -19511,7 +19597,7 @@
         "knowledge_gradient": 0.05256908392118882,
         "knowledge_strength": 0.72453065711191
       },
-      "latency_ms": 1194,
+      "latency_ms": 485,
       "results": [
         {
           "id": "72b899b4-505c-5a57-ac18-64146ed5f16c",
@@ -19920,13 +20006,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1041,
+        "latency_ms": 675,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0704313516616821,
+            "relevance": 1.0460128784179688,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -19936,28 +20022,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0622236728668213,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0580650568008423,
+            "relevance": 1.0375206470489502,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0365526676177979,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -21205,7 +21291,7 @@
         "knowledge_gradient": 0.050162950653979486,
         "knowledge_strength": 0.6966266397219538
       },
-      "latency_ms": 545,
+      "latency_ms": 561,
       "results": [
         {
           "id": "f1321786-beb6-4979-8d95-4502ee49f398",
@@ -21388,51 +21474,6 @@
           "stale": null
         },
         {
-          "id": "12e0532c-b45d-523c-a96b-c86360f10057",
-          "type": "file",
-          "title": "test_asgi.py",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "43705625-21f3-517c-90a5-ecfd9e86cf97",
-          "type": "function",
-          "title": "hello_world",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c04a0ba6-5592-5602-b96c-d2d38e4118ef",
-          "type": "function",
-          "title": "echo_path",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c46d5730-5ac1-5b3b-816f-d6042b9fe90a",
-          "type": "function",
-          "title": "raise_exc_after_response",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d2bad600-fdc5-515a-a40b-12524ce84ba8",
-          "type": "function",
-          "title": "echo_body",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
           "type": "observation",
           "title": "Cleanup URL percent-encoding behavior. (#2990)",
@@ -21568,6 +21609,51 @@
           "stale": null
         },
         {
+          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
+          "type": "knowledge",
+          "title": "Public API is re-exported from underscore modules",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "41fc8937-758d-4fa5-b514-15cb72864b6e",
+          "type": "observation",
+          "title": "Add `NetRCAuth()` class. (#2535)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "653a168a-b1dd-4ad8-a6b6-f2534737170f",
+          "type": "observation",
+          "title": "Define and expose the API from the same place (#3106)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "74fabc83-fb6c-4161-bbdb-d8aa7c5f4fb8",
+          "type": "observation",
+          "title": "Expose `FunctionAuth` in `__all__` (#3699)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8eac3896-2511-4533-a72e-d28db17ec169",
+          "type": "observation",
+          "title": "Introduce new `SSLContext` API & escalate deprecations. (#3319)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "56a5edff-3bcf-50b7-8763-833ef019dddb",
           "type": "class",
           "title": "ByteChunker",
@@ -21614,13 +21700,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1150,
+        "latency_ms": 1189,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.070618748664856,
+            "relevance": 1.046189546585083,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -21630,28 +21716,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0626300573349,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0584887266159058,
+            "relevance": 1.037905216217041,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0369408130645752,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },
@@ -21985,7 +22071,7 @@
             "relevance": 0.28562217950820923,
             "tier": "full",
             "drift_count": 0,
-            "content": "import asyncio\nimport json\nimport os\nimport threading\nimport time\nimport typing\n\nimport pytest\nimport trustme\nfrom cryptography.hazmat.backends import default_backend\nfrom cryptography.hazmat.primitives.serialization import (\n    BestAvailableEncryption,\n    Encoding,\n    PrivateFormat,\n    load_pem_private_key,\n)\nfrom uvicorn.config import Config\nfrom uvicorn.server import Server\n\nimport httpx\nfrom tests.concurrency import sleep\n\nENVIRONMENT_VARIABLES = {\n    \"SSL_CERT_FILE\",\n    \"SSL_CERT_DIR\",\n    \"HTTP_PROXY\",\n    \"HTTPS_PROXY\",\n    \"ALL_PROXY\",\n    \"NO_PROXY\",\n    \"SSLKEYLOGFILE\",\n... (257 more lines)",
+            "content": "import asyncio\nimport json\nimport os\nimport threading\nimport time\nimport typing\n\nimport pytest\nimport trustme\nfrom cryptography.hazmat.backends import default_backend\nfrom cryptography.hazmat.primitives.serialization import (\n    BestAvailableEncryption,\n    Encoding,\n    PrivateFormat,\n    load_pem_private_key,\n)\nfrom uvicorn.config import Config\nfrom uvicorn.server import Server\n\nimport httpx\nfrom tests.concurrency import sleep\n\nENVIRONMENT_VARIABLES = {\n    \"SSL_CERT_FILE\",\n    \"SSL_CERT_DIR\",\n    \"HTTP_PROXY\",\n    \"HTTPS_PROXY\",\n    \"ALL_PROXY\",\n    \"NO_PROXY\",\n    \"SSLKEYLOGFILE\",\n}\n\n\n@pytest.fixture(scope=\"function\", autouse=True)\ndef clean_environ():\n    \"\"\"Keeps os.environ clean for every test without having to mock os.environ\"\"\"\n    original_environ = os.environ.copy()\n    os.environ.clear()\n    os.environ.update(\n        {\n            k: v\n            for k, v in original_environ.items()\n            if k not in ENVIRONMENT_VARIABLES and k.lower() not in ENVIRONMENT_VARIABLES\n        }\n    )\n    yield\n    os.environ.clear()\n    os.environ.update(original_environ)\n\n\nMessage = typing.Dict[str, typing.Any]\nReceive = typing.Callable[[], typing.Awaitable[Message]]\nSend = typing.Callable[\n    [typing.Dict[str, typing.Any]], typing.Coroutine[None, None, None]\n]\nScope = typing.Dict[str, typing.Any]\n\n\nasync def app(scope: Scope, receive: Receive, send: Send) -> None:\n    assert scope[\"type\"] == \"http\"\n    if scope[\"path\"].startswith(\"/slow_response\"):\n        await slow_response(scope, receive, send)\n    elif scope[\"path\"].startswith(\"/status\"):\n        await status_code(scope, receive, send)\n    elif scope[\"path\"].startswith(\"/echo_body\"):\n        await echo_body(scope, receive, send)\n    elif scope[\"path\"].startswith(\"/echo_binary\"):\n        await echo_binary(scope, receive, send)\n    elif scope[\"path\"].startswith(\"/echo_headers\"):\n        await echo_headers(scope, receive, send)\n    elif scope...",
             "graph_path": [
               "a4db91cf-25ae-56db-906e-2ea39650d492"
             ],
@@ -22120,104 +22206,6 @@
               "74d65873-e718-568c-8b78-50784faddb7d"
             ],
             "graph_path_description": ""
-          },
-          {
-            "entity_id": "3617fb57-5675-5b5c-9c61-dd928129a01d",
-            "source": "function",
-            "title": "test_SSLContext_with_get_request",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def test_SSLContext_with_get_request(server, cert_pem_file):\n    context = httpx.create_ssl_context()\n    context.load_verify_locations(cert_pem_file)\n    response = httpx.get(server.url, verify=context)\n    assert response.status_code == 200",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "3617fb57-5675-5b5c-9c61-dd928129a01d"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "43705625-21f3-517c-90a5-ecfd9e86cf97",
-            "source": "function",
-            "title": "hello_world",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "async def hello_world(scope, receive, send):\n    status = 200\n    output = b\"Hello, World!\"\n    headers = [(b\"content-type\", \"text/plain\"), (b\"content-length\", str(len(output)))]\n\n    await send({\"type\": \"http.response.start\", \"status\": status, \"headers\": headers})\n    await send({\"type\": \"http.response.body\", \"body\": output})",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "43705625-21f3-517c-90a5-ecfd9e86cf97"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "9eb1a581-61dc-5421-a8a4-459bea2c9167",
-            "source": "function",
-            "title": "test_raise_for_status",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def test_raise_for_status():\n    request = httpx.Request(\"GET\", \"https://example.org\")\n\n    # 2xx status codes are not an error.\n    response = httpx.Response(200, request=request)\n    response.raise_for_status()\n\n    # 1xx status codes are informational responses.\n    response = httpx.Response(101, request=request)\n    assert response.is_informational\n    with pytest.raises(httpx.HTTPStatusError) as exc_info:\n        response.raise_for_status()\n    assert str(exc_info.value) == (\n        \"Informational response '101 Switching Protocols' for url 'https://example.org'\\n\"\n        \"For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/101\"\n    )\n\n    # 3xx status codes are redirections.\n    headers = {\"location\": \"https://other.org\"}\n    response = httpx.Response(303, headers=headers, request=request)\n    assert response.is_redirect\n    with pytest.raises(httpx.HTTPStatusError) as exc_info:\n        response.raise_for_status()\n    assert str(exc_info.value) == (\n        \"Redirect response '303 See Other' for url 'https://example.org'\\n\"\n        \"Redirect location: 'https://other.org'\\n\"\n        \"For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/303\"\n    )\n\n    # 4xx status codes are a client error.\n    response = httpx.Response(403, request=request)\n    assert response.is_client_error\n    assert response.is_error\n    with pytest.raises(httpx.HTTPStatusError) as exc_info:\n        response.raise_for_status()\n    assert str(exc_info.value) == (\n        \"Client error '403 Forbidden' for url 'https://example.org'\\n\"\n        \"For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403\"\n    )\n\n... (16 more lines)",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "9eb1a581-61dc-5421-a8a4-459bea2c9167"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "9ede007c-57f5-5617-9c72-6d3c64b227df",
-            "source": "function",
-            "title": "test_build_post_request",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def test_build_post_request(server):\n    url = server.url.copy_with(path=\"/echo_headers\")\n    headers = {\"Custom-header\": \"value\"}\n\n    with httpx.Client() as client:\n        request = client.build_request(\"POST\", url)\n        request.headers.update(headers)\n        response = client.send(request)\n\n    assert response.status_code == 200\n    assert response.url == url\n\n    assert response.json()[\"Content-length\"] == \"0\"\n    assert response.json()[\"Custom-header\"] == \"value\"",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "9ede007c-57f5-5617-9c72-6d3c64b227df"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
-            "source": "file",
-            "title": "test_client.py",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "from __future__ import annotations\n\nimport typing\nfrom datetime import timedelta\n\nimport chardet\nimport pytest\n\nimport httpx\n\n\ndef autodetect(content):\n    return chardet.detect(content).get(\"encoding\")\n\n\ndef test_get(server):\n    url = server.url\n    with httpx.Client(http2=True) as http:\n        response = http.get(url)\n    assert response.status_code == 200\n    assert response.url == url\n    assert response.content == b\"Hello, world!\"\n    assert response.text == \"Hello, world!\"\n    assert response.http_version == \"HTTP/1.1\"\n    assert response.encoding == \"utf-8\"\n    assert response.request.url == url\n    assert response.headers\n    assert response.is_redirect is False\n    assert repr(response) == \"<Response [200 OK]>\"\n    assert response.elapsed > timedelta(0)\n... (432 more lines)",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "d2bad600-fdc5-515a-a40b-12524ce84ba8",
-            "source": "function",
-            "title": "echo_body",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "async def echo_body(scope, receive, send):\n    status = 200\n    headers = [(b\"content-type\", \"text/plain\")]\n\n    await send({\"type\": \"http.response.start\", \"status\": status, \"headers\": headers})\n    more_body = True\n    while more_body:\n        message = await receive()\n        body = message.get(\"body\", b\"\")\n        more_body = message.get(\"more_body\", False)\n        await send({\"type\": \"http.response.body\", \"body\": body, \"more_body\": more_body})",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "d2bad600-fdc5-515a-a40b-12524ce84ba8"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
-          },
-          {
-            "entity_id": "f569649b-87c5-5a7a-aef4-4187fa8b6e5d",
-            "source": "function",
-            "title": "echo_headers",
-            "relevance": 0.2143133580684662,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "async def echo_headers(scope, receive, send):\n    status = 200\n    output = json.dumps(\n        {\"headers\": [[k.decode(), v.decode()] for k, v in scope[\"headers\"]]}\n    ).encode(\"utf-8\")\n    headers = [(b\"content-type\", \"text/plain\"), (b\"content-length\", str(len(output)))]\n\n    await send({\"type\": \"http.response.start\", \"status\": status, \"headers\": headers})\n    await send({\"type\": \"http.response.body\", \"body\": output})",
-            "graph_path": [
-              "f1321786-beb6-4979-8d95-4502ee49f398",
-              "f569649b-87c5-5a7a-aef4-4187fa8b6e5d"
-            ],
-            "graph_path_description": "shares vocabulary with top hit"
           },
           {
             "entity_id": "7cacc876-7abd-58bb-a102-94517b0e86fc",
@@ -22560,7 +22548,7 @@
             "relevance": 0.09896043688058853,
             "tier": "full",
             "drift_count": 0,
-            "content": "from __future__ import annotations\n\nimport typing\n\nfrom .._models import Request, Response\nfrom .base import AsyncBaseTransport, BaseTransport\n\nSyncHandler = typing.Callable[[Request], Response]\nAsyncHandler = typing.Callable[[Request], typing.Coroutine[None, None, Response]]\n\n\n__all__ = [\"MockTransport\"]\n\n\nclass MockTransport(AsyncBaseTransport, BaseTransport):\n    def __init__...",
+            "content": "from __future__ import annotations\n\nimport typing\n\nfrom .._models import Request, Response\nfrom .base import AsyncBaseTransport, BaseTransport\n\nSyncHandler = typing.Callable[[Request], Response]\nAsyncHandler = typing.Callable[[Request], typing.Coroutine[None, None, Response]]\n\n\n__all__ = [\"MockTransport\"]\n\n\nclass MockTransport(AsyncBaseTransport, BaseTransport):\n    def __init__(self, handler: SyncHandler | AsyncHandler) -> None:\n        self.handler = handler\n\n    def handle_request(\n        self,\n        request: Request,\n    ) -> Response:\n        request.read()\n        response = self.handler(request)\n        if not isinstance(response, Response):  # pragma: no cover\n            raise TypeError(\"Cannot use an async handler in a sync Client\")\n        return response\n\n    async def handle_async_request(\n        self,\n... (13 more lines)",
             "graph_path": [
               "70025f7c-466b-48fb-9094-0809ea9f8c4e",
               "b632b02c-8803-58e2-bf17-fecc2929a2a8"
@@ -22574,7 +22562,7 @@
             "relevance": 0.09896043688058853,
             "tier": "full",
             "drift_count": 0,
-            "content": "class MockTransport(AsyncBaseTransport, BaseTransport):\n    def __init__(self, handler: SyncHandler | AsyncHandler) -> None:\n        self.handler = handler\n\n... (7 more lines)",
+            "content": "class MockTransport(AsyncBaseTransport, BaseTransport):\n    def __init__(self, handler: SyncHandler | AsyncHandler) -> None:\n        self.handler = handler\n\n    def handle_request(\n        self,\n        request: Request,\n    ) -> Response:\n        request.read()\n        response = self.handler(request)\n        if not isinstance(response, Response):  # pragma: no cover\n            raise TypeError(\"Cannot use an async handler in a sync Client\")\n        return response\n\n    async def handle_async_request(\n        self,\n        request: Request,\n    ) -> Response:\n        await request.aread()\n        response = self.handler(request)\n\n        # Allow handler to *optionally* be an `async` function.\n        # If it is, then the `response` variable need to be awaited to actually\n        # return the result.\n\n        if not isinstance(response, Response):\n            response = await response\n\n        return response",
             "graph_path": [
               "70025f7c-466b-48fb-9094-0809ea9f8c4e",
               "d0bbbe05-ff75-5755-b61e-422fde2ce8d7"
@@ -22596,27 +22584,13 @@
             "graph_path_description": "co-change"
           },
           {
-            "entity_id": "3c755505-e316-548e-9abc-f0e42e7c3247",
-            "source": "class",
-            "title": "TextChunker",
-            "relevance": 0.08642857521772385,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "class TextChunker:\n    \"\"\"\n    Handles returning text content in fixed-size chunks.\n    \"\"\"\n... (7 more lines)",
-            "graph_path": [
-              "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
-              "3c755505-e316-548e-9abc-f0e42e7c3247"
-            ],
-            "graph_path_description": "co-change"
-          },
-          {
             "entity_id": "59ef1dfc-83cf-5145-8db8-1cdfb1384e17",
             "source": "function",
             "title": "__aiter__",
             "relevance": 0.08642857521772385,
             "tier": "full",
             "drift_count": 0,
-            "content": "async def __aiter__(self) -> AsyncIterator[bytes]:\n        raise NotImplementedError(\n            \"The '__aiter__' method must be implemented.\"\n        )  # pragma: no cover\n... (1 more lines)",
+            "content": "async def __aiter__(self) -> AsyncIterator[bytes]:\n        raise NotImplementedError(\n            \"The '__aiter__' method must be implemented.\"\n        )  # pragma: no cover\n        yield b\"\"  # pragma: no cover",
             "graph_path": [
               "a28a3666-5fa8-5844-9945-502dd4245d1c",
               "59ef1dfc-83cf-5145-8db8-1cdfb1384e17"
@@ -22644,24 +22618,10 @@
             "relevance": 0.08642857521772385,
             "tier": "full",
             "drift_count": 0,
-            "content": "class TextDecoder:\n    \"\"\"\n    Handles incrementally decoding bytes into text\n    \"\"\"\n... (7 more lines)",
+            "content": "class TextDecoder:\n    \"\"\"\n    Handles incrementally decoding bytes into text\n    \"\"\"\n\n    def __init__(self, encoding: str = \"utf-8\") -> None:\n        self.decoder = codecs.getincrementaldecoder(encoding)(errors=\"replace\")\n\n    def decode(self, data: bytes) -> str:\n        return self.decoder.decode(data)\n\n    def flush(self) -> str:\n        return self.decoder.decode(b\"\", True)",
             "graph_path": [
               "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
               "a5cee375-9220-55e5-9ff0-21241a268ee9"
-            ],
-            "graph_path_description": "co-change"
-          },
-          {
-            "entity_id": "ad4c36e9-d365-58a5-bbd2-fd022dd2d674",
-            "source": "function",
-            "title": "decode",
-            "relevance": 0.08642857521772385,
-            "tier": "full",
-            "drift_count": 0,
-            "content": "def decode(self, content: str) -> list[str]:\n        if self._chunk_size is None:\n            return [content] if content else []\n\n... (7 more lines)",
-            "graph_path": [
-              "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
-              "ad4c36e9-d365-58a5-bbd2-fd022dd2d674"
             ],
             "graph_path_description": "co-change"
           },
@@ -22734,6 +22694,45 @@
               "8eac3896-2511-4533-a72e-d28db17ec169"
             ],
             "graph_path_description": "__init__.py \u2192 auto references \u2192 Introduce new `SSLContext` API & escalate deprecations. (#3319)"
+          },
+          {
+            "entity_id": "3c755505-e316-548e-9abc-f0e42e7c3247",
+            "source": "class",
+            "title": "TextChunker",
+            "relevance": 0.08642857521772385,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "class TextChunker:\n    \"\"\"\n    Handles returning text content in fixed-size chunks.\n    \"\"\"\n... (33 more lines)",
+            "graph_path": [
+              "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
+              "3c755505-e316-548e-9abc-f0e42e7c3247"
+            ],
+            "graph_path_description": "co-change"
+          },
+          {
+            "entity_id": "ad4c36e9-d365-58a5-bbd2-fd022dd2d674",
+            "source": "function",
+            "title": "decode",
+            "relevance": 0.08642857521772385,
+            "tier": "full",
+            "drift_count": 0,
+            "content": "def decode(self, content: str) -> list[str]:\n        if self._chunk_size is None:\n            return [content] if content else []\n\n... (18 more lines)",
+            "graph_path": [
+              "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
+              "ad4c36e9-d365-58a5-bbd2-fd022dd2d674"
+            ],
+            "graph_path_description": "co-change"
+          },
+          {
+            "entity_id": "index",
+            "source": "overflow_index",
+            "title": "Also relevant",
+            "relevance": 0.0,
+            "tier": "pointer",
+            "drift_count": 0,
+            "content": "- [rule] Verification is scripts/check + scripts/test \u2014 id f1321786-beb6-4979-8d95-4502ee49f398\n- [rule] Bug repros must be minimized before fixing \u2014 id 1c264e85-7d34-4a9c-8f95-7333921e95c0\n- [rule] Follow encode style: ruff lint, explicit exports \u2014 id daf5a79f-a7a4-4203-afbb-549bbd402b14\n- [function] flush \u2014 id a1b2dc8a-2949-582c-b391-38565003a3f2\n- [class] AsyncByteStream \u2014 id f3cb540c-85e3-5027-8686-62a64cbe30d4",
+            "graph_path": [],
+            "graph_path_description": ""
           }
         ],
         "metadata": {
@@ -22741,13 +22740,18 @@
             "rule:Verification is scripts/check + scripts/test (duplicate content)",
             "rule:Bug repros must be minimized before fixing (duplicate content)",
             "rule:Follow encode style: ruff lint, explicit exports (duplicate content)",
-            "function:echo_raw_path (duplicate content)",
-            "function:test_build_request (duplicate content)",
-            "function:echo_path (duplicate content)",
-            "function:raise_exc_after_response (duplicate content)",
-            "function:flush (duplicate content)"
+            "function:flush (duplicate content)",
+            "class:AsyncByteStream (duplicate content)",
+            "class:TextChunker (duplicate content)",
+            "function:decode (duplicate content)"
           ],
-          "pointer_ids": [],
+          "pointer_ids": [
+            "f1321786-beb6-4979-8d95-4502ee49f398",
+            "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "daf5a79f-a7a4-4203-afbb-549bbd402b14",
+            "a1b2dc8a-2949-582c-b391-38565003a3f2",
+            "f3cb540c-85e3-5027-8686-62a64cbe30d4"
+          ],
           "search_mode": "hybrid",
           "selected_sources": [
             "rule",
@@ -22764,7 +22768,7 @@
             "knowledge_gradient": 0.050162950653979486,
             "knowledge_strength": 0.6966266397219538
           },
-          "size_tokens": 8192
+          "size_tokens": 7870
         }
       }
     },
@@ -22778,7 +22782,7 @@
         "knowledge_gradient": 0.04887791730586157,
         "knowledge_strength": 0.7374872956852805
       },
-      "latency_ms": 1135,
+      "latency_ms": 619,
       "results": [
         {
           "id": "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
@@ -22961,6 +22965,15 @@
           "stale": null
         },
         {
+          "id": "96e57f2c-4e8b-4241-8639-ec3c4dac0775",
+          "type": "knowledge",
+          "title": "URL pattern mounts pick the transport per request",
+          "relevance": 0.184709370136261,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
           "type": "knowledge",
           "title": "Timeout, Limits, and Proxy are value objects in _config.py",
@@ -23132,15 +23145,6 @@
           "stale": null
         },
         {
-          "id": "4b08c630-801d-5de3-9c4e-b846ad295daa",
-          "type": "class",
-          "title": "UnsetType",
-          "relevance": 0.08745875954627991,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "df8800b5-ede0-5ece-ad5c-ff2922de68cf",
           "type": "function",
           "title": "test_invalid_argument",
@@ -23187,13 +23191,13 @@
         }
       ],
       "context": {
-        "latency_ms": 1006,
+        "latency_ms": 623,
         "sections": [
           {
             "entity_id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
             "source": "rule",
             "title": "Follow encode style: ruff lint, explicit exports",
-            "relevance": 1.0706185102462769,
+            "relevance": 1.046189546585083,
             "tier": "baseline",
             "drift_count": 0,
             "content": "scripts/check runs ruff + mypy. __init__.py re-exports are explicit \u2014 adding a public name means updating __all__-equivalent imports AND the api docs page.\n",
@@ -23203,28 +23207,28 @@
             "graph_path_description": ""
           },
           {
-            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
-            "source": "rule",
-            "title": "Bug repros must be minimized before fixing",
-            "relevance": 1.0626298189163208,
-            "tier": "baseline",
-            "drift_count": 0,
-            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
-            "graph_path": [
-              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
-            ],
-            "graph_path_description": ""
-          },
-          {
             "entity_id": "f1321786-beb6-4979-8d95-4502ee49f398",
             "source": "rule",
             "title": "Verification is scripts/check + scripts/test",
-            "relevance": 1.0584884881973267,
+            "relevance": 1.0379050970077515,
             "tier": "baseline",
             "drift_count": 0,
             "content": "Always run ./scripts/check (lint+typecheck) and ./scripts/test before claiming a change works. scripts/coverage enforces 100% coverage \u2014 new code without tests fails CI.\n",
             "graph_path": [
               "f1321786-beb6-4979-8d95-4502ee49f398"
+            ],
+            "graph_path_description": ""
+          },
+          {
+            "entity_id": "1c264e85-7d34-4a9c-8f95-7333921e95c0",
+            "source": "rule",
+            "title": "Bug repros must be minimized before fixing",
+            "relevance": 1.0369408130645752,
+            "tier": "baseline",
+            "drift_count": 0,
+            "content": "Per contributing.md: reduce reports to the simplest case, and establish HTTP/1.1-vs-2, sync-vs-async, asyncio-vs-trio axes in the test before fixing.\n",
+            "graph_path": [
+              "1c264e85-7d34-4a9c-8f95-7333921e95c0"
             ],
             "graph_path_description": ""
           },

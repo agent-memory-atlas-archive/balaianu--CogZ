@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/httpx",
+  "corpus": "httpx",
   "corpus_ids": [
     "00cd4688-b64c-58d6-af4d-1d40a60b1b75",
     "0116b700-5f26-50f2-9756-3e7e927730eb",
@@ -1045,10 +1045,10 @@
     "fff5ceea-3769-5d77-a20e-a6d45f2f1043"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/httpx",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/httpx_seeded.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/httpx/det_a.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "httpx",
+    "queries": "httpx_seeded.json",
+    "out": "det_a.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": false,
     "no_expand": false,
@@ -1068,7 +1068,7 @@
         "knowledge_gradient": 0.11664483783203212,
         "knowledge_strength": 0.7952635012200009
       },
-      "latency_ms": 1943,
+      "latency_ms": 2559,
       "results": [
         {
           "id": "a16dd97c-f2b9-5909-bf50-691376f00511",
@@ -1433,7 +1433,7 @@
         "knowledge_gradient": 0.08585022412424133,
         "knowledge_strength": 0.7390531967049458
       },
-      "latency_ms": 596,
+      "latency_ms": 545,
       "results": [
         {
           "id": "3905fe27-683e-5d5d-9485-aa672d7e7ccf",
@@ -1616,24 +1616,6 @@
           "stale": null
         },
         {
-          "id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
-          "type": "function",
-          "title": "test_mounted_transport",
-          "relevance": 0.18773438036441803,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "89bcc448-d44c-530c-a246-1e1e8c894a4c",
-          "type": "function",
-          "title": "test_all_mounted_transport",
-          "relevance": 0.18773438036441803,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "1a7cdd8f-905a-4925-8746-0fa148513595",
           "type": "rule",
           "title": "New implementation goes in underscore modules",
@@ -1796,6 +1778,24 @@
           "stale": null
         },
         {
+          "id": "b4f8eb3b-be9f-5f6a-8592-aaf0f276a24f",
+          "type": "function",
+          "title": "__init__",
+          "relevance": 0.08212910592556,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c349c913-fd61-5a0a-8859-762377f381a5",
+          "type": "function",
+          "title": "peek_filelike_length",
+          "relevance": 0.08212910592556,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "f23757fc-a095-5c52-a85f-befb301ec97c",
           "type": "function",
           "title": "test_socks_proxy",
@@ -1852,7 +1852,7 @@
         "knowledge_gradient": 0.06324126294261949,
         "knowledge_strength": 0.7036365854686893
       },
-      "latency_ms": 608,
+      "latency_ms": 483,
       "results": [
         {
           "id": "2f22d141-1a82-5f71-8f07-2a8475316b66",
@@ -2044,9 +2044,18 @@
           "stale": null
         },
         {
-          "id": "9e03f519-1bfc-585c-85eb-283bb0360501",
+          "id": "9534b2b0-3da1-5293-8e38-790a31a5cb1c",
           "type": "function",
-          "title": "test_digest_auth_setting_cookie_in_request",
+          "title": "test_digest_auth_rfc_7616_sha_256",
+          "relevance": 0.18021510541439056,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b5a1618d-451e-543f-98cf-717f219d5017",
+          "type": "function",
+          "title": "test_digest_auth_rfc_7616_md5",
           "relevance": 0.18021510541439056,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -2056,6 +2065,15 @@
           "id": "bd1e01bf-84fd-5c30-8977-d8f61947722e",
           "type": "class",
           "title": "App",
+          "relevance": 0.18021510541439056,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "efef6557-9f70-5702-83bd-0ae45540ff48",
+          "type": "file",
+          "title": "test_auth.py",
           "relevance": 0.18021510541439056,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -2235,7 +2253,7 @@
         "knowledge_gradient": 0.042962373075754456,
         "knowledge_strength": 0.6610099219911684
       },
-      "latency_ms": 690,
+      "latency_ms": 566,
       "results": [
         {
           "id": "c4492efd-60d7-5d35-bedf-2930b2e72e8a",
@@ -2418,6 +2436,33 @@
           "stale": null
         },
         {
+          "id": "203bbb1b-e36f-5321-863c-8fa9bc66f7df",
+          "type": "function",
+          "title": "test_limits_repr",
+          "relevance": 0.1591942012310028,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.1591942012310028,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "aa7d3067-678b-5558-96ed-902180071f05",
+          "type": "file",
+          "title": "__init__.py",
+          "relevance": 0.1591942012310028,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "271077d5-ecd4-533f-b75c-04c2bc7bc119",
           "type": "class",
           "title": "ConnectError",
@@ -2571,33 +2616,6 @@
           "stale": null
         },
         {
-          "id": "1c6c1d3d-185a-5c27-a00e-fdae5fd655be",
-          "type": "function",
-          "title": "__init__",
-          "relevance": 0.0795971006155014,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "49452ca8-bb33-5bd2-8166-9292e1659ddf",
-          "type": "function",
-          "title": "__aenter__",
-          "relevance": 0.0795971006155014,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4a239e6f-4900-5fa2-9f98-e75e443cffdb",
-          "type": "function",
-          "title": "__iter__",
-          "relevance": 0.0795971006155014,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "4b79d26d-bf77-5e29-a372-a1a636361d42",
           "type": "function",
           "title": "test_raise_for_status",
@@ -2654,7 +2672,7 @@
         "knowledge_gradient": 0.04308226711400929,
         "knowledge_strength": 0.6693415891678912
       },
-      "latency_ms": 1288,
+      "latency_ms": 583,
       "results": [
         {
           "id": "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
@@ -2846,6 +2864,15 @@
           "stale": null
         },
         {
+          "id": "33a367ec-5843-59ee-9274-7d7239eec80b",
+          "type": "function",
+          "title": "__init__",
+          "relevance": 0.19310343265533447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "72f080f7-8871-594b-ba64-42d4ce237dcb",
           "type": "class",
           "title": "RequestError",
@@ -2855,18 +2882,9 @@
           "stale": null
         },
         {
-          "id": "aa7d3067-678b-5558-96ed-902180071f05",
-          "type": "file",
-          "title": "__init__.py",
-          "relevance": 0.19310343265533447,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ea79b776-451f-5fa1-8ad9-ca0c70454189",
-          "type": "file",
-          "title": "test_timeouts.py",
+          "id": "fba282e2-48bb-5b82-906f-c95bb38f84fa",
+          "type": "function",
+          "title": "__repr__",
           "relevance": 0.19310343265533447,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -3073,7 +3091,7 @@
         "knowledge_gradient": 0.1446127123708142,
         "knowledge_strength": 0.8024992045691239
       },
-      "latency_ms": 626,
+      "latency_ms": 522,
       "results": [
         {
           "id": "4b387de0-b846-5474-a7fd-35dfedad1b6e",
@@ -3492,7 +3510,7 @@
         "knowledge_gradient": 0.09590471868339139,
         "knowledge_strength": 0.7267297468084047
       },
-      "latency_ms": 528,
+      "latency_ms": 544,
       "results": [
         {
           "id": "87ff763a-526e-5d8b-888b-38a6c34364a2",
@@ -3911,7 +3929,7 @@
         "knowledge_gradient": 0.0608857823064358,
         "knowledge_strength": 0.7306826827920118
       },
-      "latency_ms": 570,
+      "latency_ms": 589,
       "results": [
         {
           "id": "6563f9c6-9845-51f5-87bc-334c8f57aa53",
@@ -4330,7 +4348,7 @@
         "knowledge_gradient": 0.013654316661042864,
         "knowledge_strength": 0.6992488079935425
       },
-      "latency_ms": 574,
+      "latency_ms": 523,
       "results": [
         {
           "id": "524672ef-a41d-51cf-b0a3-c96372ff7756",
@@ -4513,9 +4531,27 @@
           "stale": null
         },
         {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.18961641192436218,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "88e1ed7b-e45f-5761-8170-97e2b5ebcc83",
           "type": "file",
           "title": "test_properties.py",
+          "relevance": 0.18961641192436218,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
+          "type": "rule",
+          "title": "Always set an explicit timeout on Client",
           "relevance": 0.18961641192436218,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -4675,24 +4711,6 @@
           "stale": null
         },
         {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
-          "relevance": 0.055907174944877625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "baa0b9c2-9aaa-418a-9128-cc057c219c16",
-          "type": "observation",
-          "title": "Use standard logging style (#2547)",
-          "relevance": 0.055907174944877625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "d0bbbe05-ff75-5755-b61e-422fde2ce8d7",
           "type": "class",
           "title": "MockTransport",
@@ -4749,7 +4767,7 @@
         "knowledge_gradient": 0.03741320292447516,
         "knowledge_strength": 0.7185625092826786
       },
-      "latency_ms": 542,
+      "latency_ms": 493,
       "results": [
         {
           "id": "07f42890-4874-571b-8e9b-eee727148812",
@@ -4932,9 +4950,27 @@
           "stale": null
         },
         {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
+          "id": "0c07b7d4-00bd-5e67-9e94-cbe9bb0e16af",
+          "type": "function",
+          "title": "get",
+          "relevance": 0.2180192917585373,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6c1bb2de-645b-59a1-804d-7b22def8da17",
+          "type": "file",
+          "title": "test_config.py",
+          "relevance": 0.2180192917585373,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ba092867-4aa1-52b7-a50b-c313b03dc4bb",
+          "type": "file",
+          "title": "_config.py",
           "relevance": 0.2180192917585373,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -5123,7 +5159,7 @@
         "knowledge_gradient": 0.06621892729816985,
         "knowledge_strength": 0.7218885109394962
       },
-      "latency_ms": 621,
+      "latency_ms": 528,
       "results": [
         {
           "id": "bde8c574-043d-5b62-b474-002fb7f1fbfb",
@@ -5542,7 +5578,7 @@
         "knowledge_gradient": 0.02456938835798601,
         "knowledge_strength": 0.683820739530472
       },
-      "latency_ms": 607,
+      "latency_ms": 590,
       "results": [
         {
           "id": "cb3b1a5c-f513-5263-88e4-e618f75bee28",
@@ -5725,9 +5761,18 @@
           "stale": null
         },
         {
-          "id": "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
-          "type": "file",
-          "title": "test_client.py",
+          "id": "2e997642-807c-53da-baad-a95d0049a21a",
+          "type": "function",
+          "title": "test_context_managed_transport_and_mount",
+          "relevance": 0.15462012588977814,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f05c692-3d8a-4b44-8490-20a3265dd6a9",
+          "type": "rule",
+          "title": "Always set an explicit timeout on Client",
           "relevance": 0.15462012588977814,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -5952,7 +5997,7 @@
         "knowledge_gradient": 0.05256908392118882,
         "knowledge_strength": 0.72453065711191
       },
-      "latency_ms": 617,
+      "latency_ms": 1360,
       "results": [
         {
           "id": "72b899b4-505c-5a57-ac18-64146ed5f16c",
@@ -6371,7 +6416,7 @@
         "knowledge_gradient": 0.050162950653979486,
         "knowledge_strength": 0.6966266397219538
       },
-      "latency_ms": 574,
+      "latency_ms": 502,
       "results": [
         {
           "id": "f1321786-beb6-4979-8d95-4502ee49f398",
@@ -6554,51 +6599,6 @@
           "stale": null
         },
         {
-          "id": "12e0532c-b45d-523c-a96b-c86360f10057",
-          "type": "file",
-          "title": "test_asgi.py",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "43705625-21f3-517c-90a5-ecfd9e86cf97",
-          "type": "function",
-          "title": "hello_world",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c04a0ba6-5592-5602-b96c-d2d38e4118ef",
-          "type": "function",
-          "title": "echo_path",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c46d5730-5ac1-5b3b-816f-d6042b9fe90a",
-          "type": "function",
-          "title": "raise_exc_after_response",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d2bad600-fdc5-515a-a40b-12524ce84ba8",
-          "type": "function",
-          "title": "echo_body",
-          "relevance": 0.18595187366008759,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
           "type": "observation",
           "title": "Cleanup URL percent-encoding behavior. (#2990)",
@@ -6734,6 +6734,51 @@
           "stale": null
         },
         {
+          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
+          "type": "knowledge",
+          "title": "Public API is re-exported from underscore modules",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "41fc8937-758d-4fa5-b514-15cb72864b6e",
+          "type": "observation",
+          "title": "Add `NetRCAuth()` class. (#2535)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "653a168a-b1dd-4ad8-a6b6-f2534737170f",
+          "type": "observation",
+          "title": "Define and expose the API from the same place (#3106)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "74fabc83-fb6c-4161-bbdb-d8aa7c5f4fb8",
+          "type": "observation",
+          "title": "Expose `FunctionAuth` in `__all__` (#3699)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8eac3896-2511-4533-a72e-d28db17ec169",
+          "type": "observation",
+          "title": "Introduce new `SSLContext` API & escalate deprecations. (#3319)",
+          "relevance": 0.0737856850028038,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "56a5edff-3bcf-50b7-8763-833ef019dddb",
           "type": "class",
           "title": "ByteChunker",
@@ -6790,7 +6835,7 @@
         "knowledge_gradient": 0.04887791730586157,
         "knowledge_strength": 0.7374872956852805
       },
-      "latency_ms": 621,
+      "latency_ms": 525,
       "results": [
         {
           "id": "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
@@ -6973,6 +7018,15 @@
           "stale": null
         },
         {
+          "id": "96e57f2c-4e8b-4241-8639-ec3c4dac0775",
+          "type": "knowledge",
+          "title": "URL pattern mounts pick the transport per request",
+          "relevance": 0.184709370136261,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
           "type": "knowledge",
           "title": "Timeout, Limits, and Proxy are value objects in _config.py",
@@ -7139,15 +7193,6 @@
           "type": "class",
           "title": "BaseClient",
           "relevance": 0.0923546850681305,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4b08c630-801d-5de3-9c4e-b846ad295daa",
-          "type": "class",
-          "title": "UnsetType",
-          "relevance": 0.08745875954627991,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null

@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2265 entities
+  cb2a66b33: 45 results, 644ms
+  c2936aae2: 45 results, 577ms
+  c889edec4: 45 results, 724ms
+  c7621eace: 45 results, 752ms
+  ced78398f: 45 results, 552ms
+  c83db0140: 45 results, 562ms
+  c1967e086: 45 results, 541ms
+  c7a57828b: 45 results, 784ms
+  c7fcffe59: 45 results, 661ms
+  c60e252f0: 45 results, 605ms
+  ce41f06c9: 45 results, 565ms
+  c043021a8: 45 results, 553ms
+  c0b28e111: 45 results, 612ms
+  c86e70363: 45 results, 636ms
+  c72678b97: 45 results, 778ms
+  c2e0b8b3a: 40 results, 576ms
+  cdc8ffbed: 45 results, 685ms
+  c85130a9e: 45 results, 573ms
+  cc97a642e: 45 results, 653ms
+  c3333e354: 45 results, 968ms
+  c8ccb962d: 45 results, 620ms
+  c111d85ea: 45 results, 758ms
+  cace7c26f: 45 results, 820ms
+  c371880b9: 45 results, 699ms
+  c0207bab1: 45 results, 699ms
+wrote ab_fts_commit.json

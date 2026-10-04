@@ -1,7 +1,7 @@
 # Benchmark corpus config — written to <corpus>/.cogz/config.toml by
 # fetch_corpus.py. {{NAME}} is replaced with the corpus name.
-# Mirrors the values used across the report-card campaign; changing
-# anything here invalidates cross-corpus comparisons.
+# Shared across all benchmark corpora; changing anything here
+# invalidates cross-corpus comparisons.
 
 [project]
 name = "{{NAME}}"

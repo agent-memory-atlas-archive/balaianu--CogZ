@@ -1,6 +1,6 @@
 {
  "version": "commit-gt-v1",
- "corpus": "/home/andy/cogz_bench/corpora/httpx",
+ "corpus": "httpx",
  "queries": [
   {
    "id": "cb5addb64",

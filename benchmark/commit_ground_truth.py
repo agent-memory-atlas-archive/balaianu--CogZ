@@ -132,7 +132,7 @@ def main():
     out = args.out or str(
         Path(__file__).parent / "results" / f"gt_{repo.name}.json")
     Path(out).parent.mkdir(parents=True, exist_ok=True)
-    json.dump({"version": "commit-gt-v1", "corpus": str(repo),
+    json.dump({"version": "commit-gt-v1", "corpus": repo.name,
                "queries": queries}, open(out, "w"), indent=1)
     print(f"{repo.name}: {len(queries)} commit-derived queries → {out}")
 

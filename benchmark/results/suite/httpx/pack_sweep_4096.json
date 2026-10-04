@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/httpx",
+ "corpus": "httpx",
  "pack_tokens": 4096,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1680.1,
+    "cold_first_ms": 1813.3,
     "n": 15,
-    "p50_ms": 536.5,
-    "p95_ms": 843.8,
-    "p99_ms": 1298.8,
-    "mean_ms": 540.7,
+    "p50_ms": 485.2,
+    "p95_ms": 871.0,
+    "p99_ms": 1091.9,
+    "mean_ms": 548.6,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -20,15 +20,15 @@
     {
      "query": "how does the main entry point work",
      "sections": 76,
-     "size_tokens": 4088,
+     "size_tokens": 4091,
      "budget": 4096,
-     "dropped": 5,
+     "dropped": 4,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "file/full": 15,
-      "function/full": 37,
-      "observation/full": 6,
+      "file/full": 13,
+      "function/full": 35,
+      "observation/full": 10,
       "rule/full": 3,
       "class/full": 6,
       "knowledge/full": 4,
@@ -44,8 +44,8 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "class/full": 33,
-      "function/full": 38,
+      "class/full": 34,
+      "function/full": 37,
       "file/full": 5,
       "observation/full": 5,
       "knowledge/full": 1
@@ -60,9 +60,9 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 31,
+      "function/full": 28,
       "file/full": 8,
-      "class/full": 15,
+      "class/full": 18,
       "observation/full": 16,
       "knowledge/full": 7,
       "rule/full": 3
@@ -77,11 +77,11 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 44,
+      "function/full": 47,
       "class/full": 21,
-      "file/full": 10,
+      "file/full": 12,
       "knowledge/full": 1,
-      "observation/full": 9,
+      "observation/full": 4,
       "overflow_index/pointer": 1
      }
     },
@@ -107,12 +107,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 335.0,
+    "cold_first_ms": 302.6,
     "n": 15,
-    "p50_ms": 359.8,
-    "p95_ms": 599.8,
-    "p99_ms": 969.0,
-    "mean_ms": 405.6,
+    "p50_ms": 333.8,
+    "p95_ms": 610.7,
+    "p99_ms": 999.0,
+    "mean_ms": 373.6,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -121,19 +121,19 @@
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 76,
+     "sections": 79,
      "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 18,
+     "dropped": 15,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "rule/full": 2,
-      "function/full": 37,
+      "function/full": 32,
       "file/full": 13,
-      "observation/full": 7,
+      "observation/full": 12,
       "knowledge/full": 4,
-      "class/full": 9
+      "class/full": 12
      }
     },
     {
@@ -175,12 +175,12 @@
      "sections": 86,
      "size_tokens": 4096,
      "budget": 4096,
-     "dropped": 10,
+     "dropped": 11,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 55,
-      "file/full": 7,
+      "function/full": 56,
+      "file/full": 6,
       "class/full": 11,
       "observation/full": 9
      }

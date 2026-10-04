@@ -1,9 +1,11 @@
-# Benchmark corpus manifest — every corpus is pinned to a commit SHA.
-# `github` entries are publicly fetchable (the reproducible set);
-# `local` entries are private development corpora (battery-only).
+# Benchmark corpus manifest — every corpus is a public, pinned checkout.
+# `github` corpora are fetched by `fetch_corpus.py` into a corpora dir,
+# resolved from $COGZ_BENCH_CORPORA (default: `corpora_dir` below, relative
+# to benchmark/). `local` entries resolve `path` relative to this directory —
+# use them only for the project's own repository.
 
 [suite]
-corpora_dir = "/home/andy/cogz_bench/corpora"
+corpora_dir = "corpora"
 results_dir = "results/suite"
 config_template = "config_template.toml"
 
@@ -28,39 +30,10 @@ url = "https://github.com/spf13/cobra"
 sha = "adbc8813901bba65827259daa8e22ff94ec1f30e"
 language = "go"
 
-# Private corpora — included in the battery but not publicly fetchable.
-[[corpus]]
-name = "CogZ"
-source = "local"
-path = "/home/andy/dev/personal/CogZ"
-language = "rust"
-
-[[corpus]]
-name = "CogZ-py"
-source = "local"
-path = "/home/andy/cogz_bench/corpora/CogZ-py"
-language = "python"
-
-[[corpus]]
-name = "api_tool"
-source = "local"
-path = "/home/andy/cogz_bench/corpora/api_tool"
-language = "python"
-
-[[corpus]]
-name = "kinetik"
-source = "local"
-path = "/home/andy/cogz_bench/corpora/kinetik"
-language = "rust"
-
-[[corpus]]
-name = "kaos-website"
-source = "local"
-path = "/home/andy/cogz_bench/corpora/kaos-website"
-language = "typescript"
+# The project benchmarks against its own repository — `.cogz/` is the live
+# dogfooding corpus. `path` resolves relative to this directory.
 [[corpus]]
 name = "cogz"
 source = "local"
-path = "/home/andy/dev/personal/CogZ"
-sha = "748139a059d9d2125e3f9f6b071ef806039b77ab"
+path = "../.."
 language = "rust"

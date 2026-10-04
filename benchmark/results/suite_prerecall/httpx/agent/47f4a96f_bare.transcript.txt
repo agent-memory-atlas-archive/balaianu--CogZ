@@ -1,9 +1,0 @@
-I'll explore the repository structure first.This is the httpx codebase. Let me look at the decoder test and the zstd decoder implementation.Let me run the test to see the current failure.The failure is in `test_zstd_empty` — `ZStandardDecoder.flush()` raises `DecodingError` when no data was ever fed. Let me check how `decode`/`flush` are invoked in `_models.py` to see whether `decode(b"")` is even called for empty content.Let me check whether `iter_raw` yields anything for `content=b""`.Now let me check how `content=b""` becomes a stream — whether `decode(b"")` gets called before `flush()`.`ByteStream(b"")` yields a single empty chunk, but `iter_raw`'s `ByteChunker` filters out empty content (`[content] if content else []`), so `decode()` is never called for empty bodies — only `flush()` is. The fix mirrors the `BrotliDecoder` pattern: track `seen_data` and short-circuit `flush()` when nothing was decoded.All 40 tests pass. Quick sanity check on related response tests to confirm no regression:Done. `tests/test_decoders.py` — all 40 tests pass, and `test_responses.py` still passes (106 tests).
-
-The fix in `httpx/_decoders.py` adds a `seen_data` flag to `ZStandardDecoder`, mirroring the existing `BrotliDecoder` pattern:
-
-- `__init__`: `self.seen_data = False`
-- `decode()`: sets `self.seen_data = True`
-- `flush()`: returns `b""` early if no data was ever decoded
-
-This works because `iter_raw`'s `ByteChunker` filters out empty chunks, so for an empty body only `flush()` runs — previously it raised `DecodingError("Zstandard data is incomplete")` since the decompressor never reached `eof`. Truncated/corrupt data still raises `DecodingError` correctly (`test_zstd_truncated`, `test_zstd_decoding_error`).

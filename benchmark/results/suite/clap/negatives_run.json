@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/clap",
+  "corpus": "clap",
   "corpus_ids": [
     "00473cfe-f6f7-5948-8eee-a407940eef65",
     "004a5029-c7e3-5d34-90be-b2b7d19d4ae2",
@@ -4658,10 +4658,10 @@
     "ffeebb29-27c1-54f8-814b-d314ee6e26cd"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/clap",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/clap_negatives.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/clap/negatives_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "clap",
+    "queries": "clap_negatives.json",
+    "out": "negatives_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": false,
     "no_expand": false,
@@ -4681,7 +4681,7 @@
         "knowledge_gradient": 0.044388771735324004,
         "knowledge_strength": 0.7140576403973699
       },
-      "latency_ms": 2858,
+      "latency_ms": 2186,
       "results": [
         {
           "id": "50dfd605-abce-5062-a31a-144efe57cff2",
@@ -4864,27 +4864,27 @@
           "stale": null
         },
         {
-          "id": "461cce78-fd46-5459-a4cd-a2735bfaf27c",
+          "id": "312bcbe2-f44e-5233-bb23-412d4ca699e2",
           "type": "file",
-          "title": "dynamic.rs",
+          "title": "explicit_name_no_renaming.rs",
           "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "5e62ecd1-7b8d-54c1-8a64-ca0b754c0dd8",
+          "id": "460b5908-44ea-5fa8-b701-1b896b91096b",
           "type": "file",
-          "title": "skip_with_other_options.rs",
+          "title": "utils.rs",
           "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "aedd2a6b-fe12-57b1-9a33-f4c772d93134",
-          "type": "function",
-          "title": "main",
+          "id": "4aba3532-142a-5d57-9b86-edf60634a539",
+          "type": "file",
+          "title": "common.rs",
           "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -5100,7 +5100,7 @@
         "knowledge_gradient": 0.007205366061152785,
         "knowledge_strength": 0.6443541075608573
       },
-      "latency_ms": 830,
+      "latency_ms": 756,
       "results": [
         {
           "id": "461cce78-fd46-5459-a4cd-a2735bfaf27c",
@@ -5512,15 +5512,376 @@
     {
       "id": "ln03",
       "search_mode": "hybrid",
-      "filtered_count": 100,
+      "filtered_count": 1568,
       "signals": {
         "code_gradient": 0.012461907436820564,
         "code_strength": 0.2679913949015595,
         "knowledge_gradient": 0.01212140251910374,
         "knowledge_strength": 0.5754265183063622
       },
-      "latency_ms": 456,
-      "results": []
+      "latency_ms": 703,
+      "results": [
+        {
+          "id": "49beca54-1e28-577f-b93c-20e16ddb9b1d",
+          "type": "class",
+          "title": "Key",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5dc74fea-9794-52dc-b6c8-1558379e6364",
+          "type": "function",
+          "title": "subcommand_sort_key",
+          "relevance": 0.7753356695175171,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3bf3f300-c282-553f-9024-663b958a9d81",
+          "type": "function",
+          "title": "keys",
+          "relevance": 0.7893231511116028,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c1a81c4c-7435-5b9e-a128-21b378323b49",
+          "type": "function",
+          "title": "contains_key",
+          "relevance": 0.7426813244819641,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b52e2d1f-fb5b-4707-b03f-eec600c0eb3c",
+          "type": "observation",
+          "title": "feat(builder): Expose Command::get_overridden_usage",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3ae0b625-a370-5386-86ba-63deeb20092e",
+          "type": "function",
+          "title": "option_sort_key",
+          "relevance": 0.7081348299980164,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bf600671-2a19-5415-a929-72a472e89624",
+          "type": "function",
+          "title": "positional_sort_key",
+          "relevance": 0.6900616884231567,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "281cb056-f649-57a9-99ec-b2a5694e9128",
+          "type": "function",
+          "title": "keys",
+          "relevance": 0.7345524430274963,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a058cc78-da1a-5ca8-ba2c-b49e5212f30b",
+          "type": "function",
+          "title": "contains",
+          "relevance": 0.6942800879478455,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3427fab5-8232-5e1d-adb2-4d2fae67f044",
+          "type": "class",
+          "title": "impl Shell",
+          "relevance": 0.4192555844783783,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "47d68ab5-5223-57fb-ac83-5c6dba3d6d46",
+          "type": "function",
+          "title": "issue_1642_long_help_spacing",
+          "relevance": 0.426128625869751,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8ebc88bc-413a-5ee1-a59e-443d898f94e2",
+          "type": "function",
+          "title": "is",
+          "relevance": 0.41260072588920593,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "19d8f972-5e57-55b7-ba1e-97f75f334019",
+          "type": "function",
+          "title": "find_duplicates",
+          "relevance": 0.39990532398223877,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "76dfba5b-9245-5a8d-b2ca-65d4cec39783",
+          "type": "function",
+          "title": "readline",
+          "relevance": 0.3822624385356903,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d51c0dd1-faa9-52e9-9b22-7ed94ff99f7b",
+          "type": "module",
+          "title": "mkeymap",
+          "relevance": 0.3249230682849884,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d94fb852-eb10-5111-ba65-7b371ebfe8b3",
+          "type": "function",
+          "title": "append_keys",
+          "relevance": 0.4061538577079773,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "191c7427-9c40-5987-91b3-74fe95810e75",
+          "type": "class",
+          "title": "impl PartialEq<OsStr> for KeyType",
+          "relevance": 0.39990532398223877,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7d858e72-1073-4b13-b409-c93a4c093177",
+          "type": "knowledge",
+          "title": "ValueParser converts raw OsStr into typed values",
+          "relevance": 0.1967741996049881,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f1bc8979-a6de-4505-8035-2e587d4ba371",
+          "type": "knowledge",
+          "title": "ArgAction defines flag semantics: Set, Append, Count, SetTrue",
+          "relevance": 0.19365079700946808,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2bc01033-335d-4a5e-8f75-8e40ce283d92",
+          "type": "observation",
+          "title": "fix(complete): Detect pwsh for PowerShell",
+          "relevance": 0.17941176891326904,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0e12e0d2-f8c8-54f8-b364-64620b475019",
+          "type": "class",
+          "title": "impl PartialEq<&str> for KeyType",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1b572a9c-210d-5b4e-ac4a-848315bccec1",
+          "type": "class",
+          "title": "impl PartialEq<char> for KeyType",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1ce473d8-aec4-508d-ba9a-7896a218ed57",
+          "type": "class",
+          "title": "impl PartialEq<str> for KeyType",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "68d1fcd3-aa00-5736-b361-5a5d2270766f",
+          "type": "class",
+          "title": "KeyType",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6b705dd2-3f81-5554-9e28-ddfc3902faf1",
+          "type": "class",
+          "title": "impl KeyType",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7d3d033e-9821-5c10-aaec-e074685d513b",
+          "type": "class",
+          "title": "impl Index<&'_ KeyType> for MKeyMap",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f571fdff-9036-55bb-a752-514c26bc2c69",
+          "type": "class",
+          "title": "impl PartialEq<usize> for KeyType",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f8e92a5d-ec24-5a0a-8fd5-3a180c44c2f9",
+          "type": "function",
+          "title": "shells_completer_for_path_finds_powershell",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "14e5a6c9-6ea0-56d4-a90b-cd112b521873",
+          "type": "function",
+          "title": "skip_val",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ae504cfa-afa8-5b45-a771-0b6aa41d0a0d",
+          "type": "function",
+          "title": "to_long_with_value",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cc7662fe-f920-5443-84a3-7e4c87d67c65",
+          "type": "function",
+          "title": "to_long_with_empty_value",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "469790b3-c2b7-58bc-9f77-5a1df8cb7365",
+          "type": "class",
+          "title": "impl MKeyMap",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f13a4482-de60-5a3d-a032-87d13f6f7e7e",
+          "type": "class",
+          "title": "MKeyMap",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "09a065c3-7680-5034-b39b-2cf5ac6e1904",
+          "type": "class",
+          "title": "impl Entry<'a, K, V>",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0ab43a31-25a1-587c-8377-f14f211dbcdf",
+          "type": "class",
+          "title": "impl DoubleEndedIterator for IterMut<'a, K, V>",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3b80c0e3-8ede-5956-94e0-9d17cf8bbe24",
+          "type": "class",
+          "title": "Entry",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "55633d7a-a938-5fda-b7e2-cc13d2f5057a",
+          "type": "class",
+          "title": "FlatMap",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "76df70b1-7259-5616-832a-a0998c92809c",
+          "type": "class",
+          "title": "impl FlatMap<K, V>",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7d8e2117-1d49-5789-bd13-0080d30b0039",
+          "type": "class",
+          "title": "IterMut",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7fa3880d-0a6b-5561-96d2-f22834bfab35",
+          "type": "class",
+          "title": "VacantEntry",
+          "relevance": 0.11839848011732101,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
     },
     {
       "id": "ln04",
@@ -5532,21 +5893,382 @@
         "knowledge_gradient": 0.010638385058243282,
         "knowledge_strength": 0.5712506286596112
       },
-      "latency_ms": 450,
+      "latency_ms": 387,
       "results": []
     },
     {
       "id": "ln05",
       "search_mode": "hybrid",
-      "filtered_count": 100,
+      "filtered_count": 1731,
       "signals": {
         "code_gradient": 0.009033014032583919,
         "code_strength": 0.23100434758414679,
         "knowledge_gradient": 0.01316117017802596,
         "knowledge_strength": 0.6196470672397864
       },
-      "latency_ms": 623,
-      "results": []
+      "latency_ms": 732,
+      "results": [
+        {
+          "id": "ad0f8750-d68c-50f9-a78f-3e45701e6204",
+          "type": "function",
+          "title": "resolve_pending",
+          "relevance": 0.6610286831855774,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d2069cc2-201e-588f-8a3a-0e068d4df43c",
+          "type": "function",
+          "title": "get_invalid",
+          "relevance": 0.6531306505203247,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "85e77506-cceb-509a-8766-871fb3f08e7a",
+          "type": "function",
+          "title": "resolve",
+          "relevance": 0.6531306505203247,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "40600d90-a841-5b0d-ba87-9dad6ef72327",
+          "type": "function",
+          "title": "from_str_invalid",
+          "relevance": 0.6388157606124878,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1066ea4c-dab8-4264-9737-b5c82181552c",
+          "type": "observation",
+          "title": "fix(parser): Resolve regression with value_terminator/last",
+          "relevance": 0.3389713168144226,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "65110a27-7ee4-514a-98fe-f9404f6ca5e8",
+          "type": "function",
+          "title": "resolve",
+          "relevance": 0.6505048871040344,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4eda7111-ae39-5a1d-b30c-14e79d8fe59b",
+          "type": "class",
+          "title": "ErrCode",
+          "relevance": 0.3002382218837738,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "344764e9-5a60-5626-85b5-83182a9585b8",
+          "type": "class",
+          "title": "EnvCompleter",
+          "relevance": 0.3275326192378998,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6cef183e-33a0-5c11-b87a-d31c399a8333",
+          "type": "class",
+          "title": "Named",
+          "relevance": 0.2844361960887909,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ffddc913-b684-5f06-934b-5a93c50624e8",
+          "type": "function",
+          "title": "mut_subcommand_with_alias_resolve",
+          "relevance": 0.33776798844337463,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a1541d6f-dd59-50d6-88f5-109dcaf537c6",
+          "type": "class",
+          "title": "impl Deref for ArgMatcher",
+          "relevance": 0.3132920563220978,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f13a4482-de60-5a3d-a032-87d13f6f7e7e",
+          "type": "class",
+          "title": "MKeyMap",
+          "relevance": 0.3325715661048889,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "82c4eb18-2b41-5359-93b1-552ff8540b36",
+          "type": "function",
+          "title": "write_dynamic_context",
+          "relevance": 0.2961253821849823,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bcba9cdd-1920-5eaf-aade-1851b22c53b0",
+          "type": "function",
+          "title": "invalid_utf8",
+          "relevance": 0.32264405488967896,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "acc465b7-259f-53b7-9e04-8641178a2c14",
+          "type": "function",
+          "title": "invalid_utf8_option_long_space",
+          "relevance": 0.34312939643859863,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4fb6a949-ab9e-4238-b78e-8199c0b77a97",
+          "type": "observation",
+          "title": "fix(derive): Improve invalid attribute errors",
+          "relevance": 0.3290557563304901,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3d76e316-62ba-429b-a979-26cd8421c8ab",
+          "type": "rule",
+          "title": "MSRV bumps are minor-release events, never patch",
+          "relevance": 0.1709967702627182,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4b6657ec-5479-45e5-8bf0-73a8e91c5930",
+          "type": "observation",
+          "title": "refactor(builder): Rename internal blacklist field to conflicts",
+          "relevance": 0.19581888616085052,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "727eaeab-9f07-4d95-8d72-f13f1e055c3e",
+          "type": "knowledge",
+          "title": "Subcommands nest as Command children with propagated settings",
+          "relevance": 0.1468641608953476,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "391445e7-aab2-494f-b25f-3d89838eff51",
+          "type": "rule",
+          "title": "Deprecations ship behind the `deprecated` feature flag",
+          "relevance": 0.15175963938236237,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "624a8615-b003-5366-85ef-8e7591dc842e",
+          "type": "file",
+          "title": "subcommand.rs",
+          "relevance": 0.19830861687660217,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "79251686-d94f-59cd-b1c5-56732820f5a2",
+          "type": "function",
+          "title": "gen_augment",
+          "relevance": 0.19830861687660217,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7d46526a-03f9-507f-8202-eabd27bdec53",
+          "type": "file",
+          "title": "default_values_t_invalid.rs",
+          "relevance": 0.16525717079639435,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0835f434-3805-5ea0-a3bc-3cec54624b8a",
+          "type": "class",
+          "title": "ParseState",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0c67c045-4fc2-5da6-876a-32e8a575095e",
+          "type": "class",
+          "title": "impl Parser<'cmd>",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "18ca3f56-b458-5681-9a0f-6b4f695cb5e0",
+          "type": "class",
+          "title": "ParseResult",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1d0288fd-0f8d-55bc-ad04-c3e36837703d",
+          "type": "class",
+          "title": "Identifier",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5132c12a-a7d6-59bb-9006-ff9eee429651",
+          "type": "class",
+          "title": "Parser",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6061e69e-3e0e-502e-a8fd-1fb42c0dacbe",
+          "type": "class",
+          "title": "impl Parser<'_>",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f645f6f7-0cf3-5f43-890f-c151c6bef79a",
+          "type": "class",
+          "title": "PendingArg",
+          "relevance": 0.09915430843830109,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "06e6ead2-6290-5a5f-b59d-6f4b92163a5d",
+          "type": "class",
+          "title": "impl Default for &'_ Styles",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "17a1d013-ae7b-5a89-831e-6ede1b59b05d",
+          "type": "file",
+          "title": "styling.rs",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "29f73f8e-399c-528a-99ec-d8e2b221aef0",
+          "type": "class",
+          "title": "impl ToTokens for Method",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2c2a418d-3569-5a1f-8abf-5d713a660d34",
+          "type": "class",
+          "title": "impl Item",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "528e6209-598c-5658-b3bf-21e1a9f0320d",
+          "type": "class",
+          "title": "CasingStyle",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "56a93cc2-8655-5365-9829-bc82a6b48599",
+          "type": "class",
+          "title": "impl Kind",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5a81ce83-0388-5076-8f9a-463ee597de03",
+          "type": "class",
+          "title": "Deprecation",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5de5c0ea-df92-5af1-b119-7c22313a5c6f",
+          "type": "class",
+          "title": "impl Method",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5e6004c2-f0e9-5060-b51c-8594cbeba806",
+          "type": "class",
+          "title": "Styles",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "665a2517-fcfc-5036-9171-783e2af31200",
+          "type": "class",
+          "title": "impl ValueParser",
+          "relevance": 0.09796959906816483,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
     }
   ]
 }

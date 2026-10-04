@@ -1,9 +1,0 @@
-I'll start by querying CogZ for relevant context, then look at the completion code.The bug is at line 369: `append(finalArgs, "--")` can write into the shared backing array when `finalArgs` has spare capacity. The fix per the commit description is to copy `trimmedArgs` at the top. Let me check the Go version and idioms used.Go 1.15 — no `slices.Clone`, so I'll copy via `append`. `finalArgs` returned by `Traverse`/`Find` is a sub-slice of `trimmedArgs`; making `trimmedArgs` a private copy means the `append(finalArgs, "--")` on line 369 can only write into our own backing array, never `os.Args`.Target test passes. Running the broader completion test suite for regressions.Done. Full test suite passes.
-
-**Fix** — `completions.go`, `getCompletions()`: [completions.go:319-322](file:///home/andy/cogz_bench/replay_tmp/cogz_replay_746ef071_0cth1dmb/completions.go)
-
-```go
-trimmedArgs := append([]string{}, args[:len(args)-1]...)
-```
-
-`trimmedArgs` was a sub-slice of `args` (ultimately `os.Args[1:]`), so `finalArgs` — the sub-slice returned by `Traverse`/`Find` — shared that backing array. The `append(finalArgs, "--")` sentinel at line 371 could then write `"--"` in place when capacity remained, corrupting `os.Args` (visible to a user's `ValidArgsFunction` with `TraverseChildren` enabled). Copying `trimmedArgs` at the top guarantees any later `append` only touches our private array.

@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/cobra",
+ "corpus": "cobra",
  "pack_tokens": 8192,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1873.5,
+    "cold_first_ms": 2365.7,
     "n": 15,
-    "p50_ms": 502.9,
-    "p95_ms": 1192.6,
-    "p99_ms": 1320.2,
-    "mean_ms": 535.0,
+    "p50_ms": 456.1,
+    "p95_ms": 1086.0,
+    "p99_ms": 1136.9,
+    "mean_ms": 575.1,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -26,12 +26,12 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 54,
+      "function/full": 55,
       "file/full": 1,
       "class/full": 8,
       "knowledge/full": 4,
       "rule/full": 1,
-      "observation/full": 12
+      "observation/full": 11
      }
     },
     {
@@ -52,7 +52,7 @@
     },
     {
      "query": "configuration and initialization",
-     "sections": 59,
+     "sections": 60,
      "size_tokens": 8192,
      "budget": 8192,
      "dropped": 9,
@@ -60,7 +60,7 @@
       "rule/baseline": 3,
       "identity/baseline": 1,
       "function/full": 36,
-      "observation/full": 6,
+      "observation/full": 7,
       "knowledge/full": 6,
       "file/full": 1,
       "class/full": 6
@@ -68,14 +68,14 @@
     },
     {
      "query": "data validation logic",
-     "sections": 86,
+     "sections": 88,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 9,
+     "dropped": 7,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 63,
+      "function/full": 65,
       "file/full": 1,
       "rule/full": 1,
       "class/full": 4,
@@ -105,12 +105,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 288.6,
+    "cold_first_ms": 477.1,
     "n": 15,
-    "p50_ms": 369.4,
-    "p95_ms": 862.5,
-    "p99_ms": 892.6,
-    "mean_ms": 426.0,
+    "p50_ms": 323.5,
+    "p95_ms": 992.0,
+    "p99_ms": 1009.6,
+    "mean_ms": 475.2,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -154,10 +154,10 @@
     },
     {
      "query": "configuration and initialization",
-     "sections": 76,
+     "sections": 75,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 14,
+     "dropped": 15,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -165,19 +165,18 @@
       "observation/full": 25,
       "knowledge/full": 11,
       "file/full": 1,
-      "rule/full": 2
+      "rule/full": 1
      }
     },
     {
      "query": "data validation logic",
-     "sections": 76,
+     "sections": 75,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 13,
+     "dropped": 14,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "rule/full": 1,
       "file/full": 1,
       "knowledge/full": 5,
       "function/full": 30,

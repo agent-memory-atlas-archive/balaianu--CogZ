@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/clap",
+ "corpus": "clap",
  "pack_tokens": 8192,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1783.9,
+    "cold_first_ms": 2096.1,
     "n": 15,
-    "p50_ms": 467.1,
-    "p95_ms": 840.5,
-    "p99_ms": 860.2,
-    "mean_ms": 595.7,
+    "p50_ms": 775.5,
+    "p95_ms": 1000.0,
+    "p99_ms": 1241.2,
+    "mean_ms": 805.9,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -38,30 +38,30 @@
      "sections": 89,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 5,
+     "dropped": 6,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "class/full": 41,
+      "class/full": 35,
       "module/full": 4,
-      "function/full": 28,
-      "file/full": 10,
+      "function/full": 32,
+      "file/full": 12,
       "knowledge/full": 1,
       "observation/full": 1
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 87,
-     "size_tokens": 8128,
+     "sections": 86,
+     "size_tokens": 8126,
      "budget": 8192,
      "dropped": 10,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 43,
+      "function/full": 41,
       "module/full": 2,
-      "class/full": 18,
+      "class/full": 19,
       "observation/full": 6,
       "knowledge/full": 2,
       "file/full": 11,
@@ -88,15 +88,15 @@
     {
      "query": "how are requests processed",
      "sections": 82,
-     "size_tokens": 8190,
+     "size_tokens": 8040,
      "budget": 8192,
-     "dropped": 4,
+     "dropped": 5,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "file/full": 13,
-      "class/full": 28,
-      "module/full": 6,
+      "file/full": 16,
+      "class/full": 24,
+      "module/full": 7,
       "function/full": 27,
       "knowledge/full": 2,
       "observation/full": 1,
@@ -108,12 +108,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 464.9,
+    "cold_first_ms": 425.2,
     "n": 15,
-    "p50_ms": 445.8,
-    "p95_ms": 726.7,
-    "p99_ms": 1099.9,
-    "mean_ms": 501.5,
+    "p50_ms": 412.0,
+    "p95_ms": 1023.9,
+    "p99_ms": 1121.1,
+    "mean_ms": 496.8,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -138,36 +138,36 @@
     },
     {
      "query": "error handling strategy",
-     "sections": 86,
+     "sections": 84,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 8,
+     "dropped": 10,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "knowledge/full": 6,
-      "function/full": 35,
+      "knowledge/full": 5,
+      "function/full": 33,
       "observation/full": 1,
       "module/full": 8,
       "rule/full": 1,
       "class/full": 12,
-      "file/full": 19
+      "file/full": 20
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 87,
-     "size_tokens": 7867,
+     "sections": 85,
+     "size_tokens": 7908,
      "budget": 8192,
-     "dropped": 11,
+     "dropped": 13,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 51,
+      "function/full": 50,
       "observation/full": 5,
       "rule/full": 1,
       "knowledge/full": 4,
-      "file/full": 13,
+      "file/full": 12,
       "class/full": 7,
       "module/full": 1,
       "overflow_index/pointer": 1
@@ -194,20 +194,21 @@
     },
     {
      "query": "how are requests processed",
-     "sections": 69,
-     "size_tokens": 8170,
+     "sections": 72,
+     "size_tokens": 8178,
      "budget": 8192,
-     "dropped": 15,
+     "dropped": 14,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 3,
-      "file/full": 8,
+      "file/full": 12,
       "function/full": 27,
       "rule/full": 1,
-      "module/full": 1,
+      "module/full": 2,
       "observation/full": 1,
-      "class/full": 24
+      "class/full": 21,
+      "overflow_index/pointer": 1
      }
     }
    ]

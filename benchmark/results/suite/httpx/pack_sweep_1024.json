@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/httpx",
+ "corpus": "httpx",
  "pack_tokens": 1024,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1632.5,
+    "cold_first_ms": 1808.8,
     "n": 15,
-    "p50_ms": 520.7,
-    "p95_ms": 780.7,
-    "p99_ms": 1111.7,
-    "mean_ms": 496.3,
+    "p50_ms": 508.0,
+    "p95_ms": 797.1,
+    "p99_ms": 1155.3,
+    "mean_ms": 554.5,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -22,7 +22,7 @@
      "sections": 14,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 65,
+     "dropped": 64,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -90,12 +90,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 383.8,
+    "cold_first_ms": 311.9,
     "n": 15,
-    "p50_ms": 400.4,
-    "p95_ms": 992.8,
-    "p99_ms": 1073.8,
-    "mean_ms": 500.8,
+    "p50_ms": 278.0,
+    "p95_ms": 718.7,
+    "p99_ms": 927.6,
+    "mean_ms": 352.5,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1

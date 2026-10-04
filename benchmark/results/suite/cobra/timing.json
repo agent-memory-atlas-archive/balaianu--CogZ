@@ -1,0 +1,7 @@
+{
+ "corpus": "cobra",
+ "reindex_noop_s": 1.0,
+ "reindex_add_file_s": 2.2,
+ "reindex_remove_file_s": 0.6,
+ "full_index_s": 23.9
+}

@@ -1,0 +1,192 @@
+{
+ "corpus": "cogz",
+ "pack_tokens": 2048,
+ "states": [
+  {
+   "label": "hybrid",
+   "search": {
+    "cold_first_ms": 1930.5,
+    "n": 15,
+    "p50_ms": 583.3,
+    "p95_ms": 840.7,
+    "p99_ms": 865.0,
+    "mean_ms": 618.8,
+    "silence_gate": {
+     "queries": 3,
+     "with_hits": 3
+    }
+   },
+   "packs": [
+    {
+     "query": "how does the main entry point work",
+     "sections": 17,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 77,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 9,
+      "file/full": 4
+     }
+    },
+    {
+     "query": "error handling strategy",
+     "sections": 21,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 63,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 13,
+      "class/full": 1,
+      "file/full": 2,
+      "module/full": 1
+     }
+    },
+    {
+     "query": "configuration and initialization",
+     "sections": 17,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 69,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 7,
+      "file/full": 2,
+      "knowledge/full": 2,
+      "module/full": 1,
+      "class/full": 1
+     }
+    },
+    {
+     "query": "data validation logic",
+     "sections": 22,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 72,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "module/full": 2,
+      "function/full": 9,
+      "file/full": 5,
+      "class/full": 1,
+      "observation/full": 1
+     }
+    },
+    {
+     "query": "how are requests processed",
+     "sections": 14,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 70,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "file/full": 2,
+      "function/full": 5,
+      "knowledge/full": 1,
+      "rule/full": 1,
+      "class/full": 1
+     }
+    }
+   ]
+  },
+  {
+   "label": "fts_only",
+   "search": {
+    "cold_first_ms": 325.3,
+    "n": 15,
+    "p50_ms": 344.2,
+    "p95_ms": 459.9,
+    "p99_ms": 531.0,
+    "mean_ms": 361.4,
+    "silence_gate": {
+     "queries": 3,
+     "with_hits": 3
+    }
+   },
+   "packs": [
+    {
+     "query": "how does the main entry point work",
+     "sections": 10,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 84,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "observation/full": 1,
+      "function/full": 3,
+      "knowledge/full": 2
+     }
+    },
+    {
+     "query": "error handling strategy",
+     "sections": 12,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 72,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "knowledge/full": 1,
+      "function/full": 4,
+      "observation/full": 3
+     }
+    },
+    {
+     "query": "configuration and initialization",
+     "sections": 11,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 75,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 2,
+      "module/full": 1,
+      "observation/full": 1,
+      "rule/full": 1,
+      "file/full": 1,
+      "knowledge/full": 1
+     }
+    },
+    {
+     "query": "data validation logic",
+     "sections": 19,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 75,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "observation/full": 5,
+      "file/full": 3,
+      "rule/full": 1,
+      "function/full": 4,
+      "module/full": 2
+     }
+    },
+    {
+     "query": "how are requests processed",
+     "sections": 12,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 72,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "knowledge/full": 2,
+      "function/full": 4,
+      "rule/full": 1,
+      "observation/full": 1
+     }
+    }
+   ]
+  }
+ ]
+}

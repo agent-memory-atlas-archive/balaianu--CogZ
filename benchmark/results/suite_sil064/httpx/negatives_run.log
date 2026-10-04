@@ -1,8 +1,0 @@
-collecting corpus ids...
-corpus: 1042 entities
-  hn01: 40 results, 1937ms
-  hn02: 0 results, 323ms
-  hn03: 40 results, 577ms
-  hn04: 32 results, 506ms
-  hn05: 0 results, 317ms
-wrote /home/andy/dev/personal/CogZ/benchmark/results/suite/httpx/negatives_run.json

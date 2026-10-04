@@ -4,8 +4,9 @@ FTS-only vs hybrid latency, budget binding. Runs one MCP session per
 config state. Usage: pack_metrics.py --repo <path> [--queries q.json]
 [--fts-only] [--out out.json]"""
 import argparse, json, os, re, statistics, subprocess, sys, time
+from pathlib import Path
 
-COGZ = "/home/andy/dev/personal/CogZ/target/release/cogz"
+COGZ = str(Path(__file__).resolve().parents[1] / "target" / "release" / "cogz")
 
 DEFAULT_QUERIES = [
     "how does the main entry point work",
@@ -49,6 +50,15 @@ def get_context(proc, repo, q, tokens, rid):
                                    "arguments": {"repo": repo, "query": q, "mode": "task", "max_tokens": tokens}}, rid)
     return json.loads(res["content"][0]["text"])
 
+def rss_mb(pid):
+    try:
+        for line in open(f"/proc/{pid}/status"):
+            if line.startswith("VmRSS"):
+                return int(line.split()[1]) // 1024
+    except (OSError, ValueError):
+        pass
+    return None
+
 def percentile(vals, p):
     vals = sorted(vals)
     if not vals:
@@ -62,9 +72,11 @@ def run_state(repo, queries, silence, pack_tokens, label):
     out = {"label": label, "search": {}, "packs": []}
     rid = 10
     lats = []
+    out["search"]["ram_idle_mb"] = rss_mb(proc.pid)
     # warm-up query (model load included, kept separate)
     lat, _ = search(proc, repo, queries[0], rid); rid += 1
     out["search"]["cold_first_ms"] = round(lat, 1)
+    out["search"]["ram_loaded_mb"] = rss_mb(proc.pid)
     reps = 3 if len(queries) <= 6 else 2
     for i in range(reps):
         for q in queries:
@@ -121,7 +133,8 @@ def main():
     a = ap.parse_args()
     queries = json.load(open(a.queries)) if a.queries else DEFAULT_QUERIES
     cfg = os.path.join(a.repo, ".cogz", "config.toml")
-    if not os.path.exists(cfg + ".bak"):
+    created_backup = not os.path.exists(cfg + ".bak")
+    if created_backup:
         import shutil; shutil.copy(cfg, cfg + ".bak")
     states = []
     if not a.fts_only:
@@ -131,7 +144,9 @@ def main():
         states.append(run_state(a.repo, queries, SILENCE_QUERIES, a.pack_tokens, "fts_only"))
     finally:
         set_fts_only(a.repo, False)
-    result = {"repo": a.repo, "pack_tokens": a.pack_tokens, "states": states}
+        if created_backup and os.path.exists(cfg + ".bak"):
+            os.remove(cfg + ".bak")
+    result = {"corpus": Path(a.repo).name.lower(), "pack_tokens": a.pack_tokens, "states": states}
     print(json.dumps(result, indent=1))
     if a.out:
         json.dump(result, open(a.out, "w"), indent=1)

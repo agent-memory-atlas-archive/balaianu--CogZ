@@ -7,11 +7,12 @@ Collects from each corpus DB + repo:
   git commit count, source file/LOC counts.
 
 Usage: corpus_metrics.py CORPUS_DIR [CORPUS_DIR ...]
-       corpus_metrics.py --all        # every dir under ~/cogz_bench/corpora
+       corpus_metrics.py --all        # every dir under $COGZ_BENCH_CORPORA
 Writes benchmark/results/corpus_metrics.json
 """
 
 import json
+import os
 import sqlite3
 import subprocess
 import sys
@@ -89,7 +90,7 @@ def collect(root):
     root = Path(root)
     db = root / ".cogz" / "cogz.db"
     files, loc, langs = source_stats(root)
-    m = {"path": str(root), "source_files": files, "loc": loc,
+    m = {"corpus": root.name.lower(), "source_files": files, "loc": loc,
          "src_langs": langs, "git_commits": git_commits(root)}
     if db.exists():
         m.update(db_stats(db))
@@ -101,14 +102,15 @@ def collect(root):
 def main():
     args = sys.argv[1:]
     if args == ["--all"]:
-        base = Path.home() / "cogz_bench" / "corpora"
+        base = Path(os.environ.get("COGZ_BENCH_CORPORA",
+                                   Path(__file__).resolve().parent / "corpora"))
         args = [str(d) for d in sorted(base.iterdir()) if d.is_dir()]
     if not args:
         sys.exit("usage: corpus_metrics.py CORPUS_DIR... | --all")
     allm = {}
     for a in args:
         m = collect(a)
-        allm[Path(a).name] = m
+        allm[Path(a).name.lower()] = m
         emb = m.get("code_embeddings", 0) + m.get("knowledge_embeddings", 0)
         print(f"{Path(a).name}: {m['source_files']} files, {m['loc']} LOC, "
               f"{sum(m.get('entities_by_type', {}).values())} entities, "
@@ -120,7 +122,7 @@ def main():
         existing = json.loads(RESULTS.read_text())
     existing.update(allm)
     RESULTS.write_text(json.dumps(existing, indent=2))
-    print(f"wrote {RESULTS}")
+    print(f"wrote {RESULTS.name}")
 
 
 if __name__ == "__main__":

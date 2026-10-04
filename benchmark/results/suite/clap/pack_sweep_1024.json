@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/clap",
+ "corpus": "clap",
  "pack_tokens": 1024,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1804.6,
+    "cold_first_ms": 2078.3,
     "n": 15,
-    "p50_ms": 458.2,
-    "p95_ms": 831.0,
-    "p99_ms": 892.4,
-    "mean_ms": 589.6,
+    "p50_ms": 766.1,
+    "p95_ms": 1313.4,
+    "p99_ms": 1325.5,
+    "mean_ms": 858.2,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -50,7 +50,7 @@
      "sections": 17,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 77,
+     "dropped": 76,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -94,12 +94,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 434.7,
+    "cold_first_ms": 413.9,
     "n": 15,
-    "p50_ms": 465.0,
-    "p95_ms": 637.2,
-    "p99_ms": 891.7,
-    "mean_ms": 482.3,
+    "p50_ms": 426.2,
+    "p95_ms": 1908.5,
+    "p99_ms": 2022.8,
+    "mean_ms": 655.1,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1

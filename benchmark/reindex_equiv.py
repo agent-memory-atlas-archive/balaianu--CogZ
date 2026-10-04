@@ -26,7 +26,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-COGZ = "/home/andy/dev/personal/CogZ/target/release/cogz"
+COGZ = str(Path(__file__).resolve().parents[1] / "target" / "release" / "cogz")
 
 ENTITY_COLS = "id, type, title, content, properties, file_path, status, content_hash"
 EDGE_COLS = "source_id, target_id, edge_type, weight"
@@ -294,6 +294,8 @@ def diff_states(a, b):
         print(f"  note: {len(emb_cos)} embeddings differ by batch "
               f"composition, cosine min={min(emb_cos):.4f} "
               f"max={max(emb_cos):.4f}")
+        print(f"  EMBEDDING_DRIFT: n={len(emb_cos)} "
+              f"cosine_min={min(emb_cos):.4f} cosine_max={max(emb_cos):.4f}")
         if min(emb_cos) < 0.90:
             diffs.append(
                 f"embedding divergence beyond batch noise: "

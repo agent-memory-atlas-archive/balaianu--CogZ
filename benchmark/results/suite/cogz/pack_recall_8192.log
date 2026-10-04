@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2265 entities
+  cb2a66b33: 45 results, 1858ms
+  c2936aae2: 45 results, 726ms
+  c889edec4: 45 results, 645ms
+  c7621eace: 45 results, 659ms
+  ced78398f: 45 results, 982ms
+  c83db0140: 45 results, 726ms
+  c1967e086: 45 results, 636ms
+  c7a57828b: 45 results, 642ms
+  c7fcffe59: 45 results, 704ms
+  c60e252f0: 45 results, 819ms
+  ce41f06c9: 45 results, 723ms
+  c043021a8: 45 results, 690ms
+  c0b28e111: 45 results, 697ms
+  c86e70363: 45 results, 653ms
+  c72678b97: 45 results, 1035ms
+  c2e0b8b3a: 40 results, 677ms
+  cdc8ffbed: 45 results, 677ms
+  c85130a9e: 45 results, 674ms
+  cc97a642e: 45 results, 663ms
+  c3333e354: 45 results, 974ms
+  c8ccb962d: 45 results, 619ms
+  c111d85ea: 45 results, 633ms
+  cace7c26f: 45 results, 727ms
+  c371880b9: 45 results, 697ms
+  c0207bab1: 45 results, 1070ms
+wrote pack_recall_8192.json

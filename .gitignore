@@ -1,6 +1,7 @@
 target/
 __pycache__/
 benchmark/results/raw_*.json
+benchmark/corpora/
 benchmark/nli_compare/export-env/
 benchmark/nli_compare/**/*.onnx
 benchmark/nli_compare/*/config*.json

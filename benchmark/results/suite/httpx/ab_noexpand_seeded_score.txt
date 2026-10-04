@@ -1,0 +1,7 @@
+
+=== CogZ benchmark — 15 queries ===
+overall: P@5=0.173 [0.133, 0.2]  MRR=0.358 [0.253, 0.482]  R@20=0.917 [0.817, 1.0]  avg 1434.2ms
+latency: p50=1176ms  p95=4859ms  p99=4859ms
+errors: none  rotted-expected: 0
+intent       n    P@k    MRR   R@20  xpd/q      ms
+knowledge   15  0.173  0.358  0.917    0.0  1434.2

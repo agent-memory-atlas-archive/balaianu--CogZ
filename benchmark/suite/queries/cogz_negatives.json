@@ -1,0 +1,36 @@
+{
+ "version": "neg-v1",
+ "corpus": "cogz",
+ "queries": [
+  {
+   "id": "cn01",
+   "intent": "negative",
+   "query": "encrypt stored embeddings at rest",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn02",
+   "intent": "negative",
+   "query": "sync entities to a remote server",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn03",
+   "intent": "negative",
+   "query": "index Java and Swift source files",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn04",
+   "intent": "negative",
+   "query": "export the knowledge graph to Neo4j",
+   "expected_entity_ids": []
+  },
+  {
+   "id": "cn05",
+   "intent": "negative",
+   "query": "web dashboard for browsing memories",
+   "expected_entity_ids": []
+  }
+ ]
+}

@@ -1,16 +1,16 @@
 {
- "repo": "/home/andy/cogz_bench/corpora/httpx",
+ "corpus": "httpx",
  "pack_tokens": 2048,
  "states": [
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1704.6,
+    "cold_first_ms": 1818.0,
     "n": 15,
-    "p50_ms": 512.3,
-    "p95_ms": 800.1,
-    "p99_ms": 1202.5,
-    "mean_ms": 508.4,
+    "p50_ms": 473.0,
+    "p95_ms": 1142.6,
+    "p99_ms": 1259.8,
+    "mean_ms": 576.3,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1
@@ -22,7 +22,7 @@
      "sections": 28,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 51,
+     "dropped": 50,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -49,14 +49,14 @@
     {
      "query": "configuration and initialization",
      "sections": 42,
-     "size_tokens": 2051,
+     "size_tokens": 2048,
      "budget": 2048,
      "dropped": 45,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 24,
-      "file/full": 7,
+      "function/full": 23,
+      "file/full": 8,
       "class/full": 6,
       "observation/full": 1
      }
@@ -95,12 +95,12 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 328.2,
+    "cold_first_ms": 250.3,
     "n": 15,
-    "p50_ms": 369.9,
-    "p95_ms": 1155.6,
-    "p99_ms": 1206.3,
-    "mean_ms": 481.2,
+    "p50_ms": 337.6,
+    "p95_ms": 1189.7,
+    "p99_ms": 1210.4,
+    "mean_ms": 435.7,
     "silence_gate": {
      "queries": 3,
      "with_hits": 1

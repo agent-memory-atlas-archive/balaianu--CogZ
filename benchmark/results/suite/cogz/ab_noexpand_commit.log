@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2265 entities
+  cb2a66b33: 20 results, 10809ms
+  c2936aae2: 20 results, 2599ms
+  c889edec4: 20 results, 3478ms
+  c7621eace: 20 results, 2894ms
+  ced78398f: 20 results, 2837ms
+  c83db0140: 20 results, 2413ms
+  c1967e086: 20 results, 2687ms
+  c7a57828b: 20 results, 3036ms
+  c7fcffe59: 20 results, 3022ms
+  c60e252f0: 20 results, 3159ms
+  ce41f06c9: 20 results, 2330ms
+  c043021a8: 20 results, 2715ms
+  c0b28e111: 20 results, 2745ms
+  c86e70363: 20 results, 3514ms
+  c72678b97: 20 results, 2595ms
+  c2e0b8b3a: 20 results, 2927ms
+  cdc8ffbed: 20 results, 3221ms
+  c85130a9e: 20 results, 2609ms
+  cc97a642e: 20 results, 2715ms
+  c3333e354: 20 results, 2553ms
+  c8ccb962d: 20 results, 3216ms
+  c111d85ea: 20 results, 3051ms
+  cace7c26f: 20 results, 3813ms
+  c371880b9: 20 results, 3000ms
+  c0207bab1: 20 results, 2944ms
+wrote ab_noexpand_commit.json

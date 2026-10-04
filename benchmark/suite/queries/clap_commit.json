@@ -1,6 +1,6 @@
 {
  "version": "commit-gt-v1",
- "corpus": "/home/andy/cogz_bench/corpora/clap",
+ "corpus": "clap",
  "queries": [
   {
    "id": "ca1b6be72",

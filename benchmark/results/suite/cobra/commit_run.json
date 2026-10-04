@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/cobra",
+  "corpus": "cobra",
   "corpus_ids": [
     "005cad92-2fc7-5ac9-bc6a-4bfbf7d4e872",
     "00d1fb20-f168-5c3b-b30d-8aa259ef09cd",
@@ -762,10 +762,10 @@
     "ffdb2d68-262c-4d43-8311-3721184547e9"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/cobra",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/cobra_commit.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/cobra/commit_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "cobra",
+    "queries": "cobra_commit.json",
+    "out": "commit_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": false,
     "no_expand": false,
@@ -785,7 +785,7 @@
         "knowledge_gradient": 0.04279161179906832,
         "knowledge_strength": 0.7305544386036414
       },
-      "latency_ms": 2344,
+      "latency_ms": 2451,
       "results": [
         {
           "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
@@ -968,6 +968,15 @@
           "stale": null
         },
         {
+          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
+          "type": "file",
+          "title": "active_help_test.go",
+          "relevance": 0.1524861603975296,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "967b1854-27d5-5800-b4ab-271f1c0cf03d",
           "type": "class",
           "title": "PositionalArgs",
@@ -1139,15 +1148,6 @@
           "stale": null
         },
         {
-          "id": "65dafcb4-6d27-5dd2-b0b2-e7225aebd433",
-          "type": "file",
-          "title": "flag_groups.go",
-          "relevance": 0.08832509815692902,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "0405967e-86c5-51f5-b6cb-077f9ea9ce9b",
           "type": "function",
           "title": "TestNoDuplicateArgs_WithValid_WithDuplicateArgs",
@@ -1204,7 +1204,7 @@
         "knowledge_gradient": 0.12352021200645599,
         "knowledge_strength": 0.8418014328885991
       },
-      "latency_ms": 576,
+      "latency_ms": 1259,
       "results": [
         {
           "id": "f1bc6e08-672f-4912-93bd-4c551bfe48b8",
@@ -1387,15 +1387,6 @@
           "stale": null
         },
         {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
-          "relevance": 0.1854800581932068,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "1370b54e-abe7-48f7-bc88-dce7f79e319e",
           "type": "knowledge",
           "title": "The doc/ package generates man, markdown, and yaml docs",
@@ -1560,7 +1551,7 @@
         "knowledge_gradient": 0.03615351973093197,
         "knowledge_strength": 0.7429564435970987
       },
-      "latency_ms": 509,
+      "latency_ms": 476,
       "results": [
         {
           "id": "2c5b0654-9d41-5b04-b3fc-814e99a48ce0",
@@ -1743,33 +1734,6 @@
           "stale": null
         },
         {
-          "id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
-          "type": "rule",
-          "title": "Active help must degrade cleanly without env support",
-          "relevance": 0.2047581821680069,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e202e232-6e78-5ac3-97ac-ee2349651793",
-          "type": "file",
-          "title": "cmd_test.go",
-          "relevance": 0.2047581821680069,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e3924294-2470-4e0f-aac3-afb5f9e31346",
-          "type": "observation",
-          "title": "Replace all non-alphanumerics in active help env var program prefix (#1940)",
-          "relevance": 0.2047581821680069,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "ab038f64-d2dc-57ee-9eb8-c0f162b5399c",
           "type": "class",
           "title": "flagCompError",
@@ -1923,6 +1887,33 @@
           "stale": null
         },
         {
+          "id": "5625c5d3-e62c-53bf-a310-ffee254afd36",
+          "type": "function",
+          "title": "getEnvConfig",
+          "relevance": 0.09758007526397705,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "79f01795-7dd7-59b4-9d69-1c8d52be3a46",
+          "type": "function",
+          "title": "MinimumNArgs",
+          "relevance": 0.09758007526397705,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b7e28200-991d-57ba-ae4f-3372385aa19d",
+          "type": "function",
+          "title": "CompErrorln",
+          "relevance": 0.09758007526397705,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "a3f54462-21a9-5ceb-b1a7-f2040dfa4d67",
           "type": "function",
           "title": "*Command::execute",
@@ -1979,7 +1970,7 @@
         "knowledge_gradient": 0.17480415185894427,
         "knowledge_strength": 0.8605859458707431
       },
-      "latency_ms": 575,
+      "latency_ms": 485,
       "results": [
         {
           "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
@@ -2344,7 +2335,7 @@
         "knowledge_gradient": 0.11083136974033543,
         "knowledge_strength": 0.7487392885366523
       },
-      "latency_ms": 560,
+      "latency_ms": 537,
       "results": [
         {
           "id": "c6c1acf5-91a1-58b5-b44b-cf877b19998b",
@@ -2664,7 +2655,7 @@
         "knowledge_gradient": 0.013992023842007262,
         "knowledge_strength": 0.7280249404397985
       },
-      "latency_ms": 534,
+      "latency_ms": 1212,
       "results": [
         {
           "id": "5145dc88-a445-52ae-a2a0-2f1fa9530451",
@@ -2847,6 +2838,15 @@
           "stale": null
         },
         {
+          "id": "bcb5530b-80d1-48df-a35b-a129f7b575fe",
+          "type": "knowledge",
+          "title": "Cobra runs hooks around Run in a fixed order",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "1d9aa95c-0d92-5592-a456-3d300985ec37",
           "type": "function",
           "title": "genFlagResult",
@@ -3018,15 +3018,6 @@
           "stale": null
         },
         {
-          "id": "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-          "type": "file",
-          "title": "command_test.go",
-          "relevance": 0.10669627040624619,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "2371f6ff-e9ec-56c9-ab49-516e1d3c5c09",
           "type": "function",
           "title": "TestRootUnknownCommandSilenced",
@@ -3083,7 +3074,7 @@
         "knowledge_gradient": 0.02312306802964048,
         "knowledge_strength": 0.6983277381547115
       },
-      "latency_ms": 600,
+      "latency_ms": 761,
       "results": [
         {
           "id": "a9fce38b-6a86-5a3b-a08f-31632d632723",
@@ -3502,7 +3493,7 @@
         "knowledge_gradient": 0.11288155182279454,
         "knowledge_strength": 0.8346751955082845
       },
-      "latency_ms": 580,
+      "latency_ms": 640,
       "results": [
         {
           "id": "30156d14-70d8-49c2-9f19-14df28949d72",
@@ -3685,15 +3676,6 @@
           "stale": null
         },
         {
-          "id": "fc891eea-39db-5f0a-a129-8263983febf0",
-          "type": "function",
-          "title": "init",
-          "relevance": 0.18465811014175415,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "25b0ae34-9132-52cb-8e85-6207543c21a9",
           "type": "file",
           "title": "rest_docs.go",
@@ -3865,6 +3847,15 @@
           "stale": null
         },
         {
+          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
+          "type": "file",
+          "title": "powershell_completions.go",
+          "relevance": 0.05928497388958931,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "78334402-b213-5f56-ab4e-07f6ddac7efb",
           "type": "function",
           "title": "*Command::ExecuteC",
@@ -3921,7 +3912,7 @@
         "knowledge_gradient": 0.043934486491563465,
         "knowledge_strength": 0.7654419073762888
       },
-      "latency_ms": 574,
+      "latency_ms": 483,
       "results": [
         {
           "id": "fb86a539-03e5-401a-9601-02e9434ad6e6",
@@ -4104,27 +4095,9 @@
           "stale": null
         },
         {
-          "id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
-          "type": "rule",
-          "title": "Active help must degrade cleanly without env support",
-          "relevance": 0.18551939725875854,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
           "type": "file",
           "title": "fish_completions.go",
-          "relevance": 0.18551939725875854,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
           "relevance": 0.18551939725875854,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -4284,6 +4257,24 @@
           "stale": null
         },
         {
+          "id": "936fff5b-1069-5382-965c-1c57e7fde57a",
+          "type": "function",
+          "title": "GenMan",
+          "relevance": 0.057240311056375504,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b958433a-0f85-5cf7-9aae-ce5852bb846f",
+          "type": "class",
+          "title": "GenManTreeOptions",
+          "relevance": 0.057240311056375504,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "0459f92a-b1c2-5fe8-93df-69e6533cd46e",
           "type": "function",
           "title": "TestHiddenCommandExecutes",
@@ -4340,7 +4331,7 @@
         "knowledge_gradient": 0.028996039776309313,
         "knowledge_strength": 0.7257293081829334
       },
-      "latency_ms": 566,
+      "latency_ms": 632,
       "results": [
         {
           "id": "0b709961-c4a4-57fc-82e6-6682a9c6c001",
@@ -4523,24 +4514,6 @@
           "stale": null
         },
         {
-          "id": "4451da44-25f8-467c-9100-b22c62e7c89f",
-          "type": "rule",
-          "title": "Test commands with SetArgs + buffers, never subprocess",
-          "relevance": 0.19700504839420319,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4c876d3d-bebe-4d43-90bd-c07b6bb7d9ac",
-          "type": "knowledge",
-          "title": "Positional arg validation runs between flag parsing and Run",
-          "relevance": 0.19700504839420319,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "35600b73-80c9-5614-af7a-4f0af4a74402",
           "type": "class",
           "title": "commandSorterByName",
@@ -4703,6 +4676,24 @@
           "stale": null
         },
         {
+          "id": "743d5ee0-04c5-4c53-a582-47202c084370",
+          "type": "observation",
+          "title": "Allow to reset the templates to the default (#2229)",
+          "relevance": 0.06057504191994667,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "785f5367-f893-43f3-a8e3-6f9b9c15622f",
+          "type": "knowledge",
+          "title": "Hook order is PersistentPreRun, PreRun, Run, PostRun, PersistentPostRun",
+          "relevance": 0.06057504191994667,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "0504e502-1edb-58e2-80ac-7f17296c4de4",
           "type": "function",
           "title": "*Command::SetHelpTemplate",
@@ -4759,7 +4750,7 @@
         "knowledge_gradient": 0.04576885618697244,
         "knowledge_strength": 0.7564485892100835
       },
-      "latency_ms": 582,
+      "latency_ms": 666,
       "results": [
         {
           "id": "58d4b831-35a7-5671-8679-bf2203bde2b6",
@@ -4942,36 +4933,27 @@
           "stale": null
         },
         {
-          "id": "21f7a789-3797-5abd-90fa-b92a59cb1cb9",
-          "type": "function",
-          "title": "TestProgWithDash",
+          "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
+          "type": "observation",
+          "title": "fix: quote args in fish shell completion (#2285)",
           "relevance": 0.17491967976093292,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "4a1c0b33-3c30-5ca9-b8a6-d67e22234536",
-          "type": "function",
-          "title": "TestProgWithColon",
+          "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
+          "type": "observation",
+          "title": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
           "relevance": 0.17491967976093292,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "86c7a0cc-cdc4-55ac-878b-49d1f2057e33",
-          "type": "function",
-          "title": "check",
-          "relevance": 0.17491967976093292,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
-          "type": "file",
-          "title": "fish_completions_test.go",
+          "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
+          "type": "observation",
+          "title": "Fix typo in fish completions (#1945)",
           "relevance": 0.17491967976093292,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -5115,7 +5097,7 @@
         "knowledge_gradient": 0.06857759690325582,
         "knowledge_strength": 0.8358753984093915
       },
-      "latency_ms": 501,
+      "latency_ms": 1176,
       "results": [
         {
           "id": "32bf359d-18e5-494d-8cc4-76f70d00b4e8",
@@ -5298,42 +5280,6 @@
           "stale": null
         },
         {
-          "id": "09514be6-baa8-5c2f-afe8-8e3b124438f2",
-          "type": "function",
-          "title": "TestActiveHelpWithComps",
-          "relevance": 0.21179847419261932,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
-          "relevance": 0.21179847419261932,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6bb1e4c4-ac4c-5606-b168-cda3514858c0",
-          "type": "function",
-          "title": "TestActiveHelpForFlag",
-          "relevance": 0.21179847419261932,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6fd37bc8-4fbd-568b-be0f-c8d3e725b3f6",
-          "type": "function",
-          "title": "TestMultiActiveHelp",
-          "relevance": 0.21179847419261932,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
           "type": "file",
           "title": "powershell_completions.go",
@@ -5471,7 +5417,7 @@
         "knowledge_gradient": 0.08186959781016094,
         "knowledge_strength": 0.7927047097423027
       },
-      "latency_ms": 1006,
+      "latency_ms": 649,
       "results": [
         {
           "id": "f36b832a-0c69-5bfd-b9e9-f3e5f043d26a",
@@ -5890,7 +5836,7 @@
         "knowledge_gradient": 0.10126621980489188,
         "knowledge_strength": 0.819914917691103
       },
-      "latency_ms": 549,
+      "latency_ms": 1166,
       "results": [
         {
           "id": "21d23602-1d60-5bf0-8f3f-7db545a6f90e",
@@ -6073,6 +6019,15 @@
           "stale": null
         },
         {
+          "id": "8b1a338c-2ab5-57c5-acf0-17bac64cdc9f",
+          "type": "function",
+          "title": "prepareCustomAnnotationsForFlags",
+          "relevance": 0.15058445930480957,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "eff71d84-543b-5516-9d1e-bf0cc75df351",
           "type": "class",
           "title": "CompletionOptions",
@@ -6210,7 +6165,7 @@
         "knowledge_gradient": 0.07898046476912257,
         "knowledge_strength": 0.7327339558533309
       },
-      "latency_ms": 804,
+      "latency_ms": 572,
       "results": [
         {
           "id": "a8676eb4-984f-5780-b543-3dad3cd33379",
@@ -6530,7 +6485,7 @@
         "knowledge_gradient": 0.1426049834905976,
         "knowledge_strength": 0.7941455537022074
       },
-      "latency_ms": 569,
+      "latency_ms": 584,
       "results": [
         {
           "id": "ea3b6c6e-9b55-5b01-a40e-6713958e6e49",
@@ -6850,7 +6805,7 @@
         "knowledge_gradient": 0.1262351317110396,
         "knowledge_strength": 0.8238611292358429
       },
-      "latency_ms": 535,
+      "latency_ms": 1470,
       "results": [
         {
           "id": "09514be6-baa8-5c2f-afe8-8e3b124438f2",
@@ -7152,7 +7107,7 @@
         "knowledge_gradient": 0.11199308886343451,
         "knowledge_strength": 0.8037808648714643
       },
-      "latency_ms": 575,
+      "latency_ms": 731,
       "results": [
         {
           "id": "c6219a0f-4941-4a1e-ae9f-50c906d4dc53",
@@ -7544,7 +7499,7 @@
         "knowledge_gradient": 0.09898752088896165,
         "knowledge_strength": 0.8248471657731162
       },
-      "latency_ms": 581,
+      "latency_ms": 839,
       "results": [
         {
           "id": "c56a9fdd-3d9f-5c76-93a3-60d359e6df39",
@@ -7727,6 +7682,15 @@
           "stale": null
         },
         {
+          "id": "4730060a-806b-4c58-a766-9ff1b453327d",
+          "type": "observation",
+          "title": "Consistent annotation names (#2140)",
+          "relevance": 0.15265019237995148,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
           "type": "rule",
           "title": "Active help must degrade cleanly without env support",
@@ -7900,7 +7864,7 @@
         "knowledge_gradient": 0.08609679624704694,
         "knowledge_strength": 0.8206851890357295
       },
-      "latency_ms": 573,
+      "latency_ms": 566,
       "results": [
         {
           "id": "5d46b6d2-18c2-520f-9f33-55b7d78cf785",
@@ -8319,7 +8283,7 @@
         "knowledge_gradient": 0.0860279795795611,
         "knowledge_strength": 0.7677831112883963
       },
-      "latency_ms": 537,
+      "latency_ms": 469,
       "results": [
         {
           "id": "4229f908-8a61-57f3-88d9-be06d86f3109",
@@ -8502,63 +8466,27 @@
           "stale": null
         },
         {
-          "id": "1d4fc8e5-c3ff-5f47-b0fc-d7c900763ca5",
-          "type": "file",
-          "title": "flag_groups_test.go",
+          "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
+          "type": "observation",
+          "title": "fix: quote args in fish shell completion (#2285)",
           "relevance": 0.16772326827049255,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "315cf79d-a5f8-583c-949d-2136128bda7b",
-          "type": "function",
-          "title": "TestValidateFlagGroups",
+          "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
+          "type": "observation",
+          "title": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
           "relevance": 0.16772326827049255,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "324075b1-ce19-5b11-807c-c39310d1949c",
-          "type": "function",
-          "title": "TestCompletionForOneRequiredGroupFlags",
-          "relevance": 0.16772326827049255,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "98ac427d-d64a-5129-a306-d9c1786e058c",
-          "type": "function",
-          "title": "TestCompletionForGroupedFlags",
-          "relevance": 0.16772326827049255,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
-          "type": "file",
-          "title": "completions_test.go",
-          "relevance": 0.16772326827049255,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc0876c6-170b-5c5e-b959-1833a827cfc6",
-          "type": "function",
-          "title": "TestFlagCompletionWithNotInterspersedArgs",
-          "relevance": 0.16772326827049255,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fe46fcf6-50b4-5554-b7a3-b0c978147938",
-          "type": "function",
-          "title": "TestCompletionForMutuallyExclusiveFlags",
+          "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
+          "type": "observation",
+          "title": "Fix typo in fish completions (#1945)",
           "relevance": 0.16772326827049255,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -8682,6 +8610,42 @@
           "stale": null
         },
         {
+          "id": "418483b6-0636-5ec4-b47c-9c69c168e495",
+          "type": "function",
+          "title": "checkNumOccurrences",
+          "relevance": 0.08386163413524628,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6602775e-e8ed-556a-98ec-1c3268e6f8be",
+          "type": "function",
+          "title": "runShellCheck",
+          "relevance": 0.08386163413524628,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "85cd3310-023a-5eb9-9569-180e27fd8da9",
+          "type": "function",
+          "title": "checkRegex",
+          "relevance": 0.08386163413524628,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "86c7a0cc-cdc4-55ac-878b-49d1f2057e33",
+          "type": "function",
+          "title": "check",
+          "relevance": 0.08386163413524628,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "aa5d0abd-ceff-5b12-9e6b-92e1445232cd",
           "type": "function",
           "title": "TestRpad",
@@ -8738,7 +8702,7 @@
         "knowledge_gradient": 0.0173761551820381,
         "knowledge_strength": 0.7193135058045522
       },
-      "latency_ms": 589,
+      "latency_ms": 548,
       "results": [
         {
           "id": "cddd7c7b-2da4-415c-aaf5-dc5e421c1bd1",
@@ -8930,15 +8894,6 @@
           "stale": null
         },
         {
-          "id": "9404d5fc-9020-5643-9aae-3d6068a113b2",
-          "type": "file",
-          "title": "man_examples_test.go",
-          "relevance": 0.18005289137363434,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "9f494797-ba0e-5262-86c5-4f63ec7630b0",
           "type": "file",
           "title": "man_docs_test.go",
@@ -9101,6 +9056,15 @@
           "stale": null
         },
         {
+          "id": "8dee2209-4689-5f88-ac03-e093de632d62",
+          "type": "function",
+          "title": "manPrintFlags",
+          "relevance": 0.05997356399893761,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "ba33be39-0a88-5086-b360-a67877ad395c",
           "type": "function",
           "title": "*Command::Traverse",
@@ -9157,7 +9121,7 @@
         "knowledge_gradient": 0.1273548109207342,
         "knowledge_strength": 0.8208102821247937
       },
-      "latency_ms": 540,
+      "latency_ms": 474,
       "results": [
         {
           "id": "55a2e64d-1e4d-4fa1-b7a8-b1d8709f183d",
@@ -9513,7 +9477,7 @@
         "knowledge_gradient": 0.07046838136563979,
         "knowledge_strength": 0.7716920562277464
       },
-      "latency_ms": 556,
+      "latency_ms": 505,
       "results": [
         {
           "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
@@ -9705,9 +9669,9 @@
           "stale": null
         },
         {
-          "id": "6e76d174-a7b5-5c20-ada5-49783831717d",
-          "type": "function",
-          "title": "TestBashCompletions",
+          "id": "933a9b1c-5db9-576e-aef8-42d30dd6b51c",
+          "type": "file",
+          "title": "cobra_test.go",
           "relevance": 0.15622812509536743,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -9896,7 +9860,7 @@
         "knowledge_gradient": 0.011859272232445029,
         "knowledge_strength": 0.7133175831741916
       },
-      "latency_ms": 539,
+      "latency_ms": 1510,
       "results": [
         {
           "id": "a03b288e-042a-5fca-93f8-0bc07e125add",
@@ -10079,9 +10043,27 @@
           "stale": null
         },
         {
-          "id": "ffdb2d68-262c-4d43-8311-3721184547e9",
-          "type": "observation",
-          "title": "Don't complete --help flag when flag parsing disabled (#2061)",
+          "id": "140ca9c2-7703-5f1e-af4c-b5487f64d374",
+          "type": "function",
+          "title": "writeRequiredFlag",
+          "relevance": 0.1912762075662613,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3e760e1b-421d-50af-9d85-e2b6bd4a4140",
+          "type": "function",
+          "title": "writeLocalNonPersistentFlag",
+          "relevance": 0.1912762075662613,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c5657f13-c3a1-5a9f-8e5a-895ea142d2ab",
+          "type": "file",
+          "title": "bash_completions.go",
           "relevance": 0.1912762075662613,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -10279,7 +10261,7 @@
         "knowledge_gradient": 0.13559424047285992,
         "knowledge_strength": 0.8571985911325505
       },
-      "latency_ms": 993,
+      "latency_ms": 485,
       "results": [
         {
           "id": "5d46b6d2-18c2-520f-9f33-55b7d78cf785",
@@ -10462,6 +10444,24 @@
           "stale": null
         },
         {
+          "id": "1d4fc8e5-c3ff-5f47-b0fc-d7c900763ca5",
+          "type": "file",
+          "title": "flag_groups_test.go",
+          "relevance": 0.200286865234375,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "315cf79d-a5f8-583c-949d-2136128bda7b",
+          "type": "function",
+          "title": "TestValidateFlagGroups",
+          "relevance": 0.200286865234375,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "441ae355-6963-5af9-bb2a-ae96dc453571",
           "type": "class",
           "title": "customMultiString",
@@ -10624,24 +10624,6 @@
           "stale": null
         },
         {
-          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
-          "type": "file",
-          "title": "completions_test.go",
-          "relevance": 0.05376240238547325,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ea67c102-2ccd-5458-9dbd-7b0dd597bc83",
-          "type": "function",
-          "title": "hasAllFlags",
-          "relevance": 0.05376240238547325,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "412a6133-a3c3-59f1-89f9-17a57b2084cb",
           "type": "function",
           "title": "completeRequireFlags",
@@ -10698,7 +10680,7 @@
         "knowledge_gradient": 0.17708323588763566,
         "knowledge_strength": 0.8626391993183984
       },
-      "latency_ms": 572,
+      "latency_ms": 578,
       "results": [
         {
           "id": "052c4782-a346-4929-b158-79b8cab5e858",
@@ -10881,6 +10863,24 @@
           "stale": null
         },
         {
+          "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
+          "type": "observation",
+          "title": "fix: quote args in fish shell completion (#2285)",
+          "relevance": 0.15088388323783875,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
+          "type": "observation",
+          "title": "Fix typo in fish completions (#1945)",
+          "relevance": 0.15088388323783875,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "2079be6a-5493-5ed2-93c9-b32785852d16",
           "type": "function",
           "title": "genZshComp",
@@ -11043,24 +11043,6 @@
           "stale": null
         },
         {
-          "id": "cebe5bad-6022-55ed-aef0-d18ea9f4e9db",
-          "type": "function",
-          "title": "NoDuplicateArgs",
-          "relevance": 0.07455805689096451,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e1e4a7d5-8003-588a-bc54-ee35ac73b191",
-          "type": "class",
-          "title": "FParseErrWhitelist",
-          "relevance": 0.07455805689096451,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "73a7203b-bff2-5b5e-94d0-6e3e104757aa",
           "type": "function",
           "title": "TestEnablePrefixMatching",
@@ -11117,7 +11099,7 @@
         "knowledge_gradient": 0.12876423884516483,
         "knowledge_strength": 0.8014908893897251
       },
-      "latency_ms": 591,
+      "latency_ms": 457,
       "results": [
         {
           "id": "366f8960-07b4-51d5-9a3c-632723e14c32",
@@ -11300,9 +11282,27 @@
           "stale": null
         },
         {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
+          "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
+          "type": "observation",
+          "title": "fix: quote args in fish shell completion (#2285)",
+          "relevance": 0.17762601375579834,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
+          "type": "observation",
+          "title": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
+          "relevance": 0.17762601375579834,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
+          "type": "observation",
+          "title": "Fix typo in fish completions (#1945)",
           "relevance": 0.17762601375579834,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -11462,24 +11462,6 @@
           "stale": null
         },
         {
-          "id": "441ae355-6963-5af9-bb2a-ae96dc453571",
-          "type": "class",
-          "title": "customMultiString",
-          "relevance": 0.05037003755569458,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9c32dbae-bd69-5856-b837-c8bc66d6976c",
-          "type": "file",
-          "title": "util.go",
-          "relevance": 0.05037003755569458,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "040fea7d-f25f-5f03-a696-f4bd98da52e9",
           "type": "function",
           "title": "*Command::NamePadding",
@@ -11536,7 +11518,7 @@
         "knowledge_gradient": 0.10879325993332531,
         "knowledge_strength": 0.7809327443689651
       },
-      "latency_ms": 546,
+      "latency_ms": 471,
       "results": [
         {
           "id": "65dafcb4-6d27-5dd2-b0b2-e7225aebd433",
@@ -11719,24 +11701,6 @@
           "stale": null
         },
         {
-          "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
-          "type": "file",
-          "title": "zsh_completions.go",
-          "relevance": 0.20391510426998138,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
-          "type": "file",
-          "title": "powershell_completions.go",
-          "relevance": 0.20391510426998138,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "acb5376a-444d-55ac-8b99-e96949047e67",
           "type": "function",
           "title": "MarkFlagDirname",
@@ -11899,6 +11863,24 @@
           "stale": null
         },
         {
+          "id": "758612b9-5da1-50b8-ae70-80ea03042562",
+          "type": "function",
+          "title": "writeCommands",
+          "relevance": 0.09407707303762436,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "939a2e85-bee6-502d-923c-042dd733d28f",
+          "type": "function",
+          "title": "gen",
+          "relevance": 0.09407707303762436,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "a2e59c97-18f9-5715-9ad4-d8c3264f09dc",
           "type": "function",
           "title": "writePreamble",
@@ -11955,7 +11937,7 @@
         "knowledge_gradient": 0.02393164562097614,
         "knowledge_strength": 0.7329453174339395
       },
-      "latency_ms": 568,
+      "latency_ms": 508,
       "results": [
         {
           "id": "b29e726a-b632-4873-8efb-ef74ee164ee3",
@@ -12134,24 +12116,6 @@
           "title": "TestCompletionDoesNotMutateOsArgs",
           "relevance": 0.11948804557323456,
           "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
-          "type": "file",
-          "title": "zsh_completions.go",
-          "relevance": 0.224818617105484,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
-          "relevance": 0.224818617105484,
-          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -12338,7 +12302,7 @@
         "knowledge_gradient": 0.050650503900388985,
         "knowledge_strength": 0.7944138498020449
       },
-      "latency_ms": 594,
+      "latency_ms": 528,
       "results": [
         {
           "id": "075630c7-eeab-5395-b74f-7ad699379e0f",
@@ -12757,7 +12721,7 @@
         "knowledge_gradient": 0.02298911395141796,
         "knowledge_strength": 0.7313231280801317
       },
-      "latency_ms": 627,
+      "latency_ms": 779,
       "results": [
         {
           "id": "f15c12f5-31f6-488a-b477-70f4dc7ddaf8",
@@ -13140,7 +13104,7 @@
         "knowledge_gradient": 0.14117170116153235,
         "knowledge_strength": 0.8328656216650457
       },
-      "latency_ms": 546,
+      "latency_ms": 487,
       "results": [
         {
           "id": "c89412df-0b5e-4d67-8bec-f75811cb3bb4",
@@ -13332,15 +13296,6 @@
           "stale": null
         },
         {
-          "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
-          "type": "file",
-          "title": "fish_completions_test.go",
-          "relevance": 0.18009378015995026,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "a73ff038-6e5c-457b-8e3a-5c495c2fcb61",
           "type": "observation",
           "title": "powershell: escape variable with curly brackets (#1960)",
@@ -13505,7 +13460,7 @@
         "knowledge_gradient": 0.09522438136760988,
         "knowledge_strength": 0.7796970902790067
       },
-      "latency_ms": 562,
+      "latency_ms": 528,
       "results": [
         {
           "id": "c89412df-0b5e-4d67-8bec-f75811cb3bb4",
@@ -13688,18 +13643,18 @@
           "stale": null
         },
         {
-          "id": "4229f908-8a61-57f3-88d9-be06d86f3109",
-          "type": "file",
-          "title": "bash_completions_test.go",
+          "id": "366f8960-07b4-51d5-9a3c-632723e14c32",
+          "type": "function",
+          "title": "TestDeadcodeElimination",
           "relevance": 0.19853748381137848,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "6e76d174-a7b5-5c20-ada5-49783831717d",
-          "type": "function",
-          "title": "TestBashCompletions",
+          "id": "4229f908-8a61-57f3-88d9-be06d86f3109",
+          "type": "file",
+          "title": "bash_completions_test.go",
           "relevance": 0.19853748381137848,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -13906,7 +13861,7 @@
         "knowledge_gradient": 0.09134261724801218,
         "knowledge_strength": 0.7921576985155961
       },
-      "latency_ms": 584,
+      "latency_ms": 477,
       "results": [
         {
           "id": "eff71d84-543b-5516-9d1e-bf0cc75df351",
@@ -14325,7 +14280,7 @@
         "knowledge_gradient": 0.11258923917511503,
         "knowledge_strength": 0.8431499073428673
       },
-      "latency_ms": 566,
+      "latency_ms": 500,
       "results": [
         {
           "id": "8df64f91-5782-58b8-856d-fd32b5463966",
@@ -14744,7 +14699,7 @@
         "knowledge_gradient": 0.06968924781691559,
         "knowledge_strength": 0.7310798485530926
       },
-      "latency_ms": 546,
+      "latency_ms": 562,
       "results": [
         {
           "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
@@ -14945,15 +14900,6 @@
           "stale": null
         },
         {
-          "id": "e202e232-6e78-5ac3-97ac-ee2349651793",
-          "type": "file",
-          "title": "cmd_test.go",
-          "relevance": 0.17507502436637878,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "a210b0f2-9ff6-450c-b470-3371f0cde32c",
           "type": "rule",
           "title": "CLI-visible changes are breaking for downstream CLIs",
@@ -15145,7 +15091,7 @@
         "knowledge_gradient": 0.13429955431454327,
         "knowledge_strength": 0.7948944745550931
       },
-      "latency_ms": 1054,
+      "latency_ms": 520,
       "results": [
         {
           "id": "b5cef97f-6869-5e81-aeef-23dba4c94302",
@@ -15328,15 +15274,6 @@
           "stale": null
         },
         {
-          "id": "27600cd6-79af-403e-b95e-5f884a6a5c9f",
-          "type": "rule",
-          "title": "Global flags belong on PersistentFlags, not local Flags",
-          "relevance": 0.1705799549818039,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "412c8971-7f70-5515-a80b-80e24579af44",
           "type": "file",
           "title": "zsh_completions_test.go",
@@ -15456,7 +15393,7 @@
         "knowledge_gradient": 0.057127838229395135,
         "knowledge_strength": 0.7732428205532896
       },
-      "latency_ms": 588,
+      "latency_ms": 703,
       "results": [
         {
           "id": "074fd0df-e94b-5078-8b01-e3942f73f306",
@@ -15639,9 +15576,9 @@
           "stale": null
         },
         {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
+          "id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
+          "type": "rule",
+          "title": "Active help must degrade cleanly without env support",
           "relevance": 0.16126860678195953,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -15875,7 +15812,7 @@
         "knowledge_gradient": 0.10871117614622602,
         "knowledge_strength": 0.8278867459897233
       },
-      "latency_ms": 627,
+      "latency_ms": 522,
       "results": [
         {
           "id": "e960ad6b-7ac1-5534-b085-c36cd5677c15",
@@ -16294,7 +16231,7 @@
         "knowledge_gradient": 0.05050902129780972,
         "knowledge_strength": 0.7760425425206865
       },
-      "latency_ms": 569,
+      "latency_ms": 503,
       "results": [
         {
           "id": "d6f78e93-dbcd-46a7-b9dc-e626ef4d8683",
@@ -16641,7 +16578,7 @@
         "knowledge_gradient": 0.08939718296417758,
         "knowledge_strength": 0.8402808368925717
       },
-      "latency_ms": 598,
+      "latency_ms": 494,
       "results": [
         {
           "id": "4d0486b9-6d45-547c-b89f-3264dbe8304f",
@@ -16824,6 +16761,24 @@
           "stale": null
         },
         {
+          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
+          "type": "knowledge",
+          "title": "Flag group constraints are declared then validated post-parse",
+          "relevance": 0.1647045910358429,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5f9ac011-e857-4a68-b74b-e3b69db9fda2",
+          "type": "knowledge",
+          "title": "SilenceUsage and SilenceErrors control post-error output",
+          "relevance": 0.1647045910358429,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "35ed6be0-f6ae-46d0-9497-a397550a79f6",
           "type": "observation",
           "title": "Allow sourcing zsh completion script (#1917)",
@@ -16986,24 +16941,6 @@
           "stale": null
         },
         {
-          "id": "17927112-f37c-5279-ac56-a95366a1cdb6",
-          "type": "function",
-          "title": "executeCommand",
-          "relevance": 0.07728447020053864,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-          "type": "file",
-          "title": "command_test.go",
-          "relevance": 0.07728447020053864,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "6602775e-e8ed-556a-98ec-1c3268e6f8be",
           "type": "function",
           "title": "runShellCheck",
@@ -17060,7 +16997,7 @@
         "knowledge_gradient": 0.018965122924794287,
         "knowledge_strength": 0.7068703671591775
       },
-      "latency_ms": 616,
+      "latency_ms": 536,
       "results": [
         {
           "id": "3d1977ae-e4cf-5cac-a238-14bad5c90471",
@@ -17479,7 +17416,7 @@
         "knowledge_gradient": 0.11830095589468952,
         "knowledge_strength": 0.8310666174871005
       },
-      "latency_ms": 581,
+      "latency_ms": 513,
       "results": [
         {
           "id": "074fd0df-e94b-5078-8b01-e3942f73f306",
@@ -17662,9 +17599,18 @@
           "stale": null
         },
         {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
+          "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
+          "type": "observation",
+          "title": "fix: quote args in fish shell completion (#2285)",
+          "relevance": 0.15015292167663574,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
+          "type": "observation",
+          "title": "Fix typo in fish completions (#1945)",
           "relevance": 0.15015292167663574,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -17833,15 +17779,6 @@
           "stale": null
         },
         {
-          "id": "cddd7c7b-2da4-415c-aaf5-dc5e421c1bd1",
-          "type": "observation",
-          "title": "Allow linker to perform deadcode elimination for program using Cobra (#1956)",
-          "relevance": 0.05018812045454979,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "c495250c-6132-5bd4-a64a-6cf9500367c7",
           "type": "function",
           "title": "checkIfFlagCompletion",
@@ -17898,7 +17835,7 @@
         "knowledge_gradient": 0.03386945410012052,
         "knowledge_strength": 0.7141434377124103
       },
-      "latency_ms": 554,
+      "latency_ms": 456,
       "results": [
         {
           "id": "08bcf3ad-12ad-5d6c-a2b6-0573b991c6db",
@@ -18081,6 +18018,15 @@
           "stale": null
         },
         {
+          "id": "2079be6a-5493-5ed2-93c9-b32785852d16",
+          "type": "function",
+          "title": "genZshComp",
+          "relevance": 0.20958741009235382,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
           "type": "file",
           "title": "fish_completions_test.go",
@@ -18227,7 +18173,7 @@
         "knowledge_gradient": 0.008053324098166925,
         "knowledge_strength": 0.6702503870236303
       },
-      "latency_ms": 611,
+      "latency_ms": 544,
       "results": [
         {
           "id": "546771fa-c34b-5e0c-a8f1-0ea59c4b472b",
@@ -18419,24 +18365,6 @@
           "stale": null
         },
         {
-          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
-          "type": "file",
-          "title": "completions_test.go",
-          "relevance": 0.2239844650030136,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
-          "type": "file",
-          "title": "fish_completions_test.go",
-          "relevance": 0.2239844650030136,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "4730060a-806b-4c58-a766-9ff1b453327d",
           "type": "observation",
           "title": "Consistent annotation names (#2140)",
@@ -18590,6 +18518,24 @@
           "stale": null
         },
         {
+          "id": "045e7638-5e6a-50da-a689-e939f5e9a6cd",
+          "type": "function",
+          "title": "TestUsageHelpGroup",
+          "relevance": 0.10510040819644928,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0adb4213-5983-5733-8538-674051d6d681",
+          "type": "function",
+          "title": "TestUsageWithGroup",
+          "relevance": 0.10510040819644928,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "eb0d0c4c-b670-5f83-b34f-6de504ae097c",
           "type": "function",
           "title": "*Command::CommandPathPadding",
@@ -18646,7 +18592,7 @@
         "knowledge_gradient": 0.003007388411338785,
         "knowledge_strength": 0.6970451707851447
       },
-      "latency_ms": 528,
+      "latency_ms": 469,
       "results": [
         {
           "id": "fb86a539-03e5-401a-9601-02e9434ad6e6",
@@ -19065,7 +19011,7 @@
         "knowledge_gradient": 0.035003577127963516,
         "knowledge_strength": 0.7366649389481049
       },
-      "latency_ms": 583,
+      "latency_ms": 526,
       "results": [
         {
           "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
@@ -19244,15 +19190,6 @@
           "title": "args.go",
           "relevance": 0.1236642524600029,
           "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4229f908-8a61-57f3-88d9-be06d86f3109",
-          "type": "file",
-          "title": "bash_completions_test.go",
-          "relevance": 0.22519327700138092,
-          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -19466,7 +19403,7 @@
         "knowledge_gradient": 0.02565704734384664,
         "knowledge_strength": 0.7148976162913403
       },
-      "latency_ms": 600,
+      "latency_ms": 509,
       "results": [
         {
           "id": "19b2fee5-47b0-55b8-a269-57d6ec1c2708",
@@ -19813,7 +19750,7 @@
         "knowledge_gradient": 0.12866813804039529,
         "knowledge_strength": 0.773669265855777
       },
-      "latency_ms": 1105,
+      "latency_ms": 554,
       "results": [
         {
           "id": "a73ff038-6e5c-457b-8e3a-5c495c2fcb61",
@@ -19992,6 +19929,15 @@
           "title": "genBashComp",
           "relevance": 0.22181902825832367,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6838db0d-82ea-5416-9af1-af030681cbe9",
+          "type": "file",
+          "title": "bash_completionsV2_test.go",
+          "relevance": 0.1647619605064392,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -20187,7 +20133,7 @@
         "knowledge_gradient": 0.043757549089623995,
         "knowledge_strength": 0.7433421589184199
       },
-      "latency_ms": 607,
+      "latency_ms": 758,
       "results": [
         {
           "id": "f13d3c03-ea74-5a21-a9dd-d4e932b78454",
@@ -20370,9 +20316,18 @@
           "stale": null
         },
         {
-          "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
-          "type": "file",
-          "title": "zsh_completions.go",
+          "id": "19d9f711-77d3-5247-a990-91b5feb42659",
+          "type": "function",
+          "title": "TestBashCompletionHiddenFlag",
+          "relevance": 0.1953154355287552,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3fee49cb-3887-5d3a-a774-fc0dcb0ec463",
+          "type": "function",
+          "title": "TestBashCompletionDeprecatedFlag",
           "relevance": 0.1953154355287552,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -20525,7 +20480,7 @@
         "knowledge_gradient": 0.06107581946924419,
         "knowledge_strength": 0.7347752836500986
       },
-      "latency_ms": 597,
+      "latency_ms": 1338,
       "results": [
         {
           "id": "a1b10706-5d14-4e31-928a-0adce7d8fcd5",
@@ -20708,55 +20663,64 @@
           "stale": null
         },
         {
-          "id": "1d4fc8e5-c3ff-5f47-b0fc-d7c900763ca5",
-          "type": "file",
-          "title": "flag_groups_test.go",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "315cf79d-a5f8-583c-949d-2136128bda7b",
+          "id": "02908878-32f0-5114-b36d-68507e086fef",
           "type": "function",
-          "title": "TestValidateFlagGroups",
-          "relevance": 0.24000000953674316,
+          "title": "trimRightSpace",
+          "relevance": 0.0950000062584877,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "b7cebe98-abf2-5fc3-850f-d696b8d5ddad",
-          "type": "file",
-          "title": "cobra.go",
-          "relevance": 0.1679999977350235,
+          "id": "1a65d9a1-6992-5337-8910-5510bf382f02",
+          "type": "function",
+          "title": "Eq",
+          "relevance": 0.0950000062584877,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
-          "type": "file",
-          "title": "fish_completions.go",
-          "relevance": 0.1510923206806183,
+          "id": "3dcefdbd-cb81-5597-8063-8df9ccb7424b",
+          "type": "function",
+          "title": "Gt",
+          "relevance": 0.0950000062584877,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "c5657f13-c3a1-5a9f-8e5a-895ea142d2ab",
-          "type": "file",
-          "title": "bash_completions.go",
-          "relevance": 0.1362333446741104,
+          "id": "69cd0663-6079-5955-990b-dc76d494b70d",
+          "type": "function",
+          "title": "*Command::UsageFunc",
+          "relevance": 0.0950000062584877,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
-          "type": "file",
-          "title": "args.go",
-          "relevance": 0.1362333446741104,
+          "id": "7c974d17-46b8-5870-9fdf-a3001b6b70f9",
+          "type": "class",
+          "title": "Command",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "825540f0-0590-593e-b1e5-5cf51825d228",
+          "type": "function",
+          "title": "*Command::getIn",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cf0d1dad-e032-5057-aa07-4b5eb8cb48eb",
+          "type": "function",
+          "title": "*Command::getErr",
+          "relevance": 0.0950000062584877,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -20834,46 +20798,37 @@
           "stale": null
         },
         {
-          "id": "02908878-32f0-5114-b36d-68507e086fef",
-          "type": "function",
-          "title": "trimRightSpace",
-          "relevance": 0.0950000062584877,
+          "id": "c5657f13-c3a1-5a9f-8e5a-895ea142d2ab",
+          "type": "file",
+          "title": "bash_completions.go",
+          "relevance": 0.1362333446741104,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "1a65d9a1-6992-5337-8910-5510bf382f02",
-          "type": "function",
-          "title": "Eq",
-          "relevance": 0.0950000062584877,
+          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
+          "type": "file",
+          "title": "args.go",
+          "relevance": 0.1362333446741104,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "3dcefdbd-cb81-5597-8063-8df9ccb7424b",
-          "type": "function",
-          "title": "Gt",
-          "relevance": 0.0950000062584877,
+          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
+          "type": "file",
+          "title": "fish_completions.go",
+          "relevance": 0.1510923206806183,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "69cd0663-6079-5955-990b-dc76d494b70d",
-          "type": "function",
-          "title": "*Command::UsageFunc",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7c974d17-46b8-5870-9fdf-a3001b6b70f9",
-          "type": "class",
-          "title": "Command",
-          "relevance": 0.0950000062584877,
+          "id": "b7cebe98-abf2-5fc3-850f-d696b8d5ddad",
+          "type": "file",
+          "title": "cobra.go",
+          "relevance": 0.1679999977350235,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -20890,7 +20845,7 @@
         "knowledge_gradient": 0.14293991712492343,
         "knowledge_strength": 0.8348990200836212
       },
-      "latency_ms": 533,
+      "latency_ms": 635,
       "results": [
         {
           "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
@@ -21237,7 +21192,7 @@
         "knowledge_gradient": 0.09794942069734447,
         "knowledge_strength": 0.8067216091712984
       },
-      "latency_ms": 562,
+      "latency_ms": 487,
       "results": [
         {
           "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
@@ -21656,7 +21611,7 @@
         "knowledge_gradient": 0.09155921144290335,
         "knowledge_strength": 0.7670956904102789
       },
-      "latency_ms": 553,
+      "latency_ms": 503,
       "results": [
         {
           "id": "230fd1cc-8fd1-4e8b-afb6-4f88a53d21c4",
@@ -22021,7 +21976,7 @@
         "knowledge_gradient": 0.11258374932463103,
         "knowledge_strength": 0.7993085422130483
       },
-      "latency_ms": 573,
+      "latency_ms": 1095,
       "results": [
         {
           "id": "34908ffb-e681-4c7a-9eae-253042ddb257",
@@ -22377,7 +22332,7 @@
         "knowledge_gradient": 0.10046677454803557,
         "knowledge_strength": 0.8353842958730328
       },
-      "latency_ms": 614,
+      "latency_ms": 665,
       "results": [
         {
           "id": "c495250c-6132-5bd4-a64a-6cf9500367c7",
@@ -22796,7 +22751,7 @@
         "knowledge_gradient": 0.09819733273900697,
         "knowledge_strength": 0.8103595742650082
       },
-      "latency_ms": 542,
+      "latency_ms": 1051,
       "results": [
         {
           "id": "45a2dd5a-f216-40ff-810d-8834970264f3",
@@ -23215,7 +23170,7 @@
         "knowledge_gradient": 0.06351274821587483,
         "knowledge_strength": 0.776547274162049
       },
-      "latency_ms": 615,
+      "latency_ms": 499,
       "results": [
         {
           "id": "f15c12f5-31f6-488a-b477-70f4dc7ddaf8",
@@ -23347,7 +23302,7 @@
           "id": "c89412df-0b5e-4d67-8bec-f75811cb3bb4",
           "type": "observation",
           "title": "Fix help text for runnable plugin command",
-          "relevance": 0.5567203760147095,
+          "relevance": 0.5535147190093994,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -23589,7 +23544,7 @@
         "knowledge_gradient": 0.14891880858750212,
         "knowledge_strength": 0.8077020583634548
       },
-      "latency_ms": 580,
+      "latency_ms": 492,
       "results": [
         {
           "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
@@ -23772,24 +23727,6 @@
           "stale": null
         },
         {
-          "id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
-          "type": "rule",
-          "title": "Active help must degrade cleanly without env support",
-          "relevance": 0.1922300010919571,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "565e8ab0-1e4c-5391-a26e-177b3c6a24db",
-          "type": "file",
-          "title": "active_help_test.go",
-          "relevance": 0.1922300010919571,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
           "type": "rule",
           "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
@@ -23947,6 +23884,24 @@
           "type": "function",
           "title": "*Command::GenPowerShellCompletionFile",
           "relevance": 0.05137841776013374,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "16c09795-0548-5da2-bacb-80cab6c05626",
+          "type": "function",
+          "title": "WriteStringAndCheck",
+          "relevance": 0.05102844908833504,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2a33fd37-4f70-53f1-b8d4-67e5f467f0c3",
+          "type": "function",
+          "title": "*Command::genPowerShellCompletion",
+          "relevance": 0.05102844908833504,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null

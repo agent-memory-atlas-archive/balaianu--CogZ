@@ -1,5 +1,0 @@
-I'll start by exploring the repo and running the failing test.This is httpx. `iter_text` yields a trailing `''`. Let me find the decoder implementation.Now let me look at `iter_text` and `aiter_text` in `_models.py`.Found it. `TextChunker.decode` at line 214-215 returns `[content]` unconditionally when `chunk_size` is None — unlike `ByteChunker` (line 176) which guards with `if content`. So `decoder.flush()` returning `""` at end-of-stream yields a trailing `''`.
-
-Let me check the test file for related expectations before fixing.The fix: `TextChunker.decode` should skip empty content, mirroring `ByteChunker.decode` (line 176). One-line change in `_decoders.py`.All 35 tests pass.
-
-The bug was in `TextChunker.decode` at `httpx/_decoders.py:215`. When `chunk_size` is `None` it returned `[content]` unconditionally, so the `decoder.flush()` call at end-of-stream in `iter_text`/`aiter_text` (which returns `""` when nothing is buffered) produced a spurious trailing `''`. The fix mirrors `ByteChunker.decode` — return `[]` for empty content — which also prevents empty decoded chunks mid-stream from yielding `''`.

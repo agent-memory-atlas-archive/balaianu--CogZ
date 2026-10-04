@@ -1,5 +1,5 @@
 {
-  "repo": "/home/andy/cogz_bench/corpora/cobra",
+  "corpus": "cobra",
   "corpus_ids": [
     "005cad92-2fc7-5ac9-bc6a-4bfbf7d4e872",
     "00d1fb20-f168-5c3b-b30d-8aa259ef09cd",
@@ -762,10 +762,10 @@
     "ffdb2d68-262c-4d43-8311-3721184547e9"
   ],
   "args": {
-    "repo": "/home/andy/cogz_bench/corpora/cobra",
-    "queries": "/home/andy/dev/personal/CogZ/benchmark/suite/queries/cobra_negatives.json",
-    "out": "/home/andy/dev/personal/CogZ/benchmark/results/suite/cobra/negatives_run.json",
-    "cogz": "/home/andy/dev/personal/CogZ/target/release/cogz",
+    "repo": "cobra",
+    "queries": "cobra_negatives.json",
+    "out": "negatives_run.json",
+    "cogz": "cogz",
     "limit": 20,
     "with_context": false,
     "no_expand": false,
@@ -785,7 +785,7 @@
         "knowledge_gradient": 0.008102084154895262,
         "knowledge_strength": 0.6525548578512327
       },
-      "latency_ms": 1869,
+      "latency_ms": 1857,
       "results": [
         {
           "id": "4a9d62ee-ab2a-5800-b701-7fb69bacf9ae",
@@ -968,9 +968,36 @@
           "stale": null
         },
         {
+          "id": "0aa3b659-190c-417c-9573-06298fb239a4",
+          "type": "rule",
+          "title": "Prefer stdlib + pflag; dependencies need justification",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "35600b73-80c9-5614-af7a-4f0af4a74402",
           "type": "class",
           "title": "commandSorterByName",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4780f88b-d26b-5c4e-85df-155bdabb4681",
+          "type": "function",
+          "title": "TestGenMdNoHiddenParents",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6740b6b2-4837-593a-9848-5f087b2d2ef1",
+          "type": "function",
+          "title": "TestGenManNoHiddenParents",
           "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
@@ -1121,24 +1148,6 @@
           "stale": null
         },
         {
-          "id": "2acc4eb8-3300-5633-b184-7a1a2cfc4ccc",
-          "type": "function",
-          "title": "ShellCompDirective::string",
-          "relevance": 0.051992807537317276,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
-          "type": "file",
-          "title": "completions.go",
-          "relevance": 0.051992807537317276,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "eb0d0c4c-b670-5f83-b34f-6de504ae097c",
           "type": "function",
           "title": "*Command::CommandPathPadding",
@@ -1195,7 +1204,7 @@
         "knowledge_gradient": 0.015349217991610441,
         "knowledge_strength": 0.686231978937629
       },
-      "latency_ms": 1153,
+      "latency_ms": 561,
       "results": [
         {
           "id": "ea3b6c6e-9b55-5b01-a40e-6713958e6e49",
@@ -1614,7 +1623,7 @@
         "knowledge_gradient": 0.01561040702962795,
         "knowledge_strength": 0.6422589112088861
       },
-      "latency_ms": 663,
+      "latency_ms": 483,
       "results": [
         {
           "id": "dc5d8bb8-13a4-5e02-841b-d62692246c99",
@@ -1981,28 +1990,795 @@
     {
       "id": "cn04",
       "search_mode": "hybrid",
-      "filtered_count": 42,
+      "filtered_count": 257,
       "signals": {
         "code_gradient": 0.0,
         "code_strength": 0.1829732759387923,
         "knowledge_gradient": 0.006851566486870686,
         "knowledge_strength": 0.5772249441819058
       },
-      "latency_ms": 354,
-      "results": []
+      "latency_ms": 473,
+      "results": [
+        {
+          "id": "5ab81763-b793-5be9-8d0e-01fe3ffb409e",
+          "type": "function",
+          "title": "getFlagNameCompletions",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f9a068bb-6b6a-5cc1-bda9-c5f8c388eaf8",
+          "type": "module",
+          "title": "doc",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fee621e6-a018-534e-ac99-0ad3502ecb7d",
+          "type": "class",
+          "title": "tmplFunc",
+          "relevance": 0.6777777671813965,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "96c39456-8a1d-51ae-90f8-84d1185601ba",
+          "type": "function",
+          "title": "preExecHook",
+          "relevance": 0.6506666541099548,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "84657187-5760-437e-99a1-37e099c6916a",
+          "type": "observation",
+          "title": "Micro-optimizations (#1957)",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
+          "type": "file",
+          "title": "completions.go",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f31ebe6-a1cc-5c33-8df8-a70989798ef9",
+          "type": "function",
+          "title": "indentString",
+          "relevance": 0.6873239278793335,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b958433a-0f85-5cf7-9aae-ce5852bb846f",
+          "type": "class",
+          "title": "GenManTreeOptions",
+          "relevance": 0.633766233921051,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ad822fbb-8c10-5237-97d7-fdaaaca3bb6d",
+          "type": "class",
+          "title": "Group",
+          "relevance": 0.6594594717025757,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4a1c0b33-3c30-5ca9-b8a6-d67e22234536",
+          "type": "function",
+          "title": "TestProgWithColon",
+          "relevance": 0.6256410479545593,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "25b0ae34-9132-52cb-8e85-6207543c21a9",
+          "type": "file",
+          "title": "rest_docs.go",
+          "relevance": 0.6421052813529968,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9974bbdf-4f83-5ea5-89e3-d0ddff99e625",
+          "type": "file",
+          "title": "command_win.go",
+          "relevance": 0.6684931516647339,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cc1dab18-15e6-526c-a144-755e7f2312b0",
+          "type": "module",
+          "title": "doc",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9bbfabad-d155-57a4-9175-a571e9cbb115",
+          "type": "module",
+          "title": "doc",
+          "relevance": 0.7746031880378723,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8b12f174-a183-587e-9575-32f367c7dab7",
+          "type": "module",
+          "title": "doc",
+          "relevance": 0.762499988079071,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
+          "type": "file",
+          "title": "fish_completions.go",
+          "relevance": 0.6100000143051147,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7e67c728-c6d9-5565-b166-d9256ca78f2a",
+          "type": "module",
+          "title": "doc",
+          "relevance": 0.7507692575454712,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d39ceb4d-459d-4d0a-ab75-2a9b06ab830c",
+          "type": "rule",
+          "title": "Security issues go through SECURITY.md contact, not public issues",
+          "relevance": 0.1626666635274887,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4730060a-806b-4c58-a766-9ff1b453327d",
+          "type": "observation",
+          "title": "Consistent annotation names (#2140)",
+          "relevance": 0.1768115907907486,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "052c4782-a346-4929-b158-79b8cab5e858",
+          "type": "observation",
+          "title": "Address golangci-lint deprecation warnings, enable some more linters (#2152)",
+          "relevance": 0.19365079700946808,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "050bd299-634e-531d-9df9-6157c1d5d334",
+          "type": "function",
+          "title": "TestFlagNameCompletionInGo",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "23de7846-f546-5fd1-a556-287c91126dd1",
+          "type": "function",
+          "title": "TestCompletionCobraFlags",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
+          "type": "file",
+          "title": "shell_completions.go",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "324075b1-ce19-5b11-807c-c39310d1949c",
+          "type": "function",
+          "title": "TestCompletionForOneRequiredGroupFlags",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "37a7d588-22a9-5bfc-94a9-279feacdc22f",
+          "type": "function",
+          "title": "TestInitDefaultCompletionCmd",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8df64f91-5782-58b8-856d-fd32b5463966",
+          "type": "function",
+          "title": "TestGetFlagCompletion",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "98ac427d-d64a-5129-a306-d9c1786e058c",
+          "type": "function",
+          "title": "TestCompletionForGroupedFlags",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a9fce38b-6a86-5a3b-a08f-31632d632723",
+          "type": "function",
+          "title": "TestCustomDefaultShellCompDirective",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c9b8ee31-6746-5b7f-acd0-fbb9bba9d8a8",
+          "type": "function",
+          "title": "TestArgsNotDetectedAsFlagsCompletionInGo",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
+          "type": "file",
+          "title": "completions_test.go",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fe46fcf6-50b4-5554-b7a3-b0c978147938",
+          "type": "function",
+          "title": "TestCompletionForMutuallyExclusiveFlags",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "185f9192-c442-4f14-837f-dfa9feb2ae18",
+          "type": "observation",
+          "title": "feat: add getters for flag completions (#1943)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1a078f19-6d25-451a-b169-22733ee0bbde",
+          "type": "rule",
+          "title": "Completion changes must cover bash, zsh, fish, powershell",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "30d50cfc-58bf-4534-aad2-61aa41f10ddf",
+          "type": "observation",
+          "title": "Remove fully inactivated linters (#2148)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "32bf359d-18e5-494d-8cc4-76f70d00b4e8",
+          "type": "observation",
+          "title": "fix CompletionFunc implementation (#2234)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "35ed6be0-f6ae-46d0-9497-a397550a79f6",
+          "type": "observation",
+          "title": "Allow sourcing zsh completion script (#1917)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4427a65e-2b70-4954-8005-b632da76f792",
+          "type": "observation",
+          "title": "fix(completions): Complete map flags multiple times (#2174)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "45a2dd5a-f216-40ff-810d-8834970264f3",
+          "type": "observation",
+          "title": "fix: func name in doc strings (#1885)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "52f1bfa9-dff2-4fba-8584-75d7b705ce01",
+          "type": "observation",
+          "title": "feat: add CompletionFunc type to help with completions (#2220)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6de58255-f2f2-4f39-a97d-f173409489cd",
+          "type": "observation",
+          "title": "feat: add CompletionWithDesc helper (#2231)",
+          "relevance": 0.16529032588005066,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
     },
     {
       "id": "cn05",
       "search_mode": "hybrid",
-      "filtered_count": 58,
+      "filtered_count": 447,
       "signals": {
         "code_gradient": 0.0063680572257653004,
         "code_strength": 0.21790929986905164,
         "knowledge_gradient": 0.010183848483752289,
         "knowledge_strength": 0.6033373889358403
       },
-      "latency_ms": 308,
-      "results": []
+      "latency_ms": 444,
+      "results": [
+        {
+          "id": "b6ff5710-21ed-58de-8057-b18bc23c9ea3",
+          "type": "function",
+          "title": "rangeArgsWithInvalidCount",
+          "relevance": 0.6473221778869629,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "07371e48-ff80-5696-993d-4ccdf2c3c9d7",
+          "type": "function",
+          "title": "TestCmdNameCompletionInGo",
+          "relevance": 0.6267722249031067,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
+          "type": "file",
+          "title": "args.go",
+          "relevance": 0.6074869632720947,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2ca29925-75fb-5ae5-b2b8-7e906cf236f5",
+          "type": "function",
+          "title": "isFlagArg",
+          "relevance": 0.5722703337669373,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "052c4782-a346-4929-b158-79b8cab5e858",
+          "type": "observation",
+          "title": "Address golangci-lint deprecation warnings, enable some more linters (#2152)",
+          "relevance": 0.3526778221130371,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c56a9fdd-3d9f-5c76-93a3-60d359e6df39",
+          "type": "function",
+          "title": "TestCompletionFuncCompatibility",
+          "relevance": 0.6473221778869629,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "315cf79d-a5f8-583c-949d-2136128bda7b",
+          "type": "function",
+          "title": "TestValidateFlagGroups",
+          "relevance": 0.6169789433479309,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c1495da1-c743-588a-aea2-fe2c54cd3fd5",
+          "type": "function",
+          "title": "TestValidArgsFuncCmdContext",
+          "relevance": 0.6368814706802368,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7c974d17-46b8-5870-9fdf-a3001b6b70f9",
+          "type": "class",
+          "title": "Command",
+          "relevance": 0.5806860327720642,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "68d7dd4f-8bb5-5084-a798-211d2691a8a7",
+          "type": "function",
+          "title": "genFishComp",
+          "relevance": 0.5722703337669373,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b88f77cf-8fb0-55b9-afa0-cfb13231c4ae",
+          "type": "function",
+          "title": "*Command::initCompleteCmd",
+          "relevance": 0.5893530249595642,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "eff83dfb-63b2-50a3-8e6b-6f03796f259b",
+          "type": "function",
+          "title": "TestArbitraryArgs_WithValid_WithInvalidArgs",
+          "relevance": 0.5806860327720642,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6ba6ead1-c22b-5310-8a3f-0c5f2d84d2dc",
+          "type": "function",
+          "title": "TestCompleteHelp",
+          "relevance": 0.6368814706802368,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "84d39239-ae75-5892-b4a3-7cbc46cf0d84",
+          "type": "function",
+          "title": "TestValidArgsNotValidArgsFunc",
+          "relevance": 0.6267722249031067,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
+          "type": "rule",
+          "title": "Use the provided Args validators before custom logic",
+          "relevance": 0.340793251991272,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
+          "type": "knowledge",
+          "title": "Flag group constraints are declared then validated post-parse",
+          "relevance": 0.33919501304626465,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4c876d3d-bebe-4d43-90bd-c07b6bb7d9ac",
+          "type": "knowledge",
+          "title": "Positional arg validation runs between flag parsing and Run",
+          "relevance": 0.3446290194988251,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d39ceb4d-459d-4d0a-ab75-2a9b06ab830c",
+          "type": "rule",
+          "title": "Security issues go through SECURITY.md contact, not public issues",
+          "relevance": 0.18348270654678345,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c6219a0f-4941-4a1e-ae9f-50c906d4dc53",
+          "type": "observation",
+          "title": "Add similar whitespace escape logic to bash v2 completions than in other completions (#1743)",
+          "relevance": 0.17816437780857086,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4730060a-806b-4c58-a766-9ff1b453327d",
+          "type": "observation",
+          "title": "Consistent annotation names (#2140)",
+          "relevance": 0.18626275658607483,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5549f67c-69cf-4647-bee0-dc9a2eefbd12",
+          "type": "knowledge",
+          "title": "Commands form a tree resolved by ExecuteC and find()",
+          "relevance": 0.1941966563463211,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ed716d98-9953-5757-a72e-163116ebcb85",
+          "type": "function",
+          "title": "TestTraverseWithBadChildFlag",
+          "relevance": 0.1941966563463211,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "45a2dd5a-f216-40ff-810d-8834970264f3",
+          "type": "observation",
+          "title": "fix: func name in doc strings (#1885)",
+          "relevance": 0.12757225334644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "84657187-5760-437e-99a1-37e099c6916a",
+          "type": "observation",
+          "title": "Micro-optimizations (#1957)",
+          "relevance": 0.12757225334644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "441ae355-6963-5af9-bb2a-ae96dc453571",
+          "type": "class",
+          "title": "customMultiString",
+          "relevance": 0.09709832817316055,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "752ddaf8-9cf6-57e0-805d-1a9b6049bfa8",
+          "type": "function",
+          "title": "TestRangeArgs_WithInvalidCount",
+          "relevance": 0.09709832817316055,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "92c288cd-48d9-5db0-818c-755ab23389b4",
+          "type": "function",
+          "title": "TestRangeArgs_WithInvalidCount_WithValid",
+          "relevance": 0.09709832817316055,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c54f2db7-f3ca-5d24-ae28-0b64be7ed93b",
+          "type": "function",
+          "title": "TestRangeArgs_WithInvalidCount_WithValid_WithInvalidArgs",
+          "relevance": 0.09709832817316055,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "dc2c45e2-7eb0-5f82-947f-977de2bd98c5",
+          "type": "file",
+          "title": "args_test.go",
+          "relevance": 0.09709832817316055,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a4c6bf87-90e4-5b90-b11e-8136b5b0c7e4",
+          "type": "function",
+          "title": "executeCommandWithContextC",
+          "relevance": 0.09553222358226776,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "17927112-f37c-5279-ac56-a95366a1cdb6",
+          "type": "function",
+          "title": "executeCommand",
+          "relevance": 0.09401583671569824,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
+          "type": "file",
+          "title": "completions_test.go",
+          "relevance": 0.09401583671569824,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1d4fc8e5-c3ff-5f47-b0fc-d7c900763ca5",
+          "type": "file",
+          "title": "flag_groups_test.go",
+          "relevance": 0.09254684299230576,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "967b1854-27d5-5800-b4ab-271f1c0cf03d",
+          "type": "class",
+          "title": "PositionalArgs",
+          "relevance": 0.09112304449081421,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5625c5d3-e62c-53bf-a310-ffee254afd36",
+          "type": "function",
+          "title": "getEnvConfig",
+          "relevance": 0.08840295672416687,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b7e28200-991d-57ba-ae4f-3372385aa19d",
+          "type": "function",
+          "title": "CompErrorln",
+          "relevance": 0.08840295672416687,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
+          "type": "file",
+          "title": "completions.go",
+          "relevance": 0.08840295672416687,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d0c207ca-1091-57cd-a73d-1a54e913d624",
+          "type": "function",
+          "title": "GetActiveHelpConfig",
+          "relevance": 0.08840295672416687,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "273aefa0-6325-5962-b61d-b096f048a349",
+          "type": "function",
+          "title": "expectSuccess",
+          "relevance": 0.08710290491580963,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2acc4eb8-3300-5633-b184-7a1a2cfc4ccc",
+          "type": "function",
+          "title": "ShellCompDirective::string",
+          "relevance": 0.08710290491580963,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0d1296aa-6221-5d1e-bd57-d0b8718d2861",
+          "type": "function",
+          "title": "legacyArgs",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "14741b7a-163c-5071-b4ef-e4dbc4fabc2e",
+          "type": "function",
+          "title": "*Command::PrintErrf",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "15ca6b95-479e-5933-8489-94c4b0b68984",
+          "type": "function",
+          "title": "*Command::VersionTemplate",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "22ee708e-24cc-5214-bdce-cd45bcc56038",
+          "type": "function",
+          "title": "MaximumNArgs",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3d6c42c9-a20c-55f2-abff-55881eeab7ec",
+          "type": "function",
+          "title": "*Command::Find",
+          "relevance": 0.0950000062584877,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
     }
   ]
 }
