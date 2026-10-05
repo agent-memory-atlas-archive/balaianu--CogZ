@@ -7,7 +7,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-VER=$(git describe --tags --abbrev=0 | sed 's/^v//')
+VER=$(echo "${MCP_REGISTRY_VERSION:-$(git describe --tags --abbrev=0)}" | sed 's/^v//')
 echo "Publishing io.github.balaianu/cogz v$VER"
 
 sed -i -e "s/\"version\": \"[^\"]*\"/\"version\": \"$VER\"/g" \

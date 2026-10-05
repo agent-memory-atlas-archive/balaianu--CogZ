@@ -81,18 +81,23 @@ The install scripts (`install.sh`, `install.ps1`) download from the latest GitHu
 
 ## MCP registry publish
 
-After a tag release has produced the ghcr image, publish to the official
-MCP registry (which Glama, PulseMCP, and others ingest):
+The `registry-publish` job in `release.yml` publishes to the official
+MCP registry automatically after `docker-publish` succeeds — it
+authenticates via GitHub Actions OIDC (no stored credentials), so every
+tagged release registers itself with no manual step.
+
+To publish or republish by hand:
 
 ```bash
+mcp-publisher login github   # one-time, registry JWT expires quickly
 ./publish-registry.sh
 ```
 
 The script stamps the `version` fields in `server.json` from the latest
 git tag before validating and publishing — the committed file is never
-bumped by hand. One-time prerequisites: `mcp-publisher` on PATH
-(`github.com/modelcontextprotocol/registry` releases), the ghcr package
-set to public visibility, and `mcp-publisher login github`.
+bumped by hand. Local prerequisites: `mcp-publisher` on PATH
+(`github.com/modelcontextprotocol/registry` releases) and the ghcr
+package set to public visibility.
 
 ## ONNX Runtime
 

@@ -129,6 +129,28 @@ jobs:
           docker push $IMAGE:${VER#v}
           docker push $IMAGE:latest
 
+  registry-publish:
+    needs: docker-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          sudo install -m 755 mcp-publisher /usr/local/bin/
+
+      - name: Authenticate via GitHub OIDC
+        run: mcp-publisher login github-oidc
+
+      - name: Publish to MCP registry
+        env:
+          MCP_REGISTRY_VERSION: ${{ github.ref_name }}
+        run: ./publish-registry.sh
+
   checksums:
     needs: build-and-release
     runs-on: ubuntu-latest
