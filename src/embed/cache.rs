@@ -15,7 +15,7 @@ use super::model::{EmbeddingError, EmbeddingModel, EmbeddingResult};
 fn content_hash(text: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(text.as_bytes());
-    format!("{:x}", hasher.finalize())
+    hex::encode(hasher.finalize())
 }
 
 /// In-memory embedding cache keyed by (model_name, content_hash).
