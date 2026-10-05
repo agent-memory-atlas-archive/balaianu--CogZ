@@ -62,6 +62,29 @@ jobs:
       - name: Test
         run: cargo test
 
+  docker:
+    name: docker image + mcp handshake
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Build image
+        run: docker build -t cogz:test .
+
+      - name: Verify MCP handshake in container
+        run: |
+          out=$(printf '%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' \
+            '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
+            | timeout 30 docker run --rm -i cogz:test || true)
+          echo "$out"
+          echo "$out" | grep -q '"serverInfo"'
+          echo "$out" | grep -q '"search"'
+
   audit:
     name: cargo audit
     runs-on: ubuntu-latest

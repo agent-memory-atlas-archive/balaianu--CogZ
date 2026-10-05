@@ -1,0 +1,8 @@
+.git
+target
+.github
+benchmark
+docs
+.cogz/db
+*.db
+*.db-*
