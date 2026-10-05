@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.balaianu/cogz",
+  "title": "CogZ",
+  "description": "Local-first engineering cognition for AI coding agents — persistent memory over your codebase.",
+  "version": "0.5.7",
+  "repository": {
+    "url": "https://github.com/balaianu/CogZ",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "oci",
+      "registryBaseUrl": "https://ghcr.io",
+      "identifier": "balaianu/cogz",
+      "version": "0.5.7",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

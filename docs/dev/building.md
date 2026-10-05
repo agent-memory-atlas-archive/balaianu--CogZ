@@ -75,8 +75,24 @@ The `release.yml` workflow:
 3. Generates SHA256 checksums per asset.
 4. Creates a GitHub release with the binaries.
 5. Generates a combined `SHA256SUMS` manifest.
+6. Builds the container image and pushes `ghcr.io/balaianu/cogz:{vX.Y.Z, X.Y.Z, latest}`.
 
 The install scripts (`install.sh`, `install.ps1`) download from the latest GitHub release and verify checksums against `SHA256SUMS`. `install.sh` works on Linux, macOS, and Windows (Git Bash / MSYS2). `install.ps1` is the PowerShell alternative for Windows.
+
+## MCP registry publish
+
+After a tag release has produced the ghcr image, publish to the official
+MCP registry (which Glama, PulseMCP, and others ingest):
+
+```bash
+./publish-registry.sh
+```
+
+The script stamps the `version` fields in `server.json` from the latest
+git tag before validating and publishing — the committed file is never
+bumped by hand. One-time prerequisites: `mcp-publisher` on PATH
+(`github.com/modelcontextprotocol/registry` releases), the ghcr package
+set to public visibility, and `mcp-publisher login github`.
 
 ## ONNX Runtime
 

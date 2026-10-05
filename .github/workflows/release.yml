@@ -121,9 +121,12 @@ jobs:
       - name: Push image
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/cogz
-          docker tag cogz:test $IMAGE:${{ github.ref_name }}
+          VER=${{ github.ref_name }}
+          docker tag cogz:test $IMAGE:$VER
+          docker tag cogz:test $IMAGE:${VER#v}
           docker tag cogz:test $IMAGE:latest
-          docker push $IMAGE:${{ github.ref_name }}
+          docker push $IMAGE:$VER
+          docker push $IMAGE:${VER#v}
           docker push $IMAGE:latest
 
   checksums:
