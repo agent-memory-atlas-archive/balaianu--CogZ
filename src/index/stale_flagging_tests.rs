@@ -1,5 +1,5 @@
 use super::*;
-use crate::files::{EntityFile, FileEntityType, write_entity_file};
+use crate::files::{EntityFile, FileEntityType, FmValue, write_entity_file};
 use crate::storage::crud::{Entity, insert_entity};
 use crate::storage::edges::{Edge, insert_edge};
 use tempfile::TempDir;
@@ -16,8 +16,14 @@ fn setup() -> (TempDir, Storage) {
     (dir, storage)
 }
 
-fn make_observation(cogz_dir: &Path, id: &str, title: &str, content: &str) -> EntityFile {
-    let mut entity = EntityFile::new(title, FileEntityType::Observation, content);
+fn make_file_entity(
+    cogz_dir: &Path,
+    id: &str,
+    title: &str,
+    content: &str,
+    ftype: FileEntityType,
+) -> EntityFile {
+    let mut entity = EntityFile::new(title, ftype, content);
     entity.id = id.to_string();
     entity.status = "active".to_string();
     let path = entity.file_path(cogz_dir);
@@ -28,6 +34,14 @@ fn make_observation(cogz_dir: &Path, id: &str, title: &str, content: &str) -> En
     entity
 }
 
+fn make_observation(cogz_dir: &Path, id: &str, title: &str, content: &str) -> EntityFile {
+    make_file_entity(cogz_dir, id, title, content, FileEntityType::Observation)
+}
+
+fn make_rule(cogz_dir: &Path, id: &str, title: &str, content: &str) -> EntityFile {
+    make_file_entity(cogz_dir, id, title, content, FileEntityType::Rule)
+}
+
 fn make_db_observation(id: &str, title: &str, content: &str) -> Entity {
     let year_month = chrono::Utc::now().format("%Y-%m").to_string();
     let mut entity = Entity::new(id, "observation", title, content);
@@ -35,8 +49,14 @@ fn make_db_observation(id: &str, title: &str, content: &str) -> Entity {
     entity
 }
 
+fn make_db_rule(id: &str, title: &str, content: &str) -> Entity {
+    let mut entity = Entity::new(id, "rule", title, content);
+    entity.file_path = Some(format!("rules/{}.md", crate::files::slugify(title)));
+    entity
+}
+
 #[test]
-fn flags_observation_referencing_changed_code() {
+fn flags_living_entity_referencing_changed_code() {
     let (dir, storage) = setup();
     let cogz_dir = dir.path().join(".cogz");
 
@@ -45,14 +65,14 @@ fn flags_observation_referencing_changed_code() {
     let code_entity = Entity::new("code-uuid-1", "function", "my_func", "fn my_func() {}");
     insert_entity(&conn, &code_entity).unwrap();
 
-    // Insert an observation that references the code entity.
-    let obs = make_observation(
+    // Insert a living entity (rule) that references the code entity.
+    let obs = make_rule(
         &cogz_dir,
         "a1b2c3d4-e5f6-4789-abcd-000000000021",
         "Bug in my_func",
         "Found a bug",
     );
-    let obs_entity = make_db_observation(
+    let obs_entity = make_db_rule(
         "a1b2c3d4-e5f6-4789-abcd-000000000021",
         "Bug in my_func",
         "Found a bug",
@@ -100,7 +120,7 @@ fn does_not_flag_already_stale() {
     let code_entity = Entity::new("code-uuid-2", "function", "func2", "fn func2() {}");
     insert_entity(&conn, &code_entity).unwrap();
 
-    let mut obs = make_observation(
+    let mut obs = make_rule(
         &cogz_dir,
         "a1b2c3d4-e5f6-4789-abcd-000000000022",
         "Note about func2",
@@ -110,7 +130,7 @@ fn does_not_flag_already_stale() {
     let path = obs.file_path(&cogz_dir);
     write_entity_file(&path, &obs).unwrap();
 
-    let obs_entity = make_db_observation(
+    let obs_entity = make_db_rule(
         "a1b2c3d4-e5f6-4789-abcd-000000000022",
         "Note about func2",
         "Some note",
@@ -186,11 +206,11 @@ fn flags_multiple_referencing_entities() {
     );
     insert_entity(&conn, &code_entity).unwrap();
 
-    // Two observations referencing the same code entity.
+    // Two living entities referencing the same code entity.
     for i in 0..2 {
         let id = format!("a1b2c3d4-e5f6-4789-abcd-00000000003{i}");
-        make_observation(&cogz_dir, &id, &format!("Note {i}"), "content");
-        let entity = make_db_observation(&id, &format!("Note {i}"), "content");
+        make_rule(&cogz_dir, &id, &format!("Note {i}"), "content");
+        let entity = make_db_rule(&id, &format!("Note {i}"), "content");
         insert_entity(&conn, &entity).unwrap();
         insert_edge(
             &conn,
@@ -222,14 +242,14 @@ fn flags_auto_references_edges() {
     let code_entity = Entity::new("code-auto-1", "function", "auto_func", "fn auto_func() {}");
     insert_entity(&conn, &code_entity).unwrap();
 
-    // Observation linked via auto_references (not manual references).
-    make_observation(
+    // Living entity linked via auto_references (not manual references).
+    make_rule(
         &cogz_dir,
         "a1b2c3d4-e5f6-4789-abcd-000000000023",
         "Note about auto_func",
         "content",
     );
-    let obs_entity = make_db_observation(
+    let obs_entity = make_db_rule(
         "a1b2c3d4-e5f6-4789-abcd-000000000023",
         "Note about auto_func",
         "content",
@@ -254,4 +274,91 @@ fn flags_auto_references_edges() {
     let conn = storage.conn();
     let entity = storage::crud::get_entity(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000023").unwrap();
     assert_eq!(entity.status, "stale");
+}
+
+#[test]
+fn does_not_flag_record_entities() {
+    // Record volatility (observations, dated-fact knowledge categories)
+    // is exempt from mechanical stale flagging — only NLI contradiction
+    // may mark them.
+    let (dir, storage) = setup();
+    let cogz_dir = dir.path().join(".cogz");
+
+    let conn = storage.conn();
+    let code_entity = Entity::new("code-rec-1", "function", "rec_func", "fn rec_func() {}");
+    insert_entity(&conn, &code_entity).unwrap();
+
+    // Observation — record by type.
+    make_observation(
+        &cogz_dir,
+        "a1b2c3d4-e5f6-4789-abcd-000000000041",
+        "Saw rec_func misbehave",
+        "content",
+    );
+    let obs_entity = make_db_observation(
+        "a1b2c3d4-e5f6-4789-abcd-000000000041",
+        "Saw rec_func misbehave",
+        "content",
+    );
+    insert_entity(&conn, &obs_entity).unwrap();
+    insert_edge(
+        &conn,
+        &Edge {
+            source_id: "a1b2c3d4-e5f6-4789-abcd-000000000041".to_string(),
+            target_id: "code-rec-1".to_string(),
+            edge_type: "references".to_string(),
+            weight: 1.0,
+            created_at: chrono::Utc::now().to_rfc3339(),
+        },
+    )
+    .unwrap();
+
+    // Decision-category knowledge — record by category.
+    let mut dec = EntityFile::new(
+        "Chose rec_func over alt",
+        FileEntityType::Knowledge,
+        "content",
+    );
+    dec.id = "a1b2c3d4-e5f6-4789-abcd-000000000042".to_string();
+    dec.frontmatter
+        .insert("category", FmValue::String("decisions".to_string()));
+    let dec_path = dec.file_path(&cogz_dir);
+    std::fs::create_dir_all(dec_path.parent().unwrap()).unwrap();
+    write_entity_file(&dec_path, &dec).unwrap();
+    let mut dec_db = Entity::new(
+        "a1b2c3d4-e5f6-4789-abcd-000000000042",
+        "knowledge",
+        "Chose rec_func over alt",
+        "content",
+    );
+    dec_db.file_path = Some(format!(
+        "knowledge/decisions/{}.md",
+        crate::files::slugify("Chose rec_func over alt")
+    ));
+    dec_db.properties = serde_json::json!({"category": "decisions"});
+    insert_entity(&conn, &dec_db).unwrap();
+    insert_edge(
+        &conn,
+        &Edge {
+            source_id: "a1b2c3d4-e5f6-4789-abcd-000000000042".to_string(),
+            target_id: "code-rec-1".to_string(),
+            edge_type: "references".to_string(),
+            weight: 1.0,
+            created_at: chrono::Utc::now().to_rfc3339(),
+        },
+    )
+    .unwrap();
+    drop(conn);
+
+    let count = flag_stale_knowledge(&storage, &cogz_dir, &["code-rec-1".to_string()]);
+    assert_eq!(count, 0, "record entities must not be drift-flagged");
+
+    let conn = storage.conn();
+    for id in [
+        "a1b2c3d4-e5f6-4789-abcd-000000000041",
+        "a1b2c3d4-e5f6-4789-abcd-000000000042",
+    ] {
+        let entity = storage::crud::get_entity(&conn, id).unwrap();
+        assert_eq!(entity.status, "active", "{id} must stay active");
+    }
 }

@@ -171,16 +171,22 @@ pub async fn verify_knowledge(
     let repo = server.resolve_repo(&params.repo)?;
     let storage = repo.storage.clone();
     let cogz_dir = repo.cogz_dir.clone();
+    let allow_dead_refs = params.allow_dead_refs;
 
     let result = tokio::task::spawn_blocking(move || {
-        let verify_result = crate::index::drift::verify_entity(&storage, &cogz_dir, &params.id)
-            .map(|(refs_stamped, reactivated)| {
-                json!({
-                    "id": params.id,
-                    "refs_stamped": refs_stamped,
-                    "reactivated": reactivated,
-                })
-            })?;
+        let opts = crate::index::drift::VerifyOptions { allow_dead_refs };
+        let verify_result = crate::index::drift::verify_entity(
+            &storage, &cogz_dir, &params.id, &opts,
+        )
+        .map(|o| {
+            json!({
+                "id": params.id,
+                "refs_stamped": o.stamped,
+                "refs_resolved": o.resolved,
+                "dead_refs": o.dead_refs,
+                "reactivated": o.reactivated,
+            })
+        })?;
 
         // A verify call is itself a knowledge moment — the agent just
         // confirmed something holds. If mining has other candidates

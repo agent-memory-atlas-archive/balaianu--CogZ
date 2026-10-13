@@ -13,10 +13,17 @@ pub mod drift;
 pub mod git_diff;
 pub mod gitignore;
 pub mod parse;
+pub(crate) mod post_index;
+pub mod reanchor;
+pub(crate) mod refstate;
 pub mod reindex;
 pub mod stale_flagging;
 pub mod sync;
 pub mod tree_sitter;
+pub(crate) mod verify;
+
+#[cfg(test)]
+pub(crate) mod drift_test_support;
 
 use std::path::{Path, PathBuf};
 
@@ -166,6 +173,7 @@ pub fn reindex_code(
                 updated: result.updated,
                 marked_stale: result.marked_stale,
                 skipped: result.skipped,
+                hash_migrated: result.hash_migrated,
                 synced_entity_ids: result.synced_entity_ids.clone(),
                 changed_code_ids: result.synced_entity_ids,
                 deleted_code_ids,

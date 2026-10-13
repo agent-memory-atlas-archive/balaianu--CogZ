@@ -85,6 +85,10 @@ pub struct VerifyKnowledgeParams {
     pub repo: String,
     /// UUID of the knowledge entity to verify.
     pub id: String,
+    /// Reactivate even when some references are dead — asserts the
+    /// claim holds despite missing anchors.
+    #[serde(default)]
+    pub allow_dead_refs: bool,
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]

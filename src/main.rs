@@ -256,8 +256,23 @@ enum Commands {
     /// Use after confirming drifted or orphaned knowledge is still
     /// accurate.
     Verify {
-        /// Entity UUID to verify.
-        entity_id: String,
+        /// Entity UUID to verify. Omit when a selection flag is used.
+        entity_id: Option<String>,
+        /// Reactivate even when some references are dead.
+        #[arg(long)]
+        allow_dead_refs: bool,
+        /// Batch: verify every entity with drift rows.
+        #[arg(long, conflicts_with_all = ["entity_id", "stale", "unverified", "all"])]
+        drifted: bool,
+        /// Batch: verify every stale file-backed entity.
+        #[arg(long, conflicts_with_all = ["entity_id", "unverified", "all"])]
+        stale: bool,
+        /// Batch: verify living entities with no provenance baseline.
+        #[arg(long, conflicts_with_all = ["entity_id", "all"])]
+        unverified: bool,
+        /// Batch: verify every living file-backed entity.
+        #[arg(long, conflicts_with = "entity_id")]
+        all: bool,
 
         /// Repository root directory. Defaults to current directory.
         #[arg(long, default_value = ".")]
@@ -300,6 +315,12 @@ enum Commands {
         /// Confirm pruning (deletes files, creates tombstones).
         #[arg(long)]
         confirm: bool,
+
+        /// Batch-verify knowledge claims: drifted | stale | unverified | all.
+        /// Re-stamps provenance and reports dead references over the
+        /// selected queue.
+        #[arg(long, value_name = "MODE")]
+        verify: Option<String>,
     },
 
     /// Self-update — download and install the latest release from GitHub.
@@ -482,7 +503,28 @@ fn main() -> anyhow::Result<()> {
         Commands::Suggest { repo, days, limit } => cli_events::run_suggest(&repo, days, limit),
         Commands::McpStdio => cli_events::run_mcp_stdio(),
         Commands::Consolidate { repo, dry_run } => commands::run_consolidate(&repo, dry_run),
-        Commands::Verify { entity_id, repo } => commands::run_verify(&repo, &entity_id),
+        Commands::Verify {
+            entity_id,
+            allow_dead_refs,
+            drifted,
+            stale,
+            unverified,
+            all,
+            repo,
+        } => {
+            let selection = if drifted {
+                Some(cogz::index::drift::VerifySelection::Drifted)
+            } else if stale {
+                Some(cogz::index::drift::VerifySelection::Stale)
+            } else if unverified {
+                Some(cogz::index::drift::VerifySelection::Unverified)
+            } else if all {
+                Some(cogz::index::drift::VerifySelection::All)
+            } else {
+                None
+            };
+            commands::run_verify(&repo, entity_id.as_deref(), selection, allow_dead_refs)
+        }
         Commands::Reject {
             entity_id,
             reason,

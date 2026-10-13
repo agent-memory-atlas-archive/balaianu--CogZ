@@ -6,8 +6,14 @@ use cogz::config::Config;
 
 use super::load_config;
 
-/// `cogz doctor` — health check and optional observation pruning.
-pub fn run_doctor(repo: &Path, prune_observations: bool, confirm: bool) -> anyhow::Result<()> {
+/// `cogz doctor` — health check, optional observation pruning, and
+/// optional batch claim verification (`--verify <mode>`).
+pub fn run_doctor(
+    repo: &Path,
+    prune_observations: bool,
+    confirm: bool,
+    verify: Option<String>,
+) -> anyhow::Result<()> {
     let (config, db_path) = load_config(repo)?;
     let cogz_dir = repo.join(".cogz");
 
@@ -98,6 +104,15 @@ pub fn run_doctor(repo: &Path, prune_observations: bool, confirm: bool) -> anyho
     }
 
     print_review_queue(&storage);
+
+    if let Some(mode) = verify {
+        let selection = cogz::index::drift::VerifySelection::parse(&mode).ok_or_else(|| {
+            anyhow::anyhow!("invalid --verify mode '{mode}' — use drifted|stale|unverified|all")
+        })?;
+        println!("\nBatch verification ({mode}):");
+        let opts = cogz::index::drift::VerifyOptions::default();
+        super::run_batch_verify(&storage, &cogz_dir, selection, &opts)?;
+    }
 
     Ok(())
 }

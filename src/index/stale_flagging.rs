@@ -9,6 +9,7 @@ use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
 use crate::files::{read_entity_file, write_entity_file};
+use crate::index::refstate::resolve_file_path;
 use crate::storage::events::{EventType, record_event};
 use crate::storage::graph::get_edges_involving_batch;
 use crate::storage::status::transition_status;
@@ -58,21 +59,6 @@ fn find_referencing_entities(
     referencing
 }
 
-/// Resolve a DB-stored file path to an absolute path.
-///
-/// DB paths for file-backed entities are stored relative to `.cogz`
-/// (e.g. `observations/2026-08/uuid.md`).
-fn resolve_file_path(file_path: &str, cogz_dir: &Path) -> PathBuf {
-    // Separator-boundary prefix: `.cogz` alone would also match a
-    // hypothetical `.cogz-evil/...` path.
-    let normalized = file_path.replace('\\', "/");
-    if normalized.starts_with(".cogz/") {
-        cogz_dir.parent().unwrap_or(cogz_dir).join(normalized)
-    } else {
-        cogz_dir.join(normalized)
-    }
-}
-
 /// Mark observations/rules/knowledge that reference changed code
 /// entities as stale. Follows the file-first invariant: updates the
 /// frontmatter `status` field on disk before updating the DB.
@@ -116,6 +102,13 @@ pub fn flag_stale_knowledge(
 
     for entity in entities {
         if !knowledge_types.contains(&entity.r#type.as_str()) {
+            continue;
+        }
+        // Record entities are dated history — only NLI contradiction
+        // may mark them, never mechanical drift flagging.
+        if crate::volatility::classify(&entity.r#type, &entity.properties)
+            == crate::volatility::RECORD
+        {
             continue;
         }
         if entity.status != "active" {

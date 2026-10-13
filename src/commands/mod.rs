@@ -413,7 +413,12 @@ pub fn run_consolidate(repo: &Path, dry_run: bool) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn run_verify(repo: &Path, entity_id: &str) -> anyhow::Result<()> {
+pub fn run_verify(
+    repo: &Path,
+    entity_id: Option<&str>,
+    selection: Option<cogz::index::drift::VerifySelection>,
+    allow_dead_refs: bool,
+) -> anyhow::Result<()> {
     let (config, db_path) = load_config(repo)?;
     let cogz_dir = repo.join(".cogz");
 
@@ -425,16 +430,94 @@ pub fn run_verify(repo: &Path, entity_id: &str) -> anyhow::Result<()> {
     }
 
     let storage = cogz::storage::Storage::open(&db_path, config.embedding.dimension)?;
-    let (stamped, reactivated) = cogz::index::drift::verify_entity(&storage, &cogz_dir, entity_id)?;
+    let opts = cogz::index::drift::VerifyOptions { allow_dead_refs };
+
+    if let Some(selection) = selection {
+        return run_batch_verify(&storage, &cogz_dir, selection, &opts);
+    }
+
+    let entity_id = entity_id
+        .ok_or_else(|| anyhow::anyhow!("verify needs an entity id or a selection flag"))?;
+    let out = cogz::index::drift::verify_entity(&storage, &cogz_dir, entity_id, &opts)?;
 
     println!(
-        "Verified {entity_id}: {stamped} reference(s) re-stamped{}",
-        if reactivated {
+        "Verified {entity_id}: {}/{} reference(s) resolved{}{}",
+        out.resolved,
+        out.resolved + out.dead_refs.len(),
+        if out.reactivated {
             ", entity reactivated (stale → active)"
         } else {
             ""
-        }
+        },
+        if out.dead_refs.is_empty() {
+            String::new()
+        } else {
+            format!(", dead refs: {}", out.dead_refs.join(", "))
+        },
     );
+    if !out.reactivated && !out.dead_refs.is_empty() {
+        println!("  still stale — resolve the dead refs or use `--allow-dead-refs`.");
+    }
+    Ok(())
+}
+
+pub(crate) fn run_batch_verify(
+    storage: &cogz::storage::Storage,
+    cogz_dir: &Path,
+    selection: cogz::index::drift::VerifySelection,
+    opts: &cogz::index::drift::VerifyOptions,
+) -> anyhow::Result<()> {
+    let rows = cogz::index::drift::batch_verify(storage, cogz_dir, selection, opts);
+    let mut verified = 0;
+    let mut reactivated = 0;
+    let mut still_stale = 0;
+    let mut failed = 0;
+    for row in &rows {
+        match &row.outcome {
+            Ok(o) => {
+                verified += 1;
+                if o.reactivated {
+                    reactivated += 1;
+                }
+                if !o.dead_refs.is_empty() {
+                    still_stale += 1;
+                    println!(
+                        "  ~ {} — {}/{} refs resolved, dead: {}",
+                        row.title,
+                        o.resolved,
+                        o.resolved + o.dead_refs.len(),
+                        o.dead_refs.join(", ")
+                    );
+                }
+            }
+            Err(e) => {
+                failed += 1;
+                println!("  ! {} — verify failed: {}", row.title, e);
+            }
+        }
+    }
+    println!(
+        "Batch verify ({}): {} entities — {} verified, {} reactivated{}{}",
+        selection.as_str(),
+        rows.len(),
+        verified,
+        reactivated,
+        if still_stale > 0 {
+            format!(", {still_stale} with dead refs")
+        } else {
+            String::new()
+        },
+        if failed > 0 {
+            format!(", {failed} failed")
+        } else {
+            String::new()
+        },
+    );
+    if still_stale > 0 {
+        println!(
+            "Entries with dead refs stay stale — resolve anchors or `verify <id> --allow-dead-refs`."
+        );
+    }
     Ok(())
 }
 
