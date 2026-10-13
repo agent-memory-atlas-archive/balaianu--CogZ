@@ -29,6 +29,8 @@ Every tool call that returns entity *content* also records a *delivery* (`pack`,
 
 `cogz search` on the CLI records the same `search` delivery, so terminal pulls are measured identically to MCP pulls.
 
+Inspection reads can opt out of tracking entirely: pass `record: false` on `search` or `get_context`, or `--no-record` on the CLI. Inspection reads bump no access counts, open no deliveries, do not convert pointers, and — critically — never close open deliveries, so a look at a pack can't resolve pending usage as misses.
+
 ## Write tools
 
 ### `create_entity`
@@ -78,13 +80,16 @@ When `references` changes, newly added live references are stamped into `verifie
 
 Re-stamp a knowledge entry's `verified_against` provenance to the current hashes of its resolvable references — including stale knowledge-type targets (acknowledged lineage). Stale code targets cannot be stamped: the referenced code is gone, so the drift row stays `missing` until the reference is removed or the doc is updated. Use after reading drift-flagged knowledge and confirming it is still accurate — clears the drift penalty on retrieval. Do not use to mark content as reviewed without checking it; verification asserts correctness against current code.
 
+Verification is operator attestation — the call asserts the claim is still accurate. Every resolvable reference is re-stamped; references that resolve to nothing live are reported in `dead_refs` and block reactivation unless `allow_dead_refs` is set.
+
 **Parameters:**
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `repo` | string | yes | Absolute path to project root |
 | `id` | string | yes | UUID of the knowledge entry to verify |
+| `allow_dead_refs` | bool | no | Reactivate despite dead references (default false) |
 
-**Returns:** JSON with `id`, `restamped` (number of references re-stamped), `reactivated` (whether a `code_orphaned` stale status was cleared), and optionally `write_nudge` (see below).
+**Returns:** JSON with `id`, `refs_stamped` (number of references re-stamped), `refs_resolved` (references that resolved to a live target), `dead_refs` (reference UUIDs resolving to nothing live — the anchors that block reactivation), `reactivated` (whether a stale status was cleared), and optionally `write_nudge` (see below).
 
 Despite the name, `verify_knowledge` accepts any file-backed knowledge-layer entity — stale observations and rules can be re-stamped the same way. The name is historical; "knowledge" is the umbrella term for the `.cogz/`-file layer vs. code entities.
 
@@ -150,12 +155,13 @@ Search across all entities using hybrid FTS5 + vector search with RRF fusion. Re
 | `expand` | boolean | no | Enable graph expansion (default: `true`) |
 | `code_search` | boolean | no | Use code model for query embedding (for code-focused queries) |
 | `before` | integer | no | Only use git history committed before this unix timestamp for the co-change channel |
+| `record` | boolean | no | Record this call in usage telemetry (default: `true`). Pass `false` for inspection reads. |
 
 **Returns:** JSON with `results` array and `search_mode` (`hybrid`, `knowledge_hybrid`, `code_hybrid`, or `fts_only`), and optionally `write_nudge` (see below).
 
 Each result has `entity`, `relevance`, `kind` (`direct` or `expanded`), `graph_path`, `graph_path_description`, and `drift_count` — the number of the entity's references whose `verified_against` provenance diverged. `drift_count > 0` means the content may be outdated relative to current code; the score was already demoted by `search.drift_penalty`.
 
-Top-level fields: `filtered_count` (results removed by the relevance floor) and `signals` (`code_strength`, `knowledge_strength`, `code_gradient`, `knowledge_gradient` — per-channel KNN signals used for merge weighting and the silence gate; absent in `fts_only` mode). When the silence gate fires, `results` is empty and `filtered_count` reports the suppressed candidate count.
+Top-level fields: `filtered_count` (results removed by the relevance floor) and `signals` (`code_strength`, `knowledge_strength`, `code_gradient`, `knowledge_gradient` — per-channel KNN signals used for merge weighting, absent in `fts_only` mode; plus `answer_coverage` — the silence gate's IDF-weighted evidence score, present whenever the gate is enabled). When the silence gate fires, `results` is empty and `filtered_count` reports the suppressed candidate count.
 
 ### `get_context`
 
@@ -169,6 +175,7 @@ Assemble a context pack — a coherent, scoped, ranked collection of information
 | `mode` | string | no | Context mode: `cold_start`, `task`, `escalation` (default: `task`) |
 | `include_stale` | boolean | no | Include stale entities (default: `false`) |
 | `max_tokens` | integer | no | Override token budget from config |
+| `record` | boolean | no | Record this call as a delivery in usage telemetry (default: `true`). Pass `false` to inspect a pack without bumping access counts, opening a delivery, or closing pending usage as misses. |
 
 **Returns:** JSON context pack with `query`, `mode`, `sections` (each with `source`, `entity_id`, `title`, `content`, `relevance`, `graph_path`, `tier`), and `metadata` (`size_tokens`, `selected_sources`, `dropped_sources`, `search_mode`, `pointer_ids`, `signals` — per-channel `code_strength`/`knowledge_strength`/gradients when retrieval ran in hybrid mode), and optionally `write_nudge` (see below).
 

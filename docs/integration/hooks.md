@@ -137,7 +137,7 @@ This is the canonical hook config. Copy it into your agent's hook configuration 
 
 - **`session_start`** always spawns (primary recovery, fires once per session).
 - **`prompt_submit`** is debounced (60s window) to avoid redundant spawns when the user sends many messages in quick succession.
-- The background process syncs `.cogz/` entity files, runs git-diff-based code reindex, runs post-index maintenance (stale flag + provenance backfill + drift recompute + heal), and defers embedding to `embed-bg`. It runs detached — the hook returns immediately without waiting for it.
+- The background process syncs `.cogz/` entity files, runs git-diff-based code reindex, runs post-index maintenance (stale flag + provenance backfill + drift recompute + heal), and embeds synced + missing-vector entities (knowledge inline, code inline or via `embed-bg` when many). It runs detached — the hook returns immediately without waiting for it.
 - The debounce marker is a temp file keyed by the canonical repo path, so `.`, absolute paths, and symlinks to the same repo share one marker.
 
 **PostCompaction:** After context compaction, the agent loses its injected context. Re-inject by treating it as a session start:

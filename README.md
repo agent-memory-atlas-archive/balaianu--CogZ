@@ -215,15 +215,15 @@ CogZ ships a reproducible suite (`benchmark/`) run on pinned public corpora — 
 
 | Corpus | P@5 | MRR | Recall@20 |
 |---|---|---|---|
-| cobra | 0.200 | 0.531 | 0.967 |
-| httpx | 0.173 | 0.358 | 0.917 |
-| clap | 0.185 | 0.278 | 0.839 |
+| cobra | 0.200 | 0.523 | 0.867 |
+| httpx | 0.160 | 0.364 | 0.867 |
+| clap | 0.169 | 0.259 | 0.789 |
 
-Channel ablations on commit queries: removing graph expansion costs 10–16pt recall@20 on every corpus; FTS-only mode retains ~75–85% of hybrid recall with ~745 MB less RSS. Context packs keep 0.70–0.90 expected-entity recall at the default 8K budget. Reruns are byte-identical. Full methodology, per-phase numbers, and the raw artifacts: [benchmark/README.md](benchmark/README.md).
+Channel ablations on commit queries: removing graph expansion costs 3–15pt recall@20; FTS-only mode is competitive on commit-intent queries (0.34–0.47 R@20 vs hybrid's 0.31–0.47) — the vector channel's lift concentrates on semantic queries while expansion dilutes under the row cap (tracked as the top ranking issue). Context packs keep 0.49–0.89 expected-entity recall at the default 8K budget. Reruns are byte-identical. Full methodology, per-phase numbers, and the raw artifacts: [benchmark/README.md](benchmark/README.md).
 
 **What using it buys (measured):** in a 14-task agent replay, the seeded-knowledge arm finished ~2x faster than bare (871s vs 1748s average) and completed more runs (14/14 vs 10/14) at equal correctness. Consolidation machinery is precise: dedup precision/recall 1.0, NLI contradiction detection 4/4 with zero false alarms, drift marking exact.
 
-**Honest limits:** top-5 precision is weak on mixed corpora (P@5 <= 0.20; code entities outrank knowledge at the top of the ranking), commit-intent queries reach 0.36–0.56 recall@20, adjacent-domain negative queries leak confident hits (silence-gate clean rate 0–0.4 across corpora), and at n=14 tasks there is no measurable task-correctness lift yet.
+**Honest limits:** top-5 precision is weak on mixed corpora (P@5 <= 0.20; code entities outrank knowledge at the top of the ranking), commit-intent queries reach 0.31–0.53 recall@20, adjacent-domain negative queries still leak confident hits (silence-gate clean rate 0.47–0.73 across corpora), and at n=14 tasks there is no measurable task-correctness lift yet.
 
 ## Architecture
 

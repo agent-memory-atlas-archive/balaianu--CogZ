@@ -62,7 +62,7 @@ cogz index [--repo <path>] [--no-download]
 1. Scans `.cogz/knowledge/`, `.cogz/rules/`, `.cogz/observations/` and syncs to the DB (new files created, changed files updated, deleted files marked stale).
 2. Scans source files (respecting `.gitignore` + `[index].allow`/`deny`) and indexes them with tree-sitter.
 3. If `auto_download = true` and `--no-download` is not set, downloads models on first run.
-4. Embeds all new and updated entities using the configured models.
+4. Embeds new, updated, and previously-unembedded active entities using the configured models. Unchanged entities are skipped by content hash — never re-embedded.
 
 ## `cogz reindex`
 
@@ -89,11 +89,11 @@ cogz reindex-bg --repo <path> --db <path>
 - `--repo <path>` — repository root
 - `--db <path>` — database file path
 
-Syncs `.cogz/` entity files, runs git-diff code reindex, flags stale knowledge, and defers embedding to `embed-bg`. Not intended for manual use — spawned automatically by hooks.
+Syncs `.cogz/` entity files, runs git-diff code reindex, flags stale knowledge, then embeds synced + missing-vector entities — knowledge inline, code inline when few or via `embed-bg` when many. Not intended for manual use — spawned automatically by hooks.
 
 ## `cogz embed-bg`
 
-Background embedding — spawned by `cogz index` or `reindex-bg` to embed code entities after indexing completes.
+Background embedding — spawned by `cogz index` or `reindex-bg` to embed code entities after indexing completes. Only spawned when the code model files exist.
 
 ```
 cogz embed-bg --db <path> --ids-file <path> --code-model <name> --dimension <n> --idle-ttl <s> --min-free-mb <n>
@@ -128,6 +128,7 @@ cogz search <query> [--repo <path>] [--entity-type <type>] [--status <status>] [
 - `--no-expand` — disable graph expansion
 - `--code` — use the code model (CodeRankEmbed) for query embedding. Applies the CodeRankEmbed query prefix for code-focused search.
 - `--before <ts>` — only use git history committed before this unix timestamp for the co-change channel
+- `--no-record` — inspection mode: read results without recording usage telemetry (access counts, delivery rows, `search_performed` events). Use for humans or tooling that look at results without consuming them.
 
 ## `cogz context`
 
@@ -145,6 +146,7 @@ cogz context [--mode <mode>] [query] [--repo <path>] [--include-stale] [--max-to
 - `--repo <path>` — repository root (default: `.`)
 - `--include-stale` — include stale entities in the context pack
 - `--max-tokens <n>` — override the token budget from config
+- `--no-record` — inspection mode: assemble the pack without recording usage telemetry or closing open deliveries. Use for humans or tooling that inspect packs without injecting them.
 
 **Output:** formatted text pack — header (mode, query, search mode, section/token counts, dropped sections), then numbered sections with entity type, title, relevance, drift flags, graph provenance, and content. The `get_context` MCP tool returns the same pack as JSON. Ends with a write-back nudge footer when a fresh mined candidate exists.
 
@@ -254,13 +256,14 @@ Remove broken cache files (`.incomplete` files >1h old, empty `refs/main`). Safe
 Health check — DB integrity, model availability, policy violations.
 
 ```
-cogz doctor [--repo <path>] [--prune-observations] [--confirm]
+cogz doctor [--repo <path>] [--prune-observations] [--confirm] [--verify <mode>]
 ```
 
 **Flags:**
 - `--repo <path>` — repository root (default: `.`)
 - `--prune-observations` — report prunable observations (dry-run)
 - `--confirm` — confirm pruning (deletes content, creates tombstones). Only prunes `rejected` and `superseded` observations older than `retention.observation_prune_after_days`.
+- `--verify <mode>` — run batch verification after the checks (`drifted`, `stale`, `unverified`, or `all`); same engine and output as `cogz verify --<mode>`.
 
 **Checks performed:**
 - DB integrity (`PRAGMA integrity_check`)
@@ -292,13 +295,19 @@ Deliveries are recorded on every context pack (`session_start`, `prompt_submit`,
 Re-stamp a knowledge entity's `verified_against` provenance to the current hashes of its live references. Use after confirming the content is still accurate — clears drift rows and restores full retrieval ranking. Also reactivates `code_orphaned`-stale entities whose references now resolve.
 
 ```
-cogz verify <entity-id> [--repo <path>]
+cogz verify <entity-id> [--allow-dead-refs] [--repo <path>]
+cogz verify --drifted | --stale | --unverified | --all [--repo <path>]
 ```
 
 **Flags:**
+- `--allow-dead-refs` — reactivate a stale entity even though some references resolve to nothing live. The dead refs are still reported — this asserts the claim holds despite missing anchors, it does not hide them.
+- `--drifted` — batch: verify every entity with drift rows.
+- `--stale` — batch: verify every stale file-backed entity.
+- `--unverified` — batch: verify living entities with no provenance baseline (bootstrap coverage the code-change triggers can't reach).
+- `--all` — batch: verify every living file-backed entity. Selection flags are mutually exclusive with an explicit entity id.
 - `--repo <path>` — repository root (default: `.`)
 
-Writes canonical frontmatter first, then re-syncs the DB. Fails on unknown IDs and entities with no backing file (code entities — they carry no `verified_against` frontmatter to re-stamp). Works on observations, rules, and knowledge.
+Verification is operator attestation: it re-stamps `verified_against` for every resolvable reference, reports `resolved N/M` plus the dead reference ids, clears the entity's drift rows, and reactivates stale entities whose anchors all resolve — or all-but-dead ones under `--allow-dead-refs`. Writes canonical frontmatter first, then re-syncs the DB. Fails on unknown IDs and entities with no backing file (code entities — they carry no `verified_against` frontmatter to re-stamp). Works on observations, rules, and knowledge. Batch mode prints a per-entity dead-ref report and a summary (`verified`, `reactivated`, `with dead refs`, `failed`).
 
 ## `cogz reject`
 

@@ -35,6 +35,7 @@ The frontmatter parser is a hand-rolled YAML subset (`src/files/frontmatter.rs`)
 | `created_at` | RFC 3339 string | yes | Creation timestamp. |
 | `updated_at` | RFC 3339 string | yes | Last modification timestamp. |
 | `references` | array of strings | yes | UUIDs this entity references. Can be empty. |
+| `volatility` | `living` or `record` | no | Whether the entity is a claim about current state (subject to drift tracking) or immutable dated history (exempt). See Volatility below. |
 
 ### Type-specific fields
 
@@ -98,6 +99,22 @@ Illegal transitions are rejected by `transition_status()` with an `IllegalTransi
 - The derived `entity_drift` table holds one row per diverging reference: `changed` (hash moved), `missing` (target stale/absent), `unverified` (no recorded baseline). Recomputed on every index, file-save, and background reindex — never written to canonical files.
 - Drifted entities stay `active` and retrievable, demoted by `search.drift_penalty` (default `0.7` per diverging ref) and annotated in packs/search results (`drift_count`). Invalidate ≠ delete.
 - Recovery: an exact hash revert drains drift automatically on the next index; `cogz verify <id>` (or `verify_knowledge` MCP) re-stamps provenance explicitly and clears drift rows. `cogz doctor` prints the review queue.
+- **Verification is attestation:** `verify` re-stamps resolvable references, reports which resolved and which are dead, clears drift rows, and reactivates entities whose anchors all resolve (`--allow-dead-refs` asserts over missing ones). The claim's truth is asserted by the caller — no model verdict stands between the operator and the stamp. A *wrong* claim is removed via `reject`, not via verify.
+
+### Volatility
+
+`volatility` classifies whether an entity can *drift*:
+
+- **`living`** — a claim about the current state of the world (architecture notes, gotchas, rules). Eligible for `verified_against` provenance, drift recomputation, drift-based demotion, and `code_orphaned` stale flagging.
+- **`record`** — immutable dated history (something was observed, measured, or decided on a date — that fact does not drift). Exempt from drift tracking, provenance stamping, demotion, and mechanical stale flagging. A record can still be removed by manual rejection.
+
+Defaults when the field is absent:
+
+- `observation` → `record`
+- `rule` → `living`
+- `knowledge` with `category` in `decisions`, `benchmark`, `replay`, `incident` → `record`; all other categories → `living`
+
+An explicit `volatility` value in frontmatter overrides the default in either direction (e.g. `volatility: living` on an observation that should be drift-tracked). The classification is derived — it lives in `properties` via ordinary sync and needs no migration; existing corpora reclassify on the next index. Legacy `code_orphaned` marks on record entities are healed unconditionally by `heal_stale_entities`, since such marks were never legal on records.
 
 ### Update policy
 

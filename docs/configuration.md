@@ -31,7 +31,6 @@ source_balance_enabled = false
 merge_strategy = "detect"
 min_relevance = 0.05
 edge_weighted_expansion = true
-silence_threshold = 0.05
 top_diversity_share = 0.2
 provenance_boost = 0.3
 fts_title_weight = 5.0
@@ -132,8 +131,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `fts_title_weight` | f64 | `5.0` | FTS5 `bm25()` column weight for the title column (content stays 1.0). 1.0 = uniform ranking, values >1 favor title matches. |
 | `mmr_lambda` | f64 | `0.7` | MMR diversification: `λ·relevance − (1−λ)·max cosine to already-selected same-channel items`. Similarity never crosses channels (different embedding spaces). 0.0 disables; skipped in FTS-only mode. |
 | `edge_weighted_expansion` | bool | `true` | Traverse edges strongest-first and weight expansion scores by edge type (curated semantic > auto_references > structural). |
-| `silence_threshold` | f64 | `0.05` | Return empty when both channels' KNN gradients are below this AND both top-3 strengths are below `silence_strength_floor`. 0.0 disables; skipped in FTS-only mode. See `signals` in responses for recalibration. |
-| `silence_strength_floor` | f64 | `0.66` | Escape hatch on the silence gate: a channel whose top-3 absolute cosine reaches this floor prevents silencing even with flat gradients. Model-scale dependent — calibrated on bge-base/CodeRankEmbed. |
+| `silence_coverage_floor` | f64 | `0.45` | Answer-evidence floor on the silence gate: silence when the IDF-weighted share of the query's content terms found in the fused top-10 text drops below this (corpus-absent terms at max IDF). Runs in FTS-only mode too — needs no embeddings. Calibrated on 4 corpora × 105 queries. |
 | `prf_enabled` | bool | `true` | Pseudo-relevance feedback: mine informative terms from the top FTS hits, re-run FTS, and add novel hits as expansion results. The only vocabulary-mismatch recall path in FTS-only mode. |
 | `prf_feedback_docs` | usize | `5` | FTS hits mined for expansion terms. |
 | `prf_max_terms` | usize | `8` | Expansion terms appended to the second-pass query. |

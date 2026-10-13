@@ -123,7 +123,11 @@ src/
     sync/              Code entity DB sync
     auto_link.rs       Knowledge → code auto-linking
     stale_flagging.rs  Stale knowledge flagging on code changes
-    drift.rs           Drift tracking: flag, backfill, recompute, heal, verify_entity
+    drift.rs           Drift facade: types, recompute, re-exports the submodules
+    refstate.rs        Reference/entity-state queries + shared path resolution
+    post_index.rs      Post-index maintenance: edge repair, backfill, heal
+    verify.rs          Verification: verify_entity, batch_verify, selection
+    reanchor.rs        Rename/move re-anchoring via structural hashes
   mcp/                 MCP server
     server.rs          ServerHandler impl, repo/model caching
     repo_cache.rs      Repo cache: herd protection, LRU, staleness
@@ -232,7 +236,8 @@ cogz reindex
       → mark_stale_for_deleted_files() — stale-mark removed files
     → baseline::update_baseline() — advance if no read failures
   → flag_stale_knowledge() — mark knowledge referencing changed code
-  → embed_synced() — embed all new/updated entities
+  → embed_synced() — embed new/updated entities plus any active entities
+    missing vectors (heal), per embedding space
 ```
 
 ### Background reindex path (cogz reindex-bg)
@@ -242,7 +247,9 @@ cogz reindex-bg --repo <repo> --db <db>
   → files::sync_incremental() — sync changed .cogz/ files
   → index::reindex_code() — git-diff code reindex (same as cogz reindex)
   → flag_stale_knowledge() — mark stale knowledge for changed code
-  → spawn_code_embed_background() — defer embedding to embed-bg
+  → embed_synced() — same routing as cogz reindex: file entities embed
+    inline with the knowledge model, code entities inline when few or via
+    embed-bg when many (skipped entirely if the code model is absent)
   → exit (detached process, no output to parent)
 ```
 
@@ -254,7 +261,7 @@ Agent fires session_start hook
     → parse event type
     → handle_lifecycle_event()
       → record_event() — audit trail
-      → spawn_reindex_bg() — detached background process (sync .cogz/ files, git-diff code reindex, stale flagging, embed-bg)
+      → spawn_reindex_bg() — detached background process (sync .cogz/ files, git-diff code reindex, stale flagging, embedding)
       → assemble_pack() — cold_start context pack
         → embed query (skipped with --fts-only)
         → assemble_context() — FTS-only retrieval

@@ -19,7 +19,7 @@ Primary entity storage. All entity types (file-backed and code) share this table
 | `properties` | TEXT DEFAULT '{}' | JSON: type-specific fields |
 | `file_path` | TEXT | Relative path; null for code entities without files |
 | `status` | TEXT DEFAULT 'active' | See entity model state machine |
-| `content_hash` | TEXT | SHA-256 of content for change detection |
+| `content_hash` | TEXT | SHA-256 of content for change detection. Code entities carry the `v2:` AST structural hash (comments and whitespace are invisible); `verified_against` baselines stamped under the legacy text-normalized scheme are compared via recomputed legacy hashes until they drain |
 | `created_at` | TEXT NOT NULL | RFC 3339 timestamp |
 | `updated_at` | TEXT NOT NULL | RFC 3339 timestamp |
 
