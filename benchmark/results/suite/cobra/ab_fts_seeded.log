@@ -1,18 +1,18 @@
 collecting corpus ids...
 corpus: 759 entities
-  ck01: 45 results, 319ms
-  ck02: 40 results, 275ms
-  ck03: 45 results, 293ms
-  ck04: 45 results, 518ms
-  ck05: 45 results, 303ms
-  ck06: 45 results, 275ms
-  ck07: 45 results, 526ms
-  ck08: 45 results, 307ms
-  ck09: 40 results, 299ms
-  ck10: 45 results, 340ms
-  ck11: 45 results, 308ms
-  ck12: 45 results, 283ms
-  ck13: 40 results, 287ms
-  ck14: 45 results, 279ms
-  ck15: 45 results, 305ms
+  ck01: 45 results, 155ms
+  ck02: 40 results, 114ms
+  ck03: 45 results, 135ms
+  ck04: 45 results, 152ms
+  ck05: 45 results, 134ms
+  ck06: 45 results, 113ms
+  ck07: 45 results, 57ms
+  ck08: 45 results, 68ms
+  ck09: 40 results, 55ms
+  ck10: 45 results, 68ms
+  ck11: 45 results, 64ms
+  ck12: 45 results, 63ms
+  ck13: 0 results, 17ms
+  ck14: 45 results, 58ms
+  ck15: 45 results, 68ms
 wrote ab_fts_seeded.json

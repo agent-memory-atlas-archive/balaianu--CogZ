@@ -5,48 +5,50 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1834.2,
+    "ram_idle_mb": 9,
+    "cold_first_ms": 1591.9,
+    "ram_loaded_mb": 763,
     "n": 15,
-    "p50_ms": 527.8,
-    "p95_ms": 930.7,
-    "p99_ms": 1574.6,
-    "mean_ms": 606.5,
+    "p50_ms": 260.0,
+    "p95_ms": 280.7,
+    "p99_ms": 281.6,
+    "mean_ms": 250.4,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 76,
-     "size_tokens": 8128,
+     "sections": 79,
+     "size_tokens": 7990,
      "budget": 8192,
-     "dropped": 4,
+     "dropped": 3,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "file/full": 13,
-      "function/full": 35,
-      "observation/full": 10,
-      "rule/full": 3,
-      "class/full": 6,
+      "file/full": 11,
+      "function/full": 38,
+      "rule/full": 4,
+      "observation/full": 12,
+      "class/full": 5,
       "knowledge/full": 4,
       "overflow_index/pointer": 1
      }
     },
     {
      "query": "error handling strategy",
-     "sections": 87,
-     "size_tokens": 8008,
+     "sections": 84,
+     "size_tokens": 7860,
      "budget": 8192,
-     "dropped": 6,
+     "dropped": 10,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "class/full": 34,
-      "function/full": 37,
+      "function/full": 43,
       "file/full": 5,
+      "class/full": 25,
       "observation/full": 5,
       "knowledge/full": 1,
       "overflow_index/pointer": 1
@@ -72,32 +74,34 @@
     {
      "query": "data validation logic",
      "sections": 90,
-     "size_tokens": 8192,
+     "size_tokens": 8184,
      "budget": 8192,
-     "dropped": 5,
+     "dropped": 6,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 48,
-      "class/full": 21,
-      "file/full": 12,
+      "function/full": 46,
+      "class/full": 19,
+      "file/full": 11,
+      "rule/full": 1,
       "knowledge/full": 1,
-      "observation/full": 4
+      "observation/full": 8
      }
     },
     {
      "query": "how are requests processed",
-     "sections": 90,
-     "size_tokens": 8145,
+     "sections": 91,
+     "size_tokens": 8146,
      "budget": 8192,
-     "dropped": 8,
+     "dropped": 7,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 55,
-      "class/full": 19,
-      "file/full": 6,
+      "function/full": 48,
+      "class/full": 23,
+      "file/full": 9,
       "knowledge/full": 2,
+      "rule/full": 1,
       "observation/full": 3,
       "overflow_index/pointer": 1
      }
@@ -107,28 +111,30 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 323.1,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 66.9,
+    "ram_loaded_mb": 20,
     "n": 15,
-    "p50_ms": 346.2,
-    "p95_ms": 1214.2,
-    "p99_ms": 1265.6,
-    "mean_ms": 485.1,
+    "p50_ms": 44.0,
+    "p95_ms": 50.4,
+    "p99_ms": 51.5,
+    "mean_ms": 32.0,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 92,
-     "size_tokens": 7771,
+     "sections": 93,
+     "size_tokens": 7747,
      "budget": 8192,
-     "dropped": 7,
+     "dropped": 6,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "rule/full": 2,
+      "rule/full": 3,
       "function/full": 35,
       "file/full": 18,
       "observation/full": 12,

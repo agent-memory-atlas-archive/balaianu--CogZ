@@ -779,8 +779,14 @@
       "id": "ck01",
       "search_mode": "fts_only",
       "filtered_count": 410,
-      "signals": null,
-      "latency_ms": 319,
+      "signals": {
+        "answer_coverage": 0.6492026541628436,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 155,
       "results": [
         {
           "id": "3bd263c8-b239-4589-81ff-96397e9a8607",
@@ -1193,8 +1199,14 @@
       "id": "ck02",
       "search_mode": "fts_only",
       "filtered_count": 282,
-      "signals": null,
-      "latency_ms": 275,
+      "signals": {
+        "answer_coverage": 0.8437630461730423,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 114,
       "results": [
         {
           "id": "785f5367-f893-43f3-a8e3-6f9b9c15622f",
@@ -1562,8 +1574,14 @@
       "id": "ck03",
       "search_mode": "fts_only",
       "filtered_count": 410,
-      "signals": null,
-      "latency_ms": 293,
+      "signals": {
+        "answer_coverage": 0.6019729563291206,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 135,
       "results": [
         {
           "id": "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
@@ -1976,8 +1994,14 @@
       "id": "ck04",
       "search_mode": "fts_only",
       "filtered_count": 368,
-      "signals": null,
-      "latency_ms": 518,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 152,
       "results": [
         {
           "id": "3605f047-bd85-52ab-9a07-db5ecd3f234a",
@@ -2390,8 +2414,14 @@
       "id": "ck05",
       "search_mode": "fts_only",
       "filtered_count": 232,
-      "signals": null,
-      "latency_ms": 303,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 134,
       "results": [
         {
           "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
@@ -2804,8 +2834,14 @@
       "id": "ck06",
       "search_mode": "fts_only",
       "filtered_count": 226,
-      "signals": null,
-      "latency_ms": 275,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 113,
       "results": [
         {
           "id": "1370b54e-abe7-48f7-bc88-dce7f79e319e",
@@ -3218,8 +3254,14 @@
       "id": "ck07",
       "search_mode": "fts_only",
       "filtered_count": 213,
-      "signals": null,
-      "latency_ms": 526,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 57,
       "results": [
         {
           "id": "b5cef97f-6869-5e81-aeef-23dba4c94302",
@@ -3632,8 +3674,14 @@
       "id": "ck08",
       "search_mode": "fts_only",
       "filtered_count": 467,
-      "signals": null,
-      "latency_ms": 307,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 68,
       "results": [
         {
           "id": "4c876d3d-bebe-4d43-90bd-c07b6bb7d9ac",
@@ -4046,8 +4094,14 @@
       "id": "ck09",
       "search_mode": "fts_only",
       "filtered_count": 429,
-      "signals": null,
-      "latency_ms": 299,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 55,
       "results": [
         {
           "id": "065ef67b-f4d4-521a-b854-450797f81672",
@@ -4415,8 +4469,14 @@
       "id": "ck10",
       "search_mode": "fts_only",
       "filtered_count": 418,
-      "signals": null,
-      "latency_ms": 340,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 68,
       "results": [
         {
           "id": "1fc0a961-1b8a-42f3-9a28-12bda648a8e6",
@@ -4829,8 +4889,14 @@
       "id": "ck11",
       "search_mode": "fts_only",
       "filtered_count": 218,
-      "signals": null,
-      "latency_ms": 308,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 64,
       "results": [
         {
           "id": "5550c532-4af9-47cd-8e7d-02ab54f39f0d",
@@ -5243,8 +5309,14 @@
       "id": "ck12",
       "search_mode": "fts_only",
       "filtered_count": 382,
-      "signals": null,
-      "latency_ms": 283,
+      "signals": {
+        "answer_coverage": 0.46789934367503966,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 63,
       "results": [
         {
           "id": "5f9ac011-e857-4a68-b74b-e3b69db9fda2",
@@ -5656,378 +5728,29 @@
     {
       "id": "ck13",
       "search_mode": "fts_only",
-      "filtered_count": 485,
-      "signals": null,
-      "latency_ms": 287,
-      "results": [
-        {
-          "id": "4c876d3d-bebe-4d43-90bd-c07b6bb7d9ac",
-          "type": "knowledge",
-          "title": "Positional arg validation runs between flag parsing and Run",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a951e14b-502c-5d80-a7b7-25abc9601daf",
-          "type": "function",
-          "title": "RangeArgs",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b6ff5710-21ed-58de-8057-b18bc23c9ea3",
-          "type": "function",
-          "title": "rangeArgsWithInvalidCount",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b9b64e62-8368-40ae-963a-77fe6a6fb267",
-          "type": "knowledge",
-          "title": "Hooks never fire on commands without Run",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "96101179-ac96-4283-95e7-2be5fbadc284",
-          "type": "rule",
-          "title": "Never ship a hook-only command",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a2178c0d-c3f2-5e31-8e96-601d7730b2c8",
-          "type": "function",
-          "title": "*Command::Runnable",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "785f5367-f893-43f3-a8e3-6f9b9c15622f",
-          "type": "knowledge",
-          "title": "Hook order is PersistentPreRun, PreRun, Run, PostRun, PersistentPostRun",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d55d231c-7c12-5173-bfc8-4fde4be56d79",
-          "type": "function",
-          "title": "TestShorthandVersionFlagOnlyAddedIfVersionNotDefined",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7df4e40-9a5d-4815-ae58-a36732edb23e",
-          "type": "knowledge",
-          "title": "E-suffixed hooks return errors; plain variants do not",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cb5717bf-58b0-5c5e-9160-fdcfe1786fcf",
-          "type": "function",
-          "title": "TestLevenshteinDistance",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a3f54462-21a9-5ceb-b1a7-f2040dfa4d67",
-          "type": "function",
-          "title": "*Command::execute",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e0c5610b-8ae6-44f3-aec7-7622ab00ac19",
-          "type": "observation",
-          "title": "Allow running persistent run hooks of all parents (#2044)",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7c974d17-46b8-5870-9fdf-a3001b6b70f9",
-          "type": "class",
-          "title": "Command",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e89ed7b2-3044-4111-a9ce-f524e11e4079",
-          "type": "knowledge",
-          "title": "Hook lifecycle: persistent-pre, pre, run, post, persistent-post",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b7cebe98-abf2-5fc3-850f-d696b8d5ddad",
-          "type": "file",
-          "title": "cobra.go",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f94e5fc4-8698-4bb9-8ef8-84c8010d65bb",
-          "type": "knowledge",
-          "title": "Shell completion runs through hidden __complete commands",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "074fd0df-e94b-5078-8b01-e3942f73f306",
-          "type": "function",
-          "title": "TestFlagCompletionConcurrentRegistration",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "933a9b1c-5db9-576e-aef8-42d30dd6b51c",
-          "type": "file",
-          "title": "cobra_test.go",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e4e5dfc0-7972-560e-ab13-ecf2c39680d5",
-          "type": "function",
-          "title": "*Command::InitDefaultCompletionCmd",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a8676eb4-984f-5780-b543-3dad3cd33379",
-          "type": "function",
-          "title": "TestSetUsageTemplate",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "22ee708e-24cc-5214-bdce-cd45bcc56038",
-          "type": "function",
-          "title": "MaximumNArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5896c8bc-0ec1-5efc-a236-c9dc384e7282",
-          "type": "function",
-          "title": "MatchAll",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6ac98e20-d369-50d0-93fe-a798c8bae4d9",
-          "type": "function",
-          "title": "OnlyValidArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7518939f-aee3-4fcf-94bd-ea6073ad24e3",
-          "type": "rule",
-          "title": "Use the provided Args validators before custom logic",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "79f01795-7dd7-59b4-9d69-1c8d52be3a46",
-          "type": "function",
-          "title": "MinimumNArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a014d1a0-b2ba-5ada-91b3-76d1490beac8",
-          "type": "function",
-          "title": "ExactArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a78e2537-fe27-5956-9c71-0983e1271618",
-          "type": "function",
-          "title": "ExactValidArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d9cf3c03-de40-5bbb-a998-ad236befe178",
-          "type": "function",
-          "title": "ArbitraryArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
-          "type": "file",
-          "title": "args.go",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e5df886f-9fa3-5369-b5f2-be702b3ad944",
-          "type": "function",
-          "title": "NoArgs",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "47a813ee-dede-5372-991f-3d363b1d6d51",
-          "type": "file",
-          "title": "command.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0d790aa3-3d7a-54ae-8c1b-7d08e68e819c",
-          "type": "file",
-          "title": "zsh_completions.go",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
-          "type": "file",
-          "title": "fish_completions.go",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "84657187-5760-437e-99a1-37e099c6916a",
-          "type": "observation",
-          "title": "Micro-optimizations (#1957)",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a1b10706-5d14-4e31-928a-0adce7d8fcd5",
-          "type": "observation",
-          "title": "Fix grammar: 'allows to' (#1978)",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
-          "type": "file",
-          "title": "completions.go",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
-          "type": "file",
-          "title": "powershell_completions.go",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cddd7c7b-2da4-415c-aaf5-dc5e421c1bd1",
-          "type": "observation",
-          "title": "Allow linker to perform deadcode elimination for program using Cobra (#1956)",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f15c12f5-31f6-488a-b477-70f4dc7ddaf8",
-          "type": "observation",
-          "title": "fix: conflict import name with variable (#1879)",
-          "relevance": 0.09419117867946625,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "46290bef-1a0e-5a8a-ba4d-a8d92d76a225",
-          "type": "function",
-          "title": "TestRangeArgs_WithValidOnly_WithInvalidArgs",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 17,
+      "results": []
     },
     {
       "id": "ck14",
       "search_mode": "fts_only",
       "filtered_count": 267,
-      "signals": null,
-      "latency_ms": 279,
+      "signals": {
+        "answer_coverage": 0.667157590999791,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 58,
       "results": [
         {
           "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
@@ -6440,8 +6163,14 @@
       "id": "ck15",
       "search_mode": "fts_only",
       "filtered_count": 218,
-      "signals": null,
-      "latency_ms": 305,
+      "signals": {
+        "answer_coverage": 0.7923719118970446,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 68,
       "results": [
         {
           "id": "1370b54e-abe7-48f7-bc88-dce7f79e319e",

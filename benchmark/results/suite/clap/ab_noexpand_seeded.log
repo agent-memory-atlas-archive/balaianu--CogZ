@@ -1,18 +1,18 @@
 collecting corpus ids...
 corpus: 4655 entities
-  lk01: 20 results, 5181ms
-  lk02: 20 results, 2621ms
-  lk03: 20 results, 2328ms
-  lk04: 20 results, 2369ms
-  lk05: 20 results, 1700ms
-  lk06: 20 results, 2028ms
-  lk07: 20 results, 2397ms
-  lk08: 20 results, 2608ms
-  lk09: 20 results, 1717ms
-  lk10: 20 results, 1986ms
-  lk11: 20 results, 2591ms
-  lk12: 20 results, 2614ms
-  lk13: 20 results, 2727ms
-  lk14: 20 results, 2127ms
-  lk15: 20 results, 2650ms
+  lk01: 20 results, 1789ms
+  lk02: 20 results, 472ms
+  lk03: 20 results, 477ms
+  lk04: 20 results, 484ms
+  lk05: 20 results, 510ms
+  lk06: 20 results, 484ms
+  lk07: 20 results, 484ms
+  lk08: 20 results, 480ms
+  lk09: 20 results, 482ms
+  lk10: 20 results, 485ms
+  lk11: 20 results, 483ms
+  lk12: 20 results, 481ms
+  lk13: 20 results, 481ms
+  lk14: 20 results, 477ms
+  lk15: 0 results, 492ms
 wrote ab_noexpand_seeded.json

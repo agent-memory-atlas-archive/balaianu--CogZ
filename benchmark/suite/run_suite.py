@@ -51,6 +51,56 @@ def run(cmd: list[str], out: Path | None = None) -> int:
     return r.returncode
 
 
+def embed_bg_running() -> bool:
+    # Match by comm + argv, not pgrep -f: a shell wrapper's cmdline
+    # contains the literal pattern too, so pgrep -f self-matches
+    # (monitors, this script's own invocation). A real embedder has
+    # comm=cogz and `embed-bg` as an argv element.
+    for proc in Path("/proc").iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            if (proc / "comm").read_text().strip() != "cogz":
+                continue
+            if b"embed-bg" in (proc / "cmdline").read_bytes().split(b"\0"):
+                return True
+        except OSError:
+            continue
+    return False
+
+
+def wait_for_embedders(timeout_s: int = 7200) -> bool:
+    """Block until no `cogz embed-bg` is running anywhere.
+
+    Index/reindex spawn detached embedders that outlive the foreground
+    command and compete for CPU/DB. Timing arms must not start — and
+    must not end — while one is alive, or the numbers measure
+    contention instead of the code. Cheap when nothing is running.
+    """
+    t0 = time.monotonic()
+    while embed_bg_running():
+        if time.monotonic() - t0 > timeout_s:
+            print("warn: embed-bg still running after timeout")
+            return False
+        time.sleep(5)
+    return True
+
+
+def embedding_state(cogz: str, repo: Path) -> dict:
+    """Entity/embedding counts — the completeness signal needed to
+    interpret query-phase scores (missing vectors depress recall)."""
+    r = subprocess.run([cogz, "status", "--repo", str(repo)],
+                       capture_output=True, text=True)
+    out = {}
+    for line in r.stdout.splitlines():
+        m = re.match(r"\s*(Total entities|Stale entities|"
+                     r"Embeddings stored|Edges):\s+(\d+)", line)
+        if m:
+            key = m.group(1).lower().replace(" ", "_")
+            out[key] = int(m.group(2))
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--corpus", required=True)
@@ -174,11 +224,22 @@ def main() -> None:
     # timing runs last: the full-index arm rebuilds the corpus DB.
     if "timing" not in skip:
         timing = {"corpus": args.corpus}
+        # Embedding completeness in the DB state the query phases
+        # actually measured — scores are uninterpretable without it.
+        timing["embedding_state_at_scoring"] = embedding_state(
+            args.cogz, repo)
 
         def timed(cmd: list[str]) -> float | None:
+            # A leftover embedder from an earlier arm (or an earlier
+            # corpus) turns this measurement into contention noise.
+            wait_for_embedders()
             t0 = time.monotonic()
             rc = run(cmd)
-            return round(time.monotonic() - t0, 1) if rc == 0 else None
+            dt = round(time.monotonic() - t0, 1) if rc == 0 else None
+            # The arm may have spawned its own embedder in the tail —
+            # drain it before the next arm or corpus starts.
+            wait_for_embedders()
+            return dt
 
         timing["reindex_noop_s"] = timed(
             [args.cogz, "reindex", "--repo", str(repo)])
@@ -199,6 +260,8 @@ def main() -> None:
             run([args.cogz, "reset", "--repo", str(repo)])
             timing["full_index_s"] = timed(
                 [args.cogz, "index", "--repo", str(repo)])
+            timing["embedding_state_after_rebuild"] = embedding_state(
+                args.cogz, repo)
         (outdir / "timing.json").write_text(json.dumps(timing, indent=1))
 
     print(f"{args.corpus}: battery complete -> {outdir}")

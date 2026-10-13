@@ -5,57 +5,59 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1818.0,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 1583.8,
+    "ram_loaded_mb": 764,
     "n": 15,
-    "p50_ms": 473.0,
-    "p95_ms": 1142.6,
-    "p99_ms": 1259.8,
-    "mean_ms": 576.3,
+    "p50_ms": 258.4,
+    "p95_ms": 281.4,
+    "p99_ms": 281.5,
+    "mean_ms": 251.4,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 28,
-     "size_tokens": 2048,
+     "sections": 29,
+     "size_tokens": 2054,
      "budget": 2048,
      "dropped": 50,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "file/full": 3,
-      "function/full": 18,
-      "observation/full": 1,
-      "rule/full": 2
+      "file/full": 4,
+      "function/full": 17,
+      "rule/full": 3,
+      "observation/full": 1
      }
     },
     {
      "query": "error handling strategy",
-     "sections": 47,
+     "sections": 48,
+     "size_tokens": 2048,
+     "budget": 2048,
+     "dropped": 43,
+     "composition": {
+      "rule/baseline": 3,
+      "identity/baseline": 1,
+      "function/full": 21,
+      "file/full": 3,
+      "class/full": 20
+     }
+    },
+    {
+     "query": "configuration and initialization",
+     "sections": 43,
      "size_tokens": 2048,
      "budget": 2048,
      "dropped": 44,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "class/full": 19,
-      "function/full": 21,
-      "file/full": 3
-     }
-    },
-    {
-     "query": "configuration and initialization",
-     "sections": 42,
-     "size_tokens": 2048,
-     "budget": 2048,
-     "dropped": 45,
-     "composition": {
-      "rule/baseline": 3,
-      "identity/baseline": 1,
-      "function/full": 23,
+      "function/full": 24,
       "file/full": 8,
       "class/full": 6,
       "observation/full": 1
@@ -63,31 +65,30 @@
     },
     {
      "query": "data validation logic",
-     "sections": 40,
-     "size_tokens": 2035,
+     "sections": 45,
+     "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 55,
+     "dropped": 49,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 29,
+      "function/full": 34,
       "class/full": 4,
-      "file/full": 2,
-      "overflow_index/pointer": 1
+      "file/full": 3
      }
     },
     {
      "query": "how are requests processed",
-     "sections": 27,
+     "sections": 28,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 67,
+     "dropped": 66,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "function/full": 19,
       "class/full": 3,
-      "file/full": 1
+      "file/full": 2
      }
     }
    ]
@@ -95,28 +96,30 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 250.3,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 60.4,
+    "ram_loaded_mb": 19,
     "n": 15,
-    "p50_ms": 337.6,
-    "p95_ms": 1189.7,
-    "p99_ms": 1210.4,
-    "mean_ms": 435.7,
+    "p50_ms": 45.4,
+    "p95_ms": 52.7,
+    "p99_ms": 53.2,
+    "mean_ms": 32.8,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 30,
+     "sections": 31,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 64,
+     "dropped": 63,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "rule/full": 2,
+      "rule/full": 3,
       "function/full": 16,
       "file/full": 2,
       "observation/full": 2,
@@ -175,7 +178,7 @@
     {
      "query": "how are requests processed",
      "sections": 28,
-     "size_tokens": 2057,
+     "size_tokens": 2048,
      "budget": 2048,
      "dropped": 66,
      "composition": {

@@ -1,8 +1,18 @@
 collecting corpus ids...
 corpus: 4655 entities
-  ln01: 45 results, 2186ms
-  ln02: 45 results, 756ms
-  ln03: 40 results, 703ms
-  ln04: 0 results, 387ms
-  ln05: 40 results, 732ms
+  ln01: 40 results, 1870ms
+  ln02: 0 results, 434ms
+  ln03: 0 results, 441ms
+  ln04: 0 results, 424ms
+  ln05: 0 results, 407ms
+  ln06: 40 results, 576ms
+  ln07: 0 results, 489ms
+  ln08: 40 results, 563ms
+  ln09: 40 results, 546ms
+  ln10: 40 results, 526ms
+  ln11: 40 results, 540ms
+  ln12: 0 results, 483ms
+  ln13: 40 results, 567ms
+  ln14: 40 results, 570ms
+  ln15: 0 results, 507ms
 wrote negatives_run.json

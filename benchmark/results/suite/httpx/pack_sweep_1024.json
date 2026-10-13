@@ -5,15 +5,17 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1808.8,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 1621.8,
+    "ram_loaded_mb": 764,
     "n": 15,
-    "p50_ms": 508.0,
-    "p95_ms": 797.1,
-    "p99_ms": 1155.3,
-    "mean_ms": 554.5,
+    "p50_ms": 262.7,
+    "p95_ms": 291.0,
+    "p99_ms": 301.6,
+    "mean_ms": 254.5,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
@@ -22,7 +24,7 @@
      "sections": 14,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 64,
+     "dropped": 65,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
@@ -39,9 +41,9 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "class/full": 7,
       "function/full": 8,
-      "file/full": 1
+      "file/full": 1,
+      "class/full": 7
      }
     },
     {
@@ -60,15 +62,15 @@
     },
     {
      "query": "data validation logic",
-     "sections": 16,
+     "sections": 18,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 78,
+     "dropped": 76,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 11,
-      "class/full": 1
+      "function/full": 12,
+      "class/full": 2
      }
     },
     {
@@ -80,8 +82,8 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 7,
-      "class/full": 2,
+      "function/full": 6,
+      "class/full": 3,
       "file/full": 1
      }
     }
@@ -90,28 +92,30 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 311.9,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 66.0,
+    "ram_loaded_mb": 20,
     "n": 15,
-    "p50_ms": 278.0,
-    "p95_ms": 718.7,
-    "p99_ms": 927.6,
-    "mean_ms": 352.5,
+    "p50_ms": 39.6,
+    "p95_ms": 45.1,
+    "p99_ms": 45.9,
+    "mean_ms": 28.9,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 16,
+     "sections": 17,
      "size_tokens": 1024,
      "budget": 1024,
-     "dropped": 78,
+     "dropped": 77,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "rule/full": 2,
+      "rule/full": 3,
       "function/full": 5,
       "file/full": 1,
       "observation/full": 2,

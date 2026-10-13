@@ -4674,9 +4674,15 @@
     {
       "id": "lk01",
       "search_mode": "fts_only",
-      "filtered_count": 113,
-      "signals": null,
-      "latency_ms": 657,
+      "filtered_count": 136,
+      "signals": {
+        "answer_coverage": 0.5429772093554287,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 67,
       "results": [
         {
           "id": "1c487d6d-da23-5c54-94e2-87a7638eacc6",
@@ -4859,15 +4865,6 @@
           "stale": null
         },
         {
-          "id": "08cd6d9b-4f90-5e31-b3a5-06d265d5d789",
-          "type": "module",
-          "title": "derive",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "211e89ec-6ecc-5a82-a506-17378cd9e54f",
           "type": "file",
           "title": "item.rs",
@@ -4895,10 +4892,37 @@
           "stale": null
         },
         {
+          "id": "08cd6d9b-4f90-5e31-b3a5-06d265d5d789",
+          "type": "module",
+          "title": "derive",
+          "relevance": 0.10500000417232513,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "718be12f-9f5a-56b8-b946-e747b1088f04",
           "type": "file",
           "title": "lib.rs",
           "relevance": 0.10166666656732559,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8df3c538-f91f-5c7d-9ffa-e197742b58ad",
+          "type": "function",
+          "title": "use_option",
+          "relevance": 0.061000000685453415,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d67d1dab-1351-5b09-8c71-d799fb480553",
+          "type": "function",
+          "title": "issue_447",
+          "relevance": 0.061000000685453415,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4956,78 +4980,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "8df3c538-f91f-5c7d-9ffa-e197742b58ad",
-          "type": "function",
-          "title": "use_option",
-          "relevance": 0.061000000685453415,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d67d1dab-1351-5b09-8c71-d799fb480553",
-          "type": "function",
-          "title": "issue_447",
-          "relevance": 0.061000000685453415,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d7602b76-c188-52ee-911b-a2c87ad15661",
-          "type": "function",
-          "title": "derive_args",
-          "relevance": 0.16480350494384766,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "faca42e3-c9a5-54e9-8c8c-9a24eb1adf99",
-          "type": "function",
-          "title": "derive_parser",
-          "relevance": 0.16461145877838135,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e8710be6-99df-50c4-abbc-83efa283f933",
-          "type": "function",
-          "title": "derive_subcommand",
-          "relevance": 0.16432154178619385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b6e37ba8-b993-5716-bd46-d006d45e972c",
-          "type": "function",
-          "title": "derive_value_enum",
-          "relevance": 0.15922442078590393,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9443b2df-55bf-5882-97a9-e852f336b5bc",
-          "type": "function",
-          "title": "gen_augment",
-          "relevance": 0.12332849204540253,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk02",
       "search_mode": "fts_only",
-      "filtered_count": 866,
-      "signals": null,
-      "latency_ms": 904,
+      "filtered_count": 901,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 126,
       "results": [
         {
           "id": "f1bc8979-a6de-4505-8035-2e587d4ba371",
@@ -5363,6 +5330,15 @@
           "stale": null
         },
         {
+          "id": "4299f68c-b10a-5ac9-bb38-a528936d4dcc",
+          "type": "class",
+          "title": "ArgAction",
+          "relevance": 0.10500000417232513,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "0251ab26-de05-5798-94bf-8b9f42736398",
           "type": "class",
           "title": "ArgMatches",
@@ -5379,69 +5355,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "0d57fc9a-e426-5571-91c7-68e76ce3b1ba",
-          "type": "class",
-          "title": "impl ExactSizeIterator for IdsRef<'_>",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "16ad6619-e79a-5cdb-a534-023357961c7d",
-          "type": "function",
-          "title": "multiple_occurrences_of_after_env",
-          "relevance": 0.14802326261997223,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6aeae794-c865-58be-813d-5565b5bcb3e5",
-          "type": "function",
-          "title": "inner_can_access_flag",
-          "relevance": 0.14802326261997223,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "aa3a2536-e910-5f79-b339-7f98ff477f42",
-          "type": "function",
-          "title": "top_can_access_flag",
-          "relevance": 0.14802326261997223,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b72b121c-b488-56fa-ae5d-4b6442676626",
-          "type": "function",
-          "title": "outer_can_access_flag",
-          "relevance": 0.14802326261997223,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d8fec1e6-fbac-5942-8a74-326259753d77",
-          "type": "function",
-          "title": "multiple_occurrences_of_before_env",
-          "relevance": 0.14802326261997223,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk03",
       "search_mode": "fts_only",
-      "filtered_count": 857,
-      "signals": null,
-      "latency_ms": 1314,
+      "filtered_count": 870,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 111,
       "results": [
         {
           "id": "490ed79b-4ca4-48b9-9737-56b781ba0473",
@@ -5802,60 +5730,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "93f84e40-4a1d-5820-9647-b2286fae27c6",
-          "type": "function",
-          "title": "no_default_values_if_arg_present_no_arg_with_value_with_default",
-          "relevance": 0.18173913657665253,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fd6d5bfb-7cae-57b5-8925-14045ad0ec44",
-          "type": "function",
-          "title": "arg_conflicts_with_group_with_required_memeber",
-          "relevance": 0.18173913657665253,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1d927092-84b8-5e9c-abb6-4b9004d6e021",
-          "type": "function",
-          "title": "required_group_conflicts_with_arg",
-          "relevance": 0.17758063971996307,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0719dba3-949b-5108-8650-1b197d3f70a9",
-          "type": "function",
-          "title": "render_synopsis_arg",
-          "relevance": 0.1392105221748352,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9883eaa6-8b22-504d-bcca-a0b69f9f7da5",
-          "type": "function",
-          "title": "write_arg",
-          "relevance": 0.13173913955688477,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk04",
       "search_mode": "fts_only",
-      "filtered_count": 986,
-      "signals": null,
-      "latency_ms": 733,
+      "filtered_count": 990,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 104,
       "results": [
         {
           "id": "3d6dd4de-c82c-5bbd-86dc-0a56e48c73b0",
@@ -6216,60 +6105,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "dd7d90cd-7bbe-5cb0-894f-1a88a8b29241",
-          "type": "function",
-          "title": "value_parser",
-          "relevance": 0.2038387805223465,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c89f49ed-c454-5e14-b3e6-8908003dea72",
-          "type": "function",
-          "title": "complete_arg_value",
-          "relevance": 0.15394844114780426,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f7ff7765-f788-59e8-85d0-21b5fd13a1fb",
-          "type": "function",
-          "title": "suggest_value_path_file",
-          "relevance": 0.15394844114780426,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0b7dffad-4d82-5e0c-9879-329ef2a1fa03",
-          "type": "class",
-          "title": "impl std::fmt::Display for BumpLevel",
-          "relevance": 0.136428564786911,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7322dd59-4d03-5a08-8e66-35dfbee09e60",
-          "type": "class",
-          "title": "impl std::str::FromStr for BumpLevel",
-          "relevance": 0.136428564786911,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk05",
       "search_mode": "fts_only",
-      "filtered_count": 1397,
-      "signals": null,
-      "latency_ms": 823,
+      "filtered_count": 1413,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 114,
       "results": [
         {
           "id": "7412b8c6-898d-4bf8-9467-d76ff53907ed",
@@ -6630,60 +6480,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "aaba137b-d995-50ab-93f0-b57f7762b189",
-          "type": "class",
-          "title": "impl TypedValueParser for UnknownArgumentValueParser",
-          "relevance": 0.18299999833106995,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4d52ede6-e726-5cce-8681-aaace6abf7b7",
-          "type": "function",
-          "title": "gen_for_enum",
-          "relevance": 0.14240601658821106,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7e4da344-3470-52eb-a9ae-6cf1abd75774",
-          "type": "function",
-          "title": "gen_for_enum",
-          "relevance": 0.13681818544864655,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bd043c9f-0684-51f6-9f0e-9715398865da",
-          "type": "function",
-          "title": "cli",
-          "relevance": 0.13681818544864655,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a3a1f1cf-63ea-503c-9c73-b232f5c500c2",
-          "type": "class",
-          "title": "impl Extension for T",
-          "relevance": 0.136428564786911,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk06",
       "search_mode": "fts_only",
-      "filtered_count": 1406,
-      "signals": null,
-      "latency_ms": 789,
+      "filtered_count": 1462,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 112,
       "results": [
         {
           "id": "239834c2-de06-5635-b1a5-6c8a680caa93",
@@ -7044,60 +6855,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "02ec4f93-1695-5762-931d-474f00168248",
-          "type": "function",
-          "title": "posix_compatible_opts_long_equals_rev",
-          "relevance": 0.08751677721738815,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "03929e36-96ac-5e92-8d99-4d42f9619a25",
-          "type": "function",
-          "title": "multiple_occurrences_of_flags_long",
-          "relevance": 0.08751677721738815,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "04d3e821-d726-5ed0-b496-6b6715c85d03",
-          "type": "function",
-          "title": "default_missing_value_per_occurrence",
-          "relevance": 0.08751677721738815,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "075b0169-57ae-5f2e-adc8-cd204ecb2da0",
-          "type": "function",
-          "title": "multiple_occurrences_of_flags_short",
-          "relevance": 0.08751677721738815,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0e8d33a3-2cf6-5843-9c12-a1f7218c147c",
-          "type": "function",
-          "title": "incremental_override",
-          "relevance": 0.08751677721738815,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk07",
       "search_mode": "fts_only",
-      "filtered_count": 994,
-      "signals": null,
-      "latency_ms": 659,
+      "filtered_count": 1030,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 100,
       "results": [
         {
           "id": "5a3e12a5-eacc-5cc8-8055-14858b7bd518",
@@ -7406,6 +7178,24 @@
           "stale": null
         },
         {
+          "id": "942d0c97-7b78-5597-8e07-dd159478c257",
+          "type": "function",
+          "title": "port_in_range",
+          "relevance": 0.07148437947034836,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b02cd002-3fe3-5c6f-808d-945120735913",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.07148437947034836,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "03cc4518-c53d-52f6-b7c0-c69605c7a66b",
           "type": "class",
           "title": "Id",
@@ -7440,78 +7230,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "4ea402ee-bcf6-5112-b53b-d75e7f77d8c2",
-          "type": "function",
-          "title": "get_direct_conflicts",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "55633d7a-a938-5fda-b7e2-cc13d2f5057a",
-          "type": "class",
-          "title": "FlatMap",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e323ca44-853b-5250-b6c5-5509761e40c5",
-          "type": "function",
-          "title": "subcmd_help_subcmd_help",
-          "relevance": 0.2126879096031189,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2e9dcce2-9b2f-574f-9a5f-6f29b385369f",
-          "type": "function",
-          "title": "try_help_custom_flag",
-          "relevance": 0.21233144402503967,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "43a04477-bfa2-53c7-9133-c11ff24f6b98",
-          "type": "function",
-          "title": "help_subcmd_help",
-          "relevance": 0.21225705742835999,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4bc106fa-ae84-52a1-b245-d910fba334de",
-          "type": "function",
-          "title": "try_help_custom_flag_long",
-          "relevance": 0.21219608187675476,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6717f8cb-0901-58c1-ad76-c216087567f7",
-          "type": "function",
-          "title": "try_help_custom_flag_no_action",
-          "relevance": 0.21206024289131165,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk08",
       "search_mode": "fts_only",
-      "filtered_count": 153,
-      "signals": null,
-      "latency_ms": 705,
+      "filtered_count": 173,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 60,
       "results": [
         {
           "id": "9f7aceb3-2144-5e25-b6b8-309bd7ca9440",
@@ -7748,10 +7481,64 @@
           "stale": null
         },
         {
+          "id": "2548fbb5-df33-58f1-8d62-03444f1412de",
+          "type": "function",
+          "title": "raw_defer",
+          "relevance": 0.07500000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "14fbf762-0e5b-52c6-8cf9-574a08162f75",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.06931818276643753,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
           "id": "7132d286-7721-5b8c-9979-9a5c45d87b14",
           "type": "class",
           "title": "Cli",
           "relevance": 0.06931818276643753,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "745edab8-5b67-5568-9408-04be1f6e6acd",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.06828358769416809,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7c798c2e-f312-5ba3-94ab-d30457f75875",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.06828358769416809,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3c558b93-4829-5ef8-aca3-e6ec6d901b97",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.06727941334247589,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "99481a6c-3ef7-57a4-be6e-e90c4819a47a",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.06727941334247589,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -7818,69 +7605,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "e6c6f9da-222f-5745-bafa-f73f263a6c81",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.05865384638309479,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "10f1c4fc-87a6-50c7-9c02-3b64b80e9758",
-          "type": "function",
-          "title": "from_subcommand_variant",
-          "relevance": 0.1878114640712738,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f9dd0da2-3977-5433-9f7a-4aa4ca820906",
-          "type": "function",
-          "title": "from_value_enum",
-          "relevance": 0.18745654821395874,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bb2d4129-d170-5f9a-ae64-d83d1621c55e",
-          "type": "function",
-          "title": "from_value_enum_variant",
-          "relevance": 0.18441417813301086,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "02b99f82-f987-5bdc-86e9-c886fd0937c9",
-          "type": "function",
-          "title": "defer",
-          "relevance": 0.16888588666915894,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "260784f0-5f85-592b-b5ac-af88c57091fd",
-          "type": "function",
-          "title": "subcommand",
-          "relevance": 0.1420014351606369,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk09",
       "search_mode": "fts_only",
-      "filtered_count": 332,
-      "signals": null,
-      "latency_ms": 747,
+      "filtered_count": 333,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 67,
       "results": [
         {
           "id": "daf4ea77-3a61-533f-b7f3-51e7ad74752b",
@@ -8241,60 +7980,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "58775542-905e-5f1d-8932-6f0177a82105",
-          "type": "function",
-          "title": "possible_values_of_positional_multiple_fail",
-          "relevance": 0.13615942001342773,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f4549acf-be80-570b-91e7-28dceeaa2ef4",
-          "type": "function",
-          "title": "suggest_multiple_positional_after_escape",
-          "relevance": 0.1357995867729187,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c5b1bfc7-e8bf-5b09-8ad4-29c202e3b993",
-          "type": "class",
-          "title": "impl Escape<'s>",
-          "relevance": 0.13534310460090637,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5471e91d-9ecf-566e-b93e-1ae676c39e48",
-          "type": "function",
-          "title": "register_completion",
-          "relevance": 0.13179776072502136,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a74bc640-8135-5fa7-ad61-d154cdf5556a",
-          "type": "class",
-          "title": "impl std::fmt::Display for Escape<'_>",
-          "relevance": 0.12999999523162842,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk10",
       "search_mode": "fts_only",
-      "filtered_count": 212,
-      "signals": null,
-      "latency_ms": 788,
+      "filtered_count": 214,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 59,
       "results": [
         {
           "id": "391445e7-aab2-494f-b25f-3d89838eff51",
@@ -8655,60 +8355,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "12c91162-f868-556b-92ca-adcdeb4fe64a",
-          "type": "function",
-          "title": "issue_1284_argument_in_flag_style",
-          "relevance": 0.1521736979484558,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "64b730f8-2775-5e8b-9fa6-c40a8559b9a9",
-          "type": "function",
-          "title": "try_help_subcommand_custom_flag_no_action",
-          "relevance": 0.13115383684635162,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3d3e6cb1-3660-5e85-9c70-7904ab6fe509",
-          "type": "function",
-          "title": "example_tests",
-          "relevance": 0.12177842855453491,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9549b7fd-af90-58da-883d-90a9eaeb2657",
-          "type": "function",
-          "title": "unexpected_value_error",
-          "relevance": 0.11322085559368134,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4c69fb37-a2bd-5096-a551-9fef04e9f53f",
-          "type": "function",
-          "title": "possible_values_output",
-          "relevance": 0.10768012702465057,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk11",
       "search_mode": "fts_only",
-      "filtered_count": 900,
-      "signals": null,
-      "latency_ms": 996,
+      "filtered_count": 921,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 90,
       "results": [
         {
           "id": "3ee4fc41-4984-4783-a0e7-54b3f02e39ee",
@@ -8891,10 +8552,10 @@
           "stale": null
         },
         {
-          "id": "097c666a-be73-5c31-869a-2d84d88689e4",
-          "type": "file",
-          "title": "mod.rs",
-          "relevance": 0.15000000596046448,
+          "id": "8cba7b3d-5d1d-5e7e-8f9e-01ebfbf95af8",
+          "type": "module",
+          "title": "debug_asserts",
+          "relevance": 0.09853846579790115,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -8909,28 +8570,10 @@
           "stale": null
         },
         {
-          "id": "8cba7b3d-5d1d-5e7e-8f9e-01ebfbf95af8",
-          "type": "module",
-          "title": "debug_asserts",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
           "id": "da5fe68a-1967-407b-96ee-ee985e28a636",
           "type": "knowledge",
           "title": "clap is a workspace: builder, derive, lex, complete, mangen",
           "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "485e603e-8755-5aa1-840a-96a632d3d2f6",
-          "type": "file",
-          "title": "conflicts.rs",
-          "relevance": 0.07379032671451569,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -8949,6 +8592,24 @@
           "type": "function",
           "title": "new",
           "relevance": 0.07379032671451569,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "485e603e-8755-5aa1-840a-96a632d3d2f6",
+          "type": "file",
+          "title": "conflicts.rs",
+          "relevance": 0.07379032671451569,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "716d0f41-cfe9-51a7-a82c-9bac9c29f2f8",
+          "type": "file",
+          "title": "flag_subcommands.rs",
+          "relevance": 0.06354166567325592,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -9053,55 +8714,10 @@
           "stale": null
         },
         {
-          "id": "716d0f41-cfe9-51a7-a82c-9bac9c29f2f8",
+          "id": "097c666a-be73-5c31-869a-2d84d88689e4",
           "type": "file",
-          "title": "flag_subcommands.rs",
-          "relevance": 0.06354166567325592,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "12c91162-f868-556b-92ca-adcdeb4fe64a",
-          "type": "function",
-          "title": "issue_1284_argument_in_flag_style",
-          "relevance": 0.14666013419628143,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fd17f906-0251-5cf6-8cdc-092b37128cf3",
-          "type": "function",
-          "title": "issue_3880_allow_long_flag_hyphen_value_for_positional_arg",
-          "relevance": 0.14071428775787354,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "64b730f8-2775-5e8b-9fa6-c40a8559b9a9",
-          "type": "function",
-          "title": "try_help_subcommand_custom_flag_no_action",
-          "relevance": 0.13115383684635162,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b9ef6c8c-8327-5b06-9a80-caba3141f811",
-          "type": "function",
-          "title": "ui",
-          "relevance": 0.10334449261426926,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d5cdb026-193d-5ab0-b124-e67f0b892aa0",
-          "type": "function",
-          "title": "invisible_aliases_help_output",
-          "relevance": 0.10258220136165619,
+          "title": "mod.rs",
+          "relevance": 0.15000000596046448,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -9112,8 +8728,14 @@
       "id": "lk12",
       "search_mode": "fts_only",
       "filtered_count": 1004,
-      "signals": null,
-      "latency_ms": 847,
+      "signals": {
+        "answer_coverage": 0.5,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 99,
       "results": [
         {
           "id": "d83fac91-20c0-581c-88dc-3c062dbf5554",
@@ -9480,9 +9102,15 @@
     {
       "id": "lk13",
       "search_mode": "fts_only",
-      "filtered_count": 1266,
-      "signals": null,
-      "latency_ms": 868,
+      "filtered_count": 1275,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 87,
       "results": [
         {
           "id": "8c536f37-d2da-423f-8034-f9cde54b3736",
@@ -9843,60 +9471,21 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "2e01b4fa-2035-5f5b-98cc-34bea6ffc8d6",
-          "type": "class",
-          "title": "Cli",
-          "relevance": 0.08615384250879288,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3ca18351-c131-527c-a499-110cd0427c56",
-          "type": "function",
-          "title": "from_subcommand_enum",
-          "relevance": 0.08615384250879288,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4d52ede6-e726-5cce-8681-aaace6abf7b7",
-          "type": "function",
-          "title": "gen_for_enum",
-          "relevance": 0.08615384250879288,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "790f2d2d-1211-5254-9c31-d134f833cecb",
-          "type": "function",
-          "title": "port_in_range",
-          "relevance": 0.08615384250879288,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b02cd002-3fe3-5c6f-808d-945120735913",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.08615384250879288,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk14",
       "search_mode": "fts_only",
-      "filtered_count": 1308,
-      "signals": null,
-      "latency_ms": 920,
+      "filtered_count": 1328,
+      "signals": {
+        "answer_coverage": 0.614518076188164,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 80,
       "results": [
         {
           "id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
@@ -10257,449 +9846,22 @@
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
-        },
-        {
-          "id": "6590b3c1-0ace-51a1-8565-38980c518d3b",
-          "type": "function",
-          "title": "sources_under_posix_mode_bash",
-          "relevance": 0.08879120647907257,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0e1225f5-ec7c-5c2c-9d94-f71a3ab780ad",
-          "type": "function",
-          "title": "value_enum",
-          "relevance": 0.08642857521772385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5bd21baf-bffb-589d-92e9-657779cbba2d",
-          "type": "function",
-          "title": "args",
-          "relevance": 0.08642857521772385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "edd53f22-39f7-53e3-9fad-11aea984c322",
-          "type": "class",
-          "title": "ReadmeDoctests",
-          "relevance": 0.08642857521772385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "01fcc2d6-19c2-5b40-aa37-2e8751f00ec8",
-          "type": "function",
-          "title": "_my__app",
-          "relevance": 0.08300000429153442,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
         }
       ]
     },
     {
       "id": "lk15",
       "search_mode": "fts_only",
-      "filtered_count": 34,
-      "signals": null,
-      "latency_ms": 1210,
-      "results": [
-        {
-          "id": "633f6c31-6dd2-5219-a2d8-3e5bd5ee5a54",
-          "type": "file",
-          "title": "mod.rs",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "348fd7e4-84e2-5934-bba1-f8b4a3d6684a",
-          "type": "file",
-          "title": "02_app_settings.rs",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bf9c1caf-ab43-559f-b8d3-51173789da1d",
-          "type": "file",
-          "title": "02_apps.rs",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "50928e87-a164-55cf-973f-7991484531cf",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "57af4452-b472-59b0-ac2f-47c88d678c32",
-          "type": "file",
-          "title": "03_04_subcommands_alt.rs",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2548fbb5-df33-58f1-8d62-03444f1412de",
-          "type": "function",
-          "title": "raw_defer",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "36946eec-5250-5fd8-a72a-8647866b70d6",
-          "type": "class",
-          "title": "Cli",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "409e1321-3673-51b9-80ee-0fcbd33d0589",
-          "type": "function",
-          "title": "newtype_with_flattened_args",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a6653930-cc99-552f-9da2-8ae9b066ac3c",
-          "type": "file",
-          "title": "03_04_subcommands.rs",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "718be12f-9f5a-56b8-b946-e747b1088f04",
-          "type": "file",
-          "title": "lib.rs",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9f7aceb3-2144-5e25-b6b8-309bd7ca9440",
-          "type": "file",
-          "title": "defer.rs",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7f0d59c-0d0e-51d8-b69d-611add747047",
-          "type": "function",
-          "title": "build",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5b945609-55e7-5149-980d-cde32707e0f0",
-          "type": "module",
-          "title": "startup",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e58fa9bd-9b5e-5c53-8cce-6f367143043b",
-          "type": "module",
-          "title": "build",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "48e771e5-6df9-5dc7-aa55-ccd3c1f73b5d",
-          "type": "file",
-          "title": "04_01_enum.rs",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f045bce2-94c2-5295-b026-9fe65150fbc4",
-          "type": "file",
-          "title": "empty.rs",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "da718775-d829-5f7a-a6fe-f22eaec8f890",
-          "type": "file",
-          "title": "lib.rs",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0aab417f-8023-5927-baaf-7347cb3f9f0e",
-          "type": "function",
-          "title": "args_metadata",
-          "relevance": 0.3910256326198578,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c32f6587-a5a0-5254-9d1e-22b8bc68bc24",
-          "type": "function",
-          "title": "build_cli",
-          "relevance": 0.3860759437084198,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "69010d9c-c285-5539-b95b-a03f24611803",
-          "type": "file",
-          "title": "mod.rs",
-          "relevance": 0.3812499940395355,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "42e5a2d1-5e25-5620-a9eb-e07411242f18",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "46cc333e-9af7-5e6d-a29d-aabc8907e3ff",
-          "type": "file",
-          "title": "general.rs",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5a20825c-ed2f-5922-a66e-677bc3e98c13",
-          "type": "file",
-          "title": "completion-derive.rs",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "683c7329-f72e-56ee-bd45-6e1c1d6b16c1",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9294c0da-3a3d-51d0-8d57-b2fbc47f424c",
-          "type": "class",
-          "title": "Cli",
-          "relevance": 0.14758065342903137,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9438498a-600d-58e8-9e2a-0df3a40c9c48",
-          "type": "class",
-          "title": "Cli",
-          "relevance": 0.14523810148239136,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "597a3510-49bd-504e-87aa-cc9419ee53be",
-          "type": "class",
-          "title": "Cli",
-          "relevance": 0.14076924324035645,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "da5fe68a-1967-407b-96ee-ee985e28a636",
-          "type": "knowledge",
-          "title": "clap is a workspace: builder, derive, lex, complete, mangen",
-          "relevance": 0.09149999916553497,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "01571ba3-59f2-5070-90cb-ca91bbf879ae",
-          "type": "function",
-          "title": "generate",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "18f5e2e0-ebfb-53dc-9822-196c656532c2",
-          "type": "class",
-          "title": "Error",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6ad89669-1da2-58da-bf88-6519c40db928",
-          "type": "class",
-          "title": "Generator",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bc156a70-4d09-5194-9e48-aab8c0f81aba",
-          "type": "function",
-          "title": "_generate",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c678f935-17b6-55d8-bbc2-9339761e6305",
-          "type": "function",
-          "title": "generate_to",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ca043a02-001d-50d3-b413-ab1ecc17e10e",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b3a2ddae-6ed0-51f0-b6d3-45916958a6c3",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2222640c-1d03-5c76-90f0-b3c736f5d259",
-          "type": "file",
-          "title": "completion.rs",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2247cb70-53ef-5454-b3ba-bbc291426675",
-          "type": "class",
-          "title": "AddArgs",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7a7f9bd8-2826-5ac9-88ea-661266ad53c4",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ac1d029d-9346-5663-b1ed-aa47da9881f2",
-          "type": "class",
-          "title": "Commands",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a60410fc-96cb-51d4-a8da-dfa455d9c31d",
-          "type": "class",
-          "title": "Mode",
-          "relevance": 0.06828358769416809,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "465537a5-204d-5e3e-b963-d9e8c09d6637",
-          "type": "function",
-          "title": "_my__app",
-          "relevance": 0.14499999582767487,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5cf6cbb7-cd6c-5d46-a010-fb959e20fbb5",
-          "type": "function",
-          "title": "mut_arg_all",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a1b5f490-c13c-5f4a-b52e-2c50e4cdc058",
-          "type": "function",
-          "title": "sc_short_flag_x2_long_opt_eq_pos",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 39,
+      "results": []
     }
   ]
 }

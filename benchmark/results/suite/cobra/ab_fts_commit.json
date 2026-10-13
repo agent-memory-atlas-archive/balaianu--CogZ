@@ -779,8 +779,14 @@
       "id": "cad460ea8",
       "search_mode": "fts_only",
       "filtered_count": 437,
-      "signals": null,
-      "latency_ms": 345,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 177,
       "results": [
         {
           "id": "0b709961-c4a4-57fc-82e6-6682a9c6c001",
@@ -1193,8 +1199,14 @@
       "id": "c746ef071",
       "search_mode": "fts_only",
       "filtered_count": 263,
-      "signals": null,
-      "latency_ms": 302,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 113,
       "results": [
         {
           "id": "4ef2fe66-ee66-5da4-94b2-c5c212bdcd4c",
@@ -1607,8 +1619,14 @@
       "id": "cf2878bab",
       "search_mode": "fts_only",
       "filtered_count": 257,
-      "signals": null,
-      "latency_ms": 292,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 147,
       "results": [
         {
           "id": "c4b4d33f-3918-5d35-bbf1-1beaae105dd0",
@@ -2021,8 +2039,14 @@
       "id": "c61968e89",
       "search_mode": "fts_only",
       "filtered_count": 416,
-      "signals": null,
-      "latency_ms": 483,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 132,
       "results": [
         {
           "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
@@ -2435,8 +2459,14 @@
       "id": "c10d4b48a",
       "search_mode": "fts_only",
       "filtered_count": 199,
-      "signals": null,
-      "latency_ms": 423,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 117,
       "results": [
         {
           "id": "9714a45a-4d6a-5111-97cd-2f9481042e4d",
@@ -2848,423 +2878,29 @@
     {
       "id": "c51d67519",
       "search_mode": "fts_only",
-      "filtered_count": 328,
-      "signals": null,
-      "latency_ms": 329,
-      "results": [
-        {
-          "id": "0aa3b659-190c-417c-9573-06298fb239a4",
-          "type": "rule",
-          "title": "Prefer stdlib + pflag; dependencies need justification",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4720f11b-93a9-52bd-9ff1-25a8213d2cbe",
-          "type": "function",
-          "title": "TestNormPassedOnLocal",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d11566fa-ec5b-549c-b2fa-d36a57cb666b",
-          "type": "function",
-          "title": "TestNormPassedOnInherited",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bc5d5de8-5a9c-5efb-b92c-33a26183bafe",
-          "type": "function",
-          "title": "TestGlobalNormFuncPropagation",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
-          "type": "file",
-          "title": "shell_completions.go",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfefb1c-a14e-5c8f-9d8e-5cc4c7503bfe",
-          "type": "function",
-          "title": "writeFlags",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4bb846df-f55c-56e0-976d-8a2a90e8b382",
-          "type": "function",
-          "title": "TestMergeCommandLineToFlags",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "618aed9f-e3a9-5472-bc82-32cbaf612d79",
-          "type": "function",
-          "title": "TestConsistentNormalizedName",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5145dc88-a445-52ae-a2a0-2f1fa9530451",
-          "type": "function",
-          "title": "resetCommandLineFlagSet",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f93b51d1-61aa-583d-bb12-7f8c81e2a4ff",
-          "type": "function",
-          "title": "*Command::PersistentFlags",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65dafcb4-6d27-5dd2-b0b2-e7225aebd433",
-          "type": "file",
-          "title": "flag_groups.go",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1a9abc32-27eb-5a06-893c-3320d83a86d9",
-          "type": "function",
-          "title": "*Command::ValidateRequiredFlags",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ad974f62-2e26-5cd6-80d2-6142ea14f10b",
-          "type": "function",
-          "title": "processFlagForGroupAnnotation",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "68aa933b-0bba-59a4-aaa7-8248e0c7f105",
-          "type": "function",
-          "title": "*Command::enforceFlagGroupsForCompletion",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a9661e23-9517-5dc3-b0c3-d8cad53111c8",
-          "type": "function",
-          "title": "*Command::ValidateFlagGroups",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5ab81763-b793-5be9-8d0e-01fe3ffb409e",
-          "type": "function",
-          "title": "getFlagNameCompletions",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "412a6133-a3c3-59f1-89f9-17a57b2084cb",
-          "type": "function",
-          "title": "completeRequireFlags",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "473a04d8-642b-53d4-9263-0d10f8d9f68d",
-          "type": "function",
-          "title": "*Command::ResetFlags",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7c974d17-46b8-5870-9fdf-a3001b6b70f9",
-          "type": "class",
-          "title": "Command",
-          "relevance": 0.3910256326198578,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1b8b69a5-341f-5e5b-839a-e6f9ef90fc27",
-          "type": "function",
-          "title": "nonCompletableFlag",
-          "relevance": 0.3860759437084198,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4229f908-8a61-57f3-88d9-be06d86f3109",
-          "type": "file",
-          "title": "bash_completions_test.go",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6e76d174-a7b5-5c20-ada5-49783831717d",
-          "type": "function",
-          "title": "TestBashCompletions",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9ad57bc1-a256-5959-9b21-ca83ef2a359f",
-          "type": "function",
-          "title": "TestNoCmdNameCompletionInGo",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcb5530b-80d1-48df-a35b-a129f7b575fe",
-          "type": "knowledge",
-          "title": "Cobra runs hooks around Run in a fixed order",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e960ad6b-7ac1-5534-b085-c36cd5677c15",
-          "type": "function",
-          "title": "TestCompleteWithDisableFlagParsing",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4730060a-806b-4c58-a766-9ff1b453327d",
-          "type": "observation",
-          "title": "Consistent annotation names (#2140)",
-          "relevance": 0.09149999916553497,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5af708db-cdc3-4d00-8fe9-99669510e19f",
-          "type": "knowledge",
-          "title": "Flag group constraints are declared then validated post-parse",
-          "relevance": 0.09149999916553497,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "133d2999-509c-523f-82e3-9b90d7b749a9",
-          "type": "class",
-          "title": "calledAsTestcase",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-          "type": "file",
-          "title": "command_test.go",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "03ab168b-c272-5359-af85-59b2117b74f9",
-          "type": "function",
-          "title": "MarkFlagRequired",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1d53bd37-e9f1-5c53-9be4-15a3f61cd1f6",
-          "type": "function",
-          "title": "*Command::MarkPersistentFlagDirname",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3aae4939-8dfe-54dd-867e-cd5b2ada0cbe",
-          "type": "function",
-          "title": "*Command::MarkFlagRequired",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3d766fd1-20ac-5935-803c-3ebf039559f2",
-          "type": "function",
-          "title": "MarkFlagFilename",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3ef801c3-2e2b-58ab-8f60-df4cecb3f216",
-          "type": "function",
-          "title": "*Command::MarkFlagCustom",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "452d2fea-f5ec-5b1a-8875-9b74f64e5e4a",
-          "type": "function",
-          "title": "MarkFlagCustom",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "57fe03dd-9f64-5b45-882a-ce7735cdfc8b",
-          "type": "function",
-          "title": "*Command::MarkFlagFilename",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "664beb11-fbae-55c6-bc1b-22e48bf14b8b",
-          "type": "function",
-          "title": "*Command::MarkPersistentFlagFilename",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "acb5376a-444d-55ac-8b99-e96949047e67",
-          "type": "function",
-          "title": "MarkFlagDirname",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c751c89f-9843-55f3-85de-9a1bb925df99",
-          "type": "function",
-          "title": "*Command::MarkPersistentFlagRequired",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "db6997e9-805e-5a27-a09e-c0b3cbd786b6",
-          "type": "function",
-          "title": "*Command::MarkFlagDirname",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2371f6ff-e9ec-56c9-ab49-516e1d3c5c09",
-          "type": "function",
-          "title": "TestRootUnknownCommandSilenced",
-          "relevance": 0.08000000566244125,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "366f8960-07b4-51d5-9a3c-632723e14c32",
-          "type": "function",
-          "title": "TestDeadcodeElimination",
-          "relevance": 0.08000000566244125,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3c7898aa-74b4-5867-8c3b-2cd0408f2519",
-          "type": "function",
-          "title": "TestCommandAlias",
-          "relevance": 0.08000000566244125,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8b272088-840e-530e-82d6-48504064c82c",
-          "type": "function",
-          "title": "*Command::SetVersionTemplate",
-          "relevance": 0.08000000566244125,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a3f54462-21a9-5ceb-b1a7-f2040dfa4d67",
-          "type": "function",
-          "title": "*Command::execute",
-          "relevance": 0.08000000566244125,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.3009031671506354,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 43,
+      "results": []
     },
     {
       "id": "c6dec1ae2",
       "search_mode": "fts_only",
       "filtered_count": 254,
-      "signals": null,
-      "latency_ms": 347,
+      "signals": {
+        "answer_coverage": 0.8101140369066481,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 107,
       "results": [
         {
           "id": "86e0eaa3-b3e7-4f48-8304-2e05e3a92e62",
@@ -3677,8 +3313,14 @@
       "id": "c4af7b64d",
       "search_mode": "fts_only",
       "filtered_count": 436,
-      "signals": null,
-      "latency_ms": 305,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 102,
       "results": [
         {
           "id": "30156d14-70d8-49c2-9f19-14df28949d72",
@@ -4090,423 +3732,29 @@
     {
       "id": "c75790e48",
       "search_mode": "fts_only",
-      "filtered_count": 344,
-      "signals": null,
-      "latency_ms": 304,
-      "results": [
-        {
-          "id": "c6219a0f-4941-4a1e-ae9f-50c906d4dc53",
-          "type": "observation",
-          "title": "Add similar whitespace escape logic to bash v2 completions than in other completions (#1743)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c6c1acf5-91a1-58b5-b44b-cf877b19998b",
-          "type": "function",
-          "title": "genBashComp",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "683b8800-8e49-562d-8ae7-4c9116933954",
-          "type": "file",
-          "title": "bash_completionsV2.go",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "743d5ee0-04c5-4c53-a582-47202c084370",
-          "type": "observation",
-          "title": "Allow to reset the templates to the default (#2229)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6f830dca-1005-5692-9c11-b3c782bd5513",
-          "type": "file",
-          "title": "man_docs.go",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "756bbf78-7043-4951-a635-375d6199db14",
-          "type": "knowledge",
-          "title": "Only persistent flags propagate to subcommands",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
-          "type": "file",
-          "title": "shell_completions.go",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "34908ffb-e681-4c7a-9eae-253042ddb257",
-          "type": "observation",
-          "title": "Add keeporder to shell completion (#1903)",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23227f97-ff64-5426-9763-d1be631915e0",
-          "type": "function",
-          "title": "TestSetOutput",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fb86a539-03e5-401a-9601-02e9434ad6e6",
-          "type": "observation",
-          "title": "refactor: change minUsagePadding from var to const (#2325)",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "07d16f44-4481-5ff3-bf84-3c342cf73edd",
-          "type": "function",
-          "title": "TestSetOut",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cddd7c7b-2da4-415c-aaf5-dc5e421c1bd1",
-          "type": "observation",
-          "title": "Allow linker to perform deadcode elimination for program using Cobra (#1956)",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5550c532-4af9-47cd-8e7d-02ab54f39f0d",
-          "type": "knowledge",
-          "title": "SetContext flows ctx through ExecuteC to every hook",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
-          "type": "observation",
-          "title": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7bfe4fc2-ba6b-4973-adb0-269e969f5c42",
-          "type": "observation",
-          "title": "Add env variable to suppress completion descriptions on create (#1938)",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bfb76059-a247-4524-ac1f-282183d5c394",
-          "type": "observation",
-          "title": "Improve API to get flag completion function (#2063)",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3bd263c8-b239-4589-81ff-96397e9a8607",
-          "type": "knowledge",
-          "title": "PersistentFlags inherit to children; local Flags do not",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a1b10706-5d14-4e31-928a-0adce7d8fcd5",
-          "type": "observation",
-          "title": "Fix grammar: 'allows to' (#1978)",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "52f1bfa9-dff2-4fba-8584-75d7b705ce01",
-          "type": "observation",
-          "title": "feat: add CompletionFunc type to help with completions (#2220)",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e3713664-16e5-421e-8cb3-daa363d1cb6e",
-          "type": "rule",
-          "title": "Do not put cleanup in root PersistentPostRun expecting it to run for children",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0273ca5a-a9ce-43cc-ab28-d1b3cec8ede6",
-          "type": "observation",
-          "title": "fix(bash): nounset unbound file filter variable on empty extension (#2228)",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8d544208-0c84-48c7-82ac-619a50663e2d",
-          "type": "observation",
-          "title": "Print ActiveHelp for bash along other completions (#2076)",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "aea5003e-e5bf-4220-93a8-f478ff83a191",
-          "type": "observation",
-          "title": "perf: Loop over the bash variable directly instead of starting subprocesses. (#2333)",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1370b54e-abe7-48f7-bc88-dce7f79e319e",
-          "type": "knowledge",
-          "title": "The doc/ package generates man, markdown, and yaml docs",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30156d14-70d8-49c2-9f19-14df28949d72",
-          "type": "observation",
-          "title": "refactor: apply golangci-lint autofixes, work around false positives",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
-          "type": "file",
-          "title": "fish_completions.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
-          "type": "file",
-          "title": "completions.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
-          "type": "file",
-          "title": "powershell_completions.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b5cef97f-6869-5e81-aeef-23dba4c94302",
-          "type": "file",
-          "title": "active_help.go",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b7cebe98-abf2-5fc3-850f-d696b8d5ddad",
-          "type": "file",
-          "title": "cobra.go",
-          "relevance": 0.08895833045244217,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c5657f13-c3a1-5a9f-8e5a-895ea142d2ab",
-          "type": "file",
-          "title": "bash_completions.go",
-          "relevance": 0.08895833045244217,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "47a813ee-dede-5372-991f-3d363b1d6d51",
-          "type": "file",
-          "title": "command.go",
-          "relevance": 0.0877397283911705,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "16c09795-0548-5da2-bacb-80cab6c05626",
-          "type": "function",
-          "title": "WriteStringAndCheck",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30a060e4-d32a-5408-a061-781c6a042e20",
-          "type": "function",
-          "title": "*Command::genBashCompletion",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "04fb6b60-0a61-54d1-a983-1deaf50c2b29",
-          "type": "function",
-          "title": "*Command::GenBashCompletionFileV2",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ed35b707-37fd-5cd2-a312-b30518cff457",
-          "type": "function",
-          "title": "*Command::GenBashCompletionV2",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2e17e519-79ae-5d50-815a-83b1ba24669f",
-          "type": "function",
-          "title": "GenManTree",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4699ff91-9272-51c7-ae4d-282664d57898",
-          "type": "function",
-          "title": "GenManTreeFromOpts",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "52bef11e-7882-55fd-886f-ad1199e6f3fa",
-          "type": "function",
-          "title": "fillHeader",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "936fff5b-1069-5382-965c-1c57e7fde57a",
-          "type": "function",
-          "title": "GenMan",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0459f92a-b1c2-5fe8-93df-69e6533cd46e",
-          "type": "function",
-          "title": "TestHiddenCommandExecutes",
-          "relevance": 0.10000000149011612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
-          "type": "function",
-          "title": "TestPluginWithSubCommands",
-          "relevance": 0.10000000149011612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "08bcf3ad-12ad-5d6c-a2b6-0573b991c6db",
-          "type": "function",
-          "title": "TestRootAndSubErrPrefix",
-          "relevance": 0.10000000149011612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "140ca9c2-7703-5f1e-af4c-b5487f64d374",
-          "type": "function",
-          "title": "writeRequiredFlag",
-          "relevance": 0.10000000149011612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "14741b7a-163c-5071-b4ef-e4dbc4fabc2e",
-          "type": "function",
-          "title": "*Command::PrintErrf",
-          "relevance": 0.10000000149011612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 47,
+      "results": []
     },
     {
       "id": "c1995054b",
       "search_mode": "fts_only",
       "filtered_count": 215,
-      "signals": null,
-      "latency_ms": 376,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 124,
       "results": [
         {
           "id": "0b709961-c4a4-57fc-82e6-6682a9c6c001",
@@ -4919,8 +4167,14 @@
       "id": "c40b5bc14",
       "search_mode": "fts_only",
       "filtered_count": 444,
-      "signals": null,
-      "latency_ms": 371,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 148,
       "results": [
         {
           "id": "23227f97-ff64-5426-9763-d1be631915e0",
@@ -5333,8 +4587,14 @@
       "id": "ca97f9fd4",
       "search_mode": "fts_only",
       "filtered_count": 262,
-      "signals": null,
-      "latency_ms": 371,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 117,
       "results": [
         {
           "id": "32bf359d-18e5-494d-8cc4-76f70d00b4e8",
@@ -5747,8 +5007,14 @@
       "id": "c24ada7fe",
       "search_mode": "fts_only",
       "filtered_count": 241,
-      "signals": null,
-      "latency_ms": 364,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 179,
       "results": [
         {
           "id": "86e0eaa3-b3e7-4f48-8304-2e05e3a92e62",
@@ -6161,8 +5427,14 @@
       "id": "c8cb30f9c",
       "search_mode": "fts_only",
       "filtered_count": 431,
-      "signals": null,
-      "latency_ms": 382,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 123,
       "results": [
         {
           "id": "21d23602-1d60-5bf0-8f3f-7db545a6f90e",
@@ -6575,8 +5847,14 @@
       "id": "cab5cadcc",
       "search_mode": "fts_only",
       "filtered_count": 308,
-      "signals": null,
-      "latency_ms": 295,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 173,
       "results": [
         {
           "id": "743d5ee0-04c5-4c53-a582-47202c084370",
@@ -6989,8 +6267,14 @@
       "id": "c4ba5566f",
       "search_mode": "fts_only",
       "filtered_count": 255,
-      "signals": null,
-      "latency_ms": 369,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 122,
       "results": [
         {
           "id": "0273ca5a-a9ce-43cc-ab28-d1b3cec8ede6",
@@ -7403,8 +6687,14 @@
       "id": "c41b26ec8",
       "search_mode": "fts_only",
       "filtered_count": 388,
-      "signals": null,
-      "latency_ms": 691,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 138,
       "results": [
         {
           "id": "683b8800-8e49-562d-8ae7-4c9116933954",
@@ -7817,8 +7107,14 @@
       "id": "c09d5664f",
       "search_mode": "fts_only",
       "filtered_count": 226,
-      "signals": null,
-      "latency_ms": 387,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 139,
       "results": [
         {
           "id": "c6219a0f-4941-4a1e-ae9f-50c906d4dc53",
@@ -8231,8 +7527,14 @@
       "id": "c6c3c1163",
       "search_mode": "fts_only",
       "filtered_count": 331,
-      "signals": null,
-      "latency_ms": 355,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 143,
       "results": [
         {
           "id": "52f1bfa9-dff2-4fba-8584-75d7b705ce01",
@@ -8645,8 +7947,14 @@
       "id": "c0745e557",
       "search_mode": "fts_only",
       "filtered_count": 312,
-      "signals": null,
-      "latency_ms": 322,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 173,
       "results": [
         {
           "id": "5d46b6d2-18c2-520f-9f33-55b7d78cf785",
@@ -9059,8 +8367,14 @@
       "id": "cd1e9d85f",
       "search_mode": "fts_only",
       "filtered_count": 397,
-      "signals": null,
-      "latency_ms": 308,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 117,
       "results": [
         {
           "id": "6759c2b2-e4a2-5031-8a7d-17dafe31456f",
@@ -9473,8 +8787,14 @@
       "id": "c85196307",
       "search_mode": "fts_only",
       "filtered_count": 242,
-      "signals": null,
-      "latency_ms": 290,
+      "signals": {
+        "answer_coverage": 0.619189866470722,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 121,
       "results": [
         {
           "id": "743d5ee0-04c5-4c53-a582-47202c084370",
@@ -9887,8 +9207,14 @@
       "id": "c5a138f14",
       "search_mode": "fts_only",
       "filtered_count": 383,
-      "signals": null,
-      "latency_ms": 303,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 147,
       "results": [
         {
           "id": "55a2e64d-1e4d-4fa1-b7a8-b1d8709f183d",
@@ -10301,8 +9627,14 @@
       "id": "c5bef9d8d",
       "search_mode": "fts_only",
       "filtered_count": 294,
-      "signals": null,
-      "latency_ms": 334,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 147,
       "results": [
         {
           "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
@@ -10715,8 +10047,14 @@
       "id": "c511af59c",
       "search_mode": "fts_only",
       "filtered_count": 277,
-      "signals": null,
-      "latency_ms": 363,
+      "signals": {
+        "answer_coverage": 0.6096567495210454,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 121,
       "results": [
         {
           "id": "1d9aa95c-0d92-5592-a456-3d300985ec37",
@@ -11129,8 +10467,14 @@
       "id": "c756ba6da",
       "search_mode": "fts_only",
       "filtered_count": 282,
-      "signals": null,
-      "latency_ms": 348,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 134,
       "results": [
         {
           "id": "4427a65e-2b70-4954-8005-b632da76f792",
@@ -11543,8 +10887,14 @@
       "id": "ce94f6d0d",
       "search_mode": "fts_only",
       "filtered_count": 464,
-      "signals": null,
-      "latency_ms": 321,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 131,
       "results": [
         {
           "id": "052c4782-a346-4929-b158-79b8cab5e858",
@@ -11957,8 +11307,14 @@
       "id": "c8003b74a",
       "search_mode": "fts_only",
       "filtered_count": 486,
-      "signals": null,
-      "latency_ms": 594,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 140,
       "results": [
         {
           "id": "30d50cfc-58bf-4534-aad2-61aa41f10ddf",
@@ -12371,8 +11727,14 @@
       "id": "c5c2c1d62",
       "search_mode": "fts_only",
       "filtered_count": 401,
-      "signals": null,
-      "latency_ms": 334,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 118,
       "results": [
         {
           "id": "4730060a-806b-4c58-a766-9ff1b453327d",
@@ -12784,342 +12146,29 @@
     {
       "id": "cbd914e58",
       "search_mode": "fts_only",
-      "filtered_count": 444,
-      "signals": null,
-      "latency_ms": 383,
-      "results": [
-        {
-          "id": "84e38fb8-68c9-5fd0-b096-8661b5411d36",
-          "type": "function",
-          "title": "TestDeprecatedCommand",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "925db41b-56ba-4b14-a052-946f43e44131",
-          "type": "observation",
-          "title": "Fix deprecation comment for Command.SetOutput (#2172)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a03b288e-042a-5fca-93f8-0bc07e125add",
-          "type": "function",
-          "title": "TestUseDeprecatedFlags",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b29e726a-b632-4873-8efb-ef74ee164ee3",
-          "type": "observation",
-          "title": "Fix --version help and output for plugins (#2180)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
-          "type": "observation",
-          "title": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f1bc6e08-672f-4912-93bd-4c551bfe48b8",
-          "type": "observation",
-          "title": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5b1708cb-df7d-4179-8dc7-97035f5028d5",
-          "type": "observation",
-          "title": "fix: quote args in fish shell completion (#2285)",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
-          "type": "observation",
-          "title": "Fix typo in fish completions (#1945)",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4427a65e-2b70-4954-8005-b632da76f792",
-          "type": "observation",
-          "title": "fix(completions): Complete map flags multiple times (#2174)",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "32bf359d-18e5-494d-8cc4-76f70d00b4e8",
-          "type": "observation",
-          "title": "fix CompletionFunc implementation (#2234)",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d3abddd6-f5f9-499d-8f39-b016e2e7dc45",
-          "type": "observation",
-          "title": "Fix help text for plugins",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcb5530b-80d1-48df-a35b-a129f7b575fe",
-          "type": "knowledge",
-          "title": "Cobra runs hooks around Run in a fixed order",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c89412df-0b5e-4d67-8bec-f75811cb3bb4",
-          "type": "observation",
-          "title": "Fix help text for runnable plugin command",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f15c12f5-31f6-488a-b477-70f4dc7ddaf8",
-          "type": "observation",
-          "title": "fix: conflict import name with variable (#1879)",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d6f78e93-dbcd-46a7-b9dc-e626ef4d8683",
-          "type": "observation",
-          "title": "Fix linter errors (#2052)",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a1b10706-5d14-4e31-928a-0adce7d8fcd5",
-          "type": "observation",
-          "title": "Fix grammar: 'allows to' (#1978)",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0273ca5a-a9ce-43cc-ab28-d1b3cec8ede6",
-          "type": "observation",
-          "title": "fix(bash): nounset unbound file filter variable on empty extension (#2228)",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "45a2dd5a-f216-40ff-810d-8834970264f3",
-          "type": "observation",
-          "title": "fix: func name in doc strings (#1885)",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "052c4782-a346-4929-b158-79b8cab5e858",
-          "type": "observation",
-          "title": "Address golangci-lint deprecation warnings, enable some more linters (#2152)",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30d50cfc-58bf-4534-aad2-61aa41f10ddf",
-          "type": "observation",
-          "title": "Remove fully inactivated linters (#2148)",
-          "relevance": 0.3910256326198578,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
-          "type": "file",
-          "title": "powershell_completions.go",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
-          "type": "file",
-          "title": "fish_completions.go",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ea69102a-6692-5faa-9ffd-fa7cacbe7c16",
-          "type": "file",
-          "title": "md_docs.go",
-          "relevance": 0.0877397283911705,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b7cebe98-abf2-5fc3-850f-d696b8d5ddad",
-          "type": "file",
-          "title": "cobra.go",
-          "relevance": 0.08655405789613724,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "683b8800-8e49-562d-8ae7-4c9116933954",
-          "type": "file",
-          "title": "bash_completionsV2.go",
-          "relevance": 0.08540000021457672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c5657f13-c3a1-5a9f-8e5a-895ea142d2ab",
-          "type": "file",
-          "title": "bash_completions.go",
-          "relevance": 0.08427631109952927,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
-          "type": "file",
-          "title": "args.go",
-          "relevance": 0.08427631109952927,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "47a813ee-dede-5372-991f-3d363b1d6d51",
-          "type": "file",
-          "title": "command.go",
-          "relevance": 0.08318182080984116,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
-          "type": "file",
-          "title": "completions.go",
-          "relevance": 0.08211538195610046,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "133d2999-509c-523f-82e3-9b90d7b749a9",
-          "type": "class",
-          "title": "calledAsTestcase",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1c136e22-cdb6-50ea-8cfe-63bc424b5c46",
-          "type": "file",
-          "title": "command_test.go",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b1f132de-bf54-5098-b65c-4fd44161c693",
-          "type": "function",
-          "title": "TestManPrintFlagsHidesShortDeprecated",
-          "relevance": 0.12863636016845703,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7c974d17-46b8-5870-9fdf-a3001b6b70f9",
-          "type": "class",
-          "title": "Command",
-          "relevance": 0.09748201072216034,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "040fea7d-f25f-5f03-a696-f4bd98da52e9",
-          "type": "function",
-          "title": "*Command::NamePadding",
-          "relevance": 0.08921052515506744,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4720f11b-93a9-52bd-9ff1-25a8213d2cbe",
-          "type": "function",
-          "title": "TestNormPassedOnLocal",
-          "relevance": 0.08496277779340744,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6e76d174-a7b5-5c20-ada5-49783831717d",
-          "type": "function",
-          "title": "TestBashCompletions",
-          "relevance": 0.08496277779340744,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.21790520752836282,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 33,
+      "results": []
     },
     {
       "id": "c4fb0a66a",
       "search_mode": "fts_only",
       "filtered_count": 292,
-      "signals": null,
-      "latency_ms": 340,
+      "signals": {
+        "answer_coverage": 0.5165549640823175,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 84,
       "results": [
         {
           "id": "3bd263c8-b239-4589-81ff-96397e9a8607",
@@ -13532,8 +12581,14 @@
       "id": "c0dec88e7",
       "search_mode": "fts_only",
       "filtered_count": 457,
-      "signals": null,
-      "latency_ms": 346,
+      "signals": {
+        "answer_coverage": 0.7054652078573004,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 87,
       "results": [
         {
           "id": "b7cebe98-abf2-5fc3-850f-d696b8d5ddad",
@@ -13883,8 +12938,14 @@
       "id": "ca73b9c39",
       "search_mode": "fts_only",
       "filtered_count": 381,
-      "signals": null,
-      "latency_ms": 381,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 71,
       "results": [
         {
           "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
@@ -14252,8 +13313,14 @@
       "id": "cdf547f5f",
       "search_mode": "fts_only",
       "filtered_count": 393,
-      "signals": null,
-      "latency_ms": 356,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 68,
       "results": [
         {
           "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
@@ -14648,8 +13715,14 @@
       "id": "ce63925d3",
       "search_mode": "fts_only",
       "filtered_count": 372,
-      "signals": null,
-      "latency_ms": 367,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 70,
       "results": [
         {
           "id": "7bfe4fc2-ba6b-4973-adb0-269e969f5c42",
@@ -15062,8 +14135,14 @@
       "id": "ca0a6ae02",
       "search_mode": "fts_only",
       "filtered_count": 241,
-      "signals": null,
-      "latency_ms": 335,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 67,
       "results": [
         {
           "id": "8df64f91-5782-58b8-856d-fd32b5463966",
@@ -15476,8 +14555,14 @@
       "id": "c890302a3",
       "search_mode": "fts_only",
       "filtered_count": 291,
-      "signals": null,
-      "latency_ms": 363,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 76,
       "results": [
         {
           "id": "06cf0874-a2d4-5931-a613-75f22ba1ab76",
@@ -15890,8 +14975,14 @@
       "id": "c22953d88",
       "search_mode": "fts_only",
       "filtered_count": 392,
-      "signals": null,
-      "latency_ms": 390,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 150,
       "results": [
         {
           "id": "b5cef97f-6869-5e81-aeef-23dba4c94302",
@@ -16303,423 +15394,29 @@
     {
       "id": "c00b68a1c",
       "search_mode": "fts_only",
-      "filtered_count": 383,
-      "signals": null,
-      "latency_ms": 385,
-      "results": [
-        {
-          "id": "185f9192-c442-4f14-837f-dfa9feb2ae18",
-          "type": "observation",
-          "title": "feat: add getters for flag completions (#1943)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
-          "type": "file",
-          "title": "shell_completions.go",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0944d033-e3c4-534f-b21d-a044e002597e",
-          "type": "function",
-          "title": "TestFlagCompletionWorksRootCommandAddedAfterFlags",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "230fd1cc-8fd1-4e8b-afb6-4f88a53d21c4",
-          "type": "observation",
-          "title": "Add support for PowerShell 7.2+ (#1916)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "074fd0df-e94b-5078-8b01-e3942f73f306",
-          "type": "function",
-          "title": "TestFlagCompletionConcurrentRegistration",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6de58255-f2f2-4f39-a97d-f173409489cd",
-          "type": "observation",
-          "title": "feat: add CompletionWithDesc helper (#2231)",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23de7846-f546-5fd1-a556-287c91126dd1",
-          "type": "function",
-          "title": "TestCompletionCobraFlags",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c6219a0f-4941-4a1e-ae9f-50c906d4dc53",
-          "type": "observation",
-          "title": "Add similar whitespace escape logic to bash v2 completions than in other completions (#1743)",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65e6ad12-0ea2-5a27-ade2-0a3c1d077a75",
-          "type": "function",
-          "title": "*Command::getCompletions",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7bfe4fc2-ba6b-4973-adb0-269e969f5c42",
-          "type": "observation",
-          "title": "Add env variable to suppress completion descriptions on create (#1938)",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "52f1bfa9-dff2-4fba-8584-75d7b705ce01",
-          "type": "observation",
-          "title": "feat: add CompletionFunc type to help with completions (#2220)",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f36b832a-0c69-5bfd-b9e9-f3e5f043d26a",
-          "type": "function",
-          "title": "TestDefaultCompletionCmd",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "34908ffb-e681-4c7a-9eae-253042ddb257",
-          "type": "observation",
-          "title": "Add keeporder to shell completion (#1903)",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
-          "type": "file",
-          "title": "completions.go",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "324075b1-ce19-5b11-807c-c39310d1949c",
-          "type": "function",
-          "title": "TestCompletionForOneRequiredGroupFlags",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7457bbf3-c238-440d-a87b-8a57c746dc40",
-          "type": "observation",
-          "title": "completion: improve detection for flags that accept multiple values (#2210)",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "98ac427d-d64a-5129-a306-d9c1786e058c",
-          "type": "function",
-          "title": "TestCompletionForGroupedFlags",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fe46fcf6-50b4-5554-b7a3-b0c978147938",
-          "type": "function",
-          "title": "TestCompletionForMutuallyExclusiveFlags",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8ab66ba1-a749-5413-bcff-0fc9e44298f1",
-          "type": "function",
-          "title": "genPowerShellComp",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7c4adbfe-7559-5ebb-a380-fa01bb61df12",
-          "type": "function",
-          "title": "TestCompleteCompletion",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "18f9928e-1c17-4f7c-89a5-ecd5a3b65392",
-          "type": "rule",
-          "title": "Active help must degrade cleanly without env support",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
-          "type": "file",
-          "title": "powershell_completions.go",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "21d23602-1d60-5bf0-8f3f-7db545a6f90e",
-          "type": "function",
-          "title": "CompletionWithDesc",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b5cef97f-6869-5e81-aeef-23dba4c94302",
-          "type": "file",
-          "title": "active_help.go",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "47a813ee-dede-5372-991f-3d363b1d6d51",
-          "type": "file",
-          "title": "command.go",
-          "relevance": 0.09704545140266418,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-          "type": "rule",
-          "title": "Completion changes must cover bash, zsh, fish, powershell",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
-          "type": "file",
-          "title": "fish_completions.go",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30156d14-70d8-49c2-9f19-14df28949d72",
-          "type": "observation",
-          "title": "refactor: apply golangci-lint autofixes, work around false positives",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30d50cfc-58bf-4534-aad2-61aa41f10ddf",
-          "type": "observation",
-          "title": "Remove fully inactivated linters (#2148)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "32bf359d-18e5-494d-8cc4-76f70d00b4e8",
-          "type": "observation",
-          "title": "fix CompletionFunc implementation (#2234)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "35ed6be0-f6ae-46d0-9497-a397550a79f6",
-          "type": "observation",
-          "title": "Allow sourcing zsh completion script (#1917)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4427a65e-2b70-4954-8005-b632da76f792",
-          "type": "observation",
-          "title": "fix(completions): Complete map flags multiple times (#2174)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "45a2dd5a-f216-40ff-810d-8834970264f3",
-          "type": "observation",
-          "title": "fix: func name in doc strings (#1885)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "683b8800-8e49-562d-8ae7-4c9116933954",
-          "type": "file",
-          "title": "bash_completionsV2.go",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "86e0eaa3-b3e7-4f48-8304-2e05e3a92e62",
-          "type": "observation",
-          "title": "Remove the default 'completion' cmd if it is alone (#1559)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bfb76059-a247-4524-ac1f-282183d5c394",
-          "type": "observation",
-          "title": "Improve API to get flag completion function (#2063)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cddd7c7b-2da4-415c-aaf5-dc5e421c1bd1",
-          "type": "observation",
-          "title": "Allow linker to perform deadcode elimination for program using Cobra (#1956)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f1bc6e08-672f-4912-93bd-4c551bfe48b8",
-          "type": "observation",
-          "title": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f94e5fc4-8698-4bb9-8ef8-84c8010d65bb",
-          "type": "knowledge",
-          "title": "Shell completion runs through hidden __complete commands",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ffdb2d68-262c-4d43-8311-3721184547e9",
-          "type": "observation",
-          "title": "Don't complete --help flag when flag parsing disabled (#2061)",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "41dd7ce6-8101-56ef-90ab-48c62e98f0a6",
-          "type": "function",
-          "title": "TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag",
-          "relevance": 0.18223635852336884,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "af5f9922-e58f-5770-a510-40d2a01222b6",
-          "type": "function",
-          "title": "TestChildFlagShadowsParentPersistentFlag",
-          "relevance": 0.18223635852336884,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4bdecb73-2281-5566-a7cc-a9a22dc554dc",
-          "type": "function",
-          "title": "writeFlag",
-          "relevance": 0.14723169803619385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e76ec587-d54f-5154-a026-54ebfdd9a6a6",
-          "type": "function",
-          "title": "TestPersistentRequiredFlagsWithDisableFlagParsing",
-          "relevance": 0.14321203529834747,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "80f1443c-59a3-56c1-b32b-78874370ce54",
-          "type": "function",
-          "title": "TestAddTemplateFunctions",
-          "relevance": 0.13340425491333008,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.2879880828521117,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 37,
+      "results": []
     },
     {
       "id": "cb711e876",
       "search_mode": "fts_only",
       "filtered_count": 358,
-      "signals": null,
-      "latency_ms": 595,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 177,
       "results": [
         {
           "id": "65e6ad12-0ea2-5a27-ade2-0a3c1d077a75",
@@ -17132,8 +15829,14 @@
       "id": "c8b1eba47",
       "search_mode": "fts_only",
       "filtered_count": 225,
-      "signals": null,
-      "latency_ms": 343,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 95,
       "results": [
         {
           "id": "d6f78e93-dbcd-46a7-b9dc-e626ef4d8683",
@@ -17447,8 +16150,14 @@
       "id": "c4cafa37b",
       "search_mode": "fts_only",
       "filtered_count": 282,
-      "signals": null,
-      "latency_ms": 373,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 128,
       "results": [
         {
           "id": "a3f54462-21a9-5ceb-b1a7-f2040dfa4d67",
@@ -17861,8 +16570,14 @@
       "id": "c95d8a1e4",
       "search_mode": "fts_only",
       "filtered_count": 310,
-      "signals": null,
-      "latency_ms": 362,
+      "signals": {
+        "answer_coverage": 0.5918763623856204,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 147,
       "results": [
         {
           "id": "785f5367-f893-43f3-a8e3-6f9b9c15622f",
@@ -18275,8 +16990,14 @@
       "id": "cbd4d1655",
       "search_mode": "fts_only",
       "filtered_count": 393,
-      "signals": null,
-      "latency_ms": 379,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 142,
       "results": [
         {
           "id": "185f9192-c442-4f14-837f-dfa9feb2ae18",
@@ -18689,8 +17410,14 @@
       "id": "c0c72800b",
       "search_mode": "fts_only",
       "filtered_count": 433,
-      "signals": null,
-      "latency_ms": 388,
+      "signals": {
+        "answer_coverage": 0.48939821747578943,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 139,
       "results": [
         {
           "id": "e202e232-6e78-5ac3-97ac-ee2349651793",
@@ -19103,8 +17830,14 @@
       "id": "c285460dc",
       "search_mode": "fts_only",
       "filtered_count": 409,
-      "signals": null,
-      "latency_ms": 389,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 143,
       "results": [
         {
           "id": "546771fa-c34b-5e0c-a8f1-0ea59c4b472b",
@@ -19516,423 +18249,29 @@
     {
       "id": "cfd865a44",
       "search_mode": "fts_only",
-      "filtered_count": 330,
-      "signals": null,
-      "latency_ms": 330,
-      "results": [
-        {
-          "id": "45a2dd5a-f216-40ff-810d-8834970264f3",
-          "type": "observation",
-          "title": "fix: func name in doc strings (#1885)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c495250c-6132-5bd4-a64a-6cf9500367c7",
-          "type": "function",
-          "title": "checkIfFlagCompletion",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "743d5ee0-04c5-4c53-a582-47202c084370",
-          "type": "observation",
-          "title": "Allow to reset the templates to the default (#2229)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a3f54462-21a9-5ceb-b1a7-f2040dfa4d67",
-          "type": "function",
-          "title": "*Command::execute",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "61d74edf-462f-58f5-8228-397b79ca9f7b",
-          "type": "function",
-          "title": "TestGenManSeeAlso",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "756bbf78-7043-4951-a635-375d6199db14",
-          "type": "knowledge",
-          "title": "Only persistent flags propagate to subcommands",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "34908ffb-e681-4c7a-9eae-253042ddb257",
-          "type": "observation",
-          "title": "Add keeporder to shell completion (#1903)",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9f494797-ba0e-5262-86c5-4f63ec7630b0",
-          "type": "file",
-          "title": "man_docs_test.go",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcfb6142-7ec5-5e03-9182-2ab8906e0d00",
-          "type": "file",
-          "title": "completions.go",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fb86a539-03e5-401a-9601-02e9434ad6e6",
-          "type": "observation",
-          "title": "refactor: change minUsagePadding from var to const (#2325)",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23227f97-ff64-5426-9763-d1be631915e0",
-          "type": "function",
-          "title": "TestSetOutput",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cddd7c7b-2da4-415c-aaf5-dc5e421c1bd1",
-          "type": "observation",
-          "title": "Allow linker to perform deadcode elimination for program using Cobra (#1956)",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "07d16f44-4481-5ff3-bf84-3c342cf73edd",
-          "type": "function",
-          "title": "TestSetOut",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5550c532-4af9-47cd-8e7d-02ab54f39f0d",
-          "type": "knowledge",
-          "title": "SetContext flows ctx through ExecuteC to every hook",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "58d4b831-35a7-5671-8679-bf2203bde2b6",
-          "type": "function",
-          "title": "TestSetErr",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",
-          "type": "observation",
-          "title": "fix: force ForEach-Object to return array in pwsh completion (#1850)",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7bfe4fc2-ba6b-4973-adb0-269e969f5c42",
-          "type": "observation",
-          "title": "Add env variable to suppress completion descriptions on create (#1938)",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e6df33bc-d21b-580b-b897-b93280260fa5",
-          "type": "function",
-          "title": "TestSetIn",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bfb76059-a247-4524-ac1f-282183d5c394",
-          "type": "observation",
-          "title": "Improve API to get flag completion function (#2063)",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3bd263c8-b239-4589-81ff-96397e9a8607",
-          "type": "knowledge",
-          "title": "PersistentFlags inherit to children; local Flags do not",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d1f162eb-115f-56b4-8d97-5de0b81d1a2f",
-          "type": "file",
-          "title": "completions_test.go",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc0876c6-170b-5c5e-b959-1833a827cfc6",
-          "type": "function",
-          "title": "TestFlagCompletionWithNotInterspersedArgs",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "47a813ee-dede-5372-991f-3d363b1d6d51",
-          "type": "file",
-          "title": "command.go",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c5657f13-c3a1-5a9f-8e5a-895ea142d2ab",
-          "type": "file",
-          "title": "bash_completions.go",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "db8c5b96-5a68-5680-acc7-e767399f45a0",
-          "type": "file",
-          "title": "args.go",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c1e5fa4-f9b0-5332-ab40-bb481cc19747",
-          "type": "file",
-          "title": "fish_completions.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "683b8800-8e49-562d-8ae7-4c9116933954",
-          "type": "file",
-          "title": "bash_completionsV2.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8fe9ab9-9c92-5617-b2b3-82f76e7edb47",
-          "type": "file",
-          "title": "powershell_completions.go",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "185f9192-c442-4f14-837f-dfa9feb2ae18",
-          "type": "observation",
-          "title": "feat: add getters for flag completions (#1943)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1a078f19-6d25-451a-b169-22733ee0bbde",
-          "type": "rule",
-          "title": "Completion changes must cover bash, zsh, fish, powershell",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30156d14-70d8-49c2-9f19-14df28949d72",
-          "type": "observation",
-          "title": "refactor: apply golangci-lint autofixes, work around false positives",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30d50cfc-58bf-4534-aad2-61aa41f10ddf",
-          "type": "observation",
-          "title": "Remove fully inactivated linters (#2148)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "32bf359d-18e5-494d-8cc4-76f70d00b4e8",
-          "type": "observation",
-          "title": "fix CompletionFunc implementation (#2234)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "35ed6be0-f6ae-46d0-9497-a397550a79f6",
-          "type": "observation",
-          "title": "Allow sourcing zsh completion script (#1917)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4427a65e-2b70-4954-8005-b632da76f792",
-          "type": "observation",
-          "title": "fix(completions): Complete map flags multiple times (#2174)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "52f1bfa9-dff2-4fba-8584-75d7b705ce01",
-          "type": "observation",
-          "title": "feat: add CompletionFunc type to help with completions (#2220)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6de58255-f2f2-4f39-a97d-f173409489cd",
-          "type": "observation",
-          "title": "feat: add CompletionWithDesc helper (#2231)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7457bbf3-c238-440d-a87b-8a57c746dc40",
-          "type": "observation",
-          "title": "completion: improve detection for flags that accept multiple values (#2210)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "86e0eaa3-b3e7-4f48-8304-2e05e3a92e62",
-          "type": "observation",
-          "title": "Remove the default 'completion' cmd if it is alone (#1559)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f1bc6e08-672f-4912-93bd-4c551bfe48b8",
-          "type": "observation",
-          "title": "fix: prevent completions from mutating os.Args via append side effect (#2356)",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c5b0654-9d41-5b04-b3fc-814e99a48ce0",
-          "type": "function",
-          "title": "TestVersionFlagOnlyAddedToRoot",
-          "relevance": 0.12686045467853546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cb5717bf-58b0-5c5e-9160-fdcfe1786fcf",
-          "type": "function",
-          "title": "TestLevenshteinDistance",
-          "relevance": 0.10868421196937561,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8e1480f4-a49f-528a-97f0-68ea9494ab8a",
-          "type": "function",
-          "title": "TestStringInSlice",
-          "relevance": 0.09033333510160446,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1206df59-069f-522c-bedc-6e47f34f25b8",
-          "type": "function",
-          "title": "TestNoRootRunCommandExecutedWithoutVersionSet",
-          "relevance": 0.08642857521772385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "309f4204-a0e6-580a-9f1c-3306cbc9865f",
-          "type": "function",
-          "title": "TestHelpCommandExecutedWithVersionSet",
-          "relevance": 0.08642857521772385,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 52,
+      "results": []
     },
     {
       "id": "c60d056d1",
       "search_mode": "fts_only",
       "filtered_count": 493,
-      "signals": null,
-      "latency_ms": 326,
+      "signals": {
+        "answer_coverage": 0.5713836796622404,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 139,
       "results": [
         {
           "id": "3605f047-bd85-52ab-9a07-db5ecd3f234a",
@@ -20345,8 +18684,14 @@
       "id": "cc81c46a0",
       "search_mode": "fts_only",
       "filtered_count": 174,
-      "signals": null,
-      "latency_ms": 390,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 157,
       "results": [
         {
           "id": "315cf79d-a5f8-583c-949d-2136128bda7b",
@@ -20759,8 +19104,14 @@
       "id": "cfdee73b4",
       "search_mode": "fts_only",
       "filtered_count": 291,
-      "signals": null,
-      "latency_ms": 298,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 104,
       "results": [
         {
           "id": "3d6c6830-0dac-57cf-8c39-737e727aa1d4",
@@ -21173,8 +19524,14 @@
       "id": "c988bd761",
       "search_mode": "fts_only",
       "filtered_count": 417,
-      "signals": null,
-      "latency_ms": 397,
+      "signals": {
+        "answer_coverage": 0.6325231401994389,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 152,
       "results": [
         {
           "id": "a89dfcad-d7db-415d-864d-470a258c28b7",
@@ -21587,8 +19944,14 @@
       "id": "c2246fa82",
       "search_mode": "fts_only",
       "filtered_count": 258,
-      "signals": null,
-      "latency_ms": 404,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 93,
       "results": [
         {
           "id": "a1b10706-5d14-4e31-928a-0adce7d8fcd5",
@@ -21929,8 +20292,14 @@
       "id": "c284f4101",
       "search_mode": "fts_only",
       "filtered_count": 462,
-      "signals": null,
-      "latency_ms": 597,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 134,
       "results": [
         {
           "id": "e2df77d7-71c0-49b1-b1a4-f8ed4058cde5",
@@ -22334,8 +20703,14 @@
       "id": "c45360a55",
       "search_mode": "fts_only",
       "filtered_count": 409,
-      "signals": null,
-      "latency_ms": 335,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 130,
       "results": [
         {
           "id": "35ed6be0-f6ae-46d0-9497-a397550a79f6",
@@ -22748,8 +21123,14 @@
       "id": "c567ea8eb",
       "search_mode": "fts_only",
       "filtered_count": 385,
-      "signals": null,
-      "latency_ms": 376,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 131,
       "results": [
         {
           "id": "230fd1cc-8fd1-4e8b-afb6-4f88a53d21c4",
@@ -23162,8 +21543,14 @@
       "id": "c3daa4b9c",
       "search_mode": "fts_only",
       "filtered_count": 396,
-      "signals": null,
-      "latency_ms": 346,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 142,
       "results": [
         {
           "id": "28e1b49b-0f42-578a-9641-b85a4d0f4b97",
@@ -23576,8 +21963,14 @@
       "id": "cb4f979ae",
       "search_mode": "fts_only",
       "filtered_count": 366,
-      "signals": null,
-      "latency_ms": 398,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 168,
       "results": [
         {
           "id": "1616f0e2-cf8a-42b1-84da-f8d01213e75e",
@@ -23990,8 +22383,14 @@
       "id": "cbf11ab63",
       "search_mode": "fts_only",
       "filtered_count": 236,
-      "signals": null,
-      "latency_ms": 383,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 114,
       "results": [
         {
           "id": "177f61cf-be0f-5f56-8c5d-5c656f03eef0",
@@ -24404,8 +22803,14 @@
       "id": "cf25a3c6e",
       "search_mode": "fts_only",
       "filtered_count": 465,
-      "signals": null,
-      "latency_ms": 372,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 137,
       "results": [
         {
           "id": "b5cef97f-6869-5e81-aeef-23dba4c94302",
@@ -24818,8 +23223,14 @@
       "id": "cc6b99719",
       "search_mode": "fts_only",
       "filtered_count": 247,
-      "signals": null,
-      "latency_ms": 362,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 107,
       "results": [
         {
           "id": "6d4fb39f-68d1-4d02-b32a-fd696225cb16",

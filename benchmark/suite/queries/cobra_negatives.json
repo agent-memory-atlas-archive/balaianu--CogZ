@@ -1,36 +1,21 @@
 {
- "version": "neg-v1",
+ "version": "neg-v2",
  "corpus": "cobra",
  "queries": [
-  {
-   "id": "cn01",
-   "intent": "negative",
-   "query": "grpc server command scaffolding",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn02",
-   "intent": "negative",
-   "query": "yaml config file parsing for flags",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn03",
-   "intent": "negative",
-   "query": "interactive prompt input collection",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn04",
-   "intent": "negative",
-   "query": "quantum entanglement routing protocol",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn05",
-   "intent": "negative",
-   "query": "blockchain wallet address validation",
-   "expected_entity_ids": []
-  }
+  {"id": "cn01", "intent": "negative", "category": "adjacent", "query": "grpc server command scaffolding", "expected_entity_ids": []},
+  {"id": "cn02", "intent": "negative", "category": "adjacent", "query": "yaml config file parsing for flags", "expected_entity_ids": []},
+  {"id": "cn03", "intent": "negative", "category": "adjacent", "query": "interactive prompt input collection", "expected_entity_ids": []},
+  {"id": "cn04", "intent": "negative", "category": "unrelated", "query": "quantum entanglement routing protocol", "expected_entity_ids": []},
+  {"id": "cn05", "intent": "negative", "category": "unrelated", "query": "blockchain wallet address validation", "expected_entity_ids": []},
+  {"id": "cn06", "intent": "negative", "category": "adjacent", "query": "ncurses full-screen TUI rendering mode for commands", "expected_entity_ids": []},
+  {"id": "cn07", "intent": "negative", "category": "adjacent", "query": "dynamic command loading via go plugin shared objects", "expected_entity_ids": []},
+  {"id": "cn08", "intent": "negative", "category": "adjacent", "query": "watch mode re-executing command when source file changes", "expected_entity_ids": []},
+  {"id": "cn09", "intent": "negative", "category": "adjacent", "query": "deserializing flag values from JSON document on disk", "expected_entity_ids": []},
+  {"id": "cn10", "intent": "negative", "category": "adjacent", "query": "websocket transport for remote command execution", "expected_entity_ids": []},
+  {"id": "cn11", "intent": "negative", "category": "adjacent", "query": "translating help output through gettext locale catalogs", "expected_entity_ids": []},
+  {"id": "cn12", "intent": "negative", "category": "entity-miss", "query": "Command.RegisterDynamicFlag method for runtime flag injection", "expected_entity_ids": []},
+  {"id": "cn13", "intent": "negative", "category": "entity-miss", "query": "ExecuteContext deadline propagation flag for child processes", "expected_entity_ids": []},
+  {"id": "cn14", "intent": "negative", "category": "entity-miss", "query": "cobra.Command.FromTOML constructor parsing command spec", "expected_entity_ids": []},
+  {"id": "cn15", "intent": "negative", "category": "unrelated", "query": "SMTP relay queue backoff policy", "expected_entity_ids": []}
  ]
 }

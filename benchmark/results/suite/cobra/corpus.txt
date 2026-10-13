@@ -1,2 +1,2 @@
-cobra: 36 files, 16765 LOC, 768 entities, 1332 edges, 768 embeddings, db=12772KB
+cobra: 36 files, 16765 LOC, 768 entities, 1332 edges, 768 embeddings, db=11060KB
 wrote corpus_metrics.json

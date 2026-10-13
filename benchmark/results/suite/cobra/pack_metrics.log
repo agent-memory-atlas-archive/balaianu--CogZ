@@ -5,15 +5,17 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 2365.7,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 3274.0,
+    "ram_loaded_mb": 763,
     "n": 15,
-    "p50_ms": 456.1,
-    "p95_ms": 1086.0,
-    "p99_ms": 1136.9,
-    "mean_ms": 575.1,
+    "p50_ms": 921.6,
+    "p95_ms": 1236.1,
+    "p99_ms": 1284.0,
+    "mean_ms": 956.2,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
@@ -36,14 +38,14 @@
     },
     {
      "query": "error handling strategy",
-     "sections": 86,
+     "sections": 84,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 8,
+     "dropped": 10,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 66,
+      "function/full": 64,
       "file/full": 1,
       "class/full": 10,
       "knowledge/full": 3,
@@ -52,52 +54,53 @@
     },
     {
      "query": "configuration and initialization",
-     "sections": 60,
+     "sections": 78,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 9,
+     "dropped": 10,
      "composition": {
-      "rule/baseline": 3,
+      "rule/baseline": 2,
       "identity/baseline": 1,
-      "function/full": 36,
-      "observation/full": 7,
-      "knowledge/full": 6,
+      "function/full": 37,
+      "observation/full": 22,
+      "knowledge/full": 8,
+      "rule/full": 1,
       "file/full": 1,
       "class/full": 6
      }
     },
     {
      "query": "data validation logic",
-     "sections": 88,
+     "sections": 78,
      "size_tokens": 8192,
      "budget": 8192,
      "dropped": 7,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 65,
+      "function/full": 55,
       "file/full": 1,
       "rule/full": 1,
-      "class/full": 4,
+      "class/full": 5,
       "observation/full": 9,
-      "knowledge/full": 4
+      "knowledge/full": 3
      }
     },
     {
      "query": "how are requests processed",
-     "sections": 75,
+     "sections": 74,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 9,
+     "dropped": 10,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "file/full": 1,
-      "function/full": 39,
-      "class/full": 9,
+      "class/full": 10,
+      "function/full": 36,
       "knowledge/full": 6,
       "observation/full": 15,
-      "rule/full": 1
+      "rule/full": 2
      }
     }
    ]
@@ -105,15 +108,17 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 477.1,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 142.4,
+    "ram_loaded_mb": 20,
     "n": 15,
-    "p50_ms": 323.5,
-    "p95_ms": 992.0,
-    "p99_ms": 1009.6,
-    "mean_ms": 475.2,
+    "p50_ms": 111.4,
+    "p95_ms": 133.2,
+    "p99_ms": 141.2,
+    "mean_ms": 96.2,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
@@ -154,29 +159,30 @@
     },
     {
      "query": "configuration and initialization",
-     "sections": 75,
+     "sections": 76,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 15,
+     "dropped": 14,
      "composition": {
-      "rule/baseline": 3,
+      "rule/baseline": 2,
       "identity/baseline": 1,
       "function/full": 33,
       "observation/full": 25,
       "knowledge/full": 11,
       "file/full": 1,
-      "rule/full": 1
+      "rule/full": 3
      }
     },
     {
      "query": "data validation logic",
-     "sections": 75,
+     "sections": 76,
      "size_tokens": 8192,
      "budget": 8192,
-     "dropped": 14,
+     "dropped": 13,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
+      "rule/full": 1,
       "file/full": 1,
       "knowledge/full": 5,
       "function/full": 30,
@@ -191,11 +197,11 @@
      "budget": 8192,
      "dropped": 12,
      "composition": {
-      "rule/baseline": 3,
+      "rule/baseline": 2,
       "identity/baseline": 1,
       "function/full": 29,
       "observation/full": 25,
-      "rule/full": 2,
+      "rule/full": 3,
       "knowledge/full": 10,
       "file/full": 1,
       "class/full": 1

@@ -145,6 +145,10 @@ def main():
                     "limit": args.limit,
                     "expand": not args.no_expand,
                     "code_search": args.code_search,
+                    # Benchmarks measure the corpus, they don't use it —
+                    # recording would drift access counts and make later
+                    # runs incomparable.
+                    "record": False,
                 }
                 if args.status:
                     params["status"] = args.status
@@ -184,7 +188,8 @@ def main():
             if args.with_context:
                 t1 = time.monotonic()
                 try:
-                    ctx_params = {"repo": repo, "query": q["query"], "mode": "task"}
+                    ctx_params = {"repo": repo, "query": q["query"], "mode": "task",
+                                  "record": False}
                     if args.pack_tokens:
                         ctx_params["max_tokens"] = args.pack_tokens
                     if args.status:

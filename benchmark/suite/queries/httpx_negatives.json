@@ -1,36 +1,21 @@
 {
- "version": "neg-v1",
+ "version": "neg-v2",
  "corpus": "httpx",
  "queries": [
-  {
-   "id": "hn01",
-   "intent": "negative",
-   "query": "websocket client connection upgrade handshake",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "hn02",
-   "intent": "negative",
-   "query": "grpc channel interceptor middleware",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "hn03",
-   "intent": "negative",
-   "query": "http3 quic transport configuration",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "hn04",
-   "intent": "negative",
-   "query": "quantum entanglement routing protocol",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "hn05",
-   "intent": "negative",
-   "query": "kubernetes pod autoscaler webhook",
-   "expected_entity_ids": []
-  }
+  {"id": "hn01", "intent": "negative", "category": "adjacent", "query": "websocket client connection upgrade handshake", "expected_entity_ids": []},
+  {"id": "hn02", "intent": "negative", "category": "adjacent", "query": "grpc channel interceptor middleware", "expected_entity_ids": []},
+  {"id": "hn03", "intent": "negative", "category": "adjacent", "query": "http3 quic transport configuration", "expected_entity_ids": []},
+  {"id": "hn04", "intent": "negative", "category": "unrelated", "query": "quantum entanglement routing protocol", "expected_entity_ids": []},
+  {"id": "hn05", "intent": "negative", "category": "unrelated", "query": "kubernetes pod autoscaler webhook", "expected_entity_ids": []},
+  {"id": "hn06", "intent": "negative", "category": "adjacent", "query": "server-sent events stream parsing and reconnection", "expected_entity_ids": []},
+  {"id": "hn07", "intent": "negative", "category": "adjacent", "query": "cookie jar persistence to encrypted disk storage", "expected_entity_ids": []},
+  {"id": "hn08", "intent": "negative", "category": "adjacent", "query": "ftp file retrieval through the transport layer", "expected_entity_ids": []},
+  {"id": "hn09", "intent": "negative", "category": "adjacent", "query": "smtp connection pooling for outbound mail", "expected_entity_ids": []},
+  {"id": "hn10", "intent": "negative", "category": "adjacent", "query": "imap mailbox fetch over the client transport", "expected_entity_ids": []},
+  {"id": "hn11", "intent": "negative", "category": "adjacent", "query": "websocket compression permessage-deflate negotiation", "expected_entity_ids": []},
+  {"id": "hn12", "intent": "negative", "category": "entity-miss", "query": "Client.stream_response helper for chunked reads", "expected_entity_ids": []},
+  {"id": "hn13", "intent": "negative", "category": "entity-miss", "query": "AsyncHTTPTransport.from_url classmethod constructor", "expected_entity_ids": []},
+  {"id": "hn14", "intent": "negative", "category": "entity-miss", "query": "Request.set_grpc_metadata method for trailers", "expected_entity_ids": []},
+  {"id": "hn15", "intent": "negative", "category": "unrelated", "query": "blockchain consensus proof-of-stake validator", "expected_entity_ids": []}
  ]
 }

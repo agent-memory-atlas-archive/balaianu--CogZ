@@ -40,14 +40,14 @@ def open_mcp(repo):
 
 def search(proc, repo, q, rid):
     t0 = time.monotonic()
-    res = rpc(proc, "tools/call", {"name": "search", "arguments": {"repo": repo, "query": q, "limit": 20}}, rid)
+    res = rpc(proc, "tools/call", {"name": "search", "arguments": {"repo": repo, "query": q, "limit": 20, "record": False}}, rid)
     lat = (time.monotonic() - t0) * 1000
     d = json.loads(res["content"][0]["text"])
     return lat, d.get("results", [])
 
 def get_context(proc, repo, q, tokens, rid):
     res = rpc(proc, "tools/call", {"name": "get_context",
-                                   "arguments": {"repo": repo, "query": q, "mode": "task", "max_tokens": tokens}}, rid)
+                                   "arguments": {"repo": repo, "query": q, "mode": "task", "max_tokens": tokens, "record": False}}, rid)
     return json.loads(res["content"][0]["text"])
 
 def rss_mb(pid):

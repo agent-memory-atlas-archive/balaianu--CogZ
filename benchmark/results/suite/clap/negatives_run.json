@@ -4674,29 +4674,21 @@
     {
       "id": "ln01",
       "search_mode": "hybrid",
-      "filtered_count": 1400,
+      "filtered_count": 1377,
       "signals": {
-        "code_gradient": 0.005549937175675446,
-        "code_strength": 0.33713641987749554,
+        "answer_coverage": 1.0,
+        "code_gradient": 0.005327341676418795,
+        "code_strength": 0.3333926092361447,
         "knowledge_gradient": 0.044388771735324004,
         "knowledge_strength": 0.7140576403973699
       },
-      "latency_ms": 2186,
+      "latency_ms": 1870,
       "results": [
         {
-          "id": "50dfd605-abce-5062-a31a-144efe57cff2",
+          "id": "f8493233-66c5-51ae-9983-51491f9175e1",
           "type": "function",
-          "title": "unexpected_argument",
+          "title": "ids_ignore_unused",
           "relevance": 0.800000011920929,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "51fa560c-3052-5d7a-88f0-a568ab12723e",
-          "type": "file",
-          "title": "arg_matches.rs",
-          "relevance": 0.7373325228691101,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4705,16 +4697,25 @@
           "id": "853e1cf8-ed1f-5282-a15a-eeaa243a5c8d",
           "type": "function",
           "title": "env_value_command",
-          "relevance": 0.44780233502388,
+          "relevance": 0.7496292591094971,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "7e2ee011-0158-53b5-8a6d-30ec36286dab",
+          "id": "57015b09-47b4-5544-a3f6-677df5c160f7",
           "type": "function",
           "title": "main",
-          "relevance": 0.43358638882637024,
+          "relevance": 0.7531958222389221,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "51fa560c-3052-5d7a-88f0-a568ab12723e",
+          "type": "file",
+          "title": "arg_matches.rs",
+          "relevance": 0.7691091299057007,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4732,7 +4733,7 @@
           "id": "da352b7a-312c-588f-a92f-8f7dc0e4c6e1",
           "type": "function",
           "title": "parse_short_arg",
-          "relevance": 0.4138779044151306,
+          "relevance": 0.4118192791938782,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4741,7 +4742,7 @@
           "id": "a68a49ea-0d56-50db-9285-716dd58d58f9",
           "type": "function",
           "title": "self_conflicting_arg",
-          "relevance": 0.44780233502388,
+          "relevance": 0.4253215491771698,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4750,16 +4751,7 @@
           "id": "69e6a345-5456-562c-806f-3b2d09b5156f",
           "type": "class",
           "title": "impl Arg",
-          "relevance": 0.40770062804222107,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "57015b09-47b4-5544-a3f6-677df5c160f7",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.43358638882637024,
+          "relevance": 0.38723307847976685,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4768,61 +4760,7 @@
           "id": "4a9904ee-6c46-5c1f-a6c0-a7cd911733aa",
           "type": "class",
           "title": "MatchedArg",
-          "relevance": 0.3741909861564636,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6a9b6702-8022-5899-896a-c491d3806951",
-          "type": "file",
-          "title": "01_quick.rs",
-          "relevance": 0.4202452600002289,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c8f9780d-cf2e-52a0-8c4d-a0610cccef8e",
-          "type": "function",
-          "title": "test_multi_args_fail",
-          "relevance": 0.37938809394836426,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "74dc1eac-3deb-5b16-9672-5954fcf6ab84",
-          "type": "function",
-          "title": "required_if_invalid_arg",
-          "relevance": 0.44057971239089966,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "028069a3-f14a-515d-a8ec-c74f3f3c0675",
-          "type": "function",
-          "title": "add_multiple_arg",
-          "relevance": 0.390227735042572,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b4a7867a-6022-5d05-b577-94cb71d719f6",
-          "type": "function",
-          "title": "suggest_argument_value",
-          "relevance": 0.38473159074783325,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a4fabb01-bdee-531b-9096-c30a4712c968",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.3642125725746155,
+          "relevance": 0.38723307847976685,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4831,7 +4769,70 @@
           "id": "8e96e4d4-7310-52a8-9540-22feedbd68f6",
           "type": "file",
           "title": "02_crate.rs",
-          "relevance": 0.4017050266265869,
+          "relevance": 0.3991479277610779,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "50dfd605-abce-5062-a31a-144efe57cff2",
+          "type": "function",
+          "title": "unexpected_argument",
+          "relevance": 0.41846153140068054,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7c6657fa-c194-5dfe-8c2f-4f6d8360b82c",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.33262327313423157,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "89fe14ee-6283-5cc7-b818-4bf698457a8f",
+          "type": "function",
+          "title": "get_args_of",
+          "relevance": 0.32841286063194275,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b4a7867a-6022-5d05-b577-94cb71d719f6",
+          "type": "function",
+          "title": "suggest_argument_value",
+          "relevance": 0.36541712284088135,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bac24e6f-b3f4-524e-92a0-19b101b6ecc6",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.34137651324272156,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6a9b6702-8022-5899-896a-c491d3806951",
+          "type": "file",
+          "title": "01_quick.rs",
+          "relevance": 0.3991479277610779,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "74dc1eac-3deb-5b16-9672-5954fcf6ab84",
+          "type": "function",
+          "title": "required_if_invalid_arg",
+          "relevance": 0.4053846299648285,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -4894,7 +4895,7 @@
           "id": "0835f434-3805-5ea0-a3bc-3cec54624b8a",
           "type": "class",
           "title": "ParseState",
-          "relevance": 0.12416337430477142,
+          "relevance": 0.12354578822851181,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4903,16 +4904,7 @@
           "id": "18ca3f56-b458-5681-9a0f-6b4f695cb5e0",
           "type": "class",
           "title": "ParseResult",
-          "relevance": 0.12416337430477142,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c48d1f14-2806-58ec-ad6c-ccce23612d01",
-          "type": "file",
-          "title": "ignore_errors.rs",
-          "relevance": 0.12000000476837158,
+          "relevance": 0.12354578822851181,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4921,7 +4913,7 @@
           "id": "0d29d790-b34f-5bd0-9a11-31424fd0147c",
           "type": "function",
           "title": "args_present_positional",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4930,7 +4922,7 @@
           "id": "27d9e097-69c4-5755-98dd-2c4d0f29c8bd",
           "type": "function",
           "title": "arg_matches_subcommand_matches_wrong_sub",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4939,7 +4931,7 @@
           "id": "5db289fb-b476-51c4-905b-7ff06a6e1347",
           "type": "function",
           "title": "arg_matches_value_of_wrong_arg",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4948,7 +4940,7 @@
           "id": "74887ca7-0393-5873-84f0-e04eb7cc33fd",
           "type": "function",
           "title": "args_present_subcommand",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4957,7 +4949,7 @@
           "id": "81cb87e3-708c-52a2-857f-cc0f364f22b2",
           "type": "function",
           "title": "args_present_flag",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4966,7 +4958,7 @@
           "id": "87030cdf-6a85-5eb0-b708-8490335cc5af",
           "type": "function",
           "title": "ids_ignore_overridden",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4975,7 +4967,7 @@
           "id": "8f2c3d76-d5cd-538d-bee2-827a4b406617",
           "type": "function",
           "title": "arg_matches_if_present_wrong_arg",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -4984,16 +4976,16 @@
           "id": "e8e84815-b886-5296-ad5b-296ad3623058",
           "type": "function",
           "title": "ids",
-          "relevance": 0.11059988290071487,
+          "relevance": 0.1153663769364357,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "f8493233-66c5-51ae-9983-51491f9175e1",
-          "type": "function",
-          "title": "ids_ignore_unused",
-          "relevance": 0.11059988290071487,
+          "id": "91129304-d406-5a59-8d87-adb4acf214a7",
+          "type": "file",
+          "title": "man.rs",
+          "relevance": 0.11297937482595444,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -5002,16 +4994,7 @@
           "id": "3e2d6e8f-0721-5e2f-aa18-850758d5a363",
           "type": "file",
           "title": "common.rs",
-          "relevance": 0.06717035174369812,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "485e603e-8755-5aa1-840a-96a632d3d2f6",
-          "type": "file",
-          "title": "conflicts.rs",
-          "relevance": 0.06717035174369812,
+          "relevance": 0.11244439333677292,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -5020,70 +5003,43 @@
           "id": "c3ccce45-37cd-577d-a6af-ead950738274",
           "type": "function",
           "title": "value_env",
-          "relevance": 0.06717035174369812,
+          "relevance": 0.11244439333677292,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "ff6c5e2b-0b05-5f71-ab09-d2c26c25f47c",
+          "id": "485e603e-8755-5aa1-840a-96a632d3d2f6",
           "type": "file",
-          "title": "require.rs",
-          "relevance": 0.06608696281909943,
+          "title": "conflicts.rs",
+          "relevance": 0.06379823386669159,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "45a99b81-6e70-5c4f-af0e-57c3902f3132",
+          "id": "c48d1f14-2806-58ec-ad6c-ccce23612d01",
+          "type": "file",
+          "title": "ignore_errors.rs",
+          "relevance": 0.06276923418045044,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3107c89-a7b6-541b-b960-0680e5f9fb90",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.06276923418045044,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0c67c045-4fc2-5da6-876a-32e8a575095e",
           "type": "class",
-          "title": "impl Args for CliArgs",
-          "relevance": 0.06503795832395554,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "05079716-5598-5f99-ad83-bc59a9d840d1",
-          "type": "function",
-          "title": "suggest_value_hint_file_path",
-          "relevance": 0.136428564786911,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f7ff7765-f788-59e8-85d0-21b5fd13a1fb",
-          "type": "function",
-          "title": "suggest_value_path_file",
-          "relevance": 0.136428564786911,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9934049f-a20b-502a-a8b6-efb471ab255c",
-          "type": "function",
-          "title": "into_vec",
-          "relevance": 0.12686045467853546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3d3e6cb1-3660-5e85-9c70-7904ab6fe509",
-          "type": "function",
-          "title": "example_tests",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b82ed781-19f2-5769-ab32-1c728c780735",
-          "type": "function",
-          "title": "_my__app",
-          "relevance": 0.09426315873861313,
+          "title": "impl Parser<'cmd>",
+          "relevance": 0.061772894114255905,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -5093,372 +5049,195 @@
     {
       "id": "ln02",
       "search_mode": "hybrid",
-      "filtered_count": 1210,
+      "filtered_count": 0,
       "signals": {
-        "code_gradient": 0.012228521656686841,
-        "code_strength": 0.3734485011749034,
-        "knowledge_gradient": 0.007205366061152785,
-        "knowledge_strength": 0.6443541075608573
+        "answer_coverage": 0.4277223828250245,
+        "code_gradient": 0.006957569231381622,
+        "code_strength": 0.36695872262626733,
+        "knowledge_gradient": 0.025180828161575474,
+        "knowledge_strength": 0.6458705342802423
       },
-      "latency_ms": 756,
+      "latency_ms": 434,
+      "results": []
+    },
+    {
+      "id": "ln03",
+      "search_mode": "hybrid",
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.42362928373777725,
+        "code_gradient": 0.004479385689582349,
+        "code_strength": 0.2596025511873137,
+        "knowledge_gradient": 0.011898033462470491,
+        "knowledge_strength": 0.6009595229079453
+      },
+      "latency_ms": 441,
+      "results": []
+    },
+    {
+      "id": "ln04",
+      "search_mode": "hybrid",
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.0,
+        "code_gradient": 0.013239817569753787,
+        "code_strength": 0.2504072842177247,
+        "knowledge_gradient": 0.00528661858888837,
+        "knowledge_strength": 0.5977902190887138
+      },
+      "latency_ms": 424,
+      "results": []
+    },
+    {
+      "id": "ln05",
+      "search_mode": "hybrid",
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.0,
+        "code_gradient": 0.0091957062800335,
+        "code_strength": 0.2639100720795753,
+        "knowledge_gradient": 0.010638385058243282,
+        "knowledge_strength": 0.5712506286596112
+      },
+      "latency_ms": 407,
+      "results": []
+    },
+    {
+      "id": "ln06",
+      "search_mode": "hybrid",
+      "filtered_count": 1732,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0021977743563160734,
+        "code_strength": 0.3241554842890035,
+        "knowledge_gradient": 0.016758583869200462,
+        "knowledge_strength": 0.6674008510620233
+      },
+      "latency_ms": 576,
       "results": [
         {
-          "id": "461cce78-fd46-5459-a4cd-a2735bfaf27c",
-          "type": "file",
-          "title": "dynamic.rs",
+          "id": "a378d343-393d-59b3-a64c-8e2ff4cf9647",
+          "type": "function",
+          "title": "configured_subcmd_order",
           "relevance": 0.800000011920929,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "99481a6c-3ef7-57a4-be6e-e90c4819a47a",
+          "id": "98dda108-ee85-515e-9b77-75196d4e8ebe",
           "type": "class",
-          "title": "Cli",
-          "relevance": 0.7746031880378723,
+          "title": "CliArgs",
+          "relevance": 0.7283582091331482,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "a49c80b7-bfa8-5f0b-bf1a-2b36bf8d2c82",
+          "id": "7c6657fa-c194-5dfe-8c2f-4f6d8360b82c",
           "type": "function",
-          "title": "complete_dynamic_env_quoted_help",
-          "relevance": 0.800000011920929,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "94972010-ec0d-5ddd-88d2-05561ad03c67",
-          "type": "function",
-          "title": "command",
+          "title": "main",
           "relevance": 0.7870967984199524,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "7412b8c6-898d-4bf8-9467-d76ff53907ed",
-          "type": "knowledge",
-          "title": "external_subcommand catches unmatched subcommands",
+          "id": "a68a49ea-0d56-50db-9285-716dd58d58f9",
+          "type": "function",
+          "title": "self_conflicting_arg",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4c78fba4-3693-422e-b627-16dc6f7a674e",
+          "type": "observation",
+          "title": "fix(complete): Two-pass quote fish env-completer",
           "relevance": 0.20000000298023224,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "f10e7136-78fd-5f76-b85a-74c940e72173",
-          "type": "function",
-          "title": "load_runtime",
-          "relevance": 0.739393949508667,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d3a5b69b-2ea9-57c9-9ec7-56a26a4be194",
-          "type": "function",
-          "title": "try_generate",
-          "relevance": 0.762499988079071,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e4b94f34-9ca0-5cd8-9339-e9bfd84180d3",
-          "type": "class",
-          "title": "Command",
-          "relevance": 0.7507692575454712,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30ce7797-b314-5586-bce8-a3e69374f33e",
-          "type": "class",
-          "title": "impl completest::Runtime for ScratchRuntime",
-          "relevance": 0.7283582091331482,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "521ba3fd-a33f-5850-9aba-fbf385fb6925",
+          "id": "097c666a-be73-5c31-869a-2d84d88689e4",
           "type": "file",
-          "title": "zsh.rs",
-          "relevance": 0.7507692575454712,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0801368a-97f4-5a71-a133-31b574953299",
-          "type": "module",
-          "title": "command",
-          "relevance": 0.7072463631629944,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cee2e755-3352-54d5-9dba-45e999774f1f",
-          "type": "class",
-          "title": "Opt",
-          "relevance": 0.6971428394317627,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c42d174-f718-5aae-bebb-663e6ef21c18",
-          "type": "function",
-          "title": "main",
-          "relevance": 0.739393949508667,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "60845b3e-4aa0-5a52-89b1-5f00230991bb",
-          "type": "function",
-          "title": "augment_args",
-          "relevance": 0.6777777671813965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8f00f8ae-47b1-5a3c-a193-79c16f0838c5",
-          "type": "function",
-          "title": "command_for_update",
-          "relevance": 0.7283582091331482,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f460c7b6-471c-5812-99da-9972c15af602",
-          "type": "function",
-          "title": "complete_dynamic_empty_space",
+          "title": "mod.rs",
           "relevance": 0.7746031880378723,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "4ab37845-1e80-5e80-8024-f7556424c42f",
+          "id": "853e1cf8-ed1f-5282-a15a-eeaa243a5c8d",
           "type": "function",
-          "title": "with_subcommand",
-          "relevance": 0.6594594717025757,
+          "title": "env_value_command",
+          "relevance": 0.762499988079071,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "ae3a2a80-d98d-4d9b-b435-57a02512ad3c",
-          "type": "knowledge",
-          "title": "Everything is a builder: Command, Arg, ArgGroup",
-          "relevance": 0.19365079700946808,
+          "id": "af2df76a-c5ec-5b1a-9a88-03d9d423ab16",
+          "type": "function",
+          "title": "try_get_matches_from_mut",
+          "relevance": 0.7507692575454712,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "d753e605-2bd8-45b8-a688-b65aab987003",
-          "type": "observation",
-          "title": "refactor(derive): Extract top-level command methods",
-          "relevance": 0.19062499701976776,
+          "id": "68bc4629-121c-53b6-8b94-629614419b1b",
+          "type": "function",
+          "title": "parse_aliases",
+          "relevance": 0.6873239278793335,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "ccf10084-eeb2-453f-bbd3-eca110a7fb54",
-          "type": "observation",
-          "title": "fix(complete): Reduce risk of conflict with actual subcommands",
-          "relevance": 0.1967741996049881,
+          "id": "c5bc84ad-bdf0-5f43-9900-0df52a465465",
+          "type": "function",
+          "title": "configured_display_order_args",
+          "relevance": 0.7283582091331482,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "e21492a7-9327-53b1-8fcf-597b4da69611",
+          "id": "2e01b4fa-2035-5f5b-98cc-34bea6ffc8d6",
           "type": "class",
-          "title": "impl completest::Runtime for ScratchRuntime",
-          "relevance": 0.3327272832393646,
-          "graph_path_len": 2,
+          "title": "Cli",
+          "relevance": 0.7072463631629944,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "87e01229-9068-597f-882d-bb506930876e",
+          "id": "2f5086f7-5bef-5077-aead-373e0579e717",
           "type": "class",
-          "title": "CommandFactory",
-          "relevance": 0.2361290454864502,
-          "graph_path_len": 2,
+          "title": "ValueHint",
+          "relevance": 0.7072463631629944,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "bd916f56-f8e3-5c3a-86b7-b80578ef05cf",
-          "type": "class",
-          "title": "impl CommandFactory for Box<T>",
-          "relevance": 0.2361290454864502,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3eafcfd3-ab6e-53ff-b9e4-4b509ec56a45",
-          "type": "class",
-          "title": "ScratchRuntime",
-          "relevance": 0.22181819379329681,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b7f237c6-1aeb-51d0-b3c8-fa5ca4a3d5f7",
+          "id": "cbd11938-f13b-513c-83d9-a1b172bcbe10",
           "type": "function",
-          "title": "complete",
-          "relevance": 0.20000000298023224,
-          "graph_path_len": 2,
+          "title": "requires_if_invalid_arg",
+          "relevance": 0.7746031880378723,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "3a57b104-3cff-5e99-be8c-4c74e61219e5",
+          "id": "f1ab17a1-70e8-5ca6-99f2-2ab99379c6a1",
           "type": "function",
-          "title": "command",
-          "relevance": 0.12000000476837158,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5868d590-71da-534b-b7e3-5d86f756817a",
-          "type": "function",
-          "title": "verify_cli",
-          "relevance": 0.12000000476837158,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c7869ffd-4e88-53a4-9f79-f45ac7d1eba0",
-          "type": "file",
-          "title": "fish.rs",
-          "relevance": 0.12000000476837158,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "078d0f52-b425-5840-b2f8-9a010697f818",
-          "type": "class",
-          "title": "impl Args for Box<T>",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1fc1b542-1aaa-53a4-81aa-dc6b7809ecaa",
-          "type": "class",
-          "title": "impl FromArgMatches for Infallible",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5866d375-e33e-557f-8e33-d4fa91beb91a",
-          "type": "class",
-          "title": "impl FromArgMatches for ()",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "73cdff9f-ad98-5018-8864-d02fab405f8e",
-          "type": "class",
-          "title": "FromArgMatches",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "73e5ac73-6f68-5837-8352-8f387e3fd7fa",
-          "type": "class",
-          "title": "Subcommand",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8dc3dfcf-f6ad-531c-8d1d-b3ba8ae3ade7",
-          "type": "class",
-          "title": "ValueEnum",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9a073c6a-a9d0-5a99-b236-d8f563e9e1af",
-          "type": "class",
-          "title": "impl Subcommand for Infallible",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "aafa6785-5b11-53a3-985a-97e48380d19f",
-          "type": "class",
-          "title": "impl Parser for Box<T>",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "abbac4c9-8b2b-5ef7-b385-c035cab7c6d3",
-          "type": "class",
-          "title": "impl Args for ()",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bb3fa59d-16d9-5263-bc16-5b59ee0062be",
-          "type": "class",
-          "title": "Parser",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d3a752cd-7be4-5979-a4e8-a6211b55680b",
-          "type": "class",
-          "title": "impl FromArgMatches for Box<T>",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ec5fd219-7d94-5623-97b9-748e895211d6",
-          "type": "class",
-          "title": "impl Subcommand for ()",
-          "relevance": 0.1180645227432251,
-          "graph_path_len": 2,
+          "title": "render_usage_",
+          "relevance": 0.6684931516647339,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
@@ -5466,210 +5245,25 @@
           "id": "46a78d52-3c29-5eee-9785-9b0261b1ee5c",
           "type": "class",
           "title": "impl Command",
-          "relevance": 0.14836135506629944,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a94ab456-1fd1-5ea3-8c38-037914815616",
-          "type": "function",
-          "title": "bad_multicall_command_error",
-          "relevance": 0.13137932121753693,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "faca42e3-c9a5-54e9-8c8c-9a24eb1adf99",
-          "type": "function",
-          "title": "derive_parser",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cbd3e08b-0167-506e-bc9a-822e33348f4c",
-          "type": "function",
-          "title": "value_hint",
-          "relevance": 0.09271186590194702,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "29591e60-37c3-512d-8066-e37b930f89f1",
-          "type": "function",
-          "title": "leading_hyphen_opt",
-          "relevance": 0.08705127984285355,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
-    },
-    {
-      "id": "ln03",
-      "search_mode": "hybrid",
-      "filtered_count": 1568,
-      "signals": {
-        "code_gradient": 0.012461907436820564,
-        "code_strength": 0.2679913949015595,
-        "knowledge_gradient": 0.01212140251910374,
-        "knowledge_strength": 0.5754265183063622
-      },
-      "latency_ms": 703,
-      "results": [
-        {
-          "id": "49beca54-1e28-577f-b93c-20e16ddb9b1d",
-          "type": "class",
-          "title": "Key",
-          "relevance": 0.800000011920929,
+          "relevance": 0.7176470756530762,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "5dc74fea-9794-52dc-b6c8-1558379e6364",
+          "id": "ebb8e97a-451f-5a93-9388-e149498771ef",
           "type": "function",
-          "title": "subcommand_sort_key",
-          "relevance": 0.7753356695175171,
+          "title": "empty_args",
+          "relevance": 0.6100000143051147,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "3bf3f300-c282-553f-9024-663b958a9d81",
+          "id": "05b2bfe9-ba3b-5fb6-853e-0488519d693a",
           "type": "function",
-          "title": "keys",
-          "relevance": 0.7893231511116028,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c1a81c4c-7435-5b9e-a128-21b378323b49",
-          "type": "function",
-          "title": "contains_key",
-          "relevance": 0.7426813244819641,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b52e2d1f-fb5b-4707-b03f-eec600c0eb3c",
-          "type": "observation",
-          "title": "feat(builder): Expose Command::get_overridden_usage",
-          "relevance": 0.20000000298023224,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3ae0b625-a370-5386-86ba-63deeb20092e",
-          "type": "function",
-          "title": "option_sort_key",
-          "relevance": 0.7081348299980164,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bf600671-2a19-5415-a929-72a472e89624",
-          "type": "function",
-          "title": "positional_sort_key",
-          "relevance": 0.6900616884231567,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "281cb056-f649-57a9-99ec-b2a5694e9128",
-          "type": "function",
-          "title": "keys",
-          "relevance": 0.7345524430274963,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a058cc78-da1a-5ca8-ba2c-b49e5212f30b",
-          "type": "function",
-          "title": "contains",
-          "relevance": 0.6942800879478455,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3427fab5-8232-5e1d-adb2-4d2fae67f044",
-          "type": "class",
-          "title": "impl Shell",
-          "relevance": 0.4192555844783783,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "47d68ab5-5223-57fb-ac83-5c6dba3d6d46",
-          "type": "function",
-          "title": "issue_1642_long_help_spacing",
-          "relevance": 0.426128625869751,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8ebc88bc-413a-5ee1-a59e-443d898f94e2",
-          "type": "function",
-          "title": "is",
-          "relevance": 0.41260072588920593,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "19d8f972-5e57-55b7-ba1e-97f75f334019",
-          "type": "function",
-          "title": "find_duplicates",
-          "relevance": 0.39990532398223877,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "76dfba5b-9245-5a8d-b2ca-65d4cec39783",
-          "type": "function",
-          "title": "readline",
-          "relevance": 0.3822624385356903,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d51c0dd1-faa9-52e9-9b22-7ed94ff99f7b",
-          "type": "module",
-          "title": "mkeymap",
-          "relevance": 0.3249230682849884,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d94fb852-eb10-5111-ba65-7b371ebfe8b3",
-          "type": "function",
-          "title": "append_keys",
-          "relevance": 0.4061538577079773,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "191c7427-9c40-5987-91b3-74fe95810e75",
-          "type": "class",
-          "title": "impl PartialEq<OsStr> for KeyType",
-          "relevance": 0.39990532398223877,
+          "title": "main",
+          "relevance": 0.7176470756530762,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -5678,394 +5272,7 @@
           "id": "7d858e72-1073-4b13-b409-c93a4c093177",
           "type": "knowledge",
           "title": "ValueParser converts raw OsStr into typed values",
-          "relevance": 0.1967741996049881,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f1bc8979-a6de-4505-8035-2e587d4ba371",
-          "type": "knowledge",
-          "title": "ArgAction defines flag semantics: Set, Append, Count, SetTrue",
-          "relevance": 0.19365079700946808,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2bc01033-335d-4a5e-8f75-8e40ce283d92",
-          "type": "observation",
-          "title": "fix(complete): Detect pwsh for PowerShell",
-          "relevance": 0.17941176891326904,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0e12e0d2-f8c8-54f8-b364-64620b475019",
-          "type": "class",
-          "title": "impl PartialEq<&str> for KeyType",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1b572a9c-210d-5b4e-ac4a-848315bccec1",
-          "type": "class",
-          "title": "impl PartialEq<char> for KeyType",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1ce473d8-aec4-508d-ba9a-7896a218ed57",
-          "type": "class",
-          "title": "impl PartialEq<str> for KeyType",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "68d1fcd3-aa00-5736-b361-5a5d2270766f",
-          "type": "class",
-          "title": "KeyType",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6b705dd2-3f81-5554-9e28-ddfc3902faf1",
-          "type": "class",
-          "title": "impl KeyType",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7d3d033e-9821-5c10-aaec-e074685d513b",
-          "type": "class",
-          "title": "impl Index<&'_ KeyType> for MKeyMap",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f571fdff-9036-55bb-a752-514c26bc2c69",
-          "type": "class",
-          "title": "impl PartialEq<usize> for KeyType",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f8e92a5d-ec24-5a0a-8fd5-3a180c44c2f9",
-          "type": "function",
-          "title": "shells_completer_for_path_finds_powershell",
-          "relevance": 0.24000000953674316,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "14e5a6c9-6ea0-56d4-a90b-cd112b521873",
-          "type": "function",
-          "title": "skip_val",
-          "relevance": 0.20000000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ae504cfa-afa8-5b45-a771-0b6aa41d0a0d",
-          "type": "function",
-          "title": "to_long_with_value",
-          "relevance": 0.20000000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cc7662fe-f920-5443-84a3-7e4c87d67c65",
-          "type": "function",
-          "title": "to_long_with_empty_value",
-          "relevance": 0.20000000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "469790b3-c2b7-58bc-9f77-5a1df8cb7365",
-          "type": "class",
-          "title": "impl MKeyMap",
-          "relevance": 0.12000000476837158,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f13a4482-de60-5a3d-a032-87d13f6f7e7e",
-          "type": "class",
-          "title": "MKeyMap",
-          "relevance": 0.12000000476837158,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "09a065c3-7680-5034-b39b-2cf5ac6e1904",
-          "type": "class",
-          "title": "impl Entry<'a, K, V>",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0ab43a31-25a1-587c-8377-f14f211dbcdf",
-          "type": "class",
-          "title": "impl DoubleEndedIterator for IterMut<'a, K, V>",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3b80c0e3-8ede-5956-94e0-9d17cf8bbe24",
-          "type": "class",
-          "title": "Entry",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "55633d7a-a938-5fda-b7e2-cc13d2f5057a",
-          "type": "class",
-          "title": "FlatMap",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "76df70b1-7259-5616-832a-a0998c92809c",
-          "type": "class",
-          "title": "impl FlatMap<K, V>",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7d8e2117-1d49-5789-bd13-0080d30b0039",
-          "type": "class",
-          "title": "IterMut",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7fa3880d-0a6b-5561-96d2-f22834bfab35",
-          "type": "class",
-          "title": "VacantEntry",
-          "relevance": 0.11839848011732101,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
-    },
-    {
-      "id": "ln04",
-      "search_mode": "hybrid",
-      "filtered_count": 40,
-      "signals": {
-        "code_gradient": 0.005513968586314167,
-        "code_strength": 0.2612431044563124,
-        "knowledge_gradient": 0.010638385058243282,
-        "knowledge_strength": 0.5712506286596112
-      },
-      "latency_ms": 387,
-      "results": []
-    },
-    {
-      "id": "ln05",
-      "search_mode": "hybrid",
-      "filtered_count": 1731,
-      "signals": {
-        "code_gradient": 0.009033014032583919,
-        "code_strength": 0.23100434758414679,
-        "knowledge_gradient": 0.01316117017802596,
-        "knowledge_strength": 0.6196470672397864
-      },
-      "latency_ms": 732,
-      "results": [
-        {
-          "id": "ad0f8750-d68c-50f9-a78f-3e45701e6204",
-          "type": "function",
-          "title": "resolve_pending",
-          "relevance": 0.6610286831855774,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d2069cc2-201e-588f-8a3a-0e068d4df43c",
-          "type": "function",
-          "title": "get_invalid",
-          "relevance": 0.6531306505203247,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "85e77506-cceb-509a-8766-871fb3f08e7a",
-          "type": "function",
-          "title": "resolve",
-          "relevance": 0.6531306505203247,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "40600d90-a841-5b0d-ba87-9dad6ef72327",
-          "type": "function",
-          "title": "from_str_invalid",
-          "relevance": 0.6388157606124878,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1066ea4c-dab8-4264-9737-b5c82181552c",
-          "type": "observation",
-          "title": "fix(parser): Resolve regression with value_terminator/last",
-          "relevance": 0.3389713168144226,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65110a27-7ee4-514a-98fe-f9404f6ca5e8",
-          "type": "function",
-          "title": "resolve",
-          "relevance": 0.6505048871040344,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4eda7111-ae39-5a1d-b30c-14e79d8fe59b",
-          "type": "class",
-          "title": "ErrCode",
-          "relevance": 0.3002382218837738,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "344764e9-5a60-5626-85b5-83182a9585b8",
-          "type": "class",
-          "title": "EnvCompleter",
-          "relevance": 0.3275326192378998,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6cef183e-33a0-5c11-b87a-d31c399a8333",
-          "type": "class",
-          "title": "Named",
-          "relevance": 0.2844361960887909,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ffddc913-b684-5f06-934b-5a93c50624e8",
-          "type": "function",
-          "title": "mut_subcommand_with_alias_resolve",
-          "relevance": 0.33776798844337463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a1541d6f-dd59-50d6-88f5-109dcaf537c6",
-          "type": "class",
-          "title": "impl Deref for ArgMatcher",
-          "relevance": 0.3132920563220978,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f13a4482-de60-5a3d-a032-87d13f6f7e7e",
-          "type": "class",
-          "title": "MKeyMap",
-          "relevance": 0.3325715661048889,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "82c4eb18-2b41-5359-93b1-552ff8540b36",
-          "type": "function",
-          "title": "write_dynamic_context",
-          "relevance": 0.2961253821849823,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bcba9cdd-1920-5eaf-aade-1851b22c53b0",
-          "type": "function",
-          "title": "invalid_utf8",
-          "relevance": 0.32264405488967896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "acc465b7-259f-53b7-9e04-8641178a2c14",
-          "type": "function",
-          "title": "invalid_utf8_option_long_space",
-          "relevance": 0.34312939643859863,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4fb6a949-ab9e-4238-b78e-8199c0b77a97",
-          "type": "observation",
-          "title": "fix(derive): Improve invalid attribute errors",
-          "relevance": 0.3290557563304901,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3d76e316-62ba-429b-a979-26cd8421c8ab",
-          "type": "rule",
-          "title": "MSRV bumps are minor-release events, never patch",
-          "relevance": 0.1709967702627182,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4b6657ec-5479-45e5-8bf0-73a8e91c5930",
-          "type": "observation",
-          "title": "refactor(builder): Rename internal blacklist field to conflicts",
-          "relevance": 0.19581888616085052,
+          "relevance": 0.17428570985794067,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
@@ -6074,17 +5281,1540 @@
           "id": "727eaeab-9f07-4d95-8d72-f13f1e055c3e",
           "type": "knowledge",
           "title": "Subcommands nest as Command children with propagated settings",
-          "relevance": 0.1468641608953476,
+          "relevance": 0.17183098196983337,
           "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "391445e7-aab2-494f-b25f-3d89838eff51",
-          "type": "rule",
-          "title": "Deprecations ship behind the `deprecated` feature flag",
-          "relevance": 0.15175963938236237,
+          "id": "8c536f37-d2da-423f-8034-f9cde54b3736",
+          "type": "knowledge",
+          "title": "Parsing runs clap_lex tokenize -> parser -> arg_matcher -> validator",
+          "relevance": 0.19365079700946808,
           "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0f262301-1ad5-56e0-844c-a586ffcce6d4",
+          "type": "file",
+          "title": "help.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "50d7006e-91a0-5d50-9366-ccd12b4de9e7",
+          "type": "function",
+          "title": "next_display_order",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c685cf6d-f876-5714-b5df-36ee294a650c",
+          "type": "function",
+          "title": "populate_command_candidate",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "97d3dc25-7fd2-5428-a38c-74209ccb31be",
+          "type": "class",
+          "title": "ParseState",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3eb25f45-ae89-4651-9658-97280026cefc",
+          "type": "observation",
+          "title": "fix(clap_complete_nushell): Set argument type to `directory` for `ValueHint::DirPath`",
+          "relevance": 0.14852175116539001,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e3ac3284-94c4-4c0b-b79c-7e340a70194e",
+          "type": "observation",
+          "title": "fix(docs): Typo in `ValueHint` docs 'anther' -> 'another'",
+          "relevance": 0.14852175116539001,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "485e603e-8755-5aa1-840a-96a632d3d2f6",
+          "type": "file",
+          "title": "conflicts.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6dbe2485-70ea-513c-8cc8-2a616cdd247d",
+          "type": "file",
+          "title": "roff.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3107c89-a7b6-541b-b960-0680e5f9fb90",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3ecdbf5-2f4e-5495-8d61-a57bcf7bd10a",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0c91af83-68af-51ae-8855-b22b98d9e035",
+          "type": "file",
+          "title": "demo.rs",
+          "relevance": 0.1180645227432251,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "11eeb521-94b9-5008-b3d2-d3b750514bf9",
+          "type": "class",
+          "title": "Args",
+          "relevance": 0.1180645227432251,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ff6c5e2b-0b05-5f71-ab09-d2c26c25f47c",
+          "type": "file",
+          "title": "require.rs",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3e2d6e8f-0721-5e2f-aa18-850758d5a363",
+          "type": "file",
+          "title": "common.rs",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c3ccce45-37cd-577d-a6af-ead950738274",
+          "type": "function",
+          "title": "value_env",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "181404d8-fec9-5b27-8c39-5bd7971640bd",
+          "type": "class",
+          "title": "CommandExt",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "18abf566-ad05-5575-9628-1575890fc5e2",
+          "type": "class",
+          "title": "impl Default for Command",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1de949a5-0f43-5656-8382-6e52c81fe7ed",
+          "type": "class",
+          "title": "impl Index<&'_ Id> for Command",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "379c345c-af59-51c9-a450-6b4ed700425e",
+          "type": "class",
+          "title": "impl From<&'_ Self> for Command",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5d06dd2f-a9e8-5514-a05c-6823522431b2",
+          "type": "class",
+          "title": "impl AppExt for MaxTermWidth",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
+    },
+    {
+      "id": "ln07",
+      "search_mode": "hybrid",
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.32473192495968534,
+        "code_gradient": 0.0060084772577243765,
+        "code_strength": 0.39052695819297156,
+        "knowledge_gradient": 0.026523459085327227,
+        "knowledge_strength": 0.6696401089904184
+      },
+      "latency_ms": 489,
+      "results": []
+    },
+    {
+      "id": "ln08",
+      "search_mode": "hybrid",
+      "filtered_count": 1550,
+      "signals": {
+        "answer_coverage": 0.886757173261518,
+        "code_gradient": 0.007628401973037935,
+        "code_strength": 0.43329259889736466,
+        "knowledge_gradient": 0.021827292644293818,
+        "knowledge_strength": 0.6785154857064045
+      },
+      "latency_ms": 563,
+      "results": [
+        {
+          "id": "15f889fa-87d5-5167-9028-323a52c210e1",
+          "type": "function",
+          "title": "required_group_missing_arg",
+          "relevance": 0.7975310683250427,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e8ccdf94-92af-5cf3-932e-ebebf1037a00",
+          "type": "function",
+          "title": "missing_required",
+          "relevance": 0.7630173563957214,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8f366b79-35c3-5a2d-9bed-9f8860f586e2",
+          "type": "file",
+          "title": "_concepts.rs",
+          "relevance": 0.3862374722957611,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "66a73084-a6a7-50a1-a2a6-4130d3f85623",
+          "type": "function",
+          "title": "_panic_on_missing_help",
+          "relevance": 0.3979416489601135,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0e378618-7ffa-4779-95f3-214958144f5b",
+          "type": "knowledge",
+          "title": "Help and version short-circuit before validators",
+          "relevance": 0.20246893167495728,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "04d3e821-d726-5ed0-b496-6b6715c85d03",
+          "type": "function",
+          "title": "default_missing_value_per_occurrence",
+          "relevance": 0.4040638208389282,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "61c713a0-6c4e-5fdb-b772-1f83cd111e0a",
+          "type": "file",
+          "title": "validator.rs",
+          "relevance": 0.36477982997894287,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4299f68c-b10a-5ac9-bb38-a528936d4dcc",
+          "type": "class",
+          "title": "ArgAction",
+          "relevance": 0.3699175715446472,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6280706e-33a4-5759-bbbb-f970e330032c",
+          "type": "function",
+          "title": "missing_required_error",
+          "relevance": 0.4103773236274719,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d2e81608-c0c0-51ee-aabf-b4c3fcffe36e",
+          "type": "function",
+          "title": "assert_arg_flags",
+          "relevance": 0.3597828447818756,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6d5daf77-6890-5fce-9539-f3a66d6114ca",
+          "type": "function",
+          "title": "is_missing_required_ok",
+          "relevance": 0.37520211935043335,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a7b3ca67-3d9f-5d32-b571-030a5974150a",
+          "type": "function",
+          "title": "allow_ext_sc_when_sc_required",
+          "relevance": 0.3920022249221802,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "eb52320c-c101-55f5-aaf2-abc689880ecf",
+          "type": "function",
+          "title": "positional_required_with_requires_if_no_value",
+          "relevance": 0.4040638208389282,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "18ca3f56-b458-5681-9a0f-6b4f695cb5e0",
+          "type": "class",
+          "title": "ParseResult",
+          "relevance": 0.3367198407649994,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bf3df1e2-dd79-511a-8579-48c3a08a7a5f",
+          "type": "function",
+          "title": "delimited_missing_value",
+          "relevance": 0.42361530661582947,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "57d10cc5-8481-5562-83fb-613fd489cbc6",
+          "type": "function",
+          "title": "help_required_but_not_given",
+          "relevance": 0.3920022249221802,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ab35c411-aa85-520d-90f8-44d8e659976b",
+          "type": "file",
+          "title": "default_missing_vals.rs",
+          "relevance": 0.43055981397628784,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7104aefc-2f0c-4dcb-aab1-0013dac556c6",
+          "type": "observation",
+          "title": "feat(complete): Index-aware ValueCompleter",
+          "relevance": 0.19604134559631348,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7412b8c6-898d-4bf8-9467-d76ff53907ed",
+          "type": "knowledge",
+          "title": "external_subcommand catches unmatched subcommands",
+          "relevance": 0.19000929594039917,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f1bc8979-a6de-4505-8035-2e587d4ba371",
+          "type": "knowledge",
+          "title": "ArgAction defines flag semantics: Set, Append, Count, SetTrue",
+          "relevance": 0.19297818839550018,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "463188cc-86df-5e0c-b152-12970bd297c0",
+          "type": "file",
+          "title": "opts.rs",
+          "relevance": 0.23925933241844177,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "51fa560c-3052-5d7a-88f0-a568ab12723e",
+          "type": "file",
+          "title": "arg_matches.rs",
+          "relevance": 0.23925933241844177,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "af70eff3-0dd6-5bec-8a2b-ce3a8187a28b",
+          "type": "file",
+          "title": "posix_compatible.rs",
+          "relevance": 0.23925933241844177,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "226b954d-de0d-5c24-83d5-dff30a1959a6",
+          "type": "file",
+          "title": "groups.rs",
+          "relevance": 0.11962966620922089,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "50487e2d-deb2-5ddc-a3f4-943f658097ad",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.11962966620922089,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "89b2919a-1079-5d06-b048-701a1a4d0876",
+          "type": "file",
+          "title": "positionals.rs",
+          "relevance": 0.11445260792970657,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6380289a-e489-43bd-94e7-49be75945035",
+          "type": "knowledge",
+          "title": "default_value silently loses to overrides_self and multiples",
+          "relevance": 0.07768268883228302,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ae3a2a80-d98d-4d9b-b435-57a02512ad3c",
+          "type": "knowledge",
+          "title": "Everything is a builder: Command, Arg, ArgGroup",
+          "relevance": 0.07768268883228302,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c336c219-5cf5-4e78-91ac-853606a5af7d",
+          "type": "rule",
+          "title": "Boolean flags must use SetTrue/SetFalse, not value parsing",
+          "relevance": 0.07768268883228302,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2108502d-daa1-4f01-ba29-cd9e85165bd8",
+          "type": "observation",
+          "title": "fix(parser): Don't report conflicting arguments in usage",
+          "relevance": 0.07660377025604248,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4b6657ec-5479-45e5-8bf0-73a8e91c5930",
+          "type": "observation",
+          "title": "refactor(builder): Rename internal blacklist field to conflicts",
+          "relevance": 0.07660377025604248,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8c536f37-d2da-423f-8034-f9cde54b3736",
+          "type": "knowledge",
+          "title": "Parsing runs clap_lex tokenize -> parser -> arg_matcher -> validator",
+          "relevance": 0.07660377025604248,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5fc2e458-c72e-56dc-aede-07ed4e9e3790",
+          "type": "function",
+          "title": "valid_index",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "610dd21a-bc81-5b70-a43b-8bec002844fd",
+          "type": "function",
+          "title": "default_missing_value_flag_value",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "68b6dfd5-71c2-5af0-89c4-2d5ffeaa1368",
+          "type": "function",
+          "title": "opt_missing",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b23ea3a4-fad6-58ef-b06c-81c5da03737a",
+          "type": "function",
+          "title": "opt_default_user_override",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b69dfbf4-32f3-5d18-92ae-b7d9c2928ddd",
+          "type": "function",
+          "title": "opt_present_with_value",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c28d8048-29a8-5081-9e9f-17fd4581566a",
+          "type": "function",
+          "title": "opt_present_with_empty_value",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d296234a-e55b-50b8-93dd-2a0e0aa37768",
+          "type": "function",
+          "title": "opt_default",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f37259b3-9cda-518f-b2e8-eeade2748abe",
+          "type": "function",
+          "title": "opt_present_with_missing_value",
+          "relevance": 0.06458397209644318,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
+    },
+    {
+      "id": "ln09",
+      "search_mode": "hybrid",
+      "filtered_count": 1559,
+      "signals": {
+        "answer_coverage": 0.5197750937333583,
+        "code_gradient": 0.003878249653284849,
+        "code_strength": 0.36909340820354924,
+        "knowledge_gradient": 0.0118450317769625,
+        "knowledge_strength": 0.6782674952278634
+      },
+      "latency_ms": 546,
+      "results": [
+        {
+          "id": "744c07dd-959d-5003-b686-cbaa12bd657d",
+          "type": "function",
+          "title": "posix_compatible_opts_short",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "841218a1-b234-5bf3-a380-84b49ef35441",
+          "type": "function",
+          "title": "posix_compatible_opts_short_rev",
+          "relevance": 0.7440048456192017,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2a18919b-85d8-5551-8877-e98fb7ac059b",
+          "type": "class",
+          "title": "HexOpt",
+          "relevance": 0.43584370613098145,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7963470d-a424-503a-8b8b-b5299cf6130c",
+          "type": "function",
+          "title": "get_short",
+          "relevance": 0.39681291580200195,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3d76e316-62ba-429b-a979-26cd8421c8ab",
+          "type": "rule",
+          "title": "MSRV bumps are minor-release events, never patch",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6fe3913d-9700-5e94-ac55-ef6d0e80d7fc",
+          "type": "function",
+          "title": "option_help",
+          "relevance": 0.36925646662712097,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b6114eb9-6a50-5596-8155-28eea3a33f39",
+          "type": "module",
+          "title": "test",
+          "relevance": 0.35927656292915344,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7e8e5f0b-332c-5c52-a54d-fddd9e96f130",
+          "type": "function",
+          "title": "source_under_posix_mode",
+          "relevance": 0.3641981780529022,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "642b6790-2d28-5a78-afab-63a61f5d9335",
+          "type": "function",
+          "title": "sc_short_flag_short_opt_pos",
+          "relevance": 0.37980666756629944,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "985a51d2-af78-5a65-be14-2e51ec4208ca",
+          "type": "class",
+          "title": "NoOpOpt",
+          "relevance": 0.4028252363204956,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "dfe90c8d-8a84-54cf-9bc9-016b847f5853",
+          "type": "class",
+          "title": "Opt",
+          "relevance": 0.42881396412849426,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bb82a5fc-bf85-599d-9b81-fc01b97c9e71",
+          "type": "function",
+          "title": "posix_compatible_flags_long",
+          "relevance": 0.43584370613098145,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b8eae951-adf1-50eb-88f7-d57816319b62",
+          "type": "function",
+          "title": "try_get_arg_t",
+          "relevance": 0.3323308229446411,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "082bd9af-0101-517d-a7c5-daf7cf897100",
+          "type": "function",
+          "title": "option_option_type_help",
+          "relevance": 0.385311096906662,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5fef3c4f-84c5-537e-a6dd-8a398848521e",
+          "type": "class",
+          "title": "Opt",
+          "relevance": 0.34982192516326904,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cbf7dafa-3d48-523f-8640-3daad6531f51",
+          "type": "file",
+          "title": "clap_empty_attr.rs",
+          "relevance": 0.3452787697315216,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6590b3c1-0ace-51a1-8565-38980c518d3b",
+          "type": "function",
+          "title": "sources_under_posix_mode_bash",
+          "relevance": 0.36925646662712097,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+          "type": "rule",
+          "title": "Verify with make test-full, make clippy-full, make doc",
+          "relevance": 0.11727801710367203,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "29e5e16d-0823-4019-ba60-61ad1c33cd94",
+          "type": "rule",
+          "title": "Choose builder or derive per command \u2014 never mix for the same arg",
+          "relevance": 0.12881356477737427,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b7985b2f-3bff-4a41-b59e-d1fc35a6d9b7",
+          "type": "observation",
+          "title": "fix: correct typos in comments",
+          "relevance": 0.12472423911094666,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "af70eff3-0dd6-5bec-8a2b-ce3a8187a28b",
+          "type": "file",
+          "title": "posix_compatible.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3107c89-a7b6-541b-b960-0680e5f9fb90",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4eda7111-ae39-5a1d-b30c-14e79d8fe59b",
+          "type": "class",
+          "title": "ErrCode",
+          "relevance": 0.06537655740976334,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "596afcbd-3451-5255-ab36-a9f4d1668149",
+          "type": "file",
+          "title": "custom_string_parsers.rs",
+          "relevance": 0.06537655740976334,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5f50cc30-57ec-55d8-9bb9-8007dcc82b67",
+          "type": "class",
+          "title": "DefaultedOpt",
+          "relevance": 0.06537655740976334,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "77472bb5-cc01-59ce-996b-24491a4900be",
+          "type": "class",
+          "title": "PathOpt",
+          "relevance": 0.06537655740976334,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cbed64d4-2f44-55ce-bf52-1272ce3cb989",
+          "type": "class",
+          "title": "impl std::error::Error for ErrCode",
+          "relevance": 0.06537655740976334,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fdcc7bb7-5072-5d59-8282-ee61f4768844",
+          "type": "class",
+          "title": "impl std::fmt::Display for ErrCode",
+          "relevance": 0.06537655740976334,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ad29cbaf-5422-5956-9a69-95094f5eb433",
+          "type": "file",
+          "title": "rename_all_non_literal_expr.rs",
+          "relevance": 0.0643220990896225,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "213f5dea-c293-593c-a56f-e57dcd2369df",
+          "type": "class",
+          "title": "impl Ord for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "445c5982-0829-51c9-bf0a-ea00280bf075",
+          "type": "class",
+          "title": "impl Eq for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "69e6a345-5456-562c-806f-3b2d09b5156f",
+          "type": "class",
+          "title": "impl Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "806aad0e-3b9a-50c6-a125-dad8aa397a18",
+          "type": "file",
+          "title": "arg.rs",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9212f1a7-7ab7-5d5a-b6c4-7a64e3aabea8",
+          "type": "class",
+          "title": "impl fmt::Debug for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a057be2a-38e9-5e3d-9ef0-ce4cdcad2979",
+          "type": "class",
+          "title": "impl PartialOrd for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bec28503-5eac-5c87-867c-276750984623",
+          "type": "class",
+          "title": "impl From<&'_ Self> for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c468871a-b6ac-5211-90a0-9ebb6e310666",
+          "type": "class",
+          "title": "Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ed06839c-5ff3-525d-bffc-fbae6ea03b34",
+          "type": "class",
+          "title": "impl PartialEq for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ee56ced2-b65d-5ac9-8bd7-4bb4dc144241",
+          "type": "class",
+          "title": "ArgExt",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "faf60ee6-a905-59b8-a77e-3c1c6bf18c63",
+          "type": "class",
+          "title": "impl Display for Arg",
+          "relevance": 0.05952193960547447,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
+    },
+    {
+      "id": "ln10",
+      "search_mode": "hybrid",
+      "filtered_count": 1126,
+      "signals": {
+        "answer_coverage": 0.46408853410005957,
+        "code_gradient": 0.011971146084633167,
+        "code_strength": 0.39010104963715503,
+        "knowledge_gradient": 0.016863479982112083,
+        "knowledge_strength": 0.6682763709575958
+      },
+      "latency_ms": 526,
+      "results": [
+        {
+          "id": "0719dba3-949b-5108-8650-1b197d3f70a9",
+          "type": "function",
+          "title": "render_synopsis_arg",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c380a44a-2f34-5694-acbe-1a6abd489c43",
+          "type": "class",
+          "title": "impl ArgSettings",
+          "relevance": 0.7746031880378723,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "36c079f0-a5c6-5645-a445-31834435ab01",
+          "type": "file",
+          "title": "core.rs",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "899822b0-b9a5-5047-83dd-30520501e851",
+          "type": "function",
+          "title": "lots_o_flags_combined",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8c536f37-d2da-423f-8034-f9cde54b3736",
+          "type": "knowledge",
+          "title": "Parsing runs clap_lex tokenize -> parser -> arg_matcher -> validator",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "72d95aa9-4e13-5a35-b439-8337aa36ae25",
+          "type": "function",
+          "title": "option_markers",
+          "relevance": 0.739393949508667,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5b84c709-2602-5e6a-ba95-df916d96d86d",
+          "type": "file",
+          "title": "unique_args.rs",
+          "relevance": 0.762499988079071,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "04bff7b2-25df-51f2-b75e-0266d8f423b6",
+          "type": "function",
+          "title": "outer_can_access_arg",
+          "relevance": 0.7507692575454712,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "30033f68-add4-55ed-a445-acf3cca5b574",
+          "type": "file",
+          "title": "unicode.rs",
+          "relevance": 0.762499988079071,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fce02a30-f4d2-5aef-ab93-ed9cf0f53dfd",
+          "type": "function",
+          "title": "indices_mult_flags_combined",
+          "relevance": 0.7746031880378723,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a1ba0373-1df6-5e5d-81aa-4dcede589b4b",
+          "type": "function",
+          "title": "write_registration",
+          "relevance": 0.7072463631629944,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d5df5e1c-b2fb-5904-9b1e-e705244e37b2",
+          "type": "file",
+          "title": "main.rs",
+          "relevance": 0.6971428394317627,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d12a281c-7515-5f91-ba42-9b76a6504ca9",
+          "type": "function",
+          "title": "ch_width",
+          "relevance": 0.6873239278793335,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0bda5252-51e2-5669-8084-766c2b22e368",
+          "type": "function",
+          "title": "split",
+          "relevance": 0.633766233921051,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9cdb5dfc-03cf-57b0-8a47-a3d0c3dad8e1",
+          "type": "function",
+          "title": "issue_626_unicode_cutoff",
+          "relevance": 0.7176470756530762,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c89f49ed-c454-5e14-b3e6-8908003dea72",
+          "type": "function",
+          "title": "complete_arg_value",
+          "relevance": 0.7176470756530762,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "df65940b-d867-5775-9698-249d487b2406",
+          "type": "function",
+          "title": "option_value_markers",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b30cb104-c1a1-408f-ae04-d21e8e85b05d",
+          "type": "observation",
+          "title": "feat: Display word alias as singular when unique",
+          "relevance": 0.1967741996049881,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0d0d4879-a5fe-46d3-a07b-a0075fff8f13",
+          "type": "rule",
+          "title": "Verify with make test-full, make clippy-full, make doc",
+          "relevance": 0.15000000596046448,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d44371a7-ec09-4638-8033-5fbec41efbd0",
+          "type": "knowledge",
+          "title": "Derive and builder are interchangeable surfaces",
+          "relevance": 0.16486486792564392,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f33a3372-0f45-5c59-be9a-a042e84bada3",
+          "type": "class",
+          "title": "impl ArgMatches",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "66babb49-e879-4928-a0f9-394601f76004",
+          "type": "knowledge",
+          "title": "clap's error model splits dev config errors from user input errors",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "29b8cf80-6ff3-526e-a96f-9d83e6027662",
+          "type": "file",
+          "title": "render.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9147c313-813c-5fba-a9b0-580601497328",
+          "type": "function",
+          "title": "synopsis",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cb54da59-e650-5599-a830-1b3cc4a8396a",
+          "type": "function",
+          "title": "display_width",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1bf0c5c4-1e7e-54e7-b4d4-5f59cd541dc4",
+          "type": "file",
+          "title": "flags.rs",
+          "relevance": 0.1180645227432251,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3107c89-a7b6-541b-b960-0680e5f9fb90",
+          "type": "function",
+          "title": "new",
+          "relevance": 0.1180645227432251,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0ed4f20f-949c-5a0b-a319-896e1e88d7c2",
+          "type": "class",
+          "title": "ArgFlags",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3d540222-84d0-5c46-bca1-2c6840cfcf6d",
+          "type": "class",
+          "title": "ArgSettings",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9b4a88f7-0f41-5a26-81d7-c04892ad9150",
+          "type": "file",
+          "title": "arg_settings.rs",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c57e7520-76e2-591f-9637-bea885786952",
+          "type": "class",
+          "title": "impl std::ops::BitOr for ArgFlags",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d1367bca-0313-53a4-bf93-c4c22a3def7d",
+          "type": "file",
+          "title": "indices.rs",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ea8999df-7047-5595-8b00-578893d738a5",
+          "type": "class",
+          "title": "impl ArgFlags",
+          "relevance": 0.11619048565626144,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "27e20c4b-2bc7-5b11-8781-bf3c2c47a354",
+          "type": "function",
+          "title": "unique_arg_names",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "51276083-5dff-5d3a-a608-9a393dd03f19",
+          "type": "function",
+          "title": "unique_arg_shorts",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b22e86ce-e208-572e-a268-59b069847ca8",
+          "type": "function",
+          "title": "unique_arg_longs",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bbc731fc-b860-5413-b398-38bee7d07d58",
+          "type": "function",
+          "title": "possible_values_ignore_case",
+          "relevance": 0.11437500268220901,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bb2d49dc-75d0-55fe-872e-ab154a5092cc",
+          "type": "function",
+          "title": "get_outer_matches",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "dbdc9c5d-6352-5fc2-9a64-27ae4a90ab83",
+          "type": "file",
+          "title": "propagate_globals.rs",
+          "relevance": 0.11261539161205292,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "31185be5-30c2-56ad-9ea9-ff458928a336",
+          "type": "function",
+          "title": "render_synopsis_option",
+          "relevance": 0.11090909689664841,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
+    },
+    {
+      "id": "ln11",
+      "search_mode": "hybrid",
+      "filtered_count": 466,
+      "signals": {
+        "answer_coverage": 0.4868759068553196,
+        "code_gradient": 0.0041575687953415265,
+        "code_strength": 0.3466767292811402,
+        "knowledge_gradient": 0.012388075887012429,
+        "knowledge_strength": 0.6378811212296842
+      },
+      "latency_ms": 540,
+      "results": [
+        {
+          "id": "8458d661-e5f8-57fd-9800-da19ca5f161a",
+          "type": "function",
+          "title": "respond",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "71d8dccf-e6f5-5c8b-8d12-98ece20726d2",
+          "type": "function",
+          "title": "parse_hex",
+          "relevance": 0.5045773983001709,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2e01b4fa-2035-5f5b-98cc-34bea6ffc8d6",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.4885590672492981,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5bf4c712-e5e5-51f6-af20-04cace8def84",
+          "type": "function",
+          "title": "parse_markdown",
+          "relevance": 0.4735264778137207,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "457bdadd-1511-48f6-b574-9d53dc751c44",
+          "type": "observation",
+          "title": "refactor(complete): Pull out subcommand separator",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f9dd0da2-3977-5433-9f7a-4aa4ca820906",
+          "type": "function",
+          "title": "from_value_enum",
+          "relevance": 0.4809253215789795,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fcbc9f09-7ca0-5b41-87f2-3adecd3355bf",
+          "type": "file",
+          "title": "lib.rs",
+          "relevance": 0.43970316648483276,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "06a94915-a1c9-54b0-861f-bbf4874769de",
+          "type": "function",
+          "title": "update_subcommands",
+          "relevance": 0.4735264778137207,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "acc465b7-259f-53b7-9e04-8641178a2c14",
+          "type": "function",
+          "title": "invalid_utf8_option_long_space",
+          "relevance": 0.4335101544857025,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "677ef51c-3f3e-5463-a373-9c38edba287e",
+          "type": "file",
+          "title": "doc_comments.rs",
+          "relevance": 0.4460756778717041,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9f95231e-86b6-52d6-9b7e-b31632fa6dd3",
+          "type": "file",
+          "title": "03_03_positional.rs",
+          "relevance": 0.4809253215789795,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fc2b133b-b2a5-57c3-9cdd-30e8cde542d6",
+          "type": "function",
+          "title": "get_matches",
+          "relevance": 0.4159354269504547,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "da8b938c-e25a-5012-a531-0e35c655917c",
+          "type": "function",
+          "title": "zero_copy_parsing",
+          "relevance": 0.46635183691978455,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "62719da6-d909-5772-a85a-60bd4b6e2aa3",
+          "type": "module",
+          "title": "markdown",
+          "relevance": 0.4335101544857025,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "532d3f6b-7ce7-5f04-86fa-ff4d0056ebd6",
+          "type": "function",
+          "title": "subcommand",
+          "relevance": 0.42748919129371643,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "48dd1215-773d-5b7c-a80b-e7c6c60c9123",
+          "type": "function",
+          "title": "parse_aliases",
+          "relevance": 0.43970316648483276,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "52262d89-4552-58de-ba84-1f1e3fa2f023",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.49643903970718384,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7d858e72-1073-4b13-b409-c93a4c093177",
+          "type": "knowledge",
+          "title": "ValueParser converts raw OsStr into typed values",
+          "relevance": 0.19062499701976776,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7412b8c6-898d-4bf8-9467-d76ff53907ed",
+          "type": "knowledge",
+          "title": "external_subcommand catches unmatched subcommands",
+          "relevance": 0.18484848737716675,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8c536f37-d2da-423f-8034-f9cde54b3736",
+          "type": "knowledge",
+          "title": "Parsing runs clap_lex tokenize -> parser -> arg_matcher -> validator",
+          "relevance": 0.1876923143863678,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "155171d4-002d-5a48-93b7-42526ba48226",
+          "type": "file",
+          "title": "args.rs",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
@@ -6092,7 +6822,7 @@
           "id": "624a8615-b003-5366-85ef-8e7591dc842e",
           "type": "file",
           "title": "subcommand.rs",
-          "relevance": 0.19830861687660217,
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -6101,26 +6831,610 @@
           "id": "79251686-d94f-59cd-b1c5-56732820f5a2",
           "type": "function",
           "title": "gen_augment",
-          "relevance": 0.19830861687660217,
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "7d46526a-03f9-507f-8202-eabd27bdec53",
-          "type": "file",
-          "title": "default_values_t_invalid.rs",
-          "relevance": 0.16525717079639435,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0835f434-3805-5ea0-a3bc-3cec54624b8a",
+          "id": "bd5d1f8c-13c4-5898-90ed-d0208cc9597b",
           "type": "class",
-          "title": "ParseState",
-          "relevance": 0.09915430843830109,
+          "title": "impl ClapAttr",
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e172bba0-7a0d-5b7c-92df-646d5604643f",
+          "type": "function",
+          "title": "parse_all",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0dde205b-aabf-5535-a528-28969421579d",
+          "type": "function",
+          "title": "complete",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "66babb49-e879-4928-a0f9-394601f76004",
+          "type": "knowledge",
+          "title": "clap's error model splits dev config errors from user input errors",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7b1b2651-57b7-538d-9f9d-08e1cd5f657b",
+          "type": "function",
+          "title": "next_line_arg_short",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0387cbe4-e273-58c9-add3-21779c0e7919",
+          "type": "class",
+          "title": "Commands",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a734b6f5-6908-5060-8598-9d27749bf053",
+          "type": "file",
+          "title": "repl-derive.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e98edebe-8e1e-5154-9ce8-c799f424bc43",
+          "type": "class",
+          "title": "Cli",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2a18919b-85d8-5551-8877-e98fb7ac059b",
+          "type": "class",
+          "title": "HexOpt",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4eda7111-ae39-5a1d-b30c-14e79d8fe59b",
+          "type": "class",
+          "title": "ErrCode",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "596afcbd-3451-5255-ab36-a9f4d1668149",
+          "type": "file",
+          "title": "custom_string_parsers.rs",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5f50cc30-57ec-55d8-9bb9-8007dcc82b67",
+          "type": "class",
+          "title": "DefaultedOpt",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "77472bb5-cc01-59ce-996b-24491a4900be",
+          "type": "class",
+          "title": "PathOpt",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "985a51d2-af78-5a65-be14-2e51ec4208ca",
+          "type": "class",
+          "title": "NoOpOpt",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cbed64d4-2f44-55ce-bf52-1272ce3cb989",
+          "type": "class",
+          "title": "impl std::error::Error for ErrCode",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "fdcc7bb7-5072-5d59-8282-ee61f4768844",
+          "type": "class",
+          "title": "impl std::fmt::Display for ErrCode",
+          "relevance": 0.07568661123514175,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c754fea4-1cff-5f30-9048-c80300643081",
+          "type": "file",
+          "title": "hand_subcommand.rs",
+          "relevance": 0.07446585595607758,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
+    },
+    {
+      "id": "ln12",
+      "search_mode": "hybrid",
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.38353216520027134,
+        "code_gradient": 0.01836324137247496,
+        "code_strength": 0.4176846965185703,
+        "knowledge_gradient": 0.020786410400989542,
+        "knowledge_strength": 0.6567338356327556
+      },
+      "latency_ms": 483,
+      "results": []
+    },
+    {
+      "id": "ln13",
+      "search_mode": "hybrid",
+      "filtered_count": 1239,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.009791032240163223,
+        "code_strength": 0.4830760404826104,
+        "knowledge_gradient": 0.03823304314024325,
+        "knowledge_strength": 0.745170538160929
+      },
+      "latency_ms": 567,
+      "results": [
+        {
+          "id": "69962d17-2d86-5577-b03c-1711cd680b60",
+          "type": "file",
+          "title": "group_name_attribute.rs",
+          "relevance": 0.6454600691795349,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d46589ac-1fb9-5528-ba7b-afaa5d664233",
+          "type": "function",
+          "title": "requires_if",
+          "relevance": 0.6350494027137756,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d3120d3e-6d9f-5a98-b941-218037e8f72f",
+          "type": "module",
+          "title": "arg_group",
+          "relevance": 0.6152041554450989,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bf3a8e9a-9dcc-5355-bddc-0150230c904f",
+          "type": "function",
+          "title": "issue_1643_args_mutually_require_each_other",
+          "relevance": 0.6350494027137756,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "490ed79b-4ca4-48b9-9737-56b781ba0473",
+          "type": "knowledge",
+          "title": "ArgGroup models mutual requirements and conflicts between args",
+          "relevance": 0.3545399308204651,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e929dfa2-c414-5d44-9a6a-9d47fb57475e",
+          "type": "class",
+          "title": "impl From<std::ops::RangeToInclusive<usize>> for ValueRange",
+          "relevance": 0.5545502305030823,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f60021a0-4bd0-59c0-b1d1-5163ee5522ac",
+          "type": "class",
+          "title": "Args",
+          "relevance": 0.6249693036079407,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "69b53ead-5add-5216-b330-ea6a07bfceb4",
+          "type": "function",
+          "title": "attribute",
+          "relevance": 0.5624723434448242,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "d2b70ca1-786c-5047-b3d8-9bc041cf9eea",
+          "type": "file",
+          "title": "mod.rs",
+          "relevance": 0.6152041554450989,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bd5d1f8c-13c4-5898-90ed-d0208cc9597b",
+          "type": "class",
+          "title": "impl ClapAttr",
+          "relevance": 0.6057394742965698,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "14607845-d481-5a83-9239-5f5578558d88",
+          "type": "function",
+          "title": "gather_requires",
+          "relevance": 0.6057394742965698,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "4c851cfe-3163-5cea-804e-11c6ae653d51",
+          "type": "function",
+          "title": "is_multiple",
+          "relevance": 0.5468481183052063,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0e1128b5-c28f-56db-9da1-caad9d0bc8e7",
+          "type": "function",
+          "title": "required_require_with_group_shows_flag",
+          "relevance": 0.6249693036079407,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "adbefa64-1234-58c0-a7f9-f5426854c746",
+          "type": "function",
+          "title": "raw",
+          "relevance": 0.5965616106987,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e589ace7-4584-499a-8dfa-a0b3534653cc",
+          "type": "observation",
+          "title": "fix: Require literal attribute values",
+          "relevance": 0.33724892139434814,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "f0350505-14c0-4be8-a5f4-868c32281fd4",
+          "type": "observation",
+          "title": "fix(derive): Improve attribute/category mismatch errors",
+          "relevance": 0.32355478405952454,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c336c219-5cf5-4e78-91ac-853606a5af7d",
+          "type": "rule",
+          "title": "Boolean flags must use SetTrue/SetFalse, not value parsing",
+          "relevance": 0.17910505831241608,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8c536f37-d2da-423f-8034-f9cde54b3736",
+          "type": "knowledge",
+          "title": "Parsing runs clap_lex tokenize -> parser -> arg_matcher -> validator",
+          "relevance": 0.19616268575191498,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ae3a2a80-d98d-4d9b-b435-57a02512ad3c",
+          "type": "knowledge",
+          "title": "Everything is a builder: Command, Arg, ArgGroup",
+          "relevance": 0.19932658970355988,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0e378618-7ffa-4779-95f3-214958144f5b",
+          "type": "knowledge",
+          "title": "Help and version short-circuit before validators",
+          "relevance": 0.16477665305137634,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "07d85142-bfbb-554f-a02c-e0070bccdfff",
+          "type": "function",
+          "title": "custom_group_id",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "0b7e2f6f-28ab-5b37-aa81-576279b3718a",
+          "type": "function",
+          "title": "implicit_struct_group",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1364b3f2-4c71-5e1e-b1b1-be5197a8c6ef",
+          "type": "function",
+          "title": "helpful_panic_on_duplicate_groups",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "1cec589b-1e94-5af6-8f3a-df48c2a74e10",
+          "type": "function",
+          "title": "optional_group_command",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5c1a777f-3cd1-51f3-b96a-b14d0beb5c97",
+          "type": "function",
+          "title": "skip_group_avoids_duplicate_ids",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "74b3e6f9-915d-52e9-b820-b8a4301411aa",
+          "type": "file",
+          "title": "issues.rs",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7ab9d133-0239-5524-a532-c8aa468c76a1",
+          "type": "function",
+          "title": "flatten_skipped_group",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7fe15b84-a31f-5ac8-86f8-fa68b576adc1",
+          "type": "function",
+          "title": "issue_151_groups_within_subcommands",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9c0afcb9-01a4-5e2f-80ec-816a95dc1158",
+          "type": "file",
+          "title": "groups.rs",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ed534ddc-c1ef-508e-a2a9-5b57c9913693",
+          "type": "function",
+          "title": "required_group",
+          "relevance": 0.19363802671432495,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "213f5dea-c293-593c-a56f-e57dcd2369df",
+          "type": "class",
+          "title": "impl Ord for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "445c5982-0829-51c9-bf0a-ea00280bf075",
+          "type": "class",
+          "title": "impl Eq for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "69e6a345-5456-562c-806f-3b2d09b5156f",
+          "type": "class",
+          "title": "impl Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "9212f1a7-7ab7-5d5a-b6c4-7a64e3aabea8",
+          "type": "class",
+          "title": "impl fmt::Debug for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a057be2a-38e9-5e3d-9ef0-ce4cdcad2979",
+          "type": "class",
+          "title": "impl PartialOrd for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "bec28503-5eac-5c87-867c-276750984623",
+          "type": "class",
+          "title": "impl From<&'_ Self> for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c468871a-b6ac-5211-90a0-9ebb6e310666",
+          "type": "class",
+          "title": "Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ed06839c-5ff3-525d-bffc-fbae6ea03b34",
+          "type": "class",
+          "title": "impl PartialEq for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ee56ced2-b65d-5ac9-8bd7-4bb4dc144241",
+          "type": "class",
+          "title": "ArgExt",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "faf60ee6-a905-59b8-a77e-3c1c6bf18c63",
+          "type": "class",
+          "title": "impl Display for Arg",
+          "relevance": 0.19051483273506165,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        }
+      ]
+    },
+    {
+      "id": "ln14",
+      "search_mode": "hybrid",
+      "filtered_count": 1857,
+      "signals": {
+        "answer_coverage": 0.8885079452311113,
+        "code_gradient": 0.0192073993984462,
+        "code_strength": 0.4498852089517745,
+        "knowledge_gradient": 0.01679369173701164,
+        "knowledge_strength": 0.7092078181734998
+      },
+      "latency_ms": 570,
+      "results": [
+        {
+          "id": "05895424-5ae7-5f34-b36b-f0c27417e72e",
+          "type": "function",
+          "title": "gen_constructor",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "344d9a4b-9d30-57b2-a897-0ba8d4b039de",
+          "type": "function",
+          "title": "from",
+          "relevance": 0.800000011920929,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2bdce2ea-ea5c-589d-9dbb-6efa72988af3",
+          "type": "function",
+          "title": "sc_spec_vals",
+          "relevance": 0.739393949508667,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "17fa2bdb-d370-5038-8efa-82fbb9cef337",
+          "type": "function",
+          "title": "suggest_allow_hyphen",
+          "relevance": 0.7746031880378723,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "ae3a2a80-d98d-4d9b-b435-57a02512ad3c",
+          "type": "knowledge",
+          "title": "Everything is a builder: Command, Arg, ArgGroup",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
@@ -6128,133 +7442,223 @@
           "id": "0c67c045-4fc2-5da6-876a-32e8a575095e",
           "type": "class",
           "title": "impl Parser<'cmd>",
-          "relevance": 0.09915430843830109,
-          "graph_path_len": 2,
+          "relevance": 0.762499988079071,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "18ca3f56-b458-5681-9a0f-6b4f695cb5e0",
+          "id": "e4ae150a-e374-57d1-9d38-c9c45f1d1d3d",
+          "type": "function",
+          "title": "will_args_wrap",
+          "relevance": 0.7072463631629944,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3ca18351-c131-527c-a499-110cd0427c56",
+          "type": "function",
+          "title": "from_subcommand_enum",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "3a57b104-3cff-5e99-be8c-4c74e61219e5",
+          "type": "function",
+          "title": "command",
+          "relevance": 0.762499988079071,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "cb9cc3ce-7aeb-55b5-9d54-ee430fe8950f",
+          "type": "function",
+          "title": "option_from_str",
+          "relevance": 0.7283582091331482,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b4a7867a-6022-5d05-b577-94cb71d719f6",
+          "type": "function",
+          "title": "suggest_argument_value",
+          "relevance": 0.7870967984199524,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "c9c5b00d-467d-5145-a916-932ed933409d",
           "type": "class",
-          "title": "ParseResult",
-          "relevance": 0.09915430843830109,
-          "graph_path_len": 2,
+          "title": "impl From<std::ops::RangeFrom<i64>> for ValueParser",
+          "relevance": 0.7176470756530762,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "1d0288fd-0f8d-55bc-ad04-c3e36837703d",
+          "id": "87e01229-9068-597f-882d-bb506930876e",
           "type": "class",
-          "title": "Identifier",
-          "relevance": 0.09915430843830109,
-          "graph_path_len": 2,
+          "title": "CommandFactory",
+          "relevance": 0.739393949508667,
+          "graph_path_len": 1,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "5132c12a-a7d6-59bb-9006-ff9eee429651",
+          "id": "dcfdfe37-d540-5796-88d7-a61b99307634",
+          "type": "function",
+          "title": "main",
+          "relevance": 0.6971428394317627,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "58ffee54-5a80-597b-891f-5af6fb504044",
+          "type": "function",
+          "title": "suggest_multi_positional_unbounded",
+          "relevance": 0.7507692575454712,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "03f0a1f6-2840-5e61-aed3-bf59299ee0d9",
+          "type": "function",
+          "title": "from",
+          "relevance": 0.7072463631629944,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "44827fbb-3b8d-51d2-8807-4766f49c37e2",
+          "type": "function",
+          "title": "required_ifs_val_present_pass",
+          "relevance": 0.6684931516647339,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "7d858e72-1073-4b13-b409-c93a4c093177",
+          "type": "knowledge",
+          "title": "ValueParser converts raw OsStr into typed values",
+          "relevance": 0.18484848737716675,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "e4c5470b-63f7-40a6-8a57-81b11da0c0dd",
+          "type": "observation",
+          "title": "feat(derive): Defer enum subcommand initialization",
+          "relevance": 0.18208955228328705,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "727eaeab-9f07-4d95-8d72-f13f1e055c3e",
+          "type": "knowledge",
+          "title": "Subcommands nest as Command children with propagated settings",
+          "relevance": 0.19365079700946808,
+          "graph_path_len": 1,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "379c345c-af59-51c9-a450-6b4ed700425e",
           "type": "class",
-          "title": "Parser",
-          "relevance": 0.09915430843830109,
+          "title": "impl From<&'_ Self> for Command",
+          "relevance": 0.36000001430511475,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "6061e69e-3e0e-502e-a8fd-1fb42c0dacbe",
+          "id": "181404d8-fec9-5b27-8c39-5bd7971640bd",
           "type": "class",
-          "title": "impl Parser<'_>",
-          "relevance": 0.09915430843830109,
+          "title": "CommandExt",
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "f645f6f7-0cf3-5f43-890f-c151c6bef79a",
+          "id": "18abf566-ad05-5575-9628-1575890fc5e2",
           "type": "class",
-          "title": "PendingArg",
-          "relevance": 0.09915430843830109,
+          "title": "impl Default for Command",
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "06e6ead2-6290-5a5f-b59d-6f4b92163a5d",
+          "id": "1de949a5-0f43-5656-8382-6e52c81fe7ed",
           "type": "class",
-          "title": "impl Default for &'_ Styles",
-          "relevance": 0.09796959906816483,
+          "title": "impl Index<&'_ Id> for Command",
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "17a1d013-ae7b-5a89-831e-6ede1b59b05d",
+          "id": "46a78d52-3c29-5eee-9785-9b0261b1ee5c",
+          "type": "class",
+          "title": "impl Command",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "61e97744-b4b9-5ff3-82e3-ae1b6806c2e9",
+          "type": "class",
+          "title": "Command",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "8444cde1-3e41-52c0-9771-0b2bff67ed0a",
+          "type": "function",
+          "title": "complete",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "90535937-ba06-5711-a2cb-30cd517d1355",
+          "type": "class",
+          "title": "impl fmt::Display for Command",
+          "relevance": 0.24000000953674316,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "95543f74-ab85-55eb-a536-e22af318eea0",
           "type": "file",
-          "title": "styling.rs",
-          "relevance": 0.09796959906816483,
+          "title": "bash.rs",
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         },
         {
-          "id": "29f73f8e-399c-528a-99ec-d8e2b221aef0",
-          "type": "class",
-          "title": "impl ToTokens for Method",
-          "relevance": 0.09796959906816483,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c2a418d-3569-5a1f-8abf-5d713a660d34",
-          "type": "class",
-          "title": "impl Item",
-          "relevance": 0.09796959906816483,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "528e6209-598c-5658-b3bf-21e1a9f0320d",
-          "type": "class",
-          "title": "CasingStyle",
-          "relevance": 0.09796959906816483,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "56a93cc2-8655-5365-9829-bc82a6b48599",
-          "type": "class",
-          "title": "impl Kind",
-          "relevance": 0.09796959906816483,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5a81ce83-0388-5076-8f9a-463ee597de03",
-          "type": "class",
-          "title": "Deprecation",
-          "relevance": 0.09796959906816483,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5de5c0ea-df92-5af1-b119-7c22313a5c6f",
-          "type": "class",
-          "title": "impl Method",
-          "relevance": 0.09796959906816483,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5e6004c2-f0e9-5060-b51c-8594cbeba806",
-          "type": "class",
-          "title": "Styles",
-          "relevance": 0.09796959906816483,
+          "id": "b053b686-a8b6-5209-8f8f-df01b8fee4f1",
+          "type": "function",
+          "title": "complete",
+          "relevance": 0.24000000953674316,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
@@ -6263,12 +7667,107 @@
           "id": "665a2517-fcfc-5036-9171-783e2af31200",
           "type": "class",
           "title": "impl ValueParser",
-          "relevance": 0.09796959906816483,
+          "relevance": 0.2361290454864502,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "b8812e7b-1bd0-51d9-b3cd-59094cd1baa1",
+          "type": "class",
+          "title": "ValueParser",
+          "relevance": 0.2361290454864502,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5132c12a-a7d6-59bb-9006-ff9eee429651",
+          "type": "class",
+          "title": "Parser",
+          "relevance": 0.22875000536441803,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6061e69e-3e0e-502e-a8fd-1fb42c0dacbe",
+          "type": "class",
+          "title": "impl Parser<'_>",
+          "relevance": 0.22875000536441803,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "2548fbb5-df33-58f1-8d62-03444f1412de",
+          "type": "function",
+          "title": "raw_defer",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "a7f0d59c-0d0e-51d8-b69d-611add747047",
+          "type": "function",
+          "title": "build",
+          "relevance": 0.20000000298023224,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "044d71ac-3269-5b12-ab99-66dd413caf0e",
+          "type": "function",
+          "title": "gen_from_arg_matches",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "155171d4-002d-5a48-93b7-42526ba48226",
+          "type": "file",
+          "title": "args.rs",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "5d06dd2f-a9e8-5514-a05c-6823522431b2",
+          "type": "class",
+          "title": "impl AppExt for MaxTermWidth",
+          "relevance": 0.12000000476837158,
+          "graph_path_len": 2,
+          "drift_count": 0,
+          "stale": null
+        },
+        {
+          "id": "6f9c9965-3176-5fbb-848f-ba7b1bbfa3a3",
+          "type": "function",
+          "title": "gen_parsers",
+          "relevance": 0.12000000476837158,
           "graph_path_len": 2,
           "drift_count": 0,
           "stale": null
         }
       ]
+    },
+    {
+      "id": "ln15",
+      "search_mode": "hybrid",
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.2735535144923043,
+        "code_gradient": 0.007066311650650659,
+        "code_strength": 0.31968241213554666,
+        "knowledge_gradient": 0.01559417391897786,
+        "knowledge_strength": 0.6905488306612634
+      },
+      "latency_ms": 507,
+      "results": []
     }
   ]
 }

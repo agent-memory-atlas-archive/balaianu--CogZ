@@ -32,7 +32,7 @@
     "code_embeddings": 684,
     "knowledge_embeddings": 84,
     "drift_rows": 0,
-    "db_bytes": 19935232,
+    "db_bytes": 11325440,
     "code_entity_langs": {
       "go": 684
     }
@@ -70,7 +70,7 @@
     "code_embeddings": 965,
     "knowledge_embeddings": 86,
     "drift_rows": 0,
-    "db_bytes": 62885888,
+    "db_bytes": 14442496,
     "code_entity_langs": {
       "python": 965
     }
@@ -83,7 +83,7 @@
       "rust": 337,
       "python": 1
     },
-    "git_commits": 9217,
+    "git_commits": 0,
     "entities_by_type": {
       "class": 804,
       "file": 353,
@@ -110,7 +110,7 @@
     "code_embeddings": 4581,
     "knowledge_embeddings": 83,
     "drift_rows": 0,
-    "db_bytes": 91492352,
+    "db_bytes": 31875072,
     "code_entity_langs": {
       "rust": 4549,
       "bash": 32
@@ -118,49 +118,48 @@
   },
   "cogz": {
     "corpus": "cogz",
-    "source_files": 210,
-    "loc": 54457,
+    "source_files": 225,
+    "loc": 58545,
     "src_langs": {
-      "bash": 1,
-      "rust": 190,
+      "bash": 2,
+      "rust": 204,
       "python": 19
     },
-    "git_commits": 275,
+    "git_commits": 291,
     "entities_by_type": {
-      "class": 234,
-      "file": 213,
-      "function": 1564,
+      "class": 241,
+      "file": 225,
+      "function": 1608,
       "knowledge": 64,
-      "module": 202,
-      "observation": 78,
+      "module": 213,
+      "observation": 85,
       "rule": 17
     },
     "entities_by_status": {
-      "active": 2269,
-      "stale": 93,
+      "active": 2443,
       "superseded": 10
     },
     "edges_by_type": {
-      "auto_references": 346,
-      "calls": 2277,
-      "contains": 1746,
+      "auto_references": 517,
+      "calls": 2318,
+      "contains": 1849,
       "contradicts": 7,
       "derived_from": 3,
       "extends": 4,
-      "imports": 260,
-      "references": 83,
+      "imports": 289,
+      "references": 82,
       "superseded_by": 10,
       "supports": 23
     },
-    "edges": 4759,
-    "code_embeddings": 2198,
-    "knowledge_embeddings": 159,
-    "drift_rows": 12,
-    "db_bytes": 40796160,
+    "edges": 5102,
+    "code_embeddings": 2287,
+    "knowledge_embeddings": 166,
+    "drift_rows": 0,
+    "db_bytes": 29642752,
     "code_entity_langs": {
-      "python": 113,
-      "rust": 2099,
-      "bash": 1
+      "python": 116,
+      "rust": 2169,
+      "bash": 2
     }
   }
 }

@@ -1,7 +1,19 @@
 {
  "corpus": "httpx",
- "reindex_noop_s": 2.7,
- "reindex_add_file_s": 5.0,
- "reindex_remove_file_s": 1.9,
- "full_index_s": 58.6
+ "embedding_state_at_scoring": {
+  "total_entities": 1051,
+  "stale_entities": 5,
+  "edges": 1318,
+  "embeddings_stored": 1051
+ },
+ "reindex_noop_s": 3.2,
+ "reindex_add_file_s": 2.5,
+ "reindex_remove_file_s": 1.0,
+ "full_index_s": 29.0,
+ "embedding_state_after_rebuild": {
+  "total_entities": 1051,
+  "stale_entities": 5,
+  "edges": 1318,
+  "embeddings_stored": 1051
+ }
 }

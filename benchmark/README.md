@@ -69,64 +69,67 @@ Search — seeded ground truth (entities planted by `fetch_corpus`):
 
 | Corpus | n | P@5 | MRR | R@20 | Pack recall |
 |---|---|---|---|---|---|
-| cobra | 15 | .200 | .531 | .967 | .967 |
-| httpx | 15 | .173 | .358 | .917 | .900 |
-| clap | 15 | .185 | .278 | .839 | .782 |
+| cobra | 15 | .200 | .523 | .867 | .967 |
+| httpx | 15 | .160 | .364 | .867 | .933 |
+| clap | 15 | .169 | .259 | .789 | .782 |
 
 Search — commit ground truth (co-change/temporal queries, one expected
 entity each; harder set):
 
 | Corpus | n | P@5 | MRR | R@20 |
 |---|---|---|---|---|
-| cobra | 60 | .103 | .288 | .501 |
-| httpx | 60 | .077 | .254 | .364 |
-| clap | 60 | .090 | .242 | .390 |
-| cogz | 25 | .104 | .352 | .560 |
+| cobra | 60 | .093 | .279 | .472 |
+| httpx | 60 | .080 | .252 | .332 |
+| clap | 60 | .097 | .280 | .308 |
+| cogz | 25 | .088 | .319 | .528 |
 
 Channel ablations (commit GT) — what each channel is worth:
 
 | Corpus | Hybrid MRR | FTS-only MRR | Hybrid R@20 | no-expand R@20 | FTS-only R@20 |
 |---|---|---|---|---|---|
-| cobra | .288 | .254 | .501 | .345 | .484 |
-| httpx | .254 | .162 | .364 | .211 | .433 |
-| clap | .242 | .175 | .390 | .291 | .409 |
-| cogz | .352 | .302 | .560 | .451 | .507 |
+| cobra | .279 | .249 | .472 | .323 | .473 |
+| httpx | .252 | .162 | .332 | .195 | .393 |
+| clap | .280 | .173 | .308 | .281 | .342 |
+| cogz | .319 | .297 | .528 | .418 | .499 |
 
-- **Graph expansion is the most valuable channel** — cutting it costs
-  10–16pt R@20 on every corpus at flat MRR; it surfaces entities that
-  direct ranking misses.
-- **The vector channel earns its keep on commit queries** (MRR +3 to
-  +9pt on httpx/clap/cogz) but not uniformly — on seeded GT, FTS-only
-  sometimes *beats* hybrid MRR (cobra .79 vs .53, clap .59 vs .28):
-  seed titles are strong lexical anchors, so semantic similarity adds
-  noise rather than signal there.
-- FTS-only degrades gracefully everywhere — never below ~75% of hybrid
-  R@20 — which is what the degraded-mode promise needs.
+- **Graph expansion is still the most valuable channel on commit
+  queries** — cutting it costs 3–15pt R@20 depending on corpus
+  (largest on cobra/httpx, least on clap where rebuild-state corpora
+  carry fewer accumulated edges).
+- **The vector channel earns its keep on commit-query MRR** (+2 to
+  +11pt over FTS-only on all four corpora) but not on raw R@20 —
+  under the 20-row cap, vector seeds dilute rather than expand, and
+  FTS-only matches or beats hybrid R@20 on the public corpora (cobra .473
+  vs .472, clap .342 vs .308, httpx .393 vs .332) and nearly ties on
+  cogz (.499 vs .528). Expansion dilution is the top open ranking issue.
+- On seeded GT the same pattern holds — seed titles are strong
+  lexical anchors; FTS-only ties hybrid on clap/httpx and beats it on
+  cobra (.933 vs .867).
 
 Pack recall at token budget (fraction of expected entities present in
 the pack at each budget — commit GT):
 
 | Corpus | 8192 | 4096 | Δ |
 |---|---|---|---|
-| cobra | .896 | .868 | −2.8pt |
-| httpx | .772 | .752 | −2.0pt |
-| clap | .704 | .665 | −3.9pt |
-| cogz | .755 | .510 | −24.5pt |
+| cobra | .891 | .856 | −3.5pt |
+| httpx | .757 | .736 | −2.1pt |
+| clap | .486 | .478 | −0.8pt |
+| cogz | .738 | .347 | −39.1pt |
 
-At 8k the budget is already binding (packs average 8,089–8,190 tokens).
+At 8k the budget is already binding (packs average ~8,100–8,200 tokens).
 4k loses recall on every corpus — mildly on the three public corpora,
-sharply on cogz (its sections are large: sections/pack drop 85→39).
+sharply on cogz (its sections are large).
 **8192 stays the default.**
 
-Silence gate — 5 adjacent-domain negative queries per corpus, scored as
-"no direct result above floor 0.05" (`neg_ok` = clean rate):
+Silence gate — 15 adjacent-domain negative queries per corpus, scored
+as "no direct result above floor" (`neg_ok` = clean rate):
 
 | Corpus | neg_ok |
 |---|---|
-| httpx | 0.4 |
-| clap | 0.2 |
-| cobra | 0.0 |
-| cogz | 0.0 |
+| httpx | 0.73 |
+| cobra | 0.67 |
+| clap | 0.47 |
+| cogz | 0.47 |
 
 The gate under-fires: vocabulary-adjacent queries (e.g. "grpc server
 command scaffolding" against a CLI library) retrieve confidently. The
@@ -137,23 +140,23 @@ Latency (hybrid search, p50 / mean; CPU-only box, contention-sensitive):
 
 | Corpus | Hybrid p50 | FTS-only p50 |
 |---|---|---|
-| cobra | 642 ms | 838 ms |
-| httpx | 528 ms | 346 ms |
-| clap | 715 ms | 395 ms |
-| cogz | 617 ms | 361 ms |
+| cobra | 315 ms | 130 ms |
+| httpx | 342 ms | 66 ms |
+| clap | 550 ms | 96 ms |
+| cogz | 443 ms | 95 ms |
 
 Indexing cost (`timing.json` per corpus — wall-clock seconds):
 
 | Corpus | no-op reindex | +1 file | −1 file | full rebuild |
 |---|---|---|---|---|
-| cobra | 1.0 | 2.2 | 0.6 | 23.9 |
-| httpx | 2.7 | 5.0 | 1.9 | 58.6 |
-| clap | 16.5 | 16.5 | 10.3 | 91.7 |
-| cogz | 58.6* | 19.1 | 14.3 | skipped† |
+| cobra | 1.3 | 3.9 | 0.7 | 25.9 |
+| httpx | 3.2 | 2.5 | 1.0 | 29.0 |
+| clap | 2.3 | 3.2 | 2.4 | 27.7 |
+| cogz | 14.4* | 10.3 | 9.0 | skipped† |
 
-\* the self-corpus reindex ran against ~900 uncommitted working-tree
-changes (this very benchmark diff) — real-world dirty-tree cost, not a
-clean checkout number. † full rebuild would erase live dogfood
+\* the self-corpus carries ~2,500 entities — no-op reindex is dominated by
+parsing/scanning live `.cogz` files, not churn (unchanged files are
+hash-skipped). † full rebuild would erase live dogfood
 telemetry (`events`, `entity_usage`), so `run_suite` skips it on
 `local` corpora.
 

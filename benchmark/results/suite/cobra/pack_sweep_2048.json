@@ -5,15 +5,17 @@
   {
    "label": "hybrid",
    "search": {
-    "cold_first_ms": 1933.9,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 3660.8,
+    "ram_loaded_mb": 763,
     "n": 15,
-    "p50_ms": 542.7,
-    "p95_ms": 1181.0,
-    "p99_ms": 1545.7,
-    "mean_ms": 642.4,
+    "p50_ms": 986.3,
+    "p95_ms": 1418.4,
+    "p99_ms": 1470.1,
+    "mean_ms": 1033.6,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
@@ -26,10 +28,11 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 16,
+      "function/full": 14,
       "file/full": 1,
       "class/full": 1,
-      "knowledge/full": 1
+      "knowledge/full": 2,
+      "rule/full": 1
      }
     },
     {
@@ -41,52 +44,56 @@
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 27,
+      "function/full": 26,
       "file/full": 1,
-      "class/full": 3
+      "class/full": 3,
+      "knowledge/full": 1
      }
     },
     {
      "query": "configuration and initialization",
-     "sections": 37,
+     "sections": 39,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 32,
+     "dropped": 49,
      "composition": {
-      "rule/baseline": 3,
+      "rule/baseline": 2,
       "identity/baseline": 1,
-      "function/full": 21,
+      "function/full": 23,
       "observation/full": 4,
       "knowledge/full": 6,
+      "rule/full": 1,
       "file/full": 1,
       "class/full": 1
      }
     },
     {
      "query": "data validation logic",
-     "sections": 32,
+     "sections": 33,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 62,
+     "dropped": 51,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
-      "function/full": 27,
-      "file/full": 1
+      "function/full": 24,
+      "file/full": 1,
+      "rule/full": 1,
+      "class/full": 3
      }
     },
     {
      "query": "how are requests processed",
-     "sections": 32,
+     "sections": 29,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 52,
+     "dropped": 55,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "file/full": 1,
-      "function/full": 18,
-      "class/full": 2,
+      "class/full": 1,
+      "function/full": 16,
       "knowledge/full": 5,
       "observation/full": 1,
       "rule/full": 1
@@ -97,30 +104,32 @@
   {
    "label": "fts_only",
    "search": {
-    "cold_first_ms": 256.4,
+    "ram_idle_mb": 8,
+    "cold_first_ms": 133.1,
+    "ram_loaded_mb": 20,
     "n": 15,
-    "p50_ms": 272.3,
-    "p95_ms": 394.8,
-    "p99_ms": 544.3,
-    "mean_ms": 293.7,
+    "p50_ms": 110.2,
+    "p95_ms": 130.1,
+    "p99_ms": 133.5,
+    "mean_ms": 96.7,
     "silence_gate": {
      "queries": 3,
-     "with_hits": 1
+     "with_hits": 0
     }
    },
    "packs": [
     {
      "query": "how does the main entry point work",
-     "sections": 25,
+     "sections": 26,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 69,
+     "dropped": 68,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
       "knowledge/full": 2,
       "function/full": 13,
-      "rule/full": 2,
+      "rule/full": 3,
       "file/full": 1,
       "class/full": 1,
       "observation/full": 2
@@ -149,24 +158,25 @@
      "budget": 2048,
      "dropped": 56,
      "composition": {
-      "rule/baseline": 3,
+      "rule/baseline": 2,
       "identity/baseline": 1,
       "function/full": 13,
       "observation/full": 8,
       "knowledge/full": 7,
       "file/full": 1,
-      "rule/full": 1
+      "rule/full": 2
      }
     },
     {
      "query": "data validation logic",
-     "sections": 26,
+     "sections": 27,
      "size_tokens": 2048,
      "budget": 2048,
-     "dropped": 63,
+     "dropped": 62,
      "composition": {
       "rule/baseline": 3,
       "identity/baseline": 1,
+      "rule/full": 1,
       "file/full": 1,
       "knowledge/full": 2,
       "function/full": 17,
@@ -181,11 +191,11 @@
      "budget": 2048,
      "dropped": 57,
      "composition": {
-      "rule/baseline": 3,
+      "rule/baseline": 2,
       "identity/baseline": 1,
       "function/full": 9,
       "observation/full": 2,
-      "rule/full": 2,
+      "rule/full": 3,
       "knowledge/full": 8,
       "file/full": 1,
       "class/full": 1

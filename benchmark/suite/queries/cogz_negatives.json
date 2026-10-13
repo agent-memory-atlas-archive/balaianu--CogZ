@@ -1,36 +1,21 @@
 {
- "version": "neg-v1",
+ "version": "neg-v2",
  "corpus": "cogz",
  "queries": [
-  {
-   "id": "cn01",
-   "intent": "negative",
-   "query": "encrypt stored embeddings at rest",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn02",
-   "intent": "negative",
-   "query": "sync entities to a remote server",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn03",
-   "intent": "negative",
-   "query": "index Java and Swift source files",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn04",
-   "intent": "negative",
-   "query": "export the knowledge graph to Neo4j",
-   "expected_entity_ids": []
-  },
-  {
-   "id": "cn05",
-   "intent": "negative",
-   "query": "web dashboard for browsing memories",
-   "expected_entity_ids": []
-  }
+  {"id": "cn01", "intent": "negative", "category": "adjacent", "query": "encrypt stored embeddings at rest", "expected_entity_ids": []},
+  {"id": "cn02", "intent": "negative", "category": "adjacent", "query": "sync entities to a remote server", "expected_entity_ids": []},
+  {"id": "cn03", "intent": "negative", "category": "adjacent", "query": "index Java and Swift source files", "expected_entity_ids": []},
+  {"id": "cn04", "intent": "negative", "category": "unrelated", "query": "export the knowledge graph to Neo4j", "expected_entity_ids": []},
+  {"id": "cn05", "intent": "negative", "category": "adjacent", "query": "web dashboard for browsing memories", "expected_entity_ids": []},
+  {"id": "cn06", "intent": "negative", "category": "adjacent", "query": "wasm embedding backend for browser execution", "expected_entity_ids": []},
+  {"id": "cn07", "intent": "negative", "category": "adjacent", "query": "rocksdb storage engine tuning for write throughput", "expected_entity_ids": []},
+  {"id": "cn08", "intent": "negative", "category": "adjacent", "query": "distributed memory federation protocol across nodes", "expected_entity_ids": []},
+  {"id": "cn09", "intent": "negative", "category": "adjacent", "query": "CRDT merge strategy for multi-agent shared index", "expected_entity_ids": []},
+  {"id": "cn10", "intent": "negative", "category": "adjacent", "query": "GPU accelerated embedding inference on CUDA", "expected_entity_ids": []},
+  {"id": "cn11", "intent": "negative", "category": "adjacent", "query": "tree-sitter grammar extraction for Kotlin sources", "expected_entity_ids": []},
+  {"id": "cn12", "intent": "negative", "category": "entity-miss", "query": "Storage::open_pooled connection pool for concurrent readers", "expected_entity_ids": []},
+  {"id": "cn13", "intent": "negative", "category": "entity-miss", "query": "SearchParams::rerank flag enabling cross-encoder reranking", "expected_entity_ids": []},
+  {"id": "cn14", "intent": "negative", "category": "entity-miss", "query": "config.toml telemetry endpoint setting", "expected_entity_ids": []},
+  {"id": "cn15", "intent": "negative", "category": "unrelated", "query": "kubernetes pod autoscaler webhook", "expected_entity_ids": []}
  ]
 }

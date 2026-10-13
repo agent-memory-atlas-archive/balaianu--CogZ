@@ -1062,8 +1062,14 @@
       "id": "cb5addb64",
       "search_mode": "fts_only",
       "filtered_count": 356,
-      "signals": null,
-      "latency_ms": 456,
+      "signals": {
+        "answer_coverage": 0.7177989150610093,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 77,
       "results": [
         {
           "id": "70025f7c-466b-48fb-9094-0809ea9f8c4e",
@@ -1476,8 +1482,14 @@
       "id": "cb55d4635",
       "search_mode": "fts_only",
       "filtered_count": 288,
-      "signals": null,
-      "latency_ms": 521,
+      "signals": {
+        "answer_coverage": 0.6794887280018633,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 80,
       "results": [
         {
           "id": "42a94e1f-2f73-53f6-9a9e-9e5be1b7756c",
@@ -1890,8 +1902,14 @@
       "id": "c364697ef",
       "search_mode": "fts_only",
       "filtered_count": 340,
-      "signals": null,
-      "latency_ms": 365,
+      "signals": {
+        "answer_coverage": 0.6751840526959462,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 50,
       "results": [
         {
           "id": "46c7a01b-0880-5c79-9c73-8ca80a61b663",
@@ -2304,8 +2322,14 @@
       "id": "c336204f0",
       "search_mode": "fts_only",
       "filtered_count": 263,
-      "signals": null,
-      "latency_ms": 382,
+      "signals": {
+        "answer_coverage": 0.6322749987560354,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 47,
       "results": [
         {
           "id": "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
@@ -2718,8 +2742,14 @@
       "id": "c89599a95",
       "search_mode": "fts_only",
       "filtered_count": 343,
-      "signals": null,
-      "latency_ms": 360,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 75,
       "results": [
         {
           "id": "3d02cd47-6218-45e5-9ed1-5187c89c8f01",
@@ -3132,8 +3162,14 @@
       "id": "c8ecb86f0",
       "search_mode": "fts_only",
       "filtered_count": 427,
-      "signals": null,
-      "latency_ms": 477,
+      "signals": {
+        "answer_coverage": 0.6729315730017883,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 94,
       "results": [
         {
           "id": "524df829-2dbd-5f65-a7a5-8dd3197ba80a",
@@ -3545,414 +3581,29 @@
     {
       "id": "c15e21e9e",
       "search_mode": "fts_only",
-      "filtered_count": 404,
-      "signals": null,
-      "latency_ms": 407,
-      "results": [
-        {
-          "id": "0d4bfca4-18c5-58ce-a9cf-ab929a334877",
-          "type": "function",
-          "title": "test_queryparam_update_is_hard_deprecated",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "543f1bbb-1387-4fb9-9fe8-575e49ac88b7",
-          "type": "observation",
-          "title": "Deprecate `app=...` in favor of explicit `WSGITransport`/`ASGITransport`. (#3050)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c08cc74-ee6f-4446-bb5e-42408589d17f",
-          "type": "observation",
-          "title": "Add the 'proxy' parameter and deprecate 'proxies'. (#2879)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3270802b-a4f0-5673-beae-2ac34f8edec6",
-          "type": "function",
-          "title": "test_set_per_request_cookie_is_deprecated",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8eac3896-2511-4533-a72e-d28db17ec169",
-          "type": "observation",
-          "title": "Introduce new `SSLContext` API & escalate deprecations. (#3319)",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc22ff01-562a-5cc7-bd8f-dba8bc0c4edd",
-          "type": "function",
-          "title": "test_header_update",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2616a876-9c9c-59f1-a358-99c6d7e2ac4d",
-          "type": "function",
-          "title": "test_queryparam_setter_is_hard_deprecated",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ffa00c11-7896-4ec2-bfae-d9e8fd493c21",
-          "type": "rule",
-          "title": "1.0 API is stable \u2014 no breaking changes to public surface",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d4845399-3f48-513f-a7fc-0c35e6abf8a3",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e0a61078-7a7b-4c22-b970-b4b4d314c988",
-          "type": "observation",
-          "title": "Update _models.py (#2840)",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bfa9afee-a9b4-5c5f-b61b-73b152ea78d3",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "95311b17-fe99-5ea8-80b8-602b9c753ce5",
-          "type": "function",
-          "title": "test_cookies_update",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4bd52945-f614-54ec-9877-086b22e339b2",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ad61d36c-c704-5839-996f-188e52d95c94",
-          "type": "function",
-          "title": "test_build_request",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "deb17aa8-528b-5714-941f-fd975717b2ed",
-          "type": "function",
-          "title": "test_iter_raw_increments_updates_counter",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9ede007c-57f5-5617-9c72-6d3c64b227df",
-          "type": "function",
-          "title": "test_build_post_request",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bd1b3e1b-e0b5-5ab3-bdd5-140273d93a01",
-          "type": "function",
-          "title": "_merge_headers",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e9ddb5af-f4b6-5207-9d17-c073812923d7",
-          "type": "function",
-          "title": "_merge_cookies",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b85449bc-0ea6-5183-8aa4-297ad63c56a9",
-          "type": "function",
-          "title": "request",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bde8c574-043d-5b62-b474-002fb7f1fbfb",
-          "type": "function",
-          "title": "create_ssl_context",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
-          "type": "observation",
-          "title": "Cleanup URL percent-encoding behavior. (#2990)",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "17f4bb90-6915-475c-bbaa-2363963811e0",
-          "type": "observation",
-          "title": "Fix environment proxies (#2741)",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6e2bf20c-10d9-4334-bd25-302e63319875",
-          "type": "observation",
-          "title": "Fix optional percent encoding behaviour. (#2671)",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1f931daa-aa45-568d-a8d2-172b1e7e6b33",
-          "type": "file",
-          "title": "_api.py",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b39481af-2598-53bb-8016-3030bc767634",
-          "type": "file",
-          "title": "_main.py",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e2885b2a-926f-5649-8806-826b3017a4ea",
-          "type": "file",
-          "title": "default.py",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f6062663-3118-5312-b03b-8720567c33b7",
-          "type": "file",
-          "title": "_client.py",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "aa7d3067-678b-5558-96ed-902180071f05",
-          "type": "file",
-          "title": "__init__.py",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c6ac95ed-bec1-5b6f-90e9-0f3fbd6cfa84",
-          "type": "file",
-          "title": "__version__.py",
-          "relevance": 0.10166666656732559,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8540b017-3037-5780-b092-2c5df6fdb837",
-          "type": "file",
-          "title": "_models.py",
-          "relevance": 0.09853846579790115,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "46952cef-409b-5a18-8eac-b93afe361cc8",
-          "type": "file",
-          "title": "test_queryparams.py",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6563f9c6-9845-51f5-87bc-334c8f57aa53",
-          "type": "file",
-          "title": "test_cookies.py",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "93ea0c80-6431-5e84-a4ab-587ca7328c66",
-          "type": "file",
-          "title": "test_headers.py",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a2583489-c349-5645-917f-5b9c3b7facbe",
-          "type": "file",
-          "title": "_urls.py",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "66acd55f-7db3-51e9-88c0-2bf015380060",
-          "type": "file",
-          "title": "test_cookies.py",
-          "relevance": 0.06828358769416809,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "15c2cf08-ba0c-542e-8ae8-ecc7db08a432",
-          "type": "function",
-          "title": "streaming_body",
-          "relevance": 0.06535714119672775,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3ef8b134-b2b4-5ca3-81f4-c1d17fc1bf73",
-          "type": "file",
-          "title": "test_responses.py",
-          "relevance": 0.06535714119672775,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c1fb0615-ddb0-5570-bc5d-6afbe28f29ec",
-          "type": "file",
-          "title": "test_client.py",
-          "relevance": 0.06443662196397781,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ba092867-4aa1-52b7-a50b-c313b03dc4bb",
-          "type": "file",
-          "title": "_config.py",
-          "relevance": 0.061000000685453415,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "df9f8167-bd78-5635-8dd9-4d497325f1c5",
-          "type": "class",
-          "title": "BaseClient",
-          "relevance": 0.18396887183189392,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
-          "type": "class",
-          "title": "Client",
-          "relevance": 0.1785053312778473,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5dba69d4-271d-522f-8e02-9a6b906e55cb",
-          "type": "class",
-          "title": "AsyncClient",
-          "relevance": 0.16946938633918762,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "17ee05a5-1afd-549d-ad80-b70d910835e3",
-          "type": "class",
-          "title": "UseClientDefault",
-          "relevance": 0.13662421703338623,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6814a8ae-9113-58de-8d10-5e431c6c8b5a",
-          "type": "function",
-          "title": "test_client_trust_env",
-          "relevance": 0.12999999523162842,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.3033245947403241,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 13,
+      "results": []
     },
     {
       "id": "ca33c8785",
       "search_mode": "fts_only",
       "filtered_count": 305,
-      "signals": null,
-      "latency_ms": 406,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 49,
       "results": [
         {
           "id": "3c5e1af4-fd18-4bd9-a747-3c86aa72b9f8",
@@ -4365,8 +4016,14 @@
       "id": "cce7e14da",
       "search_mode": "fts_only",
       "filtered_count": 237,
-      "signals": null,
-      "latency_ms": 363,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 77,
       "results": [
         {
           "id": "0c07b7d4-00bd-5e67-9e94-cbe9bb0e16af",
@@ -4779,8 +4436,14 @@
       "id": "c47f4a96f",
       "search_mode": "fts_only",
       "filtered_count": 185,
-      "signals": null,
-      "latency_ms": 405,
+      "signals": {
+        "answer_coverage": 0.6480861651839037,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 48,
       "results": [
         {
           "id": "2466c0af-5cba-5073-a5e0-48cf807b7a45",
@@ -5193,8 +4856,14 @@
       "id": "c7b19cd5f",
       "search_mode": "fts_only",
       "filtered_count": 358,
-      "signals": null,
-      "latency_ms": 473,
+      "signals": {
+        "answer_coverage": 0.6912998289503315,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 55,
       "results": [
         {
           "id": "26d41b12-096f-5d44-a5d4-3d6d15a809a9",
@@ -5607,8 +5276,14 @@
       "id": "cb47d94c9",
       "search_mode": "fts_only",
       "filtered_count": 125,
-      "signals": null,
-      "latency_ms": 1022,
+      "signals": {
+        "answer_coverage": 0.6269699968081347,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 79,
       "results": [
         {
           "id": "803d2791-1710-5c1a-a601-aebd391a192c",
@@ -6020,423 +5695,29 @@
     {
       "id": "c41597adf",
       "search_mode": "fts_only",
-      "filtered_count": 342,
-      "signals": null,
-      "latency_ms": 492,
-      "results": [
-        {
-          "id": "26d41b12-096f-5d44-a5d4-3d6d15a809a9",
-          "type": "file",
-          "title": "test_utils.py",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dceb9739-51c8-420d-b495-f27c41216eba",
-          "type": "observation",
-          "title": "Fix ruff error and script (#2680)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "17f4bb90-6915-475c-bbaa-2363963811e0",
-          "type": "observation",
-          "title": "Fix environment proxies (#2741)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5f57dcae-b6a8-567a-9350-edaf0c2d3f6e",
-          "type": "file",
-          "title": "_utils.py",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6bef1212-9be3-53e7-a23d-bcaf7f358d2b",
-          "type": "function",
-          "title": "test_head_redirect",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a094ebdb-82e6-4a7e-ba72-dd8f513732f0",
-          "type": "observation",
-          "title": "Enabling `ruff` C416 (#3001)",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b99a4cca-da66-4598-bd66-2ef71d90f312",
-          "type": "observation",
-          "title": "Fix URLPattern examples (#2740)",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5a620029-34f2-40db-b664-1027225481fd",
-          "type": "observation",
-          "title": "Raise `TypeError` on invalid query params. (#2523)",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "41fc8937-758d-4fa5-b514-15cb72864b6e",
-          "type": "observation",
-          "title": "Add `NetRCAuth()` class. (#2535)",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "baa0b9c2-9aaa-418a-9128-cc057c219c16",
-          "type": "observation",
-          "title": "Use standard logging style (#2547)",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "cbf17d71-9e50-4c95-85e6-deb714a6e034",
-          "type": "observation",
-          "title": "fix: NO_PROXY should support IPv4, IPv6 and localhost (#2659)",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
-          "type": "knowledge",
-          "title": "Public API is re-exported from underscore modules",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e0a61078-7a7b-4c22-b970-b4b4d314c988",
-          "type": "observation",
-          "title": "Update _models.py (#2840)",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9f136015-927e-429c-afe0-57fa24d5415e",
-          "type": "knowledge",
-          "title": "Request/Response models live in _models.py with lazy content",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "20e60548-e5f4-48fe-80e7-2f781bfb4be6",
-          "type": "observation",
-          "title": "fix typo (#3519)",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3c5e1af4-fd18-4bd9-a747-3c86aa72b9f8",
-          "type": "observation",
-          "title": "Fix `extensions` type annotation. (#3380)",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23306137-8707-415d-8521-c5461366a595",
-          "type": "observation",
-          "title": "Make `raise_for_status` chainable (#2776)",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8d5ed3f0-6c8d-481e-832b-63898d3827a0",
-          "type": "observation",
-          "title": "Fixed `iter_text` adding an empty string (#2998)",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65098c23-f505-4c32-ae50-7bf18e89bd75",
-          "type": "observation",
-          "title": "Raise ValueError on `Response.encoding` being set after `Response.text` has been accessed (#2852)",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "71997b22-5ece-463d-ad11-67cd0c3ed9a5",
-          "type": "observation",
-          "title": "Add support for zstd decoding (#3139)",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "85b2f5a2-a29e-5d6d-b7f9-efcbe06de235",
-          "type": "file",
-          "title": "_auth.py",
-          "relevance": 0.09704545140266418,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b89912f8-d941-5f48-a9b6-086f76d5d5f9",
-          "type": "class",
-          "title": "NetRCAuth",
-          "relevance": 0.09704545140266418,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1f931daa-aa45-568d-a8d2-172b1e7e6b33",
-          "type": "file",
-          "title": "_api.py",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6537eee7-a542-5e30-81e2-0df940010920",
-          "type": "file",
-          "title": "_content.py",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a2583489-c349-5645-917f-5b9c3b7facbe",
-          "type": "file",
-          "title": "_urls.py",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
-          "type": "file",
-          "title": "_decoders.py",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "aa7d3067-678b-5558-96ed-902180071f05",
-          "type": "file",
-          "title": "__init__.py",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ba092867-4aa1-52b7-a50b-c313b03dc4bb",
-          "type": "file",
-          "title": "_config.py",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5c5e7f2b-34d0-5e38-9314-3aa2fccbb21d",
-          "type": "function",
-          "title": "iter_lines",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "82eab9d4-b163-572b-a648-df25e2f64026",
-          "type": "function",
-          "title": "iter_bytes",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8540b017-3037-5780-b092-2c5df6fdb837",
-          "type": "file",
-          "title": "_models.py",
-          "relevance": 0.08895833045244217,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f6062663-3118-5312-b03b-8720567c33b7",
-          "type": "file",
-          "title": "_client.py",
-          "relevance": 0.08895833045244217,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a28a3666-5fa8-5844-9945-502dd4245d1c",
-          "type": "file",
-          "title": "_types.py",
-          "relevance": 0.0877397283911705,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0b9712cb-c09c-583e-86dd-5d727ce7fc7d",
-          "type": "function",
-          "title": "raise_for_status",
-          "relevance": 0.08655405789613724,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a525861c-796b-5299-9c08-27ba15ff8266",
-          "type": "function",
-          "title": "iter_text",
-          "relevance": 0.08540000021457672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9eeebe32-4673-5bd8-9538-042521441d53",
-          "type": "class",
-          "title": "Response",
-          "relevance": 0.08427631109952927,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "236110e0-803b-58eb-91ea-7d49be30ec49",
-          "type": "function",
-          "title": "test_logging_request",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "50e14e19-59e5-50e1-b7e9-c907169650a4",
-          "type": "function",
-          "title": "json",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8887fd2c-61e0-5d27-a763-8394ff9eb331",
-          "type": "function",
-          "title": "test_logging_redirect_chain",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bbdd960e-944e-591d-b12f-f3fd2904b46f",
-          "type": "function",
-          "title": "test_pattern_priority",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "85276a54-d935-561b-8062-d7ea555b21c0",
-          "type": "function",
-          "title": "primitive_value_to_str",
-          "relevance": 0.1852795034646988,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "75c41635-9361-5bc7-9f7a-b1dff57f6b56",
-          "type": "function",
-          "title": "test_setting_client_cookies_to_cookiejar",
-          "relevance": 0.14499999582767487,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a53312eb-b54c-5f62-9f6e-4dc4515fee31",
-          "type": "function",
-          "title": "_is_known_encoding",
-          "relevance": 0.11982578039169312,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
-          "type": "function",
-          "title": "get_environment_proxies",
-          "relevance": 0.11263636499643326,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2aa6b8a3-e93b-524d-851a-b1e6ec027458",
-          "type": "function",
-          "title": "_guess_content_type",
-          "relevance": 0.11263636499643326,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.36019186730541036,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 32,
+      "results": []
     },
     {
       "id": "c6212e8fa",
       "search_mode": "fts_only",
       "filtered_count": 290,
-      "signals": null,
-      "latency_ms": 379,
+      "signals": {
+        "answer_coverage": 0.7322849091916144,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 51,
       "results": [
         {
           "id": "26d41b12-096f-5d44-a5d4-3d6d15a809a9",
@@ -6849,8 +6130,14 @@
       "id": "c83a85189",
       "search_mode": "fts_only",
       "filtered_count": 392,
-      "signals": null,
-      "latency_ms": 386,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 82,
       "results": [
         {
           "id": "02c14723-b834-5c70-b03b-17b8d98795a4",
@@ -7263,8 +6550,14 @@
       "id": "c66225539",
       "search_mode": "fts_only",
       "filtered_count": 98,
-      "signals": null,
-      "latency_ms": 384,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 81,
       "results": [
         {
           "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
@@ -7677,8 +6970,14 @@
       "id": "c12be5c44",
       "search_mode": "fts_only",
       "filtered_count": 386,
-      "signals": null,
-      "latency_ms": 454,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 75,
       "results": [
         {
           "id": "51a49e35-a45a-5d91-8126-2c539d854574",
@@ -8091,8 +7390,14 @@
       "id": "ce9cabc8e",
       "search_mode": "fts_only",
       "filtered_count": 334,
-      "signals": null,
-      "latency_ms": 408,
+      "signals": {
+        "answer_coverage": 0.6404511276995177,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 49,
       "results": [
         {
           "id": "369154e5-a6bf-5cba-8ddc-9dd831dd4da4",
@@ -8505,8 +7810,14 @@
       "id": "ceeb5e3c2",
       "search_mode": "fts_only",
       "filtered_count": 347,
-      "signals": null,
-      "latency_ms": 397,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 52,
       "results": [
         {
           "id": "69503557-6aec-5ade-8ef6-e7bca56393ca",
@@ -8919,8 +8230,14 @@
       "id": "c5dda2aa3",
       "search_mode": "fts_only",
       "filtered_count": 352,
-      "signals": null,
-      "latency_ms": 409,
+      "signals": {
+        "answer_coverage": 0.6104039965282454,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 81,
       "results": [
         {
           "id": "30291d66-d9e8-58b0-837c-3b87c983899f",
@@ -9333,8 +8650,14 @@
       "id": "cba2e5121",
       "search_mode": "fts_only",
       "filtered_count": 332,
-      "signals": null,
-      "latency_ms": 392,
+      "signals": {
+        "answer_coverage": 0.47086248531419944,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 86,
       "results": [
         {
           "id": "6b0f1b52-8417-4d36-834d-b56a5949aca8",
@@ -9747,8 +9070,14 @@
       "id": "cd293374b",
       "search_mode": "fts_only",
       "filtered_count": 48,
-      "signals": null,
-      "latency_ms": 466,
+      "signals": {
+        "answer_coverage": 0.5909339410439751,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 43,
       "results": [
         {
           "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
@@ -10161,8 +9490,14 @@
       "id": "c9fd6f0ca",
       "search_mode": "fts_only",
       "filtered_count": 293,
-      "signals": null,
-      "latency_ms": 958,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 52,
       "results": [
         {
           "id": "bcf59b15-e18b-5a73-a116-566b45af394e",
@@ -10575,8 +9910,14 @@
       "id": "c3f76571d",
       "search_mode": "fts_only",
       "filtered_count": 98,
-      "signals": null,
-      "latency_ms": 491,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 76,
       "results": [
         {
           "id": "7f3acbe2-e2bd-52cb-9ea4-347924b3b091",
@@ -10988,423 +10329,29 @@
     {
       "id": "c49d74a2e",
       "search_mode": "fts_only",
-      "filtered_count": 316,
-      "signals": null,
-      "latency_ms": 449,
-      "results": [
-        {
-          "id": "9eb1a581-61dc-5421-a8a4-459bea2c9167",
-          "type": "function",
-          "title": "test_raise_for_status",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8540b017-3037-5780-b092-2c5df6fdb837",
-          "type": "file",
-          "title": "_models.py",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9eeebe32-4673-5bd8-9538-042521441d53",
-          "type": "class",
-          "title": "Response",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "440dd853-0991-5501-9959-d161ca6af688",
-          "type": "class",
-          "title": "HTTPStatusError",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "280c3f8b-4512-583d-8c0a-629a15422769",
-          "type": "class",
-          "title": "WSGITransport",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "39b6a6ae-be9a-516f-b7f7-a38f85508ad2",
-          "type": "function",
-          "title": "test_zstd_decoding_error",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "577cfe9d-c9eb-5b99-8e91-2e9ad29e415b",
-          "type": "function",
-          "title": "handle_request",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "566bfefc-44d6-5462-baf8-d2283970ae35",
-          "type": "file",
-          "title": "wsgi.py",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ac86bfc7-6366-5ef8-b6a0-008c8c106b93",
-          "type": "file",
-          "title": "_exceptions.py",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ed955a83-ce0e-5b61-be56-f2e8d5372c0e",
-          "type": "class",
-          "title": "codes",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8e6a6375-30b4-5ee6-b779-29b53b7c63ab",
-          "type": "file",
-          "title": "_status_codes.py",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0b9712cb-c09c-583e-86dd-5d727ce7fc7d",
-          "type": "function",
-          "title": "raise_for_status",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0fb0dc74-214d-51d9-906c-61baf3af6b08",
-          "type": "function",
-          "title": "items",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d4c440f4-073d-525c-ad66-6c1047621547",
-          "type": "function",
-          "title": "__init__",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc767078-973f-5070-95b7-caa6bfda7053",
-          "type": "class",
-          "title": "Headers",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6e3f6bd8-0154-5078-8f41-9acd7d1f8881",
-          "type": "function",
-          "title": "__init__",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2e19fed6-5402-5986-b04e-c191b1b594e8",
-          "type": "class",
-          "title": "Request",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
-          "type": "file",
-          "title": "_decoders.py",
-          "relevance": 0.3910256326198578,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "550ba29a-87f7-554c-b7fd-53f13b3f1224",
-          "type": "function",
-          "title": "urlparse",
-          "relevance": 0.3860759437084198,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "df9f8167-bd78-5635-8dd9-4d497325f1c5",
-          "type": "class",
-          "title": "BaseClient",
-          "relevance": 0.3812499940395355,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3d2bad7b-f9e6-599c-9671-5d8c57420fdb",
-          "type": "function",
-          "title": "test_multipart_encode_non_seekable_filelike",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ab4e1653-e15d-5aa6-a051-36219546368f",
-          "type": "file",
-          "title": "test_requests.py",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e93abadc-5af0-5d8c-afab-0afb01ad5524",
-          "type": "function",
-          "title": "test_transfer_encoding_header",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "271077d5-ecd4-533f-b75c-04c2bc7bc119",
-          "type": "class",
-          "title": "ConnectError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "323d1af8-7764-59b6-b3d4-bf3a07a4042e",
-          "type": "class",
-          "title": "RemoteProtocolError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3578cb4d-4d08-5396-a08c-0f62506b1fbc",
-          "type": "class",
-          "title": "DecodingError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "46ccfd6e-3b8d-5f28-a936-83ef9d1e8eb3",
-          "type": "class",
-          "title": "NetworkError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4b90128f-e49f-5782-8744-e9e755e22207",
-          "type": "class",
-          "title": "TransportError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "51fa98d0-ae00-5c19-819a-d6259b345dd1",
-          "type": "class",
-          "title": "LocalProtocolError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "56db3f51-a44d-5642-a9c3-b4207734cd3a",
-          "type": "class",
-          "title": "StreamError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "656f1e3e-701a-521c-92f2-20e26b5ce08e",
-          "type": "class",
-          "title": "WriteError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "72f080f7-8871-594b-ba64-42d4ce237dcb",
-          "type": "class",
-          "title": "RequestError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "878b85d5-14ab-50ba-9725-b504e8283ebf",
-          "type": "class",
-          "title": "ReadError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "87bdc0f2-eeb4-55fd-b0ee-32a11e84b1a7",
-          "type": "class",
-          "title": "ProtocolError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7a1d41f-3f13-5a04-8684-8c01eadb5ebd",
-          "type": "class",
-          "title": "CloseError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e0bc607f-4ffa-57ef-a975-94225a7d69f9",
-          "type": "class",
-          "title": "ProxyError",
-          "relevance": 0.14296875894069672,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "20e60548-e5f4-48fe-80e7-2f781bfb4be6",
-          "type": "observation",
-          "title": "fix typo (#3519)",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
-          "type": "knowledge",
-          "title": "Public API is re-exported from underscore modules",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3c5e1af4-fd18-4bd9-a747-3c86aa72b9f8",
-          "type": "observation",
-          "title": "Fix `extensions` type annotation. (#3380)",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65098c23-f505-4c32-ae50-7bf18e89bd75",
-          "type": "observation",
-          "title": "Raise ValueError on `Response.encoding` being set after `Response.text` has been accessed (#2852)",
-          "relevance": 0.10330645740032196,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d8ebb869-9ee6-56e9-94ed-28ad65678000",
-          "type": "function",
-          "title": "test_header_with_incorrect_value",
-          "relevance": 0.17653846740722656,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "958d281c-6f14-59e0-ba51-ff5fbbc4c04b",
-          "type": "function",
-          "title": "test_header_repeated_items",
-          "relevance": 0.15214285254478455,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c026b6db-bc30-5aa9-9e24-d5ec29073154",
-          "type": "function",
-          "title": "test_header_repeated_multi_items",
-          "relevance": 0.14581817388534546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0a4253f7-294e-5d84-8b76-6699db70a62d",
-          "type": "function",
-          "title": "test_remove_default_header",
-          "relevance": 0.13944444060325623,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dd32e5e6-c3e6-5491-b65f-3d528ec9f989",
-          "type": "function",
-          "title": "test_generator_with_transfer_encoding_header",
-          "relevance": 0.13944444060325623,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.288241540514544,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 56,
+      "results": []
     },
     {
       "id": "c7c0cda15",
       "search_mode": "fts_only",
       "filtered_count": 365,
-      "signals": null,
-      "latency_ms": 416,
+      "signals": {
+        "answer_coverage": 0.45664570646816427,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 48,
       "results": [
         {
           "id": "dceb9739-51c8-420d-b495-f27c41216eba",
@@ -11817,8 +10764,14 @@
       "id": "cdb9072f9",
       "search_mode": "fts_only",
       "filtered_count": 456,
-      "signals": null,
-      "latency_ms": 426,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 55,
       "results": [
         {
           "id": "7bb91cbf-c504-4d5c-9de2-645931be52fb",
@@ -12231,8 +11184,14 @@
       "id": "c92e9dfb3",
       "search_mode": "fts_only",
       "filtered_count": 358,
-      "signals": null,
-      "latency_ms": 407,
+      "signals": {
+        "answer_coverage": 0.5378730440132663,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 73,
       "results": [
         {
           "id": "0d4bfca4-18c5-58ce-a9cf-ab929a334877",
@@ -12645,8 +11604,14 @@
       "id": "c37593c19",
       "search_mode": "fts_only",
       "filtered_count": 435,
-      "signals": null,
-      "latency_ms": 484,
+      "signals": {
+        "answer_coverage": 0.9416032631240804,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 85,
       "results": [
         {
           "id": "02c14723-b834-5c70-b03b-17b8d98795a4",
@@ -13059,8 +12024,14 @@
       "id": "c88a81c5d",
       "search_mode": "fts_only",
       "filtered_count": 113,
-      "signals": null,
-      "latency_ms": 432,
+      "signals": {
+        "answer_coverage": 0.47786745598214714,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 67,
       "results": [
         {
           "id": "cbf17d71-9e50-4c95-85e6-deb714a6e034",
@@ -13473,8 +12444,14 @@
       "id": "ca7092af2",
       "search_mode": "fts_only",
       "filtered_count": 166,
-      "signals": null,
-      "latency_ms": 343,
+      "signals": {
+        "answer_coverage": 0.6481111286416578,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 39,
       "results": [
         {
           "id": "fbba894d-9bff-50d0-802f-b00e63b8d63c",
@@ -13868,423 +12845,29 @@
     {
       "id": "c7354ed70",
       "search_mode": "fts_only",
-      "filtered_count": 384,
-      "signals": null,
-      "latency_ms": 406,
-      "results": [
-        {
-          "id": "0d4bfca4-18c5-58ce-a9cf-ab929a334877",
-          "type": "function",
-          "title": "test_queryparam_update_is_hard_deprecated",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "71997b22-5ece-463d-ad11-67cd0c3ed9a5",
-          "type": "observation",
-          "title": "Add support for zstd decoding (#3139)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bd1b3e1b-e0b5-5ab3-bdd5-140273d93a01",
-          "type": "function",
-          "title": "_merge_headers",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e0a61078-7a7b-4c22-b970-b4b4d314c988",
-          "type": "observation",
-          "title": "Update _models.py (#2840)",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c1b2218f-0fc9-4e78-a980-496c37e85cb5",
-          "type": "rule",
-          "title": "User-facing changes need a CHANGELOG entry",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ffc3bc4b-fd2e-50c4-88d6-418282231fc2",
-          "type": "function",
-          "title": "_format_form_param",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
-          "type": "rule",
-          "title": "Follow encode style: ruff lint, explicit exports",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e9ddb5af-f4b6-5207-9d17-c073812923d7",
-          "type": "function",
-          "title": "_merge_cookies",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d4845399-3f48-513f-a7fc-0c35e6abf8a3",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b8d94fc2-49c6-55b4-a524-8080826c4944",
-          "type": "function",
-          "title": "quote",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bfa9afee-a9b4-5c5f-b61b-73b152ea78d3",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "95311b17-fe99-5ea8-80b8-602b9c753ce5",
-          "type": "function",
-          "title": "test_cookies_update",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4bd52945-f614-54ec-9877-086b22e339b2",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "187908af-5753-556b-9f7f-f5ae4e945838",
-          "type": "function",
-          "title": "test_response_no_charset_with_utf8_content",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a755344c-909a-5fa3-a1f2-89dc2cb0e205",
-          "type": "function",
-          "title": "copy_with",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "deb17aa8-528b-5714-941f-fd975717b2ed",
-          "type": "function",
-          "title": "test_iter_raw_increments_updates_counter",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7f061493-c8de-5d5d-82b8-13f2685c57a9",
-          "type": "function",
-          "title": "test_generator_with_content_length_header",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc22ff01-562a-5cc7-bd8f-dba8bc0c4edd",
-          "type": "function",
-          "title": "test_header_update",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c14be7f1-f127-59c6-bc79-6dbe8c6d2865",
-          "type": "function",
-          "title": "test_generator_with_content_length_header",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a1193a7b-046b-5e47-9fac-9297a14c23dc",
-          "type": "function",
-          "title": "test_response_fallback_to_utf8_encoding",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "6636124a-02be-41c9-a13c-a15258d9dcce",
-          "type": "observation",
-          "title": "Fixes #2666: None is the default value of file for httpx.NetRCAuth (#2667)",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7bb91cbf-c504-4d5c-9de2-645931be52fb",
-          "type": "observation",
-          "title": "Add cookies to the retried request when performing digest authentication. (#2846)",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8540b017-3037-5780-b092-2c5df6fdb837",
-          "type": "file",
-          "title": "_models.py",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
-          "type": "file",
-          "title": "_decoders.py",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "46952cef-409b-5a18-8eac-b93afe361cc8",
-          "type": "file",
-          "title": "test_queryparams.py",
-          "relevance": 0.07500000298023224,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "07378fad-3a52-5055-a592-cddfe3ffa16d",
-          "type": "class",
-          "title": "BoundAsyncStream",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "17ee05a5-1afd-549d-ad80-b70d910835e3",
-          "type": "class",
-          "title": "UseClientDefault",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "29a6a8d5-10f2-5e3f-a0ab-34e1e3dd94a0",
-          "type": "class",
-          "title": "ClientState",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5dba69d4-271d-522f-8e02-9a6b906e55cb",
-          "type": "class",
-          "title": "AsyncClient",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
-          "type": "class",
-          "title": "Client",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c5fb26e9-5162-5d03-b7b3-f5cb1c5146bc",
-          "type": "class",
-          "title": "BoundSyncStream",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "df9f8167-bd78-5635-8dd9-4d497325f1c5",
-          "type": "class",
-          "title": "BaseClient",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f6062663-3118-5312-b03b-8720567c33b7",
-          "type": "file",
-          "title": "_client.py",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0a710d03-0c27-5657-8153-4402c70c481c",
-          "type": "class",
-          "title": "MultipartStream",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "12d56445-1f48-5867-9409-5b6b17a01d28",
-          "type": "file",
-          "title": "_multipart.py",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5ca70a19-3084-5ea2-9135-ab8ba93789bc",
-          "type": "class",
-          "title": "FileField",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "70682da6-bf0f-55f0-921a-810948199297",
-          "type": "class",
-          "title": "DataField",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a2583489-c349-5645-917f-5b9c3b7facbe",
-          "type": "file",
-          "title": "_urls.py",
-          "relevance": 0.07038462162017822,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "30291d66-d9e8-58b0-837c-3b87c983899f",
-          "type": "function",
-          "title": "percent_encoded",
-          "relevance": 0.06931818276643753,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "41742861-0659-5913-a0b9-3f8fd26f70e0",
-          "type": "function",
-          "title": "encode_host",
-          "relevance": 0.06931818276643753,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8657ebb2-84b6-5810-8f96-fa43b5a447d2",
-          "type": "function",
-          "title": "test_proxy_with_auth_from_url",
-          "relevance": 0.13115383684635162,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b79e9ba8-4d93-5494-addd-f534ca5d412a",
-          "type": "function",
-          "title": "test_response_no_charset_with_iso_8859_1_content",
-          "relevance": 0.13115383684635162,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "b7b4b72f-25a3-5de4-831e-e2afc8527d6b",
-          "type": "function",
-          "title": "test_multi_with_identity",
-          "relevance": 0.13115383684635162,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "015f55c0-df75-54a6-a56b-4a32e34903dd",
-          "type": "class",
-          "title": "ASGITransport",
-          "relevance": 0.10352940857410431,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "280c3f8b-4512-583d-8c0a-629a15422769",
-          "type": "class",
-          "title": "WSGITransport",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.38520525498681485,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 19,
+      "results": []
     },
     {
       "id": "cf3eb3c90",
       "search_mode": "fts_only",
       "filtered_count": 211,
-      "signals": null,
-      "latency_ms": 436,
+      "signals": {
+        "answer_coverage": 0.8264450492412737,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 70,
       "results": [
         {
           "id": "6b0f1b52-8417-4d36-834d-b56a5949aca8",
@@ -14696,423 +13279,29 @@
     {
       "id": "c6045186f",
       "search_mode": "fts_only",
-      "filtered_count": 286,
-      "signals": null,
-      "latency_ms": 399,
-      "results": [
-        {
-          "id": "c1db8ec9-fa12-59f3-91f1-0d506b8edaf4",
-          "type": "function",
-          "title": "test_parse_header_links_no_link",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e0a61078-7a7b-4c22-b970-b4b4d314c988",
-          "type": "observation",
-          "title": "Update _models.py (#2840)",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "349c6411-6b56-56c9-b255-abf4b9f4601c",
-          "type": "function",
-          "title": "_parse_header_links",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c1b2218f-0fc9-4e78-a980-496c37e85cb5",
-          "type": "rule",
-          "title": "User-facing changes need a CHANGELOG entry",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3b98d733-ada4-552d-980a-d2308f870883",
-          "type": "file",
-          "title": "test_headers.py",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "daf5a79f-a7a4-4203-afbb-549bbd402b14",
-          "type": "rule",
-          "title": "Follow encode style: ruff lint, explicit exports",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0d4bfca4-18c5-58ce-a9cf-ab929a334877",
-          "type": "function",
-          "title": "test_queryparam_update_is_hard_deprecated",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "d4845399-3f48-513f-a7fc-0c35e6abf8a3",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bfa9afee-a9b4-5c5f-b61b-73b152ea78d3",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "95311b17-fe99-5ea8-80b8-602b9c753ce5",
-          "type": "function",
-          "title": "test_cookies_update",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4bd52945-f614-54ec-9877-086b22e339b2",
-          "type": "function",
-          "title": "update",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "deb17aa8-528b-5714-941f-fd975717b2ed",
-          "type": "function",
-          "title": "test_iter_raw_increments_updates_counter",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc22ff01-562a-5cc7-bd8f-dba8bc0c4edd",
-          "type": "function",
-          "title": "test_header_update",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8540b017-3037-5780-b092-2c5df6fdb837",
-          "type": "file",
-          "title": "_models.py",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "363fe131-534a-5805-a62c-63db79af1193",
-          "type": "function",
-          "title": "__setitem__",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a755344c-909a-5fa3-a1f2-89dc2cb0e205",
-          "type": "function",
-          "title": "copy_with",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "bd1b3e1b-e0b5-5ab3-bdd5-140273d93a01",
-          "type": "function",
-          "title": "_merge_headers",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "e9ddb5af-f4b6-5207-9d17-c073812923d7",
-          "type": "function",
-          "title": "_merge_cookies",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ad61d36c-c704-5839-996f-188e52d95c94",
-          "type": "function",
-          "title": "test_build_request",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9ede007c-57f5-5617-9c72-6d3c64b227df",
-          "type": "function",
-          "title": "test_build_post_request",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "0d2184cb-4b4a-536e-91ab-15a5387b6c00",
-          "type": "function",
-          "title": "_parse_challenge",
-          "relevance": 0.15000000596046448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "20e60548-e5f4-48fe-80e7-2f781bfb4be6",
-          "type": "observation",
-          "title": "fix typo (#3519)",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23306137-8707-415d-8521-c5461366a595",
-          "type": "observation",
-          "title": "Make `raise_for_status` chainable (#2776)",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
-          "type": "knowledge",
-          "title": "Public API is re-exported from underscore modules",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3c5e1af4-fd18-4bd9-a747-3c86aa72b9f8",
-          "type": "observation",
-          "title": "Fix `extensions` type annotation. (#3380)",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65098c23-f505-4c32-ae50-7bf18e89bd75",
-          "type": "observation",
-          "title": "Raise ValueError on `Response.encoding` being set after `Response.text` has been accessed (#2852)",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "71997b22-5ece-463d-ad11-67cd0c3ed9a5",
-          "type": "observation",
-          "title": "Add support for zstd decoding (#3139)",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8d5ed3f0-6c8d-481e-832b-63898d3827a0",
-          "type": "observation",
-          "title": "Fixed `iter_text` adding an empty string (#2998)",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9f136015-927e-429c-afe0-57fa24d5415e",
-          "type": "knowledge",
-          "title": "Request/Response models live in _models.py with lazy content",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
-          "type": "knowledge",
-          "title": "Timeout, Limits, and Proxy are value objects in _config.py",
-          "relevance": 0.09021127223968506,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2e19fed6-5402-5986-b04e-c191b1b594e8",
-          "type": "class",
-          "title": "Request",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "69c76670-2bb2-5aa5-8531-fd56e764f85d",
-          "type": "class",
-          "title": "Cookies",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9eeebe32-4673-5bd8-9538-042521441d53",
-          "type": "class",
-          "title": "Response",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "dc767078-973f-5070-95b7-caa6bfda7053",
-          "type": "class",
-          "title": "Headers",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "164812b4-df6b-5c5a-8d25-a379c5e7865a",
-          "type": "function",
-          "title": "test_headers_encoding_in_repr",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "1947255b-1540-50ef-979c-1dcaf757a34d",
-          "type": "function",
-          "title": "test_headers_decode_iso_8859_1",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "28a81332-60cd-57fe-8e83-b5f304ace108",
-          "type": "function",
-          "title": "test_multiple_headers",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "449066f2-efbf-5e7d-8759-f4d5259da13e",
-          "type": "function",
-          "title": "test_headers_insert_removes_all_existing",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "58c4820a-1d2b-5d77-b60a-ae121288492b",
-          "type": "function",
-          "title": "test_headers_insert_retains_ordering",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5f6c9fbf-bae5-5654-a668-15a90daaccb9",
-          "type": "function",
-          "title": "test_headers_decode_explicit_encoding",
-          "relevance": 0.07261905074119568,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5dba69d4-271d-522f-8e02-9a6b906e55cb",
-          "type": "class",
-          "title": "AsyncClient",
-          "relevance": 0.11382979154586792,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7520683c-d7a1-5c7a-90f0-be48715a2f5c",
-          "type": "class",
-          "title": "Client",
-          "relevance": 0.10133332759141922,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8887fd2c-61e0-5d27-a763-8394ff9eb331",
-          "type": "function",
-          "title": "test_logging_redirect_chain",
-          "relevance": 0.10000000149011612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f633b6b5-e32f-543e-bc52-4f988c35d308",
-          "type": "function",
-          "title": "_send_handling_auth",
-          "relevance": 0.0950000062584877,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "df9f8167-bd78-5635-8dd9-4d497325f1c5",
-          "type": "class",
-          "title": "BaseClient",
-          "relevance": 0.09166666865348816,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.2810212117647715,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 35,
+      "results": []
     },
     {
       "id": "c6d852d31",
       "search_mode": "fts_only",
       "filtered_count": 156,
-      "signals": null,
-      "latency_ms": 1041,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 52,
       "results": [
         {
           "id": "b85449bc-0ea6-5183-8aa4-297ad63c56a9",
@@ -15525,8 +13714,14 @@
       "id": "c4de13707",
       "search_mode": "fts_only",
       "filtered_count": 332,
-      "signals": null,
-      "latency_ms": 473,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 81,
       "results": [
         {
           "id": "037f8c26-3a53-5b34-ab8f-77412f123aad",
@@ -15939,8 +14134,14 @@
       "id": "ccabd1c09",
       "search_mode": "fts_only",
       "filtered_count": 217,
-      "signals": null,
-      "latency_ms": 523,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 52,
       "results": [
         {
           "id": "543f1bbb-1387-4fb9-9fe8-575e49ac88b7",
@@ -16353,8 +14554,14 @@
       "id": "c4f6edf36",
       "search_mode": "fts_only",
       "filtered_count": 395,
-      "signals": null,
-      "latency_ms": 549,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 55,
       "results": [
         {
           "id": "c1db8ec9-fa12-59f3-91f1-0d506b8edaf4",
@@ -16767,8 +14974,14 @@
       "id": "c99cba6ac",
       "search_mode": "fts_only",
       "filtered_count": 240,
-      "signals": null,
-      "latency_ms": 407,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 68,
       "results": [
         {
           "id": "56254c34-d3eb-4007-9835-59c5966fc1b5",
@@ -17181,8 +15394,14 @@
       "id": "cca51b453",
       "search_mode": "fts_only",
       "filtered_count": 216,
-      "signals": null,
-      "latency_ms": 436,
+      "signals": {
+        "answer_coverage": 0.8264450492412737,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 77,
       "results": [
         {
           "id": "6b0f1b52-8417-4d36-834d-b56a5949aca8",
@@ -17595,8 +15814,14 @@
       "id": "cc6907c22",
       "search_mode": "fts_only",
       "filtered_count": 333,
-      "signals": null,
-      "latency_ms": 387,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 48,
       "results": [
         {
           "id": "3d3b58fc-0d45-5973-91fc-c4612276b1b5",
@@ -18009,8 +16234,14 @@
       "id": "c1a660147",
       "search_mode": "fts_only",
       "filtered_count": 465,
-      "signals": null,
-      "latency_ms": 385,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 57,
       "results": [
         {
           "id": "383dbcee-97b8-4498-9d03-bff7e5093503",
@@ -18423,8 +16654,14 @@
       "id": "ca11fc384",
       "search_mode": "fts_only",
       "filtered_count": 207,
-      "signals": null,
-      "latency_ms": 453,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 77,
       "results": [
         {
           "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
@@ -18837,8 +17074,14 @@
       "id": "c3b9060ee",
       "search_mode": "fts_only",
       "filtered_count": 301,
-      "signals": null,
-      "latency_ms": 378,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 76,
       "results": [
         {
           "id": "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
@@ -19251,8 +17494,14 @@
       "id": "c2318fd82",
       "search_mode": "fts_only",
       "filtered_count": 207,
-      "signals": null,
-      "latency_ms": 1114,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 66,
       "results": [
         {
           "id": "6bef1212-9be3-53e7-a23d-bcaf7f358d2b",
@@ -19629,8 +17878,14 @@
       "id": "c1e110964",
       "search_mode": "fts_only",
       "filtered_count": 426,
-      "signals": null,
-      "latency_ms": 412,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 54,
       "results": [
         {
           "id": "8d5ed3f0-6c8d-481e-832b-63898d3827a0",
@@ -20043,8 +18298,14 @@
       "id": "c90538a3b",
       "search_mode": "fts_only",
       "filtered_count": 274,
-      "signals": null,
-      "latency_ms": 551,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 84,
       "results": [
         {
           "id": "550ba29a-87f7-554c-b7fd-53f13b3f1224",
@@ -20457,8 +18718,14 @@
       "id": "cb471f01d",
       "search_mode": "fts_only",
       "filtered_count": 272,
-      "signals": null,
-      "latency_ms": 394,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 80,
       "results": [
         {
           "id": "38fc00f8-9845-4339-9420-c503ac39edce",
@@ -20870,423 +19137,29 @@
     {
       "id": "cf653b2f0",
       "search_mode": "fts_only",
-      "filtered_count": 421,
-      "signals": null,
-      "latency_ms": 470,
-      "results": [
-        {
-          "id": "8e2139f5-5404-51ad-bdaa-9b2078cb3e2a",
-          "type": "function",
-          "title": "test_brotli",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "98c25da6-9726-4aef-995b-5c5c20a05041",
-          "type": "knowledge",
-          "title": "In-process testing uses WSGITransport or ASGITransport",
-          "relevance": 0.5,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f1690715-3488-5040-9705-857f31c2e9b9",
-          "type": "class",
-          "title": "BrotliDecoder",
-          "relevance": 0.49193549156188965,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7c440ec-6bb7-56bc-b0bb-574d5eb9e51a",
-          "type": "function",
-          "title": "__init__",
-          "relevance": 0.4841269850730896,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a7afe0f4-f94c-5482-8b1c-702b2fa451c9",
-          "type": "file",
-          "title": "_decoders.py",
-          "relevance": 0.4765625,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "09ffb622-3ad7-5256-a373-8134905d3930",
-          "type": "function",
-          "title": "decode",
-          "relevance": 0.4692307710647583,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fb9bfd3e-1483-53de-8dc6-5587c2686a11",
-          "type": "function",
-          "title": "flush",
-          "relevance": 0.46212121844291687,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "82eab9d4-b163-572b-a648-df25e2f64026",
-          "type": "function",
-          "title": "iter_bytes",
-          "relevance": 0.4552238881587982,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "5c8c59a8-9a7a-5869-b246-96907762e6d3",
-          "type": "function",
-          "title": "aiter_bytes",
-          "relevance": 0.4485294222831726,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9eeebe32-4673-5bd8-9538-042521441d53",
-          "type": "class",
-          "title": "Response",
-          "relevance": 0.4420289993286133,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "164812b4-df6b-5c5a-8d25-a379c5e7865a",
-          "type": "function",
-          "title": "test_headers_encoding_in_repr",
-          "relevance": 0.4357142746448517,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c48bb9be-f55a-5637-96e3-271e521666f9",
-          "type": "function",
-          "title": "test_url_non_printing_character_in_url",
-          "relevance": 0.42957746982574463,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "f1e61bde-eeae-56b6-bf37-367237a6f60a",
-          "type": "function",
-          "title": "test_url_non_printing_character_in_component",
-          "relevance": 0.4236111044883728,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9c47b784-cef0-5e0f-9a5a-c07bcf8ee451",
-          "type": "function",
-          "title": "test_host_with_non_default_port_in_url",
-          "relevance": 0.4178082048892975,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "c4492efd-60d7-5d35-bedf-2930b2e72e8a",
-          "type": "function",
-          "title": "test_host_with_auth_and_port_in_url",
-          "relevance": 0.4121621549129486,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9e03f519-1bfc-585c-85eb-283bb0360501",
-          "type": "function",
-          "title": "test_digest_auth_setting_cookie_in_request",
-          "relevance": 0.40666666626930237,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fa558226-649c-508e-88f1-59a84d170d65",
-          "type": "function",
-          "title": "test_redirect_cookie_behavior",
-          "relevance": 0.4013157784938812,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "52d48c6a-1220-5699-b552-5f93aa7c4a65",
-          "type": "function",
-          "title": "test_url_set",
-          "relevance": 0.3961038887500763,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "2c60456b-0e22-54a2-b834-9c587cf46e8b",
-          "type": "function",
-          "title": "test_httpcore_lazy_loading",
-          "relevance": 0.3910256326198578,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4c92cc37-fa8c-5cb1-a5f0-4c6bff9f4b10",
-          "type": "file",
-          "title": "test_decoders.py",
-          "relevance": 0.3860759437084198,
-          "graph_path_len": 1,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "015f55c0-df75-54a6-a56b-4a32e34903dd",
-          "type": "class",
-          "title": "ASGITransport",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "280c3f8b-4512-583d-8c0a-629a15422769",
-          "type": "class",
-          "title": "WSGITransport",
-          "relevance": 0.10500000417232513,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "23bb8dce-7964-4606-b7fd-f813458d5898",
-          "type": "knowledge",
-          "title": "Public API is re-exported from underscore modules",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "71997b22-5ece-463d-ad11-67cd0c3ed9a5",
-          "type": "observation",
-          "title": "Add support for zstd decoding (#3139)",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7c15e713-4850-4b5f-b433-34ecc05070f1",
-          "type": "observation",
-          "title": "Change LineDecoder to match stdlib splitlines, resulting in significant speed up (#2423)",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8d5ed3f0-6c8d-481e-832b-63898d3827a0",
-          "type": "observation",
-          "title": "Fixed `iter_text` adding an empty string (#2998)",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "efdf699b-ea8c-434e-852c-6f5850f0f7c3",
-          "type": "observation",
-          "title": "Ruff linter: Use the default line-length (#2922)",
-          "relevance": 0.10007812827825546,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9f136015-927e-429c-afe0-57fa24d5415e",
-          "type": "knowledge",
-          "title": "Request/Response models live in _models.py with lazy content",
-          "relevance": 0.09559702128171921,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "65098c23-f505-4c32-ae50-7bf18e89bd75",
-          "type": "observation",
-          "title": "Raise ValueError on `Response.encoding` being set after `Response.text` has been accessed (#2852)",
-          "relevance": 0.09282609820365906,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "21040c3b-3b1c-5e1f-b15f-d230eb6dbdaf",
-          "type": "class",
-          "title": "GZipDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "3c755505-e316-548e-9abc-f0e42e7c3247",
-          "type": "class",
-          "title": "TextChunker",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "4235dbcd-8f4a-5122-b76a-e8c193e13b75",
-          "type": "class",
-          "title": "ContentDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "56a5edff-3bcf-50b7-8763-833ef019dddb",
-          "type": "class",
-          "title": "ByteChunker",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "7bb3f5e1-5338-5e0b-8065-14cba70cb2e9",
-          "type": "class",
-          "title": "ZStandardDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a3ca1c9a-8fcd-5346-83c0-7cd8bc3dc549",
-          "type": "class",
-          "title": "DeflateDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "a5cee375-9220-55e5-9ff0-21241a268ee9",
-          "type": "class",
-          "title": "TextDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "df1568b6-67c7-5cac-a7d2-dfd657b0b255",
-          "type": "class",
-          "title": "LineDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "eb213e34-333a-5c9a-8d5f-54532ea3d81a",
-          "type": "class",
-          "title": "MultiDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "fff5ceea-3769-5d77-a20e-a6d45f2f1043",
-          "type": "class",
-          "title": "IdentityDecoder",
-          "relevance": 0.07379032671451569,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "01246fba-595f-52c2-abee-c5b4786bfc98",
-          "type": "function",
-          "title": "decode",
-          "relevance": 0.07148437947034836,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "8d8a9e56-765b-53ed-aa78-303d46691b1f",
-          "type": "function",
-          "title": "serve_in_thread",
-          "relevance": 0.15609091520309448,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "81bccc8a-f411-57d3-b8a6-dcc7ba7e109d",
-          "type": "function",
-          "title": "echo_headers",
-          "relevance": 0.11162161827087402,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "df85d139-7e67-58e3-8e54-026cd27e1139",
-          "type": "function",
-          "title": "redirect_301",
-          "relevance": 0.10609091073274612,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "9b77c770-6911-5323-9aee-6dfd54ec24b3",
-          "type": "function",
-          "title": "redirects",
-          "relevance": 0.10551724582910538,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        },
-        {
-          "id": "069e8b9f-5152-5a3d-8879-a4df22e9771d",
-          "type": "function",
-          "title": "test_multiple_redirects",
-          "relevance": 0.09965116530656815,
-          "graph_path_len": 2,
-          "drift_count": 0,
-          "stale": null
-        }
-      ]
+      "filtered_count": 0,
+      "signals": {
+        "answer_coverage": 0.23569536299969213,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 23,
+      "results": []
     },
     {
       "id": "c1d73150c",
       "search_mode": "fts_only",
       "filtered_count": 234,
-      "signals": null,
-      "latency_ms": 491,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 51,
       "results": [
         {
           "id": "0436fc5d-b35a-498f-b369-cd1f0165783e",
@@ -21699,8 +19572,14 @@
       "id": "cad06741d",
       "search_mode": "fts_only",
       "filtered_count": 309,
-      "signals": null,
-      "latency_ms": 464,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 84,
       "results": [
         {
           "id": "1a7cdd8f-905a-4925-8746-0fa148513595",
@@ -22113,8 +19992,14 @@
       "id": "c9751f761",
       "search_mode": "fts_only",
       "filtered_count": 228,
-      "signals": null,
-      "latency_ms": 475,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 73,
       "results": [
         {
           "id": "02c14723-b834-5c70-b03b-17b8d98795a4",
@@ -22527,8 +20412,14 @@
       "id": "c7c9db49f",
       "search_mode": "fts_only",
       "filtered_count": 448,
-      "signals": null,
-      "latency_ms": 438,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 60,
       "results": [
         {
           "id": "51a49e35-a45a-5d91-8126-2c539d854574",
@@ -22941,8 +20832,14 @@
       "id": "c59df8190",
       "search_mode": "fts_only",
       "filtered_count": 316,
-      "signals": null,
-      "latency_ms": 470,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 53,
       "results": [
         {
           "id": "19a33716-2eb0-5d48-bc76-bed89699c557",
@@ -23355,8 +21252,14 @@
       "id": "c88e84314",
       "search_mode": "fts_only",
       "filtered_count": 212,
-      "signals": null,
-      "latency_ms": 391,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 79,
       "results": [
         {
           "id": "7bb91cbf-c504-4d5c-9de2-645931be52fb",
@@ -23769,8 +21672,14 @@
       "id": "ca54ecccd",
       "search_mode": "fts_only",
       "filtered_count": 269,
-      "signals": null,
-      "latency_ms": 502,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 78,
       "results": [
         {
           "id": "8bf20482-5712-5e98-887e-95be4e7a2b5a",
@@ -24183,8 +22092,14 @@
       "id": "cadbcd0e0",
       "search_mode": "fts_only",
       "filtered_count": 267,
-      "signals": null,
-      "latency_ms": 1101,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 46,
       "results": [
         {
           "id": "4bcc8b7b-210e-42e2-b972-c23d2b727a11",
@@ -24597,8 +22512,14 @@
       "id": "cb40c04df",
       "search_mode": "fts_only",
       "filtered_count": 247,
-      "signals": null,
-      "latency_ms": 422,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 49,
       "results": [
         {
           "id": "7e0003a7-206d-4137-91ed-b6f79107ec12",
@@ -25011,8 +22932,14 @@
       "id": "c9415af64",
       "search_mode": "fts_only",
       "filtered_count": 357,
-      "signals": null,
-      "latency_ms": 329,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 77,
       "results": [
         {
           "id": "23306137-8707-415d-8521-c5461366a595",
@@ -25425,8 +23352,14 @@
       "id": "c18d7721c",
       "search_mode": "fts_only",
       "filtered_count": 251,
-      "signals": null,
-      "latency_ms": 484,
+      "signals": {
+        "answer_coverage": 0.5051773653081932,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 92,
       "results": [
         {
           "id": "98c25da6-9726-4aef-995b-5c5c20a05041",

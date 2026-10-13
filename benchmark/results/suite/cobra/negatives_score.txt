@@ -1,6 +1,6 @@
 
-=== CogZ benchmark — 5 queries ===
+=== CogZ benchmark — 15 queries ===
 overall: P@5=None   MRR=None   R@20=None   avg Nonems
 errors: none  rotted-expected: 0
 intent       n    P@k    MRR   R@20  xpd/q      ms
-negative     5   None    0.0    1.0   23.0   763.6  neg_ok=0.0
+negative    15   None    0.0    1.0    7.9 489.333  neg_ok=0.667

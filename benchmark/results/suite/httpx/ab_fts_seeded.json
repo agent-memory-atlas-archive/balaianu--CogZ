@@ -1062,8 +1062,14 @@
       "id": "hk01",
       "search_mode": "fts_only",
       "filtered_count": 246,
-      "signals": null,
-      "latency_ms": 401,
+      "signals": {
+        "answer_coverage": 0.7565292047243977,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 70,
       "results": [
         {
           "id": "17ee05a5-1afd-549d-ad80-b70d910835e3",
@@ -1458,8 +1464,14 @@
       "id": "hk02",
       "search_mode": "fts_only",
       "filtered_count": 176,
-      "signals": null,
-      "latency_ms": 413,
+      "signals": {
+        "answer_coverage": 0.766813516575796,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 71,
       "results": [
         {
           "id": "8f686d75-3e5d-53a8-95d0-12384f83398b",
@@ -1872,8 +1884,14 @@
       "id": "hk03",
       "search_mode": "fts_only",
       "filtered_count": 218,
-      "signals": null,
-      "latency_ms": 464,
+      "signals": {
+        "answer_coverage": 0.7399071837165361,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 50,
       "results": [
         {
           "id": "72e1d382-0207-573f-b3a2-c26b321d536d",
@@ -2286,8 +2304,14 @@
       "id": "hk04",
       "search_mode": "fts_only",
       "filtered_count": 380,
-      "signals": null,
-      "latency_ms": 1034,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 50,
       "results": [
         {
           "id": "dbe38e41-7d8f-4771-86e0-402375bc92d2",
@@ -2691,8 +2715,14 @@
       "id": "hk05",
       "search_mode": "fts_only",
       "filtered_count": 252,
-      "signals": null,
-      "latency_ms": 382,
+      "signals": {
+        "answer_coverage": 0.620981681879234,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 45,
       "results": [
         {
           "id": "7bb91cbf-c504-4d5c-9de2-645931be52fb",
@@ -3105,8 +3135,14 @@
       "id": "hk06",
       "search_mode": "fts_only",
       "filtered_count": 274,
-      "signals": null,
-      "latency_ms": 425,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 71,
       "results": [
         {
           "id": "4b387de0-b846-5474-a7fd-35dfedad1b6e",
@@ -3519,8 +3555,14 @@
       "id": "hk07",
       "search_mode": "fts_only",
       "filtered_count": 136,
-      "signals": null,
-      "latency_ms": 368,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 34,
       "results": [
         {
           "id": "56254c34-d3eb-4007-9835-59c5966fc1b5",
@@ -3933,8 +3975,14 @@
       "id": "hk08",
       "search_mode": "fts_only",
       "filtered_count": 298,
-      "signals": null,
-      "latency_ms": 471,
+      "signals": {
+        "answer_coverage": 0.6434000312143159,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 47,
       "results": [
         {
           "id": "ae4a2a04-8ad6-4ba6-a667-fe885b44724c",
@@ -4347,8 +4395,14 @@
       "id": "hk09",
       "search_mode": "fts_only",
       "filtered_count": 131,
-      "signals": null,
-      "latency_ms": 454,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 67,
       "results": [
         {
           "id": "a5d4a010-3e40-5e0f-8eef-c20eea274373",
@@ -4761,8 +4815,14 @@
       "id": "hk10",
       "search_mode": "fts_only",
       "filtered_count": 250,
-      "signals": null,
-      "latency_ms": 369,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 35,
       "results": [
         {
           "id": "446d3b43-d152-5d6d-9870-b04d28aeaa83",
@@ -5175,8 +5235,14 @@
       "id": "hk11",
       "search_mode": "fts_only",
       "filtered_count": 173,
-      "signals": null,
-      "latency_ms": 417,
+      "signals": {
+        "answer_coverage": 0.7027965697370874,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 36,
       "results": [
         {
           "id": "7718be7f-6bbd-4970-9022-7e81a3685c14",
@@ -5589,8 +5655,14 @@
       "id": "hk12",
       "search_mode": "fts_only",
       "filtered_count": 243,
-      "signals": null,
-      "latency_ms": 413,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 66,
       "results": [
         {
           "id": "8f686d75-3e5d-53a8-95d0-12384f83398b",
@@ -6003,8 +6075,14 @@
       "id": "hk13",
       "search_mode": "fts_only",
       "filtered_count": 388,
-      "signals": null,
-      "latency_ms": 441,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 51,
       "results": [
         {
           "id": "4b90128f-e49f-5782-8744-e9e755e22207",
@@ -6417,8 +6495,14 @@
       "id": "hk14",
       "search_mode": "fts_only",
       "filtered_count": 312,
-      "signals": null,
-      "latency_ms": 324,
+      "signals": {
+        "answer_coverage": 0.578828299247488,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 39,
       "results": [
         {
           "id": "5a666382-c528-5f89-ab4c-37b8f0a69546",
@@ -6831,8 +6915,14 @@
       "id": "hk15",
       "search_mode": "fts_only",
       "filtered_count": 249,
-      "signals": null,
-      "latency_ms": 1023,
+      "signals": {
+        "answer_coverage": 1.0,
+        "code_gradient": 0.0,
+        "code_strength": 0.0,
+        "knowledge_gradient": 0.0,
+        "knowledge_strength": 0.0
+      },
+      "latency_ms": 70,
       "results": [
         {
           "id": "0d6a3ac5-2201-5e5c-88ba-32f4085ce570",
