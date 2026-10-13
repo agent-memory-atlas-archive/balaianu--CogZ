@@ -45,6 +45,12 @@ pub enum IssueKind {
     CorruptJson,
     /// Embedding blob could not be read or parsed.
     CorruptEmbedding,
+    /// `volatility: record` on an entity class that isn't naturally a
+    /// record — silently exempts it from all drift/stale tracking.
+    VolatilityFootgun,
+    /// Knowledge category that resembles a known category without
+    /// matching it — likely a typo that changes classification.
+    CategoryTypo,
 }
 
 impl std::fmt::Display for IssueKind {
@@ -61,6 +67,8 @@ impl std::fmt::Display for IssueKind {
             Self::DimensionMismatch => write!(f, "dimension_mismatch"),
             Self::CorruptJson => write!(f, "corrupt_json"),
             Self::CorruptEmbedding => write!(f, "corrupt_embedding"),
+            Self::VolatilityFootgun => write!(f, "volatility_footgun"),
+            Self::CategoryTypo => write!(f, "category_typo"),
         }
     }
 }
@@ -135,6 +143,11 @@ pub fn run_doctor(
 
     // Corrupt entity properties or event payloads
     check_corrupt_json(&conn, &mut report);
+
+    // Staleness-tracking hygiene: record overrides on living-class
+    // entities, and category spellings that lose record status.
+    check_volatility_overrides(&conn, &mut report);
+    check_category_typos(&conn, &mut report);
 
     // Usage instrumentation (hit rate, dead weight, write quality)
     report.usage = check_usage(&conn);
@@ -330,6 +343,132 @@ fn check_observation_edits(conn: &Connection, cogz_dir: &Path, report: &mut Doct
             }
         }
     }
+}
+
+/// `volatility: record` outside the natural record classes exempts the
+/// entity from every drift/stale mechanism forever — silent and
+/// invisible in every queue. Legitimate overrides exist (e.g. a
+/// knowledge entry that is genuinely dated), so this warns without
+/// blocking.
+fn check_volatility_overrides(conn: &Connection, report: &mut DoctorReport) {
+    let sql = "SELECT id, type, json_extract(properties,'$.category') \
+               FROM entities \
+               WHERE json_extract(properties,'$.volatility') = 'record' \
+               AND type IN ('rule','knowledge') \
+               AND status NOT IN ('rejected','pruned','superseded')";
+    if let Ok(mut stmt) = conn.prepare(sql)
+        && let Ok(rows) = stmt.query_map([], |r| {
+            Ok((
+                r.get::<_, String>(0)?,
+                r.get::<_, String>(1)?,
+                r.get::<_, Option<String>>(2)?,
+            ))
+        })
+    {
+        for row in rows.flatten() {
+            let (id, etype, category) = row;
+            // A knowledge entry in a record category with an explicit
+            // record override is redundant but consistent — only flag
+            // when the override changes the classification.
+            let natural_record = etype == "knowledge"
+                && category
+                    .is_some_and(|c| crate::volatility::RECORD_CATEGORIES.contains(&c.as_str()));
+            if !natural_record {
+                report.issues.push(Issue {
+                    kind: IssueKind::VolatilityFootgun,
+                    entity_id: Some(id),
+                    message: format!(
+                        "volatility: record on a {etype} exempts it from all drift tracking — confirm this is intended dated history"
+                    ),
+                });
+            }
+        }
+    }
+}
+
+/// Category strings are free-form, so "unknown" can't be a fixed-list
+/// check — it flags resemblance instead: a category one edit away from
+/// a record category silently classifies `living` instead of `record`,
+/// and a near-duplicate of a common category is likely a typo.
+fn check_category_typos(conn: &Connection, report: &mut DoctorReport) {
+    let sql = "SELECT id, json_extract(properties,'$.category') \
+               FROM entities WHERE type = 'knowledge' \
+               AND json_extract(properties,'$.category') IS NOT NULL \
+               AND status NOT IN ('rejected','pruned','superseded')";
+    let mut counts: std::collections::HashMap<String, usize> = Default::default();
+    let mut rows: Vec<(String, String)> = Vec::new();
+    if let Ok(mut stmt) = conn.prepare(sql)
+        && let Ok(mapped) =
+            stmt.query_map([], |r| Ok((r.get::<_, String>(0)?, r.get::<_, String>(1)?)))
+    {
+        for row in mapped.flatten() {
+            *counts.entry(row.1.to_lowercase()).or_default() += 1;
+            rows.push(row);
+        }
+    }
+    for (id, category) in rows {
+        let lower = category.to_lowercase();
+        // Exact membership short-circuits — sibling record categories
+        // (decision/decisions) sit one edit apart and must not flag
+        // each other.
+        if crate::volatility::RECORD_CATEGORIES.contains(&lower.as_str()) {
+            continue;
+        }
+        let mut flagged = false;
+        for record_cat in crate::volatility::RECORD_CATEGORIES {
+            let d = edit_distance(&lower, record_cat);
+            if lower != *record_cat && d <= 2 {
+                report.issues.push(Issue {
+                    kind: IssueKind::CategoryTypo,
+                    entity_id: Some(id.clone()),
+                    message: format!(
+                        "category '{category}' is {d} edit(s) from record category '{record_cat}' — this entity classifies as `living`, not `record`"
+                    ),
+                });
+                flagged = true;
+                break;
+            }
+        }
+        // Singleton category near a much-used one → likely a typo.
+        let count = counts.get(&lower).copied().unwrap_or(0);
+        let near_common = counts
+            .iter()
+            .filter(|(c, _)| c.as_str() != lower)
+            .filter(|(_, n)| **n >= 3)
+            .find(|(c, _)| edit_distance(&lower, c) <= 2);
+        if !flagged
+            && count <= 2
+            && let Some((other, _)) = near_common
+        {
+            report.issues.push(Issue {
+                kind: IssueKind::CategoryTypo,
+                entity_id: Some(id),
+                message: format!(
+                    "category '{category}' ({count} entries) resembles '{other}' — possible typo"
+                ),
+            });
+        }
+    }
+}
+
+/// Classic Levenshtein over chars — category strings are short enough
+/// that the quadratic bound is irrelevant.
+fn edit_distance(a: &str, b: &str) -> usize {
+    let a: Vec<char> = a.chars().collect();
+    let b: Vec<char> = b.chars().collect();
+    let mut prev: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.iter().enumerate() {
+        let mut cur = vec![i + 1];
+        for (j, cb) in b.iter().enumerate() {
+            cur.push(
+                (prev[j] + usize::from(ca != cb))
+                    .min(prev[j + 1] + 1)
+                    .min(cur[j] + 1),
+            );
+        }
+        prev = cur;
+    }
+    prev[b.len()]
 }
 
 fn check_orphaned_supersedes(conn: &Connection, report: &mut DoctorReport) {

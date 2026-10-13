@@ -20,3 +20,4 @@ pub mod security;
 pub mod seeds;
 pub mod storage;
 pub mod update;
+pub mod volatility;

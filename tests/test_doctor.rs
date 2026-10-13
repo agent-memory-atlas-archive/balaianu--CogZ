@@ -451,3 +451,79 @@ fn doctor_reports_usage_metrics() {
         "never-delivered observation is a write-quality signal"
     );
 }
+
+#[test]
+fn doctor_flags_volatility_record_on_living_class() {
+    let (storage, config, cogz_dir, _dir) = setup();
+
+    // Explicit record override on a living-class knowledge entry.
+    let mut living = make_knowledge("Current API behavior", "content");
+    living
+        .frontmatter
+        .insert("category", FmValue::String("architecture".to_string()));
+    living
+        .frontmatter
+        .insert("volatility", FmValue::String("record".to_string()));
+    write_and_sync(&storage, &cogz_dir, &living, "knowledge/architecture");
+
+    // Same override on a natural record class — redundant, not a footgun.
+    let mut natural = make_knowledge("Old decision", "content");
+    natural
+        .frontmatter
+        .insert("category", FmValue::String("decisions".to_string()));
+    natural
+        .frontmatter
+        .insert("volatility", FmValue::String("record".to_string()));
+    write_and_sync(&storage, &cogz_dir, &natural, "knowledge/decisions");
+
+    let report = run_doctor(&storage, &config, &cogz_dir, &cogz_dir);
+    let footguns: Vec<_> = report
+        .issues
+        .iter()
+        .filter(|i| i.kind == IssueKind::VolatilityFootgun)
+        .collect();
+    assert_eq!(footguns.len(), 1);
+    assert_eq!(footguns[0].entity_id.as_deref(), Some(living.id.as_str()));
+}
+
+#[test]
+fn doctor_flags_category_typos() {
+    let (storage, config, cogz_dir, _dir) = setup();
+
+    // Near-miss of a record category → silently classifies `living`.
+    let mut typo = make_knowledge("Typo'd decision", "content");
+    typo.frontmatter
+        .insert("category", FmValue::String("desicions".to_string()));
+    write_and_sync(&storage, &cogz_dir, &typo, "knowledge/desicions");
+
+    // Singleton near a common category → likely a typo.
+    let mut single = make_knowledge("Orphan arch note", "content");
+    single
+        .frontmatter
+        .insert("category", FmValue::String("archtecture".to_string()));
+    write_and_sync(&storage, &cogz_dir, &single, "knowledge/archtecture");
+    for i in 0..3 {
+        let mut k = make_knowledge(&format!("Arch note {i}"), "content");
+        k.frontmatter
+            .insert("category", FmValue::String("architecture".to_string()));
+        write_and_sync(&storage, &cogz_dir, &k, "knowledge/architecture");
+    }
+
+    let report = run_doctor(&storage, &config, &cogz_dir, &cogz_dir);
+    let typos: Vec<_> = report
+        .issues
+        .iter()
+        .filter(|i| i.kind == IssueKind::CategoryTypo)
+        .collect();
+    assert_eq!(typos.len(), 2);
+    assert!(
+        typos
+            .iter()
+            .any(|i| i.entity_id.as_deref() == Some(typo.id.as_str()))
+    );
+    assert!(
+        typos
+            .iter()
+            .any(|i| i.entity_id.as_deref() == Some(single.id.as_str()))
+    );
+}

@@ -241,6 +241,15 @@ impl EntityFile {
         }
         let status = status.to_string();
 
+        if let Some(v) = fm.get("volatility").and_then(|v| v.as_str())
+            && !crate::volatility::is_valid(v)
+        {
+            return Err(FrontmatterError::Parse {
+                line: 0,
+                message: format!("invalid volatility '{}': must be one of living, record", v),
+            });
+        }
+
         let created_at = fm
             .get("created_at")
             .and_then(|v| v.as_str())

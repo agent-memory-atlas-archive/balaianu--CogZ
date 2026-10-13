@@ -33,3 +33,19 @@ fn sanitize_category_truncates_long_input() {
     let out = sanitize_category(&long);
     assert!(out.len() <= MAX_SLUG_LEN, "got {} chars", out.len());
 }
+
+#[test]
+fn volatility_frontmatter_validated_on_parse() {
+    let base = |vol: &str| {
+        format!(
+            "---\nid: 11111111-1111-4111-8111-111111111111\ntitle: t\n\
+             type: knowledge\nstatus: active\n\
+             created_at: \"2026-10-12T00:00:00Z\"\nupdated_at: \"2026-10-12T00:00:00Z\"\n\
+             references: []\nvolatility: {vol}\n---\n\nbody"
+        )
+    };
+    assert!(EntityFile::from_content(&base("living")).is_ok());
+    assert!(EntityFile::from_content(&base("record")).is_ok());
+    let err = EntityFile::from_content(&base("bogus")).unwrap_err();
+    assert!(format!("{err:?}").contains("volatility"));
+}

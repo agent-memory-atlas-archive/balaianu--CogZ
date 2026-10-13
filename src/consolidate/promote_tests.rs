@@ -199,3 +199,88 @@ fn no_duplicate_promotion_after_first() {
     let rule_count = crate::storage::crud::count_by_type(&conn, "rule").unwrap();
     assert_eq!(rule_count, 1);
 }
+
+#[test]
+fn promotion_supersedes_source_observation() {
+    let storage = setup();
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    let obs_dir = cogz_dir.join("observations").join("2026-01");
+    std::fs::create_dir_all(&obs_dir).unwrap();
+    std::fs::create_dir_all(cogz_dir.join("rules")).unwrap();
+
+    let obs_id = "a1b2c3d4-e5f6-4789-abcd-000000000041";
+    {
+        let conn = storage.conn();
+        let mut e = Entity::new(
+            obs_id,
+            "observation",
+            "Test Obs",
+            "Always use batched queries",
+        );
+        e.file_path = Some(format!("observations/2026-01/{obs_id}.md"));
+        insert_entity(&conn, &e).unwrap();
+        for i in 2..=4 {
+            insert_entity(
+                &conn,
+                &Entity::new(&format!("sup-{i}"), "observation", &format!("Sup {i}"), "c"),
+            )
+            .unwrap();
+            add_supports_edge(&conn, &format!("sup-{i}"), obs_id);
+        }
+
+        // Canonical file on disk — the supersede write is file-first.
+        let mut fm = Frontmatter::new();
+        fm.insert("id", FmValue::String(obs_id.to_string()));
+        fm.insert("title", FmValue::String("Test Obs".to_string()));
+        fm.insert("type", FmValue::String("observation".to_string()));
+        fm.insert("status", FmValue::String("active".to_string()));
+        fm.insert(
+            "created_at",
+            FmValue::String("2026-01-01T00:00:00Z".to_string()),
+        );
+        fm.insert(
+            "updated_at",
+            FmValue::String("2026-01-01T00:00:00Z".to_string()),
+        );
+        fm.insert("references", FmValue::Array(vec![]));
+        std::fs::write(
+            obs_dir.join(format!("{obs_id}.md")),
+            format!(
+                "---\n{}---\n\nAlways use batched queries",
+                crate::files::frontmatter::serialize(&fm)
+            ),
+        )
+        .unwrap();
+    }
+
+    let results = run_promotion(&storage, &cogz_dir, &config(3), false).unwrap();
+    assert_eq!(results.len(), 1);
+    let rule_id = results[0].new_rule_id.clone();
+
+    // Source observation is superseded, not left active.
+    let conn = storage.conn();
+    let obs = crate::storage::crud::get_entity(&conn, obs_id).unwrap();
+    assert_eq!(obs.status, "superseded");
+    assert_eq!(
+        obs.properties["superseded_by"],
+        serde_json::Value::String(rule_id.clone())
+    );
+
+    // superseded_by edge from observation to the new rule — graph
+    // expansion follows it to reach the survivor.
+    let edges = crate::storage::edges::get_edges_from(&conn, obs_id).unwrap();
+    assert!(
+        edges
+            .iter()
+            .any(|e| e.edge_type == "superseded_by" && e.target_id == rule_id)
+    );
+
+    // Canonical file carries the same verdict.
+    let file = read_entity_file(&obs_dir.join(format!("{obs_id}.md"))).unwrap();
+    assert_eq!(file.status, "superseded");
+    assert_eq!(
+        file.frontmatter.get("superseded_by"),
+        Some(&FmValue::String(rule_id))
+    );
+}

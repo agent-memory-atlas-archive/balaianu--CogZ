@@ -4,17 +4,20 @@
 //! `promotion_threshold`) is promoted to a rule. Promotion creates a
 //! new rule file with a `derived_from` edge to the source observation
 //! and `supporting_ids` listing all supporters. The source observation
-//! is not mutated — promotion is additive.
+//! is then marked `superseded` — the rule replaces it in the corpus,
+//! so the stale claim must stop co-surfacing.
 
 use std::path::Path;
+use std::path::PathBuf;
 
 use crate::config::ConsolidationConfig;
 use crate::files::frontmatter::{FmValue, Frontmatter};
-use crate::files::{EntityFile, FileEntityType};
+use crate::files::{EntityFile, FileEntityType, read_entity_file, write_entity_file};
 use crate::storage::StorageError;
 use crate::storage::crud::Entity;
 use crate::storage::events::{EventType, record_event};
 use crate::storage::query::get_entities_by_type;
+use crate::storage::status::transition_status;
 
 /// Result of a single promotion decision.
 #[derive(Debug, Clone, serde::Serialize)]
@@ -219,6 +222,18 @@ fn promote_one(
         )));
     }
 
+    // Supersede the source observation — its claim now lives in the
+    // rule. Failure degrades to a warning: the promoted rule is
+    // already canonical and must not be rolled back.
+    if let Err(e) = supersede_source(storage, cogz_dir, &candidate.observation.id, &rule_id) {
+        tracing::warn!(
+            "promotion: rule {} written but source observation {} could not be superseded: {}",
+            rule_id,
+            candidate.observation.id,
+            e
+        );
+    }
+
     // Record the promotion event.
     let conn = storage.conn();
     let payload = serde_json::json!({
@@ -228,6 +243,72 @@ fn promote_one(
     record_event(&conn, EventType::RulePromoted, Some(&rule_id), &payload)?;
 
     Ok(rule_id)
+}
+
+/// Mark a promoted observation `superseded` — its claim now lives in
+/// the rule. Mirrors `merge_one` in `consolidate/merge.rs`: transition
+/// pre-check from current DB state, frontmatter `status` +
+/// `superseded_by`, write, sync — all canonical, all rebuildable.
+fn supersede_source(
+    storage: &crate::storage::Storage,
+    cogz_dir: &Path,
+    observation_id: &str,
+    rule_id: &str,
+) -> Result<(), StorageError> {
+    // Re-fetch current state — a prior promotion in this batch may
+    // have already changed the observation's status.
+    let (status, file_path) = {
+        let conn = storage.conn();
+        let entity = crate::storage::crud::get_entity(&conn, observation_id)?;
+        (entity.status, entity.file_path)
+    };
+    transition_status(&status, "superseded")?;
+    let file_path =
+        file_path.ok_or_else(|| StorageError::EntityNotFound(observation_id.to_string()))?;
+    let path = resolve_file_path(&file_path, cogz_dir);
+
+    // Canonical-file write lock scopes the read-modify-write-sync
+    // sequence so a concurrent writer cannot interleave.
+    let _file_lock = storage.file_lock();
+
+    let mut entity_file = read_entity_file(&path)
+        .map_err(|e| StorageError::File(format!("read {}: {e}", path.display())))?;
+    entity_file
+        .frontmatter
+        .insert("superseded_by", FmValue::String(rule_id.to_string()));
+    entity_file.status = "superseded".to_string();
+    entity_file.updated_at = chrono::Utc::now().to_rfc3339();
+
+    write_entity_file(&path, &entity_file)
+        .map_err(|e| StorageError::File(format!("write {}: {e}", path.display())))?;
+
+    // Sync creates the superseded_by edge from frontmatter via
+    // sync_references and validates the transition in the lattice.
+    let relative_path = path
+        .strip_prefix(cogz_dir)
+        .unwrap_or(&path)
+        .to_string_lossy()
+        .to_string();
+    let sync_result = crate::files::sync_single_file(storage, cogz_dir, &relative_path);
+    if let Some(err) = sync_result.errors.first() {
+        return Err(StorageError::File(format!(
+            "sync failed for superseded observation {}: {}",
+            path.display(),
+            err.error
+        )));
+    }
+    Ok(())
+}
+
+/// Resolve a `file_path` field to an absolute path. `.cogz/`-prefixed
+/// paths are relative to the repo root; bare paths are relative to
+/// the `.cogz/` directory itself.
+fn resolve_file_path(file_path: &str, cogz_dir: &Path) -> PathBuf {
+    if file_path.starts_with(".cogz") {
+        cogz_dir.parent().unwrap_or(cogz_dir).join(file_path)
+    } else {
+        cogz_dir.join(file_path)
+    }
 }
 
 #[cfg(test)]
