@@ -43,6 +43,10 @@ holds agent-replay task sets per corpus.
 
 ## Reproduce
 
+Requires Python 3.11+ (`tomllib`) and `pip install sqlite-vec`
+(`corpus_metrics.py` reads the vec0 tables directly). All other
+scripts are stdlib-only.
+
 ```bash
 export COGZ_BENCH_CORPORA=/path/to/corpora   # default: benchmark/corpora
 
@@ -174,7 +178,29 @@ low-resource answer.
 Determinism: identical result lists across repeated runs on all corpora
 (`determinism.txt` per corpus). Embedding batch-composition drift is
 quantified in `_invariants/reindex_equiv.txt` as `EMBEDDING_DRIFT`
-(currently n=10, cosine 0.967–0.985 — a known cosmetic nondeterminism).
+(currently n=10, cosine 0.967–0.985). Cross-machine measurements (below)
+show this drift is *not* fully cosmetic at metric level — identical
+binary + identical corpora on different CPUs reproduce scores within
+±0.02 on most metrics but borderline ranks flip: observed deviations up
+to +0.06 R@20 / ±0.04 MRR. Treat sub-0.05 score deltas across hardware
+as noise; same-machine reruns are byte-identical.
+
+## Hardware variance (two-machine check, revision 182b0f7)
+
+Same binary, same pinned corpora, two machines:
+
+| | Minimum tier | Recommended tier |
+|---|---|---|
+| Machine | 8-core x86, 7.3 GB RAM, CPU-only | Legion 5 Pro: i7-11800H 8C/16T (AVX-512), 32 GB RAM, NVMe, RTX 3060 (unused — CPU ONNX) |
+| Hybrid query p50 | 315–550 ms | 103–234 ms |
+| FTS-only p50 | 66–130 ms | 16–61 ms |
+| full index | 25.9–29.0 s | 14.6–21.1 s |
+| no-op reindex | 1.3–3.2 s | 0.2–2.3 s |
+| embed-bg peak RSS | n/c (mcp-stdio RSS ~765 MB) | 286 MB VmHWM (int8, batch 32) |
+
+Absolute numbers are hardware-bound; the scores above are the stable
+part of the battery and reproduce within the drift band across
+machines. Determinism checks passed identically on both.
 
 ## Methodology notes
 
