@@ -35,19 +35,19 @@ fn extract_python_function(node: &Node, source: &[u8], file_path: &str) -> Optio
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
-    let signature = content
+    let signature = node_text(node, source)?
         .lines()
         .take_while(|l| !l.trim_start().starts_with('"') && !l.is_empty())
         .collect::<Vec<_>>()
         .join("\n");
 
-    Some(CodeEntity {
-        entity_type: "function",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "function",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -55,7 +55,7 @@ fn extract_python_function(node: &Node, source: &[u8], file_path: &str) -> Optio
             "signature": signature,
             "qualified_name": name,
         }),
-    })
+    )
 }
 
 fn extract_python_class(node: &Node, source: &[u8], file_path: &str) -> Option<CodeEntity> {
@@ -63,7 +63,6 @@ fn extract_python_class(node: &Node, source: &[u8], file_path: &str) -> Option<C
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
     let superclasses: Vec<String> = node
         .child_by_field_name("superclasses")
@@ -75,11 +74,12 @@ fn extract_python_class(node: &Node, source: &[u8], file_path: &str) -> Option<C
         })
         .unwrap_or_default();
 
-    Some(CodeEntity {
-        entity_type: "class",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "class",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -87,7 +87,7 @@ fn extract_python_class(node: &Node, source: &[u8], file_path: &str) -> Option<C
             "qualified_name": name,
             "superclasses": superclasses,
         }),
-    })
+    )
 }
 
 fn extract_python_class_methods(

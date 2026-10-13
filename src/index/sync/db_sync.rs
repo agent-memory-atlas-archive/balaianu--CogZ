@@ -23,6 +23,7 @@ pub(crate) fn sync_entities_to_db(
     let mut created = 0usize;
     let mut updated = 0usize;
     let mut skipped = 0usize;
+    let mut migrated = 0usize;
     let mut synced_ids: Vec<String> = Vec::new();
 
     // Wrap all inserts/updates in a single transaction to avoid
@@ -42,9 +43,10 @@ pub(crate) fn sync_entities_to_db(
                 &mut created,
                 &mut updated,
                 &mut skipped,
+                &mut migrated,
                 &mut synced_ids,
             );
-            apply_counts(result, created, updated, skipped, synced_ids);
+            apply_counts(result, created, updated, skipped, migrated, synced_ids);
             return;
         }
     };
@@ -56,6 +58,7 @@ pub(crate) fn sync_entities_to_db(
         &mut created,
         &mut updated,
         &mut skipped,
+        &mut migrated,
         &mut synced_ids,
     );
 
@@ -69,12 +72,13 @@ pub(crate) fn sync_entities_to_db(
         return;
     }
 
-    apply_counts(result, created, updated, skipped, synced_ids);
+    apply_counts(result, created, updated, skipped, migrated, synced_ids);
 }
 
 /// Inner loop for entity sync — works with either a `Connection` or
 /// `Transaction` (both deref to `Connection`). Updates the count
 /// counters and synced_ids in place.
+#[allow(clippy::too_many_arguments)]
 fn sync_entities_loop(
     conn: &rusqlite::Connection,
     all_entities: &[ParsedEntity],
@@ -82,6 +86,7 @@ fn sync_entities_loop(
     created: &mut usize,
     updated: &mut usize,
     skipped: &mut usize,
+    migrated: &mut usize,
     synced_ids: &mut Vec<String>,
 ) {
     for (id, entity) in all_entities {
@@ -102,6 +107,35 @@ fn sync_entities_loop(
                 if existing.content_hash == entity.content_hash {
                     *skipped += 1;
                     continue;
+                }
+                // Legacy-hash migration: the stored hash predates the
+                // v2 structural scheme. If the legacy hash of the new
+                // content still matches, the entity is semantically
+                // unchanged — rewrite the stored hash only, without
+                // re-embedding or FTS churn.
+                if existing
+                    .content_hash
+                    .as_deref()
+                    .is_some_and(|h| !crate::index::sync::is_structural_hash(h))
+                {
+                    let lang = entity
+                        .properties
+                        .get("language")
+                        .and_then(|v| v.as_str())
+                        .unwrap_or("");
+                    let legacy = crate::index::sync::legacy_content_hash(&entity.content, lang);
+                    if existing.content_hash.as_deref() == Some(legacy.as_str()) {
+                        match conn.execute(
+                            "UPDATE entities SET content_hash = ?1 WHERE id = ?2",
+                            rusqlite::params![entity.content_hash, id],
+                        ) {
+                            Ok(_) => *migrated += 1,
+                            Err(e) => {
+                                tracing::warn!("failed to migrate hash for {}: {}", id, e)
+                            }
+                        }
+                        continue;
+                    }
                 }
                 let mut updated_entity = entity.clone();
                 updated_entity.status = existing.status.clone();
@@ -131,11 +165,13 @@ fn apply_counts(
     created: usize,
     updated: usize,
     skipped: usize,
+    migrated: usize,
     synced_ids: Vec<String>,
 ) {
     result.created += created;
     result.updated += updated;
     result.skipped += skipped;
+    result.hash_migrated += migrated;
     result.synced_entity_ids.extend(synced_ids);
 }
 

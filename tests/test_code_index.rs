@@ -361,6 +361,7 @@ fn build_sql_query(table: &str) -> String {
         silence_gate: true,
         window_quota: true,
         before_ts: None,
+        record_usage: true,
     };
     let config = cogz::config::SearchConfig {
         fts_weight: 0.3,
@@ -373,7 +374,6 @@ fn build_sql_query(table: &str) -> String {
         merge_strategy: "strength".to_string(),
         min_relevance: 0.05,
         edge_weighted_expansion: true,
-        silence_threshold: 0.0,
         top_diversity_share: 0.0,
         calibration: cogz::config::CalibrationConfig::default(),
         provenance_boost: 0.0,
@@ -385,7 +385,7 @@ fn build_sql_query(table: &str) -> String {
         graph_max_hops: 2,
         graph_hop_decay: 0.5,
         graph_weight: 0.35,
-        silence_strength_floor: 0.64,
+        silence_coverage_floor: 0.45,
         prf_enabled: false,
         prf_feedback_docs: 5,
         prf_max_terms: 8,

@@ -22,6 +22,7 @@ use std::path::Path;
 
 use serde::Serialize;
 use serde_json::json;
+use sha2::{Digest, Sha256};
 use tree_sitter::{Node, Parser};
 use tree_sitter_language::LanguageFn;
 
@@ -32,7 +33,73 @@ pub struct CodeEntity {
     pub entity_type: &'static str,
     pub title: String,
     pub content: String,
+    /// `v2:`-prefixed structural hash of the entity's AST subtree.
+    pub semantic_hash: String,
     pub properties: serde_json::Value,
+}
+
+impl CodeEntity {
+    /// Build an entity from its AST node: content is the node text,
+    /// semantic_hash is the structural hash of the node's subtree.
+    pub fn new(
+        entity_type: &'static str,
+        title: String,
+        node: &Node,
+        source: &[u8],
+        properties: serde_json::Value,
+    ) -> Option<Self> {
+        Some(Self {
+            entity_type,
+            title,
+            content: node_text(node, source)?,
+            semantic_hash: ast_hash(node, source),
+            properties,
+        })
+    }
+}
+
+/// Structural hash of an AST subtree, insensitive to comments and
+/// whitespace by construction (neither reaches the emitted stream).
+/// Emits every node's kind in preorder plus the text of named leaves —
+/// anonymous leaves (punctuation, operators) are already literals via
+/// their kind. Serialized as `v2:{sha256 hex}` to distinguish it from
+/// the legacy text-normalized hash.
+fn ast_hash(node: &Node, source: &[u8]) -> String {
+    let mut hasher = Sha256::new();
+    let mut cursor = node.walk();
+    let mut descended = false;
+    loop {
+        if !descended {
+            let n = cursor.node();
+            if !n.kind().contains("comment") {
+                hasher.update(n.kind().as_bytes());
+                hasher.update([0]);
+                if n.named_child_count() == 0
+                    && let Ok(text) = n.utf8_text(source)
+                {
+                    hasher.update(text.as_bytes());
+                    hasher.update([0]);
+                }
+                if cursor.goto_first_child() {
+                    continue;
+                }
+            }
+        }
+        if cursor.goto_next_sibling() {
+            descended = false;
+            continue;
+        }
+        descended = true;
+        if !cursor.goto_parent() {
+            break;
+        }
+    }
+    let hex: String = hasher
+        .finalize()
+        .iter()
+        .map(|b| format!("{:02x}", b))
+        .collect();
+    format!("v2:{hex}")
 }
 
 /// A structural edge with unresolved name references.
@@ -135,19 +202,7 @@ pub fn extract_entities(file_path: &Path, source: &str, language: Language) -> V
     let mut entities = Vec::new();
 
     // File entity — always present
-    entities.push(CodeEntity {
-        entity_type: "file",
-        title: file_path
-            .file_name()
-            .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or_else(|| path_str.clone()),
-        content: source.to_string(),
-        properties: json!({
-            "file_path": path_str,
-            "language": language.as_str(),
-            "line_count": source.lines().count(),
-        }),
-    });
+    entities.push(file_entity(file_path, &path_str, source, language, &root));
 
     dispatch_extract(&language, &root, source_bytes, &path_str, &mut entities);
 
@@ -192,24 +247,35 @@ pub fn extract_all(
     let mut edges = Vec::new();
 
     // File entity — always present
-    entities.push(CodeEntity {
-        entity_type: "file",
-        title: file_path
-            .file_name()
-            .map(|n| n.to_string_lossy().to_string())
-            .unwrap_or_else(|| path_str.clone()),
-        content: source.to_string(),
-        properties: json!({
-            "file_path": path_str,
-            "language": language.as_str(),
-            "line_count": source.lines().count(),
-        }),
-    });
+    entities.push(file_entity(file_path, &path_str, source, language, &root));
 
     dispatch_extract(&language, &root, source_bytes, &path_str, &mut entities);
     dispatch_raw_edges(&language, &root, source_bytes, &path_str, &mut edges);
 
     (entities, edges)
+}
+
+fn file_entity(
+    file_path: &Path,
+    path_str: &str,
+    source: &str,
+    language: Language,
+    root: &Node,
+) -> CodeEntity {
+    CodeEntity {
+        entity_type: "file",
+        title: file_path
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_else(|| path_str.to_string()),
+        content: source.to_string(),
+        semantic_hash: ast_hash(root, source.as_bytes()),
+        properties: json!({
+            "file_path": path_str,
+            "language": language.as_str(),
+            "line_count": source.lines().count(),
+        }),
+    }
 }
 
 /// Dispatch entity extraction to the appropriate language module.

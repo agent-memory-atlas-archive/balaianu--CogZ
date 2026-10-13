@@ -1,4 +1,4 @@
-use super::{Language, extract_entities};
+use super::{Language, extract_all, extract_entities};
 use std::path::Path;
 
 #[path = "tests_extra.rs"]
@@ -275,5 +275,70 @@ type Handler interface {
         classes
             .iter()
             .any(|c| c.title == "Handler" && c.properties["kind"] == "interface")
+    );
+}
+
+fn fn_hash(source: &str, lang: Language, path: &str) -> String {
+    let (entities, _) = extract_all(std::path::Path::new(path), source, lang);
+    entities
+        .iter()
+        .find(|e| e.entity_type == "function")
+        .map(|e| e.semantic_hash.clone())
+        .expect("expected a function entity")
+}
+
+#[test]
+fn semantic_hash_ignores_comments_and_reformat() {
+    let a = "fn f(x: i32) -> i32 {\n    x + 1\n}";
+    let b = "// leading\nfn f(x: i32) -> i32 {\n    // inner\n    x + 1 // trailing\n}\n";
+    let c = "fn  f ( x : i32 ) -> i32 { x + 1 }";
+    for (src, tag) in [(a, "orig"), (b, "commented"), (c, "reflowed")] {
+        let h = fn_hash(src, Language::Rust, "src/m.rs");
+        assert!(h.starts_with("v2:"), "{tag} hash not v2");
+    }
+    assert_eq!(
+        fn_hash(a, Language::Rust, "src/m.rs"),
+        fn_hash(b, Language::Rust, "src/m.rs")
+    );
+    assert_eq!(
+        fn_hash(a, Language::Rust, "src/m.rs"),
+        fn_hash(c, Language::Rust, "src/m.rs")
+    );
+}
+
+#[test]
+fn semantic_hash_detects_real_edits() {
+    let a = "fn f(x: i32) -> i32 {\n    x + 1\n}";
+    let renamed_local = "fn f(y: i32) -> i32 {\n    y + 1\n}";
+    let changed_op = "fn f(x: i32) -> i32 {\n    x - 1\n}";
+    let h = fn_hash(a, Language::Rust, "src/m.rs");
+    assert_ne!(h, fn_hash(renamed_local, Language::Rust, "src/m.rs"));
+    assert_ne!(h, fn_hash(changed_op, Language::Rust, "src/m.rs"));
+}
+
+#[test]
+fn semantic_hash_handles_rust_lifetimes() {
+    // The legacy text lexer treated `'a` as a string open and ate the
+    // code after it; the AST walk parses lifetimes as real nodes.
+    let a = "fn id<'a>(x: &'a str) -> &'a str {\n    x\n}";
+    let b = "fn id<'a>(x: &'a str) -> &'a str {\n    // note\n    x\n}";
+    let changed = "fn id<'a>(x: &'a str) -> &'a str {\n    let _y = x;\n    x\n}";
+    assert_eq!(
+        fn_hash(a, Language::Rust, "src/l.rs"),
+        fn_hash(b, Language::Rust, "src/l.rs")
+    );
+    assert_ne!(
+        fn_hash(a, Language::Rust, "src/l.rs"),
+        fn_hash(changed, Language::Rust, "src/l.rs")
+    );
+}
+
+#[test]
+fn semantic_hash_treats_string_contents_as_code() {
+    let a = "def f():\n    return \"hello # world\"\n";
+    let b = "def f():\n    return \"other # world\"\n";
+    assert_ne!(
+        fn_hash(a, Language::Python, "s.py"),
+        fn_hash(b, Language::Python, "s.py")
     );
 }

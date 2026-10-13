@@ -52,6 +52,10 @@ pub enum EventType {
     /// of the adoption funnel. Conversion is measured by comparing
     /// these against `*_created` events in the same window.
     WriteNudgeShown,
+    /// A declared code reference was re-anchored to a live entity —
+    /// the old target went stale but an active entity carries the
+    /// same structural hash (the code moved, it didn't disappear).
+    ReferenceReanchored,
 }
 
 impl EventType {
@@ -81,6 +85,7 @@ impl EventType {
             Self::EntityRejected => "entity_rejected",
             Self::SearchPerformed => "search_performed",
             Self::WriteNudgeShown => "write_nudge_shown",
+            Self::ReferenceReanchored => "reference_reanchored",
         }
     }
 }

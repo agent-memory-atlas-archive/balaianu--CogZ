@@ -21,6 +21,9 @@ pub struct ReindexResult {
     pub updated: usize,
     pub marked_stale: usize,
     pub skipped: usize,
+    /// Entities whose stored hash was migrated to the structural
+    /// scheme without a semantic change (no re-embed).
+    pub hash_migrated: usize,
     /// IDs of code entities that were created or updated — used by
     /// the stale-knowledge flagging step to find affected observations/rules.
     pub changed_code_ids: Vec<String>,
@@ -63,6 +66,7 @@ pub fn reindex_files(
     result.created = sync_result.created;
     result.updated = sync_result.updated;
     result.skipped = sync_result.skipped;
+    result.hash_migrated = sync_result.hash_migrated;
     result.synced_entity_ids = sync_result.synced_entity_ids.clone();
     result.changed_code_ids = sync_result.synced_entity_ids.clone();
     // Entities removed from changed files (renamed or deleted within

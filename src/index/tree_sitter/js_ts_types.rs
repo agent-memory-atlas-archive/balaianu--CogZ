@@ -13,13 +13,13 @@ pub(super) fn extract_ts_interface(
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
-    Some(CodeEntity {
-        entity_type: "class",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "class",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -27,7 +27,7 @@ pub(super) fn extract_ts_interface(
             "qualified_name": name,
             "kind": "interface",
         }),
-    })
+    )
 }
 
 pub(super) fn extract_ts_enum(
@@ -40,13 +40,13 @@ pub(super) fn extract_ts_enum(
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
-    Some(CodeEntity {
-        entity_type: "class",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "class",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -54,5 +54,5 @@ pub(super) fn extract_ts_enum(
             "qualified_name": name,
             "kind": "enum",
         }),
-    })
+    )
 }

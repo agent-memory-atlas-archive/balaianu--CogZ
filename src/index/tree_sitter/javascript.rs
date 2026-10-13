@@ -93,14 +93,18 @@ fn extract_js_function(
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
-    let signature = content.lines().next().unwrap_or("").to_string();
+    let signature = node_text(node, source)?
+        .lines()
+        .next()
+        .unwrap_or("")
+        .to_string();
 
-    Some(CodeEntity {
-        entity_type: "function",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "function",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -108,7 +112,7 @@ fn extract_js_function(
             "signature": signature,
             "qualified_name": name,
         }),
-    })
+    )
 }
 
 fn extract_js_class(
@@ -121,7 +125,6 @@ fn extract_js_class(
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
     let superclass = node
         .child_by_field_name("superclass")
@@ -133,11 +136,12 @@ fn extract_js_class(
         })
         .and_then(|sc| sc.named_child(0).and_then(|v| node_text(&v, source)));
 
-    Some(CodeEntity {
-        entity_type: "class",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "class",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -145,7 +149,7 @@ fn extract_js_class(
             "qualified_name": name,
             "superclass": superclass,
         }),
-    })
+    )
 }
 
 fn extract_js_class_methods(
@@ -179,17 +183,18 @@ fn extract_js_class_methods(
 
         let line_start = child.start_position().row + 1;
         let line_end = child.end_position().row + 1;
-        let content = node_text(&child, source).unwrap_or_default();
-        let signature = content.lines().next().unwrap_or("").to_string();
+        let signature = node_text(&child, source)
+            .and_then(|c| c.lines().next().map(|l| l.to_string()))
+            .unwrap_or_default();
 
         if let Some(class_name_node) = class_node.child_by_field_name("name")
             && let Some(class_name) = node_text(&class_name_node, source)
-        {
-            entities.push(CodeEntity {
-                entity_type: "function",
-                title: format!("{}::{}", class_name, method_name),
-                content,
-                properties: json!({
+            && let Some(entity) = CodeEntity::new(
+                "function",
+                format!("{}::{}", class_name, method_name),
+                &child,
+                source,
+                json!({
                     "file_path": file_path,
                     "line_start": line_start,
                     "line_end": line_end,
@@ -198,7 +203,9 @@ fn extract_js_class_methods(
                     "qualified_name": format!("{class_name}::{method_name}"),
                     "is_static": is_static,
                 }),
-            });
+            )
+        {
+            entities.push(entity);
         }
     }
 }
@@ -232,14 +239,16 @@ fn extract_js_variable_declarations(
         }
         let line_start = decl.start_position().row + 1;
         let line_end = decl.end_position().row + 1;
-        let content = node_text(&decl, source).unwrap_or_default();
-        let signature = content.lines().next().unwrap_or("").to_string();
+        let signature = node_text(&decl, source)
+            .and_then(|c| c.lines().next().map(|l| l.to_string()))
+            .unwrap_or_default();
 
-        entities.push(CodeEntity {
-            entity_type: "function",
-            title: name.clone(),
-            content,
-            properties: json!({
+        if let Some(entity) = CodeEntity::new(
+            "function",
+            name.clone(),
+            &decl,
+            source,
+            json!({
                 "file_path": file_path,
                 "line_start": line_start,
                 "line_end": line_end,
@@ -248,7 +257,9 @@ fn extract_js_variable_declarations(
                 "qualified_name": name,
                 "kind": "arrow_function",
             }),
-        });
+        ) {
+            entities.push(entity);
+        }
     }
 }
 

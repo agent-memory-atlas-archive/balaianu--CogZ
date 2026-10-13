@@ -1,7 +1,7 @@
 //! Integration tests for Phase 10: git diff + stale flagging.
 //!
-//! Tests the full flow: index a git repo with source + observation,
-//! modify the source, reindex, verify stale flagging on the observation
+//! Tests the full flow: index a git repo with source + a living entity,
+//! modify the source, reindex, verify stale flagging on the entity
 //! and the code_changed event.
 
 use std::fs;
@@ -65,7 +65,7 @@ fn reindex_detects_modified_source_and_flags_stale_knowledge() {
     let dir = tempfile::tempdir().unwrap();
     init_git_repo(dir.path());
 
-    // Create a source file and an observation referencing a function.
+    // Create a source file and a living entity referencing a function.
     write_file(
         dir.path(),
         "src/lib.rs",
@@ -76,7 +76,7 @@ fn reindex_detects_modified_source_and_flags_stale_knowledge() {
         ".cogz/config.toml",
         &cogz::config::default_toml("test-project"),
     );
-    fs::create_dir_all(dir.path().join(".cogz/observations/2026-08")).unwrap();
+    fs::create_dir_all(dir.path().join(".cogz/rules")).unwrap();
 
     let sha = commit_all(dir.path());
 
@@ -102,10 +102,11 @@ fn reindex_detects_modified_source_and_flags_stale_knowledge() {
         .unwrap();
     let greet_id = greet.id.clone();
 
-    // Create an observation that references greet.
+    // Create a living entity (rule) that references greet — record
+    // volatility entities are exempt from stale flagging.
     let mut obs = EntityFile::new(
         "Bug in greet",
-        FileEntityType::Observation,
+        FileEntityType::Rule,
         "greet returns wrong value",
     );
     obs.id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee".to_string();
@@ -116,13 +117,8 @@ fn reindex_detects_modified_source_and_flags_stale_knowledge() {
     }
     write_entity_file(&obs_path, &obs).unwrap();
 
-    // Insert observation into DB directly (file is already written).
-    let mut obs_entity = Entity::new(
-        &obs.id,
-        "observation",
-        "Bug in greet",
-        "greet returns wrong value",
-    );
+    // Insert the entity into DB directly (file is already written).
+    let mut obs_entity = Entity::new(&obs.id, "rule", "Bug in greet", "greet returns wrong value");
     obs_entity.file_path = Some(
         obs_path
             .strip_prefix(dir.path())
@@ -143,7 +139,7 @@ fn reindex_detects_modified_source_and_flags_stale_knowledge() {
     )
     .unwrap();
 
-    // Verify observation is active.
+    // Verify the entity is active.
     let obs_entity = storage::crud::get_entity(&conn, &obs.id).unwrap();
     assert_eq!(obs_entity.status, "active");
     drop(conn);
@@ -168,7 +164,7 @@ fn reindex_detects_modified_source_and_flags_stale_knowledge() {
         stale_flagging::flag_stale_knowledge(&storage, &dir.path().join(".cogz"), &all_changed);
     assert!(flagged >= 1, "expected at least 1 stale knowledge flagged");
 
-    // Verify observation is now stale.
+    // Verify the entity is now stale.
     let conn = storage.conn();
     let obs_entity = storage::crud::get_entity(&conn, &obs.id).unwrap();
     assert_eq!(obs_entity.status, "stale");
@@ -245,7 +241,7 @@ fn deleted_source_marks_code_stale_and_flags_knowledge() {
         ".cogz/config.toml",
         &cogz::config::default_toml("test-project"),
     );
-    fs::create_dir_all(dir.path().join(".cogz/observations/2026-08")).unwrap();
+    fs::create_dir_all(dir.path().join(".cogz/rules")).unwrap();
     let sha = commit_all(dir.path());
 
     let db_path = dir.path().join(".cogz/cogz.db");
@@ -268,10 +264,11 @@ fn deleted_source_marks_code_stale_and_flags_knowledge() {
         .unwrap();
     let remove_me_id = remove_me.id.clone();
 
-    // Create an observation referencing remove_me.
+    // Create a living entity (rule) referencing remove_me — record
+    // volatility entities are exempt from stale flagging.
     let mut obs = EntityFile::new(
         "Note about remove_me",
-        FileEntityType::Observation,
+        FileEntityType::Rule,
         "remove_me does X",
     );
     obs.id = "11111111-2222-3333-4444-555555555555".to_string();
@@ -282,13 +279,8 @@ fn deleted_source_marks_code_stale_and_flags_knowledge() {
     }
     write_entity_file(&obs_path, &obs).unwrap();
 
-    // Insert observation into DB directly.
-    let mut obs_entity = Entity::new(
-        &obs.id,
-        "observation",
-        "Note about remove_me",
-        "remove_me does X",
-    );
+    // Insert the entity into DB directly.
+    let mut obs_entity = Entity::new(&obs.id, "rule", "Note about remove_me", "remove_me does X");
     obs_entity.file_path = Some(
         obs_path
             .strip_prefix(dir.path())
@@ -334,9 +326,9 @@ fn deleted_source_marks_code_stale_and_flags_knowledge() {
         .collect();
     let flagged =
         stale_flagging::flag_stale_knowledge(&storage, &dir.path().join(".cogz"), &all_changed);
-    assert!(flagged >= 1, "expected observation flagged stale");
+    assert!(flagged >= 1, "expected entity flagged stale");
 
-    // Verify observation is stale.
+    // Verify the entity is stale.
     let conn = storage.conn();
     let obs_entity = storage::crud::get_entity(&conn, &obs.id).unwrap();
     assert_eq!(obs_entity.status, "stale");

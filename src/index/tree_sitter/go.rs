@@ -19,17 +19,19 @@ pub(super) fn extract_go(
             for pkg_child in child.named_children(&mut pkg_cursor) {
                 if pkg_child.kind() == "package_identifier"
                     && let Some(name) = node_text(&pkg_child, source)
-                {
-                    entities.push(CodeEntity {
-                        entity_type: "module",
-                        title: name.clone(),
-                        content: node_text(&child, source).unwrap_or_default(),
-                        properties: json!({
+                    && let Some(entity) = CodeEntity::new(
+                        "module",
+                        name.clone(),
+                        &child,
+                        source,
+                        json!({
                             "file_path": file_path,
                             "language": "go",
                             "module_path": name,
                         }),
-                    });
+                    )
+                {
+                    entities.push(entity);
                 }
             }
         }
@@ -66,8 +68,11 @@ fn extract_go_function(
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
-    let signature = content.lines().next().unwrap_or("").to_string();
+    let signature = node_text(node, source)?
+        .lines()
+        .next()
+        .unwrap_or("")
+        .to_string();
 
     let (qualified_name, receiver_type) = match method_node {
         Some(m) => {
@@ -91,11 +96,12 @@ fn extract_go_function(
         None => name.clone(),
     };
 
-    Some(CodeEntity {
-        entity_type: "function",
+    CodeEntity::new(
+        "function",
         title,
-        content,
-        properties: json!({
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -104,7 +110,7 @@ fn extract_go_function(
             "qualified_name": qualified_name,
             "receiver_type": receiver_type,
         }),
-    })
+    )
 }
 
 fn extract_go_types(
@@ -128,7 +134,6 @@ fn extract_go_type(node: &Node, source: &[u8], file_path: &str) -> Option<CodeEn
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
     let kind = node
         .child_by_field_name("type")
@@ -141,11 +146,12 @@ fn extract_go_type(node: &Node, source: &[u8], file_path: &str) -> Option<CodeEn
         _ => "type_alias",
     };
 
-    Some(CodeEntity {
-        entity_type: "class",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "class",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -153,7 +159,7 @@ fn extract_go_type(node: &Node, source: &[u8], file_path: &str) -> Option<CodeEn
             "qualified_name": name,
             "kind": kind_str,
         }),
-    })
+    )
 }
 
 // ── Go raw edge extraction ─────────────────────────────────────────

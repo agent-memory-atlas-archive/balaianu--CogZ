@@ -419,12 +419,10 @@ fn normalized_hash_ignores_whitespace_changes() {
     let entities2 = parse_files(&files2);
     let result = sync_code_entities(&storage, &entities2, &Default::default());
 
-    // File entity raw content differs → updated.
-    // Function entity: only whitespace differs but normalize_content
-    // doesn't collapse internal whitespace (only trims trailing and
-    // removes blank lines), so this still counts as a change.
-    // The test verifies the function is at least processed.
-    assert!(result.updated >= 1);
+    // Whitespace is invisible to the AST hash — both the file and the
+    // function entity are skipped, no updates.
+    assert_eq!(result.updated, 0);
+    assert_eq!(result.skipped, 2);
 }
 
 #[test]
@@ -464,4 +462,64 @@ fn normalize_content_preserves_strings_with_slashes() {
     let input = "let s = \"not a // comment\";\nlet x = 1;\n";
     let normalized = normalize_content(input, "rust");
     assert!(normalized.contains("not a // comment"));
+}
+
+#[test]
+fn legacy_hash_migrates_without_reembed() {
+    let storage = Storage::open_memory().unwrap();
+    let code = "fn add(a: i32, b: i32) -> i32 { a + b }";
+    let files = vec![(
+        std::path::PathBuf::from("src/math.rs"),
+        code.to_string(),
+        Language::Rust,
+    )];
+
+    let entities = parse_files(&files);
+    sync_code_entities(&storage, &entities, &Default::default());
+
+    // Downgrade all stored hashes to the pre-v2 scheme, as a corpus
+    // indexed by an older binary would carry.
+    {
+        let conn = storage.conn();
+        let mut stmt = conn
+            .prepare("SELECT id, content, json_extract(properties,'$.language') FROM entities")
+            .unwrap();
+        let rows: Vec<(String, String, String)> = stmt
+            .query_map([], |r| {
+                Ok((
+                    r.get::<_, String>(0)?,
+                    r.get::<_, String>(1)?,
+                    r.get::<_, Option<String>>(2)?.unwrap_or_default(),
+                ))
+            })
+            .unwrap()
+            .flatten()
+            .collect();
+        for (id, content, lang) in rows {
+            let legacy = legacy_content_hash(&content, &lang);
+            conn.execute(
+                "UPDATE entities SET content_hash = ?1 WHERE id = ?2",
+                rusqlite::params![legacy, id],
+            )
+            .unwrap();
+        }
+    }
+
+    // Re-sync identical content: hashes migrate quietly, nothing is
+    // counted as changed or re-embedded.
+    let entities = parse_files(&files);
+    let result = sync_code_entities(&storage, &entities, &Default::default());
+    assert_eq!(result.updated, 0);
+    assert_eq!(result.hash_migrated, 2); // file + function
+    assert!(result.synced_entity_ids.is_empty());
+
+    let conn = storage.conn();
+    let non_v2: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM entities WHERE content_hash NOT LIKE 'v2:%'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(non_v2, 0);
 }

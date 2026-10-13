@@ -47,6 +47,10 @@ pub struct CodeSyncResult {
     pub updated: usize,
     pub marked_stale: usize,
     pub skipped: usize,
+    /// Entities whose stored hash was silently upgraded from the
+    /// legacy scheme to the `v2:` structural hash — semantically
+    /// unchanged, so not re-embedded.
+    pub hash_migrated: usize,
     /// IDs of entities that were created or updated (for embedding).
     pub synced_entity_ids: Vec<String>,
     /// IDs of entities marked stale because they're no longer present
@@ -71,20 +75,22 @@ pub fn code_entity_uuid(file_path: &str, entity_type: &str, qualified_name: &str
     Uuid::new_v5(&CODE_ENTITY_NAMESPACE, name.as_bytes()).to_string()
 }
 
-/// Compute SHA-256 hash of entity content, with comments stripped
-/// and whitespace normalized. This prevents cosmetic changes (comment
-/// edits, formatting tweaks) from triggering stale-knowledge flagging.
-///
-/// Only the content that affects semantics is hashed. Line comments
-/// (`//`, `#`) and block comments (`/* */`) are removed. Trailing
-/// whitespace and blank lines are normalized. The resulting hash
-/// changes only when the actual code logic changes.
-fn content_hash(content: &str, language: &str) -> String {
+/// Legacy SHA-256 content hash — the pre-AST text normalization.
+/// Retained only for comparing against hashes stored by older
+/// versions (`content_hash` column values and `verified_against`
+/// baselines without the `v2:` prefix). Nothing new is hashed with
+/// it; remove once legacy baselines have drained.
+pub(crate) fn legacy_content_hash(content: &str, language: &str) -> String {
     let normalized = normalize_content(content, language);
     let mut hasher = Sha256::new();
     hasher.update(normalized.as_bytes());
     let hash = hasher.finalize();
     hash.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+/// True for hashes produced by the current AST-based algorithm.
+pub(crate) fn is_structural_hash(hash: &str) -> bool {
+    hash.starts_with("v2:")
 }
 
 /// Strip comments and normalize whitespace for hash comparison.
@@ -255,15 +261,6 @@ fn convert_entities(
     let mut seen_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for (file_path_str, entities) in entities_by_file {
-        // Extract language from the file entity (always first, has
-        // "language" in properties).
-        let language = entities
-            .iter()
-            .find(|e| e.entity_type == "file")
-            .and_then(|e| e.properties.get("language"))
-            .and_then(|v| v.as_str())
-            .unwrap_or("");
-
         for ce in entities {
             // File entities use the full path as qualified_name so that
             // code_graph can compute the same UUID from the path alone.
@@ -288,7 +285,7 @@ fn convert_entities(
                 continue;
             }
 
-            let hash = content_hash(&ce.content, language);
+            let hash = ce.semantic_hash.clone();
 
             let entity_type = match ce.entity_type {
                 "function" => EntityType::Function,

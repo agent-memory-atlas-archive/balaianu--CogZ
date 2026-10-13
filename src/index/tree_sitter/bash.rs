@@ -26,20 +26,20 @@ fn extract_bash_function(node: &Node, source: &[u8], file_path: &str) -> Option<
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
-    Some(CodeEntity {
-        entity_type: "function",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "function",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
             "language": "bash",
             "qualified_name": name,
         }),
-    })
+    )
 }
 
 // ── Bash raw edge extraction ───────────────────────────────────────

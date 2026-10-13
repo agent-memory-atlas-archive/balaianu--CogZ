@@ -45,14 +45,18 @@ fn extract_rust_function(node: &Node, source: &[u8], file_path: &str) -> Option<
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
-    let signature = content.lines().next().unwrap_or("").to_string();
+    let signature = node_text(node, source)?
+        .lines()
+        .next()
+        .unwrap_or("")
+        .to_string();
 
-    Some(CodeEntity {
-        entity_type: "function",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "function",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -60,7 +64,7 @@ fn extract_rust_function(node: &Node, source: &[u8], file_path: &str) -> Option<
             "signature": signature,
             "qualified_name": name,
         }),
-    })
+    )
 }
 
 fn extract_rust_type(
@@ -73,13 +77,13 @@ fn extract_rust_type(
     let name = node_text(&name_node, source)?;
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
-    Some(CodeEntity {
-        entity_type: "class",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "class",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -87,7 +91,7 @@ fn extract_rust_type(
             "qualified_name": name,
             "kind": kind,
         }),
-    })
+    )
 }
 
 fn extract_rust_impl(node: &Node, source: &[u8], file_path: &str) -> Option<CodeEntity> {
@@ -98,7 +102,6 @@ fn extract_rust_impl(node: &Node, source: &[u8], file_path: &str) -> Option<Code
         .and_then(|n| node_text(&n, source));
     let line_start = node.start_position().row + 1;
     let line_end = node.end_position().row + 1;
-    let content = node_text(node, source)?;
 
     let title = match &trait_name {
         Some(trait_) => format!("impl {trait_} for {type_name}"),
@@ -110,11 +113,12 @@ fn extract_rust_impl(node: &Node, source: &[u8], file_path: &str) -> Option<Code
         None => format!("impl {type_name}"),
     };
 
-    Some(CodeEntity {
-        entity_type: "class",
+    CodeEntity::new(
+        "class",
         title,
-        content,
-        properties: json!({
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "line_start": line_start,
             "line_end": line_end,
@@ -123,7 +127,7 @@ fn extract_rust_impl(node: &Node, source: &[u8], file_path: &str) -> Option<Code
             "kind": "impl",
             "trait": trait_name,
         }),
-    })
+    )
 }
 
 fn extract_rust_impl_methods(
@@ -163,16 +167,16 @@ fn extract_rust_impl_methods(
 fn extract_rust_module(node: &Node, source: &[u8], file_path: &str) -> Option<CodeEntity> {
     let name_node = node.child_by_field_name("name")?;
     let name = node_text(&name_node, source)?;
-    let content = node_text(node, source)?;
 
-    Some(CodeEntity {
-        entity_type: "module",
-        title: name.clone(),
-        content,
-        properties: json!({
+    CodeEntity::new(
+        "module",
+        name.clone(),
+        node,
+        source,
+        json!({
             "file_path": file_path,
             "language": "rust",
             "module_path": name,
         }),
-    })
+    )
 }
