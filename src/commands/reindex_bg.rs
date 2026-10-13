@@ -38,8 +38,8 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
     let result = index::reindex_code(&storage, repo, &config);
 
     eprintln!(
-        "reindex-bg: {} created, {} updated, {} stale, {} skipped",
-        result.created, result.updated, result.marked_stale, result.skipped
+        "reindex-bg: {} created, {} updated, {} stale, {} skipped, {} hash-migrated",
+        result.created, result.updated, result.marked_stale, result.skipped, result.hash_migrated
     );
 
     // Mine co-change rows for new commits — same channel `index` and
@@ -60,12 +60,28 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
         );
     }
 
-    // Defer embedding to the background process. Include both file-synced
-    // and code-synced entity IDs.
-    let mut all_synced = file_result.synced_entity_ids;
-    all_synced.extend(result.synced_entity_ids);
-    if !all_synced.is_empty() {
-        crate::cli_embed::spawn_code_embed_background(&storage, &config, &all_synced);
+    // Embed synced + missing-vector entities through embed_synced —
+    // it partitions by entity type: file entities take the knowledge
+    // model inline, code goes inline under 50 / embed-bg above. Passing
+    // file-backed ids to embed-bg directly would store code-model
+    // vectors in the knowledge table — an incompatible vector space.
+    let file_targets = super::embed_targets(
+        &storage,
+        &file_result.synced_entity_ids,
+        cogz::storage::embeddings::EmbeddingSpace::Knowledge,
+    );
+    let code_targets = super::embed_targets(
+        &storage,
+        &result.synced_entity_ids,
+        cogz::storage::embeddings::EmbeddingSpace::Code,
+    );
+    let mut targets = file_targets;
+    targets.extend(code_targets);
+    if !targets.is_empty() {
+        let embedded = crate::cli_embed::embed_synced(&storage, &config, &targets);
+        if embedded > 0 {
+            eprintln!("reindex-bg: {} embedded", embedded);
+        }
     }
 
     Ok(())

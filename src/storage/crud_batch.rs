@@ -6,6 +6,11 @@ use super::StorageError;
 /// whose `file_path` is in `file_paths` as stale. Returns the number
 /// of entities updated. This is a single batched UPDATE — far more
 /// efficient than fetching all entities and updating them in a loop.
+///
+/// Also drops their code embeddings: a stale entity's vector describes
+/// code that no longer exists, so the row is dead weight and would
+/// poison explicit `--status stale` searches. Reappearing entities are
+/// re-embedded by the sync pass that revives them.
 pub fn mark_code_entities_stale_by_file_paths(
     conn: &Connection,
     file_paths: &[String],
@@ -46,6 +51,18 @@ pub fn mark_code_entities_stale_by_file_paths(
         }
 
         total += conn.execute(&sql, params.as_slice())?;
+
+        // The entities we just marked are stale now — drop their
+        // vectors. Stale-scoped (not active-scoped) so it also cleans
+        // embeddings retained by indexes that predate this rule.
+        conn.execute(
+            &format!(
+                "DELETE FROM code_embeddings WHERE entity_id IN (\
+                 SELECT id FROM entities WHERE type IN ({type_placeholders}) \
+                 AND status = 'stale' AND file_path IN ({path_placeholders}))"
+            ),
+            &params[1..],
+        )?;
     }
 
     Ok(total)
@@ -55,6 +72,9 @@ pub fn mark_code_entities_stale_by_file_paths(
 /// updated — the WHERE clause enforces the `active → stale` transition,
 /// which is legal per the status state machine. Returns the count of
 /// entities actually marked stale.
+///
+/// Also drops code embeddings on the marked entities — see
+/// `mark_code_entities_stale_by_file_paths` for the rationale.
 ///
 /// Used by incremental code sync when entities are removed from a
 /// changed file (renamed or deleted within a file that still exists).
@@ -85,6 +105,17 @@ pub fn mark_entities_stale_by_ids(
             params.push(id);
         }
         total += conn.execute(&sql, params.as_slice())?;
+
+        // Type-scoped: the caller contract is code entities, but the
+        // filter makes the embedding drop a no-op if that ever widens.
+        conn.execute(
+            &format!(
+                "DELETE FROM code_embeddings WHERE entity_id IN (\
+                 SELECT id FROM entities WHERE id IN ({placeholders}) \
+                 AND type IN ('function','class','file','module'))"
+            ),
+            &params[1..],
+        )?;
     }
 
     Ok(total)

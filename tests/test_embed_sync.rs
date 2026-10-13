@@ -184,3 +184,54 @@ fn full_sync_with_mock_embedding() {
     assert_eq!(results.len(), 1);
     assert_eq!(results[0].0, *entity_id);
 }
+
+#[test]
+fn ids_missing_embeddings_finds_unembedded_searchable_entities() {
+    use cogz::storage::embeddings::{EmbeddingSpace, ids_missing_embeddings};
+
+    let dir = tempfile::tempdir().unwrap();
+    let storage = setup_storage(dir.path());
+    let mut conn = storage.conn();
+
+    // Active knowledge + code entities with no vectors — must be found.
+    for (id, ty) in [
+        ("k1-0000-0000-0000-000000000001", "knowledge"),
+        ("f1-0000-0000-0000-000000000001", "function"),
+    ] {
+        storage::crud::insert_entity(&conn, &make_entity(id, ty, "T", "body")).unwrap();
+    }
+    // Pruned + rejected tombstones — must NOT be found.
+    for (id, ty, status) in [
+        ("k2-0000-0000-0000-000000000001", "knowledge", "pruned"),
+        ("o1-0000-0000-0000-000000000001", "observation", "rejected"),
+    ] {
+        let mut e = make_entity(id, ty, "T", "body");
+        e.status = status.to_string();
+        storage::crud::insert_entity(&conn, &e).unwrap();
+    }
+    // Stale entities are excluded from the heal set — flagged stales
+    // keep whatever vector they had, tombstone stales never get one.
+    // Verify reactivates → status becomes active → next index heals.
+    let mut stale = make_entity("k3-0000-0000-0000-000000000001", "knowledge", "T", "body");
+    stale.status = "stale".to_string();
+    storage::crud::insert_entity(&conn, &stale).unwrap();
+
+    let missing_k = ids_missing_embeddings(&conn, EmbeddingSpace::Knowledge).unwrap();
+    let missing_c = ids_missing_embeddings(&conn, EmbeddingSpace::Code).unwrap();
+    assert_eq!(
+        missing_k,
+        vec!["k1-0000-0000-0000-000000000001".to_string()]
+    );
+    assert_eq!(
+        missing_c,
+        vec!["f1-0000-0000-0000-000000000001".to_string()]
+    );
+
+    // Storing a vector removes the entity from the heal set.
+    let model = MockEmbeddingModel::new();
+    let cache = EmbeddingCache::new();
+    let e = storage::crud::get_entity(&conn, "k1-0000-0000-0000-000000000001").unwrap();
+    embed_and_store(&mut conn, &model, &cache, &[e]);
+    let missing_k = ids_missing_embeddings(&conn, EmbeddingSpace::Knowledge).unwrap();
+    assert!(missing_k.is_empty());
+}

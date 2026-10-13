@@ -290,6 +290,31 @@ fn mark_entities_stale_by_ids_marks_active_only() {
 }
 
 #[test]
+fn mark_entities_stale_by_ids_drops_code_embeddings() {
+    let conn = setup();
+    insert_entity(&conn, &Entity::new("e1", "function", "foo", "c")).unwrap();
+    insert_entity(&conn, &Entity::new("k1", "knowledge", "K", "c")).unwrap();
+    for (id, ty) in [("e1", "function"), ("k1", "knowledge")] {
+        super::super::embeddings::insert_embedding(&conn, id, ty, &vec![0.1; 768]).unwrap();
+    }
+
+    mark_entities_stale_by_ids(&conn, &["e1".to_string(), "k1".to_string()]).unwrap();
+
+    assert!(
+        super::super::embeddings::get_embedding(&conn, "e1")
+            .unwrap()
+            .is_none(),
+        "stale code entity loses its vector"
+    );
+    assert!(
+        super::super::embeddings::get_embedding(&conn, "k1")
+            .unwrap()
+            .is_some(),
+        "stale file-backed entity keeps its vector"
+    );
+}
+
+#[test]
 fn mark_entities_stale_by_ids_empty_input() {
     let conn = setup();
     let count = mark_entities_stale_by_ids(&conn, &[]).unwrap();

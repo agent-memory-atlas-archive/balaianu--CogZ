@@ -147,6 +147,26 @@ pub fn run_status(repo: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Union freshly-synced entity ids with entities that have no
+/// embedding row — the embed pass heals coverage gaps, not just
+/// freshly-changed entities (model down at index time, dropped
+/// migration rows, interrupted background embed).
+fn embed_targets(
+    storage: &cogz::storage::Storage,
+    synced: &[String],
+    space: cogz::storage::embeddings::EmbeddingSpace,
+) -> Vec<String> {
+    let mut ids: std::collections::BTreeSet<String> = synced.iter().cloned().collect();
+    {
+        let conn = storage.conn();
+        match cogz::storage::embeddings::ids_missing_embeddings(&conn, space) {
+            Ok(missing) => ids.extend(missing),
+            Err(e) => tracing::warn!("missing-embedding scan failed: {e}"),
+        }
+    }
+    ids.into_iter().collect()
+}
+
 pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
     let (config, db_path) = load_config(repo)?;
     let cogz_dir = repo.join(".cogz");
@@ -171,8 +191,13 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         }
     }
 
-    if !result.synced_entity_ids.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &result.synced_entity_ids);
+    let file_targets = embed_targets(
+        &storage,
+        &result.synced_entity_ids,
+        cogz::storage::embeddings::EmbeddingSpace::Knowledge,
+    );
+    if !file_targets.is_empty() {
+        let embedded = cli::embed_synced(&storage, &config, &file_targets);
         if embedded > 0 {
             println!("  Embedded: {}", embedded);
         }
@@ -181,12 +206,21 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
     println!("\nIndexing source code...");
     let code_result = cogz::index::index_code(&storage, repo, &config);
     println!(
-        "  Code entities: {} created, {} updated, {} stale, {} skipped",
-        code_result.created, code_result.updated, code_result.marked_stale, code_result.skipped
+        "  Code entities: {} created, {} updated, {} stale, {} skipped, {} hash-migrated",
+        code_result.created,
+        code_result.updated,
+        code_result.marked_stale,
+        code_result.skipped,
+        code_result.hash_migrated
     );
 
-    if !code_result.synced_entity_ids.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &code_result.synced_entity_ids);
+    let code_targets = embed_targets(
+        &storage,
+        &code_result.synced_entity_ids,
+        cogz::storage::embeddings::EmbeddingSpace::Code,
+    );
+    if !code_targets.is_empty() {
+        let embedded = cli::embed_synced(&storage, &config, &code_targets);
         if embedded > 0 {
             println!("  Code embedded: {}", embedded);
         }
@@ -199,10 +233,15 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         || post.healed > 0
         || post.drifted_entities > 0
         || post.verified_backfilled > 0
+        || post.reanchored > 0
     {
         println!(
-            "  Stale knowledge flagged: {} | drifted: {} | healed: {} | provenance stamped: {}",
-            post.stale_flagged, post.drifted_entities, post.healed, post.verified_backfilled
+            "  Stale knowledge flagged: {} | drifted: {} | healed: {} | provenance stamped: {} | re-anchored: {}",
+            post.stale_flagged,
+            post.drifted_entities,
+            post.healed,
+            post.verified_backfilled,
+            post.reanchored
         );
     }
 
@@ -255,8 +294,13 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
         }
     }
 
-    if !result.synced_entity_ids.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &result.synced_entity_ids);
+    let file_targets = embed_targets(
+        &storage,
+        &result.synced_entity_ids,
+        cogz::storage::embeddings::EmbeddingSpace::Knowledge,
+    );
+    if !file_targets.is_empty() {
+        let embedded = cli::embed_synced(&storage, &config, &file_targets);
         if embedded > 0 {
             println!("  Embedded: {}", embedded);
         }
@@ -271,12 +315,21 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
         println!("  (full scan — no git baseline)");
     }
     println!(
-        "  Code entities: {} created, {} updated, {} stale, {} skipped",
-        code_result.created, code_result.updated, code_result.marked_stale, code_result.skipped
+        "  Code entities: {} created, {} updated, {} stale, {} skipped, {} hash-migrated",
+        code_result.created,
+        code_result.updated,
+        code_result.marked_stale,
+        code_result.skipped,
+        code_result.hash_migrated
     );
 
-    if !code_result.synced_entity_ids.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &code_result.synced_entity_ids);
+    let code_targets = embed_targets(
+        &storage,
+        &code_result.synced_entity_ids,
+        cogz::storage::embeddings::EmbeddingSpace::Code,
+    );
+    if !code_targets.is_empty() {
+        let embedded = cli::embed_synced(&storage, &config, &code_targets);
         if embedded > 0 {
             println!("  Code embedded: {}", embedded);
         }
@@ -285,10 +338,15 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
     sync_cochange_report(&storage, repo)?;
 
     let post = cogz::index::drift::post_index_pass(&storage, &cogz_dir);
-    if post.stale_flagged > 0 || post.healed > 0 || post.drifted_entities > 0 {
+    if post.stale_flagged > 0 || post.healed > 0 || post.drifted_entities > 0 || post.reanchored > 0
+    {
         println!(
-            "  Stale knowledge flagged: {} | drifted: {} | healed: {} | provenance stamped: {}",
-            post.stale_flagged, post.drifted_entities, post.healed, post.verified_backfilled
+            "  Stale knowledge flagged: {} | drifted: {} | healed: {} | provenance stamped: {} | re-anchored: {}",
+            post.stale_flagged,
+            post.drifted_entities,
+            post.healed,
+            post.verified_backfilled,
+            post.reanchored
         );
     }
 

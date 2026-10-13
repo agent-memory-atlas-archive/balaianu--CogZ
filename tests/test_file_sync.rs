@@ -230,6 +230,36 @@ fn sync_incremental_skips_unchanged() {
 }
 
 #[test]
+fn sync_all_skips_unchanged() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    write_file(
+        dir.path(),
+        "knowledge/architecture/overview.md",
+        &knowledge_file(
+            "a1b2c3d4-e5f6-4789-abcd-000000000001",
+            "Overview",
+            "architecture",
+            "Content",
+        ),
+    );
+
+    // Full sync skips unchanged files too — identical bytes produce an
+    // identical row, so a full index must not re-write or re-embed.
+    let result = sync_all(&storage, dir.path());
+    assert_eq!(result.created, 1);
+
+    let result = sync_all(&storage, dir.path());
+    assert_eq!(result.skipped, 1);
+    assert_eq!(result.created, 0);
+    assert_eq!(result.updated, 0);
+
+    // And the skipped entity does not re-enter the embed queue.
+    assert!(result.synced_entity_ids.is_empty());
+}
+
+#[test]
 fn sync_marks_deleted_files_stale() {
     let storage = setup_storage();
     let dir = tempfile::tempdir().unwrap();
@@ -257,6 +287,133 @@ fn sync_marks_deleted_files_stale() {
     let conn = storage.conn();
     let entity = storage::crud::get_entity(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000003").unwrap();
     assert_eq!(entity.status, "stale");
+}
+
+#[test]
+fn sync_drops_embeddings_for_deleted_files_active_and_stale() {
+    use cogz::embed::{EmbeddingCache, MockEmbeddingModel};
+    use cogz::files::embed_sync::{embed_entities, store_embeddings};
+
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    let path_a = write_file(
+        dir.path(),
+        "rules/rule-a.md",
+        &rule_file("a1b2c3d4-e5f6-4789-abcd-000000000004", "Rule A", "body a"),
+    );
+    let path_b = write_file(
+        dir.path(),
+        "rules/rule-b.md",
+        &rule_file("a1b2c3d4-e5f6-4789-abcd-000000000005", "Rule B", "body b"),
+    );
+    sync_all(&storage, dir.path());
+
+    let model = MockEmbeddingModel::new();
+    let cache = EmbeddingCache::new();
+    let entities: Vec<_> = {
+        let conn = storage.conn();
+        [
+            "a1b2c3d4-e5f6-4789-abcd-000000000004",
+            "a1b2c3d4-e5f6-4789-abcd-000000000005",
+        ]
+        .iter()
+        .map(|id| storage::crud::get_entity(&conn, id).unwrap())
+        .collect()
+    };
+    let embeddings = embed_entities(&model, &cache, &entities);
+    {
+        let mut conn = storage.conn();
+        store_embeddings(&mut conn, &embeddings);
+    }
+
+    // Stale B file-first (stale_reason written to frontmatter), resync —
+    // file still exists, so the vector is kept.
+    let stale_b = rule_file("a1b2c3d4-e5f6-4789-abcd-000000000005", "Rule B", "body b").replace(
+        "status: active",
+        "status: stale\nstale_reason: code_orphaned",
+    );
+    write_file(dir.path(), "rules/rule-b.md", &stale_b);
+    sync_all(&storage, dir.path());
+    {
+        let conn = storage.conn();
+        let e = storage::crud::get_entity(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000005").unwrap();
+        assert_eq!(e.status, "stale");
+        assert!(
+            storage::embeddings::get_embedding(&conn, &e.id)
+                .unwrap()
+                .is_some()
+        );
+    }
+
+    // Delete both files: A transitions active→stale and drops its
+    // vector; B was already stale and must drop it too.
+    std::fs::remove_file(&path_a).unwrap();
+    std::fs::remove_file(&path_b).unwrap();
+    sync_all(&storage, dir.path());
+
+    let conn = storage.conn();
+    for id in [
+        "a1b2c3d4-e5f6-4789-abcd-000000000004",
+        "a1b2c3d4-e5f6-4789-abcd-000000000005",
+    ] {
+        let e = storage::crud::get_entity(&conn, id).unwrap();
+        assert_eq!(e.status, "stale");
+        assert!(
+            storage::embeddings::get_embedding(&conn, id)
+                .unwrap()
+                .is_none()
+        );
+    }
+}
+
+#[test]
+fn sync_reactivates_restored_file_marked_stale_by_deletion() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    let path = write_file(
+        dir.path(),
+        "rules/test-rule.md",
+        &rule_file(
+            "a1b2c3d4-e5f6-4789-abcd-000000000003",
+            "Test Rule",
+            "Rule body",
+        ),
+    );
+    sync_all(&storage, dir.path());
+
+    // Deletion marks the row stale DB-side only — the file was gone,
+    // so its frontmatter still declares active.
+    std::fs::remove_file(&path).unwrap();
+    sync_all(&storage, dir.path());
+    {
+        let conn = storage.conn();
+        assert_eq!(
+            storage::crud::get_entity(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000003")
+                .unwrap()
+                .status,
+            "stale"
+        );
+    }
+
+    // Restoring the identical file must converge DB → file (active),
+    // not stay skipped on the matching hash.
+    write_file(
+        dir.path(),
+        "rules/test-rule.md",
+        &rule_file(
+            "a1b2c3d4-e5f6-4789-abcd-000000000003",
+            "Test Rule",
+            "Rule body",
+        ),
+    );
+    let result = sync_all(&storage, dir.path());
+    assert_eq!(result.updated, 1);
+
+    let conn = storage.conn();
+    let entity = storage::crud::get_entity(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000003").unwrap();
+    assert_eq!(entity.status, "active");
 }
 
 #[test]

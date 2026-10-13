@@ -80,6 +80,21 @@ pub fn embed_synced(storage: &Storage, config: &Config, entity_ids: &[String]) -
         return embed_code_inline(&code_entities, config, &cache, storage) + all_embeddings.len();
     }
 
+    // Gate the spawn on model presence, same as the inline path —
+    // without it a model-less corpus would spawn a process that exits
+    // immediately on every index.
+    let code_model = OnnxEmbeddingModel::with_resource_config(
+        ModelType::Code,
+        &models_dir,
+        config.embedding.dimension,
+        &config.embedding.code_model,
+        config.embedding.model_idle_ttl,
+        config.embedding.model_min_free_mb,
+    );
+    if !code_model.model_files_exist() {
+        return all_embeddings.len();
+    }
+
     // Defer code embedding to a background process.
     let code_ids: Vec<String> = code_entities.iter().map(|e| e.id.clone()).collect();
     spawn_code_embed_background(storage, config, &code_ids);

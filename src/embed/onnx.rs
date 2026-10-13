@@ -311,6 +311,22 @@ impl EmbeddingModel for OnnxEmbeddingModel {
 
         self.try_load()?;
 
+        // CodeRankEmbed's int8 kernels are not batch-invariant: the
+        // same text drifts 0.03–0.09 cosine between batch sizes and
+        // compositions (measured on real corpora), while queries
+        // always embed solo. Per-text inference keeps stored vectors
+        // canonical — deterministic across indexing patterns and
+        // consistent with the query side — and is no slower on
+        // measured corpora since code entities truncate to 512 and
+        // every batch runs max-size attention anyway.
+        if self.model_type == ModelType::Code {
+            let mut all_results = Vec::with_capacity(texts.len());
+            for &text in texts {
+                all_results.extend(self.embed_chunk(&[text])?);
+            }
+            return Ok(all_results);
+        }
+
         // Process in chunks to avoid excessive memory use on large
         // batches. 32 balances throughput and memory for 512-token
         // sequences with 768-dim embeddings. Larger batches (64+)

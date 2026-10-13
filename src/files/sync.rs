@@ -144,15 +144,17 @@ pub fn scan_entity_files(cogz_dir: &Path) -> Vec<PathBuf> {
 
 /// Full sync: scan all entity files and sync them to the database.
 /// Also marks DB entities whose files have been deleted as stale.
+/// Files whose stored hash matches are skipped — scanning is always
+/// full-coverage, but writes and re-embeds only happen on change.
 pub fn sync_all(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
-    sync_inner(storage, cogz_dir, false)
+    sync_inner(storage, cogz_dir)
 }
 
-/// Incremental sync: only process files that have changed (different
-/// content hash) or are new. More efficient than full sync when most
-/// files haven't changed.
+/// Incremental sync entry point. Same hash-gated semantics as
+/// `sync_all` — kept as a distinct name because callers use it to
+/// express intent (hook/reindex paths).
 pub fn sync_incremental(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
-    sync_inner(storage, cogz_dir, true)
+    sync_inner(storage, cogz_dir)
 }
 
 /// Sync a single entity file to the DB. Used by the file_save hook
@@ -226,7 +228,7 @@ pub fn sync_single_file(
                 return result;
             }
         };
-        match sync_parsed_file(&tx, &entity_file, &hash, &relative_path, true) {
+        match sync_parsed_file(&tx, &entity_file, &hash, &relative_path) {
             Ok(action) => {
                 let was_skipped = action == SyncAction::Skipped;
                 record_action(&mut result, action, &entity_file.id);
@@ -258,13 +260,14 @@ pub fn sync_single_file(
     result
 }
 
-/// Shared sync implementation. When `incremental` is true, files whose
-/// content hash hasn't changed are skipped.
+/// Shared sync implementation. Every file is scanned and parsed; files
+/// whose content hash matches the stored row are skipped, so unchanged
+/// files cost a parse but no DB write and no re-embed.
 ///
 /// File reads happen without holding the storage mutex; DB operations
 /// acquire it in a second phase. This avoids blocking other callers
 /// during filesystem I/O.
-fn sync_inner(storage: &storage::Storage, cogz_dir: &Path, incremental: bool) -> SyncResult {
+fn sync_inner(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
     let mut result = SyncResult::default();
 
     // Phase 1: scan and parse all files (no lock held).
@@ -315,7 +318,7 @@ fn sync_inner(storage: &storage::Storage, cogz_dir: &Path, incremental: bool) ->
     let mut all_parsed_files: Vec<EntityFile> = Vec::new();
 
     for (file_path, ef, hash, rel_path) in &parsed {
-        match sync_parsed_file(&tx, ef, hash, rel_path, incremental) {
+        match sync_parsed_file(&tx, ef, hash, rel_path) {
             Ok(action) => {
                 record_action(&mut result, action, &ef.id);
                 seen_ids.insert(ef.id.clone(), file_path.clone());

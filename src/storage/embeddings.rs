@@ -135,6 +135,35 @@ pub fn get_code_embeddings_batch(
     get_embeddings_batch_from(conn, "code_embeddings", entity_ids)
 }
 
+/// Entity ids that should carry a vector but have none — the heal
+/// set for embed passes, which otherwise only see freshly synced ids.
+/// Covers entities whose embedding was never written (model absent at
+/// index time, dropped migration rows, interrupted background embed).
+/// Active-only: stale entities are excluded — stale-with-live-file
+/// entities keep their existing vector, and stale tombstones whose
+/// content is gone never get one.
+pub fn ids_missing_embeddings(
+    conn: &Connection,
+    space: EmbeddingSpace,
+) -> Result<Vec<String>, StorageError> {
+    let types = match space {
+        EmbeddingSpace::Code => "'function','class','file','module'",
+        EmbeddingSpace::Knowledge => "'observation','rule','knowledge'",
+    };
+    let sql = format!(
+        "SELECT id FROM entities \
+         WHERE type IN ({types}) AND status = 'active' \
+         AND id NOT IN (SELECT entity_id FROM {}) \
+         ORDER BY id",
+        space.table()
+    );
+    let mut stmt = conn.prepare(&sql)?;
+    let ids = stmt
+        .query_map([], |r| r.get(0))?
+        .collect::<Result<Vec<String>, _>>()?;
+    Ok(ids)
+}
+
 fn get_embeddings_batch_from(
     conn: &Connection,
     table: &str,

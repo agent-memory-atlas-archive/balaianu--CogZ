@@ -36,12 +36,14 @@ pub(crate) fn read_and_parse(
 }
 
 /// Sync a parsed entity file to the DB. Requires the storage lock.
+/// Files whose stored content hash matches are skipped — identical
+/// bytes produce an identical entity row, so re-writing is dead work
+/// and re-embedding is expensive churn.
 pub(crate) fn sync_parsed_file(
     conn: &rusqlite::Connection,
     entity_file: &EntityFile,
     hash: &str,
     relative_path: &str,
-    incremental: bool,
 ) -> Result<SyncAction, SyncError> {
     // A pruned file is a tombstone — terminal status, empty title and
     // body. Reject files that claim pruned while still carrying
@@ -60,7 +62,14 @@ pub(crate) fn sync_parsed_file(
 
     match storage::crud::get_entity(conn, &entity_file.id) {
         Ok(existing) => {
-            if incremental && existing.content_hash.as_deref() == Some(hash) {
+            // Hash equality normally implies identical declared state —
+            // except when the DB row was marked stale while the file was
+            // missing (the only DB-only status write: the file can't be
+            // updated when it's gone). A restored file is canonical:
+            // falling through to Updated resyncs status and re-embeds.
+            if existing.content_hash.as_deref() == Some(hash)
+                && existing.status == entity_file.status
+            {
                 return Ok(SyncAction::Skipped);
             }
             let content_changed = existing.content != entity_file.body;
@@ -187,14 +196,33 @@ pub(crate) fn mark_deleted_as_stale(
             Some(fp) => cogz_dir.join(fp),
             None => continue,
         };
-        if !disk_paths.contains(&entity_path) && entity.status == "active" {
-            match storage::crud::update_status(conn, &entity.id, "stale") {
+        if disk_paths.contains(&entity_path) {
+            continue;
+        }
+        match entity.status.as_str() {
+            "active" => match storage::crud::update_status(conn, &entity.id, "stale") {
                 Ok(()) => result.marked_stale += 1,
-                Err(error) => result.errors.push(SyncFailure {
-                    file_path: PathBuf::from(entity.file_path.unwrap_or_default()),
-                    error: SyncError::Storage(error),
-                }),
-            }
+                Err(error) => {
+                    result.errors.push(SyncFailure {
+                        file_path: PathBuf::from(entity.file_path.unwrap_or_default()),
+                        error: SyncError::Storage(error),
+                    });
+                    continue;
+                }
+            },
+            // Already stale — the file existed when it was flagged, so
+            // its vector was kept. Now the file is gone too.
+            "stale" => {}
+            _ => continue,
+        }
+        // The file is gone — the vector describes content that no
+        // longer exists canonically. Drop it; a restored file re-embeds
+        // through the normal sync path.
+        if let Err(e) = storage::embeddings::delete_embedding(conn, &entity.id) {
+            tracing::warn!(
+                "failed to drop embedding for deleted-file entity {}: {e}",
+                entity.id
+            );
         }
     }
 }
