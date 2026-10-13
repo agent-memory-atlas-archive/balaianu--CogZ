@@ -135,6 +135,12 @@ enum Commands {
         /// for the co-change channel.
         #[arg(long)]
         before: Option<i64>,
+
+        /// Inspection mode: read results without recording usage
+        /// telemetry (access counts, delivery rows). Use for humans
+        /// or tooling that look at results without consuming them.
+        #[arg(long)]
+        no_record: bool,
     },
 
     /// Assemble a context pack for agent consumption.
@@ -158,6 +164,12 @@ enum Commands {
         /// Override the token budget from config.
         #[arg(long)]
         max_tokens: Option<usize>,
+
+        /// Inspection mode: assemble the pack without recording usage
+        /// telemetry or closing open deliveries. Use for humans or
+        /// tooling that inspect packs without injecting them.
+        #[arg(long)]
+        no_record: bool,
     },
 
     /// List mined observation candidates — the review surface the
@@ -483,6 +495,7 @@ fn main() -> anyhow::Result<()> {
             no_expand,
             code,
             before,
+            no_record,
         } => cli::run_search(
             &query,
             &repo,
@@ -492,6 +505,7 @@ fn main() -> anyhow::Result<()> {
             no_expand,
             code,
             before,
+            no_record,
         ),
         Commands::Context {
             mode,
@@ -499,7 +513,15 @@ fn main() -> anyhow::Result<()> {
             repo,
             include_stale,
             max_tokens,
-        } => cli::run_context(&mode, query.as_deref(), &repo, include_stale, max_tokens),
+            no_record,
+        } => cli::run_context(
+            &mode,
+            query.as_deref(),
+            &repo,
+            include_stale,
+            max_tokens,
+            no_record,
+        ),
         Commands::Suggest { repo, days, limit } => cli_events::run_suggest(&repo, days, limit),
         Commands::McpStdio => cli_events::run_mcp_stdio(),
         Commands::Consolidate { repo, dry_run } => commands::run_consolidate(&repo, dry_run),
@@ -567,7 +589,8 @@ fn main() -> anyhow::Result<()> {
             repo,
             prune_observations,
             confirm,
-        } => commands::run_doctor(&repo, prune_observations, confirm),
+            verify,
+        } => commands::run_doctor(&repo, prune_observations, confirm, verify),
         Commands::Update { check } => {
             if check {
                 match cogz::update::check_latest_version() {

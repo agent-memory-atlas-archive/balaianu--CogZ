@@ -18,6 +18,7 @@ pub fn run_search(
     no_expand: bool,
     code: bool,
     before: Option<i64>,
+    no_record: bool,
 ) -> anyhow::Result<()> {
     let cogz_dir = repo.join(".cogz");
     let config_path = cogz_dir.join("config.toml");
@@ -70,6 +71,7 @@ pub fn run_search(
         silence_gate: true,
         window_quota: true,
         before_ts: before,
+        record_usage: !no_record,
     };
 
     let results = {
@@ -77,54 +79,57 @@ pub fn run_search(
         let results = cogz::search::search(&conn, query, embeddings, &params, &config.search)?;
         // Same usage tracking as the MCP path — a CLI pull is still a
         // pull. Best-effort: tracking failure must not fail the search.
-        let delivered: Vec<(String, cogz::storage::usage::DeliveryTier)> = results
-            .results
-            .iter()
-            .map(|r| {
-                (
-                    r.entity.id.clone(),
-                    cogz::storage::usage::DeliveryTier::Full,
-                )
-            })
-            .collect();
-        match cogz::storage::usage::record_delivery(
-            &conn,
-            cogz::storage::usage::DeliveryKind::Search,
-            None,
-        ) {
-            Ok(delivery_id) => {
-                if let Err(e) =
-                    cogz::storage::usage::record_delivered(&conn, delivery_id, &delivered)
-                {
-                    eprintln!("usage tracking: record delivered failed: {e}");
+        // Inspection runs (--no-record) skip it entirely.
+        if !no_record {
+            let delivered: Vec<(String, cogz::storage::usage::DeliveryTier)> = results
+                .results
+                .iter()
+                .map(|r| {
+                    (
+                        r.entity.id.clone(),
+                        cogz::storage::usage::DeliveryTier::Full,
+                    )
+                })
+                .collect();
+            match cogz::storage::usage::record_delivery(
+                &conn,
+                cogz::storage::usage::DeliveryKind::Search,
+                None,
+            ) {
+                Ok(delivery_id) => {
+                    if let Err(e) =
+                        cogz::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                    {
+                        eprintln!("usage tracking: record delivered failed: {e}");
+                    }
                 }
+                Err(e) => eprintln!("usage tracking: record delivery failed: {e}"),
             }
-            Err(e) => eprintln!("usage tracking: record delivery failed: {e}"),
-        }
-        let result_ids: Vec<String> = results
-            .results
-            .iter()
-            .map(|r| r.entity.id.clone())
-            .collect();
-        if let Err(e) = cogz::storage::usage::record_pointer_conversions(&conn, &result_ids) {
-            eprintln!("usage tracking: pointer conversion failed: {e}");
-        }
+            let result_ids: Vec<String> = results
+                .results
+                .iter()
+                .map(|r| r.entity.id.clone())
+                .collect();
+            if let Err(e) = cogz::storage::usage::record_pointer_conversions(&conn, &result_ids) {
+                eprintln!("usage tracking: pointer conversion failed: {e}");
+            }
 
-        // Query telemetry — the MCP path logs the same event. CLI
-        // searches are the more common path in practice; without this
-        // the search_miss mining signal starves.
-        if let Err(e) = cogz::storage::events::record_event(
-            &conn,
-            cogz::storage::events::EventType::SearchPerformed,
-            None,
-            &serde_json::json!({
-                "query": query,
-                "returned": results.results.len(),
-                "filtered": results.filtered_count,
-                "code_search": code,
-            }),
-        ) {
-            eprintln!("search_performed event: {e}");
+            // Query telemetry — the MCP path logs the same event. CLI
+            // searches are the more common path in practice; without this
+            // the search_miss mining signal starves.
+            if let Err(e) = cogz::storage::events::record_event(
+                &conn,
+                cogz::storage::events::EventType::SearchPerformed,
+                None,
+                &serde_json::json!({
+                    "query": query,
+                    "returned": results.results.len(),
+                    "filtered": results.filtered_count,
+                    "code_search": code,
+                }),
+            ) {
+                eprintln!("search_performed event: {e}");
+            }
         }
         results
     };
@@ -181,6 +186,7 @@ pub fn run_context(
     repo: &std::path::Path,
     include_stale: bool,
     max_tokens: Option<usize>,
+    no_record: bool,
 ) -> anyhow::Result<()> {
     use cogz::context::{AssembleError, ContextMode};
 
@@ -227,12 +233,15 @@ pub fn run_context(
         code_embedding: code_embedding.as_deref(),
         max_tokens,
         include_stale,
+        record_usage: !no_record,
     };
 
     let pack = {
         let conn = storage.conn();
         // A pulled pack is the same delivery boundary as a pushed one.
-        if let Err(e) = cogz::storage::usage::close_open_deliveries(&conn) {
+        // Inspection runs (--no-record) never close deliveries — a read
+        // must not resolve pending usage as misses.
+        if !no_record && let Err(e) = cogz::storage::usage::close_open_deliveries(&conn) {
             eprintln!("usage tracking: close deliveries failed: {e}");
         }
         let pack =
@@ -242,30 +251,32 @@ pub fn run_context(
                 }
                 other => anyhow::anyhow!("{other}"),
             })?;
-        let mut delivered: Vec<(String, cogz::storage::usage::DeliveryTier)> = pack
-            .sections
-            .iter()
-            .map(|s| (s.entity_id.clone(), s.tier))
-            .collect();
-        delivered.extend(
-            pack.metadata
-                .pointer_ids
+        if !no_record {
+            let mut delivered: Vec<(String, cogz::storage::usage::DeliveryTier)> = pack
+                .sections
                 .iter()
-                .map(|id| (id.clone(), cogz::storage::usage::DeliveryTier::Pointer)),
-        );
-        match cogz::storage::usage::record_delivery(
-            &conn,
-            cogz::storage::usage::DeliveryKind::Pack,
-            None,
-        ) {
-            Ok(delivery_id) => {
-                if let Err(e) =
-                    cogz::storage::usage::record_delivered(&conn, delivery_id, &delivered)
-                {
-                    eprintln!("usage tracking: record delivered failed: {e}");
+                .map(|s| (s.entity_id.clone(), s.tier))
+                .collect();
+            delivered.extend(
+                pack.metadata
+                    .pointer_ids
+                    .iter()
+                    .map(|id| (id.clone(), cogz::storage::usage::DeliveryTier::Pointer)),
+            );
+            match cogz::storage::usage::record_delivery(
+                &conn,
+                cogz::storage::usage::DeliveryKind::Pack,
+                None,
+            ) {
+                Ok(delivery_id) => {
+                    if let Err(e) =
+                        cogz::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                    {
+                        eprintln!("usage tracking: record delivered failed: {e}");
+                    }
                 }
+                Err(e) => eprintln!("usage tracking: record delivery failed: {e}"),
             }
-            Err(e) => eprintln!("usage tracking: record delivery failed: {e}"),
         }
         pack
     };

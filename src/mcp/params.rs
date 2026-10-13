@@ -215,6 +215,11 @@ pub struct SearchToolParams {
     /// the co-change channel.
     #[serde(default)]
     pub before: Option<i64>,
+    /// Record this call as a delivery in usage telemetry. Defaults to
+    /// true — pass false for inspection reads that must not bump
+    /// access counts, open deliveries, or feed mining signals.
+    #[serde(default)]
+    pub record: Option<bool>,
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]
@@ -229,6 +234,11 @@ pub struct GetContextParams {
     pub include_stale: Option<bool>,
     #[serde(default)]
     pub max_tokens: Option<usize>,
+    /// Record this call as a delivery in usage telemetry. Defaults to
+    /// true — pass false to inspect a pack without bumping access
+    /// counts, opening a delivery, or closing pending usage as misses.
+    #[serde(default)]
+    pub record: Option<bool>,
 }
 
 #[derive(Debug, serde::Deserialize, schemars::JsonSchema)]

@@ -124,20 +124,6 @@ pub struct SearchConfig {
     /// Defaults to true; set false for the legacy flat-decay behavior.
     #[serde(default = "default_true")]
     pub edge_weighted_expansion: bool,
-    /// Silence gate: when neither channel's KNN batch shows a
-    /// distinctive match (within-batch gradient below this on both),
-    /// search returns empty rather than a confident-looking list of
-    /// irrelevant entities. Model-agnostic (relative spread, not
-    /// absolute cosine). 0.0 disables. Skipped in FTS-only mode —
-    /// with no embeddings there is no signal to judge by.
-    /// Calibrated across two corpora (CogZ self + telegram-bot):
-    /// negatives measured ≤0.039 max gradient, real queries escape via
-    /// the strength floor or a channel gradient ≥0.043 → 0.05 covers
-    /// the observed negatives while the strength floor protects real
-    /// queries. Thin margin; recalibrate via `signals` in the response
-    /// when changing embedding models.
-    #[serde(default = "default_silence_threshold")]
-    pub silence_threshold: f64,
     /// Minority-channel slot guarantee: when a channel's share of the
     /// merge weight is at least this value, its best result is
     /// promoted into the top-5 window if ranking pushed it out.
@@ -202,14 +188,17 @@ pub struct SearchConfig {
     /// RRF weight for the graph candidate channel in the merge.
     #[serde(default = "default_graph_weight")]
     pub graph_weight: f64,
-    /// Absolute-strength escape hatch for the silence gate: even when
-    /// within-batch gradients are flat, a channel whose top-3 cosine
-    /// reaches this floor counts as a real match and prevents
-    /// silencing. Model-scale dependent — measured on
-    /// bge-base/CodeRankEmbed where real matches sit ≥0.65 and
-    /// negatives ≤0.66.
-    #[serde(default = "default_silence_strength_floor")]
-    pub silence_strength_floor: f64,
+    /// Answer-evidence floor for the silence gate: silence when the
+    /// IDF-weighted share of the query's content terms found in the
+    /// fused top-K text drops below this. Embedding strength measures
+    /// topical proximity, not answerability — this is the lexical
+    /// check that the returned text actually carries the query's
+    /// discriminating terms. Runs in FTS-only mode too (needs no
+    /// embeddings). Measured across 4 corpora × 105 queries:
+    /// negatives mean 0.40, positives 0.85 — 0.45 keeps ~96% of
+    /// answerable queries while silencing ~2/3 of unanswerable ones.
+    #[serde(default = "default_silence_coverage_floor")]
+    pub silence_coverage_floor: f64,
     /// Pseudo-relevance feedback: mine informative terms from the top
     /// FTS hits and run a second, expanded FTS pass whose novel hits
     /// join the expansion set — they count for recall but can never
@@ -277,10 +266,6 @@ fn default_min_relevance() -> f64 {
     0.05
 }
 
-fn default_silence_threshold() -> f64 {
-    0.05
-}
-
 fn default_top_diversity_share() -> f64 {
     0.2
 }
@@ -321,8 +306,8 @@ fn default_graph_weight() -> f64 {
     0.35
 }
 
-fn default_silence_strength_floor() -> f64 {
-    0.66
+fn default_silence_coverage_floor() -> f64 {
+    0.45
 }
 
 fn default_prf_feedback_docs() -> usize {
@@ -499,7 +484,6 @@ impl Config {
                 merge_strategy: default_merge_strategy(),
                 min_relevance: default_min_relevance(),
                 edge_weighted_expansion: default_true(),
-                silence_threshold: default_silence_threshold(),
                 top_diversity_share: default_top_diversity_share(),
                 calibration: CalibrationConfig::default(),
                 provenance_boost: default_provenance_boost(),
@@ -511,7 +495,7 @@ impl Config {
                 graph_max_hops: default_graph_max_hops(),
                 graph_hop_decay: default_graph_hop_decay(),
                 graph_weight: default_graph_weight(),
-                silence_strength_floor: default_silence_strength_floor(),
+                silence_coverage_floor: default_silence_coverage_floor(),
                 prf_enabled: default_true(),
                 prf_feedback_docs: default_prf_feedback_docs(),
                 prf_max_terms: default_prf_max_terms(),

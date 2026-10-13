@@ -27,6 +27,7 @@ pub(super) fn cold_start_sections(
     conn: &Connection,
     config: &Config,
     status: Option<&str>,
+    record_usage: bool,
 ) -> Result<Vec<ContextSection>, AssembleError> {
     let now = chrono::Utc::now();
     let weights = crate::search::scoring::ScoreWeights::default();
@@ -114,16 +115,19 @@ pub(super) fn cold_start_sections(
 
     // Increment access counts for included rules and knowledge so the
     // frequency component of composite scoring reflects cold-start
-    // usage, not just search usage.
-    let accessed: Vec<String> = sections
-        .iter()
-        .filter(|s| s.source == "rule" || s.source == "knowledge")
-        .map(|s| s.entity_id.clone())
-        .collect();
-    if !accessed.is_empty()
-        && let Err(e) = crate::storage::access::increment_access_batch(conn, &accessed)
-    {
-        tracing::warn!("failed to increment access counts: {e}");
+    // usage, not just search usage. Inspection assemblies skip the
+    // bump — a read must not reshape the ranking signal it reads back.
+    if record_usage {
+        let accessed: Vec<String> = sections
+            .iter()
+            .filter(|s| s.source == "rule" || s.source == "knowledge")
+            .map(|s| s.entity_id.clone())
+            .collect();
+        if !accessed.is_empty()
+            && let Err(e) = crate::storage::access::increment_access_batch(conn, &accessed)
+        {
+            tracing::warn!("failed to increment access counts: {e}");
+        }
     }
 
     Ok(sections)

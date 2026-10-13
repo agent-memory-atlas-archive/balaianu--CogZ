@@ -27,6 +27,7 @@ use crate::storage::query::fts_search;
 use super::QueryEmbeddings;
 use super::SearchError;
 use super::balance::{channel_strength, mean_top_k_similarity};
+use super::coverage;
 use super::describe::build_path_descriptions_batch;
 use super::expand::{edge_weight, expand_with_paths};
 use super::graph_retrieval::graph_retrieve;
@@ -364,40 +365,9 @@ pub fn search(
             knowledge_strength: channel_strength(&knowledge_distances),
             code_gradient: mean_top_k_similarity(&code_distances, 5),
             knowledge_gradient: mean_top_k_similarity(&knowledge_distances, 5),
+            answer_coverage: None,
         })
     };
-
-    // 5c. Silence gate: when no embedding space produced a distinctive
-    //     match, the honest answer is an empty result — not a
-    //     normalized list of garbage. Silence requires BOTH signals to
-    //     be absent: flat within-batch gradient AND top-3 absolute
-    //     strength below the floor. Gradient alone misfires on queries
-    //     whose nearest neighbors are uniformly decent (flat spread,
-    //     real matches) — strength is the check that nothing is close.
-    //     FTS-only skips the gate: with no vector signal there is
-    //     nothing to judge by.
-    //
-    //     The gate also yields to any FTS hit: lexical matches are
-    //     evidence the query is answerable — silencing them produced
-    //     "Results: 0" for literal title queries whose generic words
-    //     score weakly in embedding space. BM25-ranked loose matches
-    //     are still the system's best answer.
-    if params.silence_gate
-        && fts_entities.is_empty()
-        && let Some(s) = &signals
-        && hybrid_helpers::should_silence(
-            s,
-            config.silence_threshold,
-            config.silence_strength_floor,
-        )
-    {
-        return Ok(SearchResults {
-            results: Vec::new(),
-            search_mode,
-            filtered_count: fts_entities.len() + code_ids.len() + knowledge_ids.len(),
-            signals: Some(s.clone()),
-        });
-    }
 
     // 6. Resolve per-channel merge weights for the configured
     //    strategy (see rank::resolve_channel_weights).
@@ -533,13 +503,43 @@ pub fn search(
         })
         .collect();
 
+    // 10a. Answer-evidence gate: the fused head must actually carry
+    //     the query's discriminating terms. Embedding strength is
+    //     topical proximity — on a large corpus an unrelated query
+    //     always finds a confident-looking neighbor. Coverage is the
+    //     lexical check that what we would return contains the
+    //     answer-bearing vocabulary. Runs in FTS-only mode too (the
+    //     signal needs no embeddings) and subsumes the pre-fusion FTS
+    //     yield: a real lexical hit lands in the fused head, so its
+    //     terms are covered; a loose match on generic words is not.
+    let mut signals = signals;
+    if params.silence_gate {
+        let head: Vec<&Entity> = results.iter().map(|r| &r.entity).collect();
+        let cov = coverage::answer_coverage(conn, query, &head)?;
+        let mut sig = signals.take().unwrap_or_default();
+        sig.answer_coverage = Some(cov);
+        signals = Some(sig);
+        if cov < config.silence_coverage_floor {
+            return Ok(SearchResults {
+                results: Vec::new(),
+                search_mode,
+                filtered_count,
+                signals,
+            });
+        }
+    }
+
     // Track access counts for direct results only (derived state for
     // composite scoring). Graph expansions are context, not retrieval.
-    let accessed_ids: Vec<String> = results.iter().map(|r| r.entity.id.clone()).collect();
-    if !accessed_ids.is_empty()
-        && let Err(e) = crate::storage::access::increment_access_batch(conn, &accessed_ids)
-    {
-        tracing::warn!("failed to increment access counts: {e}");
+    // Inspection searches skip the bump — a read must not reshape the
+    // ranking signal it reads back.
+    if params.record_usage {
+        let accessed_ids: Vec<String> = results.iter().map(|r| r.entity.id.clone()).collect();
+        if !accessed_ids.is_empty()
+            && let Err(e) = crate::storage::access::increment_access_batch(conn, &accessed_ids)
+        {
+            tracing::warn!("failed to increment access counts: {e}");
+        }
     }
 
     // Extend with expanded results after access tracking.

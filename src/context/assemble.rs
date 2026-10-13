@@ -34,7 +34,7 @@ pub enum AssembleError {
 }
 
 /// Parameters for context assembly.
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct AssembleParams<'a> {
     pub mode: ContextMode,
     pub query: Option<&'a str>,
@@ -46,6 +46,27 @@ pub struct AssembleParams<'a> {
     pub code_embedding: Option<&'a [f32]>,
     /// Include stale entities in the pack.
     pub include_stale: bool,
+    /// Whether this assembly may write usage telemetry — access-count
+    /// bumps on baseline entities, delivery rows, and delivery-boundary
+    /// closes. Real deliveries (hooks, agent pulls) pass true;
+    /// inspection paths (a human reading a pack) pass false so looking
+    /// at a pack does not reshape future packs or corrupt hit-rate
+    /// measurement.
+    pub record_usage: bool,
+}
+
+impl Default for AssembleParams<'_> {
+    fn default() -> Self {
+        Self {
+            mode: ContextMode::Task,
+            query: None,
+            max_tokens: None,
+            knowledge_embedding: None,
+            code_embedding: None,
+            include_stale: false,
+            record_usage: true,
+        }
+    }
 }
 
 /// Assemble a context pack.
@@ -78,7 +99,8 @@ pub fn assemble_context(
 
     let (mut sections, search_mode, full_content, signals) = match params.mode {
         ContextMode::ColdStart => {
-            let sections = cold_start_sections(conn, config, cold_start_status)?;
+            let sections =
+                cold_start_sections(conn, config, cold_start_status, params.record_usage)?;
             (sections, SearchMode::FtsOnly, HashMap::new(), None)
         }
         ContextMode::Task | ContextMode::Escalation => {
@@ -111,6 +133,7 @@ pub fn assemble_context(
                 max_hops,
                 search_status,
                 &config.search,
+                params.record_usage,
             )?
         }
     };

@@ -25,7 +25,6 @@ fn default_config() -> SearchConfig {
         merge_strategy: "strength".to_string(),
         min_relevance: 0.05,
         edge_weighted_expansion: true,
-        silence_threshold: 0.0,
         top_diversity_share: 0.0,
         calibration: cogz::config::CalibrationConfig::default(),
         provenance_boost: 0.0,
@@ -37,7 +36,7 @@ fn default_config() -> SearchConfig {
         graph_max_hops: 2,
         graph_hop_decay: 0.5,
         graph_weight: 0.35,
-        silence_strength_floor: 0.64,
+        silence_coverage_floor: 0.45,
         prf_enabled: false,
         prf_feedback_docs: 5,
         prf_max_terms: 8,
@@ -721,5 +720,129 @@ fn search_expansion_deduplicates_across_seeds() {
     assert_eq!(
         shared_count, 1,
         "expanded entity reachable from multiple seeds appears only once"
+    );
+}
+
+#[test]
+fn coverage_gate_silences_unanswerable_query() {
+    let storage = setup_storage();
+    let conn = storage.conn();
+    let model = MockEmbeddingModel::new();
+
+    insert_with_embedding(
+        &conn,
+        &model,
+        "p1",
+        "function",
+        "parse_args",
+        "fn parse_args() { tokenize the command line into flags }",
+    );
+    insert_with_embedding(
+        &conn,
+        &model,
+        "p2",
+        "function",
+        "build_command",
+        "fn build_command() { assemble the clap Command builder }",
+    );
+
+    // Query vocabulary absent from the corpus → coverage 0 → silence,
+    // even though KNN would happily return the nearest neighbors.
+    let params = SearchParams {
+        limit: 20,
+        expand: false,
+        ..Default::default()
+    };
+    let results = search(
+        &conn,
+        "quantum entanglement routing protocol",
+        QueryEmbeddings::none(),
+        &params,
+        &default_config(),
+    )
+    .unwrap();
+    assert!(
+        results.results.is_empty(),
+        "uncovered query must silence, got {} results",
+        results.results.len()
+    );
+    assert_eq!(results.signals.and_then(|s| s.answer_coverage), Some(0.0));
+}
+
+#[test]
+fn coverage_gate_passes_answerable_query() {
+    let storage = setup_storage();
+    let conn = storage.conn();
+    let model = MockEmbeddingModel::new();
+
+    insert_with_embedding(
+        &conn,
+        &model,
+        "p1",
+        "function",
+        "parse_args",
+        "fn parse_args() { tokenize the command line into flags }",
+    );
+
+    let params = SearchParams {
+        limit: 20,
+        expand: false,
+        ..Default::default()
+    };
+    let results = search(
+        &conn,
+        "tokenize command line flags",
+        QueryEmbeddings::none(),
+        &params,
+        &default_config(),
+    )
+    .unwrap();
+    assert!(
+        !results.results.is_empty(),
+        "covered query must return results"
+    );
+    let cov = results.signals.and_then(|s| s.answer_coverage).unwrap();
+    assert!(cov >= 0.45, "covered query coverage {cov} below floor");
+}
+
+#[test]
+fn coverage_gate_disabled_at_zero_floor() {
+    let storage = setup_storage();
+    let conn = storage.conn();
+    let model = MockEmbeddingModel::new();
+
+    insert_with_embedding(
+        &conn,
+        &model,
+        "p1",
+        "knowledge",
+        "rust parser",
+        "fn parse_args() { tokenize the command line into flags }",
+    );
+
+    let mut config = default_config();
+    config.silence_coverage_floor = 0.0;
+    let params = SearchParams {
+        limit: 20,
+        expand: false,
+        ..Default::default()
+    };
+    // KNN must produce results the coverage gate would kill — embed
+    // the entity's own text so the query vector matches it while the
+    // query terms stay absent from the corpus.
+    let query_vec = model
+        .embed(&["rust parser\n\nfn parse_args() { tokenize the command line into flags }"])
+        .unwrap();
+    let results = search(
+        &conn,
+        "quantum entanglement routing protocol",
+        QueryEmbeddings::knowledge(&query_vec[0]),
+        &params,
+        &config,
+    )
+    .unwrap();
+    assert!(
+        !results.results.is_empty(),
+        "floor 0.0 must disable the coverage gate"
     );
 }

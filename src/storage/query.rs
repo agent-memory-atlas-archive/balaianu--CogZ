@@ -269,6 +269,24 @@ pub fn fts_search(
     Ok(entities)
 }
 
+/// Per-term document frequency: how many entities' FTS rows match
+/// each term. Terms are matched as quoted phrases — callers pass
+/// already-tokenized content terms, not raw user input. Terms with
+/// FTS-hostile characters that fail to parse count as 0, matching
+/// how `fts_search` degrades on malformed input.
+pub fn fts_doc_freq(conn: &Connection, terms: &[String]) -> Result<Vec<i64>, StorageError> {
+    let mut stmt = conn.prepare("SELECT COUNT(*) FROM entities_fts WHERE entities_fts MATCH ?")?;
+    let mut counts = Vec::with_capacity(terms.len());
+    for term in terms {
+        let phrase = format!("\"{}\"", term.replace('"', "\"\""));
+        let count = stmt
+            .query_row([&phrase], |r| r.get::<_, i64>(0))
+            .unwrap_or(0);
+        counts.push(count);
+    }
+    Ok(counts)
+}
+
 /// Count entities by status.
 pub fn count_by_status(conn: &Connection, status: &str) -> Result<i64, StorageError> {
     let count: i64 = conn.query_row(

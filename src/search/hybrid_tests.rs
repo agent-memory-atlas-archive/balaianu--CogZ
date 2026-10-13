@@ -30,7 +30,6 @@ fn default_config() -> SearchConfig {
         merge_strategy: "strength".to_string(),
         min_relevance: 0.05,
         edge_weighted_expansion: true,
-        silence_threshold: 0.0,
         top_diversity_share: 0.0,
         calibration: crate::config::CalibrationConfig::default(),
         provenance_boost: 0.0,
@@ -42,7 +41,7 @@ fn default_config() -> SearchConfig {
         graph_max_hops: 2,
         graph_hop_decay: 0.5,
         graph_weight: 0.35,
-        silence_strength_floor: 0.64,
+        silence_coverage_floor: 0.45,
         prf_enabled: false,
         prf_feedback_docs: 5,
         prf_max_terms: 8,
@@ -58,7 +57,6 @@ fn fixed_config() -> SearchConfig {
         merge_strategy: "fixed".to_string(),
         min_relevance: 0.0,
         edge_weighted_expansion: false,
-        silence_threshold: 0.0,
         top_diversity_share: 0.0,
         calibration: crate::config::CalibrationConfig::default(),
         provenance_boost: 0.0,
@@ -545,42 +543,11 @@ fn graph_first_disabled_matches_legacy() {
 // ── Silence gate ────────────────────────────────────────────────
 
 #[test]
-fn silence_gate_truth_table() {
-    use super::super::ChannelSignals;
-    let flat_low = ChannelSignals {
-        code_strength: 0.3,
-        knowledge_strength: 0.3,
-        code_gradient: 0.01,
-        knowledge_gradient: 0.01,
-    };
-    // Flat gradients + weak absolute strength on both channels: silence.
-    assert!(hybrid_helpers::should_silence(&flat_low, 0.02, 0.64));
-
-    // Flat gradient but a genuinely close match escapes — this is the
-    // "uniformly decent neighbors" case the floor was added for.
-    let flat_strong = ChannelSignals {
-        knowledge_strength: 0.68,
-        ..flat_low.clone()
-    };
-    assert!(!hybrid_helpers::should_silence(&flat_strong, 0.02, 0.64));
-
-    // A distinctive gradient on either channel also escapes.
-    let grad = ChannelSignals {
-        code_gradient: 0.5,
-        ..flat_low.clone()
-    };
-    assert!(!hybrid_helpers::should_silence(&grad, 0.02, 0.64));
-
-    // threshold 0 disables the gate entirely.
-    assert!(!hybrid_helpers::should_silence(&flat_low, 0.0, 0.64));
-}
-
-#[test]
 fn silence_gate_flag_controls_empty_results() {
-    // Query vector orthogonal to every stored embedding: flat
-    // gradient + zero strength — the silence predicate fires. The
-    // params flag decides whether that means "no results" (agent-
-    // facing search) or "ship what the floor let through" (packs).
+    // Query term absent from the corpus → coverage 0 → the gate
+    // silences. The params flag decides whether that means "no
+    // results" (agent-facing search) or "ship what the floor let
+    // through" (packs).
     let conn = setup();
     for i in 0..3 {
         let id = format!("k{i}");
@@ -597,7 +564,6 @@ fn silence_gate_flag_controls_empty_results() {
     let mut qv = vec![0.0_f32; 768];
     qv[0] = 1.0;
     let config = SearchConfig {
-        silence_threshold: 0.02,
         min_relevance: 0.0,
         merge_strategy: "detect".to_string(),
         ..default_config()
@@ -643,7 +609,6 @@ fn silence_gate_yields_to_fts_hits() {
     let mut qv = vec![0.0_f32; 768];
     qv[0] = 1.0; // orthogonal to the stored embedding — weak signal
     let config = SearchConfig {
-        silence_threshold: 0.02,
         min_relevance: 0.0,
         merge_strategy: "detect".to_string(),
         ..default_config()

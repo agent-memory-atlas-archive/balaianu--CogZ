@@ -101,6 +101,7 @@ pub fn search_response(results: SearchResults) -> serde_json::Value {
             "knowledge_strength": s.knowledge_strength,
             "code_gradient": s.code_gradient,
             "knowledge_gradient": s.knowledge_gradient,
+            "answer_coverage": s.answer_coverage,
         });
     }
     let drifted: Vec<&str> = results
@@ -162,6 +163,7 @@ pub fn context_response_ref(pack: &crate::context::ContextPack) -> serde_json::V
                     "code_gradient": s.code_gradient,
                     "knowledge_strength": s.knowledge_strength,
                     "knowledge_gradient": s.knowledge_gradient,
+                    "answer_coverage": s.answer_coverage,
                 })
             }),
         },

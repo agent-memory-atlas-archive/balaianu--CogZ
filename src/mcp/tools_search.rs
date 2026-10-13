@@ -28,6 +28,7 @@ pub async fn search(
     let query_model = repo.query_model.clone();
     let code_model = repo.code_model.clone();
     let use_code = params.code_search.unwrap_or(false);
+    let record = params.record.unwrap_or(true);
     let limit = validate_query_limit(params.limit.unwrap_or(default_limit).into())? as u32;
 
     let results = tokio::task::spawn_blocking(move || {
@@ -53,6 +54,7 @@ pub async fn search(
             silence_gate: true,
             window_quota: true,
             before_ts: params.before,
+            record_usage: record,
         };
         let results = search_entities(
             &conn,
@@ -63,54 +65,56 @@ pub async fn search(
         )?;
         // Usage tracking: record what was delivered so post_tool_use
         // hits can credit it. Best-effort — a tracking failure must
-        // never fail a search.
-        let delivered: Vec<(String, crate::storage::usage::DeliveryTier)> = results
-            .results
-            .iter()
-            .map(|r| {
-                (
-                    r.entity.id.clone(),
-                    crate::storage::usage::DeliveryTier::Full,
-                )
-            })
-            .collect();
-        match crate::storage::usage::record_delivery(
-            &conn,
-            crate::storage::usage::DeliveryKind::Search,
-            None,
-        ) {
-            Ok(delivery_id) => {
-                if let Err(e) =
-                    crate::storage::usage::record_delivered(&conn, delivery_id, &delivered)
-                {
-                    tracing::warn!("usage tracking: record delivered failed: {e}");
+        // never fail a search. Inspection calls (record=false) skip it.
+        if record {
+            let delivered: Vec<(String, crate::storage::usage::DeliveryTier)> = results
+                .results
+                .iter()
+                .map(|r| {
+                    (
+                        r.entity.id.clone(),
+                        crate::storage::usage::DeliveryTier::Full,
+                    )
+                })
+                .collect();
+            match crate::storage::usage::record_delivery(
+                &conn,
+                crate::storage::usage::DeliveryKind::Search,
+                None,
+            ) {
+                Ok(delivery_id) => {
+                    if let Err(e) =
+                        crate::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                    {
+                        tracing::warn!("usage tracking: record delivered failed: {e}");
+                    }
                 }
+                Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
             }
-            Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
-        }
-        let result_ids: Vec<String> = results
-            .results
-            .iter()
-            .map(|r| r.entity.id.clone())
-            .collect();
-        if let Err(e) = crate::storage::usage::record_pointer_conversions(&conn, &result_ids) {
-            tracing::warn!("usage tracking: pointer conversion failed: {e}");
-        }
+            let result_ids: Vec<String> = results
+                .results
+                .iter()
+                .map(|r| r.entity.id.clone())
+                .collect();
+            if let Err(e) = crate::storage::usage::record_pointer_conversions(&conn, &result_ids) {
+                tracing::warn!("usage tracking: pointer conversion failed: {e}");
+            }
 
-        // Query telemetry — feeds the search_miss mining pass and
-        // usage analysis; queries were previously unlogged.
-        if let Err(e) = crate::storage::events::record_event(
-            &conn,
-            crate::storage::events::EventType::SearchPerformed,
-            None,
-            &serde_json::json!({
-                "query": params.query,
-                "returned": results.results.len(),
-                "filtered": results.filtered_count,
-                "code_search": use_code,
-            }),
-        ) {
-            tracing::warn!("search_performed event: {e}");
+            // Query telemetry — feeds the search_miss mining pass and
+            // usage analysis; queries were previously unlogged.
+            if let Err(e) = crate::storage::events::record_event(
+                &conn,
+                crate::storage::events::EventType::SearchPerformed,
+                None,
+                &serde_json::json!({
+                    "query": params.query,
+                    "returned": results.results.len(),
+                    "filtered": results.filtered_count,
+                    "code_search": use_code,
+                }),
+            ) {
+                tracing::warn!("search_performed event: {e}");
+            }
         }
 
         // Same push surface as the hooks: a fresh mining signal
@@ -144,6 +148,7 @@ pub async fn get_context(
     let config = repo.config.clone();
     let query_model = repo.query_model.clone();
     let code_model = repo.code_model.clone();
+    let record = params.record.unwrap_or(true);
 
     let pack = tokio::task::spawn_blocking(move || {
         let knowledge_embedding = params
@@ -157,8 +162,10 @@ pub async fn get_context(
         let conn = storage.conn();
         // An agent-pulled pack is the same delivery boundary as a
         // pushed one: prior pending entities become misses, and this
-        // pack's sections are tracked for hits.
-        if let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
+        // pack's sections are tracked for hits. Inspection calls
+        // (record=false) never close deliveries — a read must not
+        // resolve pending usage as misses.
+        if record && let Err(e) = crate::storage::usage::close_open_deliveries(&conn) {
             tracing::warn!("usage tracking: close deliveries failed: {e}");
         }
         let pack = assemble_context(
@@ -170,33 +177,36 @@ pub async fn get_context(
                 code_embedding: code_embedding.as_deref(),
                 max_tokens: params.max_tokens,
                 include_stale: params.include_stale.unwrap_or(false),
+                record_usage: record,
             },
             &config,
         )?;
-        let mut delivered: Vec<(String, crate::storage::usage::DeliveryTier)> = pack
-            .sections
-            .iter()
-            .map(|s| (s.entity_id.clone(), s.tier))
-            .collect();
-        delivered.extend(
-            pack.metadata
-                .pointer_ids
+        if record {
+            let mut delivered: Vec<(String, crate::storage::usage::DeliveryTier)> = pack
+                .sections
                 .iter()
-                .map(|id| (id.clone(), crate::storage::usage::DeliveryTier::Pointer)),
-        );
-        match crate::storage::usage::record_delivery(
-            &conn,
-            crate::storage::usage::DeliveryKind::Pack,
-            None,
-        ) {
-            Ok(delivery_id) => {
-                if let Err(e) =
-                    crate::storage::usage::record_delivered(&conn, delivery_id, &delivered)
-                {
-                    tracing::warn!("usage tracking: record delivered failed: {e}");
+                .map(|s| (s.entity_id.clone(), s.tier))
+                .collect();
+            delivered.extend(
+                pack.metadata
+                    .pointer_ids
+                    .iter()
+                    .map(|id| (id.clone(), crate::storage::usage::DeliveryTier::Pointer)),
+            );
+            match crate::storage::usage::record_delivery(
+                &conn,
+                crate::storage::usage::DeliveryKind::Pack,
+                None,
+            ) {
+                Ok(delivery_id) => {
+                    if let Err(e) =
+                        crate::storage::usage::record_delivered(&conn, delivery_id, &delivered)
+                    {
+                        tracing::warn!("usage tracking: record delivered failed: {e}");
+                    }
                 }
+                Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
             }
-            Err(e) => tracing::warn!("usage tracking: record delivery failed: {e}"),
         }
 
         let fresh = crate::hooks::nudge::fresh_suggestions(&conn, "get_context");

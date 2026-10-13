@@ -647,3 +647,53 @@ fn code_entities_expand_into_budget_headroom() {
     // Spare budget is spent growing the section to full content.
     assert_eq!(func_section.content, func_content);
 }
+
+#[test]
+fn inspection_mode_writes_no_telemetry() {
+    let storage = Storage::open_memory().unwrap();
+    let conn = storage.conn();
+    insert_entity(
+        &conn,
+        &Entity::new("r1", "rule", "Rule A", "rule content a"),
+    )
+    .unwrap();
+    insert_entity(
+        &conn,
+        &Entity::new("o1", "observation", "Ranking bug", "ranking bug content"),
+    )
+    .unwrap();
+
+    let access_rows = |conn: &rusqlite::Connection| -> i64 {
+        conn.query_row("SELECT COUNT(*) FROM entity_access", [], |r| r.get(0))
+            .unwrap()
+    };
+    assert_eq!(access_rows(&conn), 0);
+
+    let config = default_config();
+
+    // Inspection assemblies must leave entity_access untouched — a read
+    // must not reshape the ranking signal it reads back.
+    let inspect_cold = AssembleParams {
+        mode: ContextMode::ColdStart,
+        record_usage: false,
+        ..Default::default()
+    };
+    assemble_context(&conn, &inspect_cold, &config).unwrap();
+    let inspect_task = AssembleParams {
+        mode: ContextMode::Task,
+        query: Some("ranking"),
+        record_usage: false,
+        ..Default::default()
+    };
+    assemble_context(&conn, &inspect_task, &config).unwrap();
+    assert_eq!(access_rows(&conn), 0);
+
+    // Default (delivery) assemblies bump access counts — baseline rules
+    // in cold start, direct hits in task mode.
+    let deliver_cold = AssembleParams {
+        mode: ContextMode::ColdStart,
+        ..Default::default()
+    };
+    assemble_context(&conn, &deliver_cold, &config).unwrap();
+    assert!(access_rows(&conn) > 0);
+}

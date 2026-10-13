@@ -83,11 +83,6 @@ impl Config {
                 "search.min_relevance must be in [0.0, 1.0)".to_string(),
             ));
         }
-        if !(0.0..1.0).contains(&self.search.silence_threshold) {
-            return Err(ConfigError::Validation(
-                "search.silence_threshold must be in [0.0, 1.0)".to_string(),
-            ));
-        }
         if !(0.0..=100.0).contains(&self.search.fts_title_weight) {
             return Err(ConfigError::Validation(
                 "search.fts_title_weight must be in [0.0, 100.0]".to_string(),

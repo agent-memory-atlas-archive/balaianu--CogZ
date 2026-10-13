@@ -275,6 +275,7 @@ pub fn handle_lifecycle_event(
                                             "code_gradient": s.code_gradient,
                                             "knowledge_strength": s.knowledge_strength,
                                             "knowledge_gradient": s.knowledge_gradient,
+                                            "answer_coverage": s.answer_coverage,
                                         })
                                     }),
                                 }
@@ -371,6 +372,38 @@ pub fn handle_lifecycle_event(
         None
     };
 
+    // Session-end review-queue summary: drift rows and stale file
+    // entities that survived the session get one line pointing at the
+    // batch verify surface. Advisory only — never blocks.
+    let review_notice = if input.event == LifecycleEvent::SessionEnd {
+        let conn = storage.conn();
+        let drift_rows: i64 = conn
+            .query_row(
+                "SELECT COUNT(DISTINCT entity_id) FROM entity_drift",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap_or(0);
+        let stale: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM entities WHERE status='stale' \
+                 AND type IN ('observation','rule','knowledge')",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap_or(0);
+        drop(conn);
+        (drift_rows + stale > 0).then(|| {
+            format!(
+                "Review queue: {stale} stale, {drift_rows} drifted entit{}. \
+                 `cogz doctor --verify drifted` walks the queue.",
+                if drift_rows + stale == 1 { "y" } else { "ies" }
+            )
+        })
+    } else {
+        None
+    };
+
     // Young-corpus nudge: when a repo has barely any recorded
     // knowledge yet, session_start points the agent at the seeded
     // ingestion protocol — and tells it to ask the user first, since
@@ -427,7 +460,7 @@ pub fn handle_lifecycle_event(
         None
     };
 
-    let notices = [drift_notice, ingest_nudge, write_nudge]
+    let notices = [drift_notice, review_notice, ingest_nudge, write_nudge]
         .into_iter()
         .flatten()
         .collect::<Vec<_>>()
@@ -885,6 +918,8 @@ fn assemble_pack(
                 code_embedding: code_embedding.as_deref(),
                 max_tokens: None,
                 include_stale: false,
+                // Hook-fired packs are real deliveries by definition.
+                record_usage: true,
             },
             config,
         )?

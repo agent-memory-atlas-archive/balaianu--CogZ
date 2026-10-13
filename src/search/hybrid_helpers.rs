@@ -10,7 +10,7 @@ use crate::storage::embeddings::{EmbeddingSpace, knn_search_with_filters};
 
 use super::SearchError;
 use crate::search::prf;
-use crate::search::{ChannelSignals, SearchParams, SearchResult};
+use crate::search::{SearchParams, SearchResult};
 
 /// Provenance tag on co-change expansion results. The expansion-cap
 /// quota partitions on this string — emit site and cap stay in sync
@@ -30,19 +30,6 @@ fn title_query_overlap(entity: &Entity, query_terms: &HashSet<String>) -> usize 
                 .count()
         })
         .unwrap_or(0)
-}
-
-/// Silence-gate predicate: true means "no channel produced any
-/// evidence of a match" — flat within-batch gradient AND top-3
-/// absolute strength below the floor on every channel. The strength
-/// clause is the escape hatch for queries whose nearest neighbors are
-/// uniformly decent (flat gradient, real matches).
-pub(crate) fn should_silence(signals: &ChannelSignals, threshold: f64, floor: f64) -> bool {
-    threshold > 0.0
-        && signals.code_gradient < threshold
-        && signals.knowledge_gradient < threshold
-        && signals.code_strength < floor
-        && signals.knowledge_strength < floor
 }
 
 /// Co-change channel: query terms → entities those terms historically

@@ -7,6 +7,7 @@
 //! boundary, same pattern as `embed_synced`.
 
 pub mod balance;
+pub mod coverage;
 pub mod describe;
 pub mod expand;
 pub mod graph_retrieval;
@@ -135,6 +136,11 @@ pub struct SearchParams {
     /// the caller needs as-of semantics — e.g. the benchmark queries
     /// against commits strictly before the query commit.
     pub before_ts: Option<i64>,
+    /// Whether this search may write usage telemetry — the access-count
+    /// bump on result entities that feeds future pack ranking. Agent
+    /// pulls pass true; inspection paths pass false so a read does not
+    /// change the ranking signal it reads back.
+    pub record_usage: bool,
 }
 
 impl Default for SearchParams {
@@ -149,6 +155,7 @@ impl Default for SearchParams {
             silence_gate: true,
             window_quota: true,
             before_ts: None,
+            record_usage: true,
         }
     }
 }
@@ -163,6 +170,10 @@ pub struct ChannelSignals {
     pub knowledge_strength: f64,
     pub code_gradient: f64,
     pub knowledge_gradient: f64,
+    /// IDF-weighted share of the query's content terms found in the
+    /// fused top-K text, corpus-absent terms at max IDF. The gate's
+    /// answer-evidence signal — `None` until the fused head exists.
+    pub answer_coverage: Option<f64>,
 }
 
 /// Complete search results.

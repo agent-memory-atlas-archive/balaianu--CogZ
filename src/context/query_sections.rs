@@ -35,6 +35,7 @@ pub(super) fn query_sections(
     max_hops: usize,
     status: Option<&str>,
     search_config: &SearchConfig,
+    record_usage: bool,
 ) -> Result<SectionBundle, AssembleError> {
     let params = SearchParams {
         entity_type: None,
@@ -62,6 +63,7 @@ pub(super) fn query_sections(
         // perturbs expansion neighborhoods (measured: pack recall
         // 0.9 → 0.7 on api_tool seeded queries).
         window_quota: false,
+        record_usage,
     };
 
     let embeddings = QueryEmbeddings {
