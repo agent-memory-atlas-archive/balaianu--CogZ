@@ -2,12 +2,13 @@
 id: a9d8f4cd-a22a-4e0c-a25a-418c92564dcd
 title: Module layering and data ownership boundaries
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-28T19:20:00Z"
-updated_at: "2026-09-13T12:32:55.400499823+00:00"
+updated_at: "2026-10-12T14:22:56.513305536+00:00"
 references: []
 category: architecture
 tags: ["layering", "architecture", "ownership", "invariants"]
+verified_against: []
 ---
 
 CogZ has four layers with strict ownership boundaries:

@@ -2,12 +2,13 @@
 id: a77468ff-07d1-451d-a14d-702760586875
 title: MCP resource sharing and cache architecture
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-05T07:07:28.257259896+00:00"
-updated_at: "2026-09-15T16:50:46.740643499+00:00"
+updated_at: "2026-10-12T14:22:55.633496391+00:00"
 references: []
 category: architecture
 tags: ["mcp", "cache", "resources", "concurrency"]
+verified_against: []
 ---
 
 The MCP server uses a multi-layer resource sharing architecture to ensure that no matter how many hooks, CLI calls, or MCP tools fire, they share the same resources without duplicates.

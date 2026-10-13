@@ -2,12 +2,13 @@
 id: a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d
 title: increment_access_batch must use a transaction
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-02T16:00:00Z"
-updated_at: "2026-09-15T16:50:46.615309109+00:00"
+updated_at: "2026-10-12T14:22:52.058050394+00:00"
 references: []
 category: gotchas
 tags: ["performance", "sqlite", "transactions"]
+verified_against: []
 ---
 
 `increment_access_batch` in `src/storage/access.rs` must wrap its

@@ -8,7 +8,6 @@ updated_at: "2026-09-21T19:22:53.281956736+00:00"
 references: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d"]
 category: decisions
 tags: ["decision", "ab-eval", "context-packs", "hybrid-search", "silence-gate", "delivery-model"]
-verified_against: ["b7c3f1a2-9e4d-4a8b-8c5d-1f2e3a4b5c6d=0e9d5ea7d99fce4f117314f2ab8e9f3ef795cfb0d514f5fcb3c59b458a3d7863"]
 ---
 
 # Hybrid delivery validated — supersedes the pack-gate recommendation

@@ -4,11 +4,11 @@ title: Declared references must be read from canonical files — materialized ed
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-21T13:09:44.096392609+00:00"
-references: ["bc587df9-ed9b-5c9f-82db-698153296fbb", "0beb5d53-436a-5886-8a73-bd8f2bf6265b", "5dbbedce-8ac5-59a4-b83e-d4685d72a58f", "87603b8f-7700-5756-a43c-2565e658a854"]
+updated_at: "2026-10-13T09:48:27.812050360+00:00"
+references: ["5dbbedce-8ac5-59a4-b83e-d4685d72a58f", "971025a2-7bd8-57f4-8090-b48135c54d7c", "dc3c0133-d914-5b1c-a324-2cf476724f4b", "bdf67392-ca0a-503e-99e8-a11d9c57c3a6"]
 category: gotchas
 tags: ["drift", "edges", "foreign-key", "file-first", "sync-ordering"]
-verified_against: ["0beb5d53-436a-5886-8a73-bd8f2bf6265b=50170679d98bc7aec13a3bfe64aa761431cdadf88e1380520ad1c611111114a7", "5dbbedce-8ac5-59a4-b83e-d4685d72a58f=1abf1e58e677f692950eb6a1faca0cc6f97dccfe68fafa0450cfab222a2b34dc", "87603b8f-7700-5756-a43c-2565e658a854=8c383401db166e2990ad19a8b1ed1ebd994b4d19449ecb254d5caa4a73a52f85", "bc587df9-ed9b-5c9f-82db-698153296fbb=9e2e76f9ca52cc01629ea4396413170f884342bf7f46080da0cc805f3da033e2"]
+verified_against: ["5dbbedce-8ac5-59a4-b83e-d4685d72a58f=v2:4c32b0628d49a9e7f633eb84ecb7f0e0fa34db9d57739e5a9aa1b5b1c6990de6", "971025a2-7bd8-57f4-8090-b48135c54d7c=v2:b106187e040729da49a19f88f338a9a9d1eeff6c339b460c21a0737bc60ca376", "bdf67392-ca0a-503e-99e8-a11d9c57c3a6=v2:6c80376aa0ae2b27485671ff845244080c86217c9d0ac748c1ae960b619a0549", "dc3c0133-d914-5b1c-a324-2cf476724f4b=v2:2c7a2815215a28acb7ceb483e413ebb85026d842181738ac4458efdc96b7d40a"]
 ---
 
 # Declared references must be read from canonical files

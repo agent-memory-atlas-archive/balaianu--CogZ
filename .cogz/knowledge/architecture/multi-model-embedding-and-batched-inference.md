@@ -2,12 +2,13 @@
 id: b3c4d5e6-f789-4abc-def0-123456789002
 title: Multi-model embedding and batched ONNX inference
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T23:20:00Z"
-updated_at: "2026-09-13T12:32:55.920758312+00:00"
+updated_at: "2026-10-12T14:22:56.261314380+00:00"
 references: []
 category: architecture
 tags: ["embedding", "onnx", "batched-inference", "multi-model", "phase-8"]
+verified_against: []
 ---
 
 ## Multi-model configuration

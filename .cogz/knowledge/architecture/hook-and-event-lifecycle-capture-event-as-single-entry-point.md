@@ -4,11 +4,11 @@ title: Hook and event lifecycle — capture-event as single entry point
 type: knowledge
 status: active
 created_at: "2026-09-13T21:42:37.625349447+00:00"
-updated_at: "2026-09-21T19:22:54.502474060+00:00"
+updated_at: "2026-10-13T00:11:35.484000033+00:00"
 references: ["59203bdf-b181-50bc-94c2-eb5e755667c7", "2f2833b0-4956-5683-8c29-b5b06ede478c"]
 category: architecture
 tags: ["architecture", "hooks", "events", "lifecycle"]
-verified_against: ["2f2833b0-4956-5683-8c29-b5b06ede478c=e686309d910720b2c39d8ee6d837210451d99ad50f58aeb8583fc3870c8fed38", "59203bdf-b181-50bc-94c2-eb5e755667c7=0d7a1d242b3f48d65e291205536b909384260e98abc29b3390ad40f813a18be4"]
+verified_against: ["2f2833b0-4956-5683-8c29-b5b06ede478c=v2:6c59ff09650754c567732b3d2d21375079067c6e1079c3215f583e1f6f7456ac", "59203bdf-b181-50bc-94c2-eb5e755667c7=v2:666f7f686a4e1bfb6cb78be2ff7e42943e7919f62f3be22f0955f192a439eeab"]
 ---
 
 # Hook and event lifecycle

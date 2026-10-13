@@ -2,12 +2,13 @@
 id: b3c4d5e6-f789-4abc-def0-123456789003
 title: Fused multi-seed BFS and chunked SQL queries
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T23:20:00Z"
-updated_at: "2026-09-15T16:50:47.083525779+00:00"
+updated_at: "2026-10-12T14:22:56.797664160+00:00"
 references: []
 category: architecture
 tags: ["graph-expansion", "bfs", "sql", "performance", "phase-8"]
+verified_against: []
 ---
 
 ## Fused multi-seed BFS

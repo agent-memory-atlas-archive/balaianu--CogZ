@@ -2,12 +2,13 @@
 id: 4cc109e1-09cc-414e-831c-8f5710374d4a
 title: MCP Server Layer
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-29T02:30:00Z"
-updated_at: "2026-09-15T16:50:46.121071043+00:00"
+updated_at: "2026-10-12T14:22:55.150926371+00:00"
 references: []
 category: architecture
 tags: ["mcp", "architecture", "rmcp", "async"]
+verified_against: []
 ---
 
 # MCP Server Layer

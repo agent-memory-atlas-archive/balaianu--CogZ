@@ -2,9 +2,9 @@
 id: c5d9eafb-09cc-414e-831c-8f5710374d4a
 title: Audit found 11 issues across 7 categories
 type: observation
-status: stale
+status: active
 created_at: "2026-09-03T12:05:00Z"
-updated_at: "2026-09-15T16:50:47.384544770+00:00"
+updated_at: "2026-10-12T14:23:02.410069715+00:00"
 references: []
 source: agent
 confidence: 0.95

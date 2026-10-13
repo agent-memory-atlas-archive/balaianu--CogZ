@@ -8,7 +8,6 @@ updated_at: "2026-09-21T19:22:53.632161517+00:00"
 references: ["c8d4e2b3-af5e-4b9c-9d6e-2f3e4b5c6d7e"]
 category: decisions
 tags: ["decision", "ab-eval", "knowledge-seeding", "drift", "provenance"]
-verified_against: ["c8d4e2b3-af5e-4b9c-9d6e-2f3e4b5c6d7e=c3106e261132a3f062fb46d48cc4182be29a6e4697fb35e576ea0dee6edf9456"]
 ---
 
 # Knowledge-seeded arm (k) — replay run6

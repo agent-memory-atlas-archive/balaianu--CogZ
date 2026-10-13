@@ -6,7 +6,6 @@ status: active
 created_at: "2026-09-22T00:00:00Z"
 updated_at: "2026-09-19T09:37:49.727263830+00:00"
 references: ["00f608f0-2ce9-567d-afb3-f6418f62079e"]
-verified_against: ["00f608f0-2ce9-567d-afb3-f6418f62079e=fcd51723a581b3ae2777ac405474cc292ac374ffdc4c8deebda2923e22b7f830"]
 ---
 
 Across the replay k-arm, agents' edits produced 50 drifted knowledge entities

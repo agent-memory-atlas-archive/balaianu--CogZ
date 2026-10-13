@@ -2,9 +2,9 @@
 id: 7c3d9e21-4f2a-4b8c-9d5e-6f7a8b9c0d1e
 title: "Delivery layer design: push the map, pull the territory"
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-16T01:10:00Z"
-updated_at: "2026-09-16T11:55:44.622544499+00:00"
+updated_at: "2026-10-12T14:22:54.908480308+00:00"
 references: []
 category: decisions
 tags: ["decision", "context-packs", "push-pull", "write-path", "backlog-42-44"]

@@ -2,12 +2,13 @@
 id: f32a2e47-512c-47d7-83e9-3832cff3cff7
 title: Subprocess MCP stdio integration tests
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-05T07:07:18.941342516+00:00"
-updated_at: "2026-09-13T12:32:56.846678395+00:00"
+updated_at: "2026-10-12T14:22:55.392945745+00:00"
 references: []
 category: architecture
 tags: ["testing", "mcp", "subprocess", "integration"]
+verified_against: []
 ---
 
 The subprocess MCP integration tests in tests/test_mcp_stdio.rs spawn the real cogz binary and communicate over stdio using JSON-RPC. This catches issues that in-process tests (test_mcp_server.rs) cannot — specifically main()-level concerns like tracing subscriber configuration.

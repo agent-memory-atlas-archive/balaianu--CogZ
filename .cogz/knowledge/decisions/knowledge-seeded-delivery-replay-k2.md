@@ -8,7 +8,6 @@ updated_at: "2026-09-21T19:22:54.218083081+00:00"
 references: ["db987e21-598b-47e0-a677-c72a334158eb", "5fa33147-970e-5b48-96a5-a8daef233491"]
 category: decisions
 tags: ["ab-eval", "knowledge-seeding", "drift", "verify", "write-back"]
-verified_against: ["5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "db987e21-598b-47e0-a677-c72a334158eb=cdf5da853a212977354671d909ee04625281975ff38210f8e1fce096fa9dc64f"]
 ---
 
 # k2 arm — same seed, new binary (14-tool MCP + drift cues + silence gate)

@@ -8,7 +8,6 @@ updated_at: "2026-09-21T14:03:25.125308383+00:00"
 references: ["7c3d9e21-4f2a-4b8c-9d5e-6f7a8b9c0d1e"]
 category: decisions
 tags: ["decision", "context-packs", "tiered-push", "mining", "backlog-13-42-43-44"]
-verified_against: ["7c3d9e21-4f2a-4b8c-9d5e-6f7a8b9c0d1e=32ea223ab5a64c729146ee49afa53a2da0d25778868c68c790f126a09d9311ac"]
 ---
 
 Implementation record for the delivery layer (backlog 13, 42, 43,

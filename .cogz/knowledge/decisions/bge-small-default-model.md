@@ -2,9 +2,9 @@
 id: a7c8e9f0-1234-5678-9abc-def012345678
 title: bge-small-en-v1.5 as default embedding model
 type: knowledge
-status: stale
+status: active
 created_at: "2026-08-31T19:45:00Z"
-updated_at: "2026-09-15T16:50:46.782504043+00:00"
+updated_at: "2026-10-12T14:22:54.666491314+00:00"
 references: []
 category: decision
 tags: ["embedding", "model", "performance", "onnx"]

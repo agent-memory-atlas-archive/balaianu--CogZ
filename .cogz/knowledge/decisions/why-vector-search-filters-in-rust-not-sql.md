@@ -8,7 +8,6 @@ updated_at: "2026-09-19T18:38:55.900931976+00:00"
 references: ["ac43ee1b-2322-4ba1-afcf-cd2464a2d065"]
 category: decisions
 tags: ["vec0", "sqlite-vec", "filtering", "trade-off"]
-verified_against: ["ac43ee1b-2322-4ba1-afcf-cd2464a2d065=17221dabc5bd12a86e5bd673cdef86f1d9a7d4670c0ab7b6d5a3d35c2a0c24f0"]
 ---
 
 sqlite-vec's vec0 virtual table doesn't support JOINs with regular

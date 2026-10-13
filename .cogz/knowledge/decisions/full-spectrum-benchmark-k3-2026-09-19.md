@@ -8,7 +8,6 @@ updated_at: "2026-09-21T19:22:52.888442535+00:00"
 references: ["e7c1a2b3-4d5e-4f6a-8b9c-0d1e2f3a4b5c", "f2a3b4c5-6d7e-4f8a-9b0c-1d2e3f4a5b6c", "5fa33147-970e-5b48-96a5-a8daef233491", "dabbf2a6-d29f-4772-a2df-6d264b4b5461"]
 category: decisions
 tags: ["ab-eval", "benchmark", "verify", "retrieval", "context-packs"]
-verified_against: ["5fa33147-970e-5b48-96a5-a8daef233491=2661b279852a95636ed24a7d5891493aa98ee4d04c493caf38ba288303763fc5", "dabbf2a6-d29f-4772-a2df-6d264b4b5461=be1e606b7569de03e4447e071beaef13d94a5cd145d10aca14fde3a18ace1488", "e7c1a2b3-4d5e-4f6a-8b9c-0d1e2f3a4b5c=9391864e03a9d8ad59b153b5bfa919559c07225dba195223022dba5cdddb0344", "f2a3b4c5-6d7e-4f8a-9b0c-1d2e3f4a5b6c=c6efeb27cc7705ce0a90cec6d535de3b8fffbaf8a1fa495e0b083fe48f141629"]
 ---
 
 # Full-spectrum benchmark (2026-09-19): what the current version can do

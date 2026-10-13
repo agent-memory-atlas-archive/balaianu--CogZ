@@ -2,12 +2,13 @@
 id: 12b7be64-e950-4f69-99f2-ceb31da698b6
 title: MCP 2026-07-28 spec alignment
 type: knowledge
-status: stale
+status: active
 created_at: "2026-09-05T07:07:11.328112049+00:00"
-updated_at: "2026-09-15T16:50:45.703104489+00:00"
+updated_at: "2026-10-12T14:22:57.608276146+00:00"
 references: []
 category: architecture
 tags: ["mcp", "protocol", "spec", "alignment"]
+verified_against: []
 ---
 
 The 2026-07-28 MCP specification (SEP-2577) deprecated Roots, Sampling, and Logging. Roots is replaced by passing paths via tool parameters, resource URIs, or server configuration. Sessions were removed (SEP-2567/2575) — the initialize/initialized handshake and Mcp-Session-Id are gone from the protocol core. Every request is now self-contained.

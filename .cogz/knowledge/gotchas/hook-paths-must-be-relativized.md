@@ -4,11 +4,11 @@ title: reindex_single_file must relativize hook-supplied absolute paths — ghos
 type: knowledge
 status: active
 created_at: "2026-09-22T00:00:00Z"
-updated_at: "2026-09-21T13:09:43.987776354+00:00"
+updated_at: "2026-10-13T09:46:12.078091130+00:00"
 references: ["aa751672-ca20-57c4-b509-08a29e3b40d4", "a0f5b27b-3ea4-5ef7-ba6f-69b7a9c08443", "ce88f80f-708c-508d-b671-f8a65b9bb9d4"]
 category: gotchas
 tags: ["indexing", "uuid5", "hooks", "ghost-entities", "path-normalization"]
-verified_against: ["a0f5b27b-3ea4-5ef7-ba6f-69b7a9c08443=ba15d63dddadb23d908c082105bccf3b1c2668697b685c05287a44044632de35", "aa751672-ca20-57c4-b509-08a29e3b40d4=9e6e4112b59d74cf0ccf606495599cb3fa42434052ed98af324b1b0a698bd130", "ce88f80f-708c-508d-b671-f8a65b9bb9d4=3057dd19d291e4186eef22f41d2d6f306d149d777c4821505ff295b717cf2e29"]
+verified_against: ["a0f5b27b-3ea4-5ef7-ba6f-69b7a9c08443=v2:e6a40fd8195e05443fbb8f206f5edc542318c5837a37fb0a73e1e8d275cd8585", "aa751672-ca20-57c4-b509-08a29e3b40d4=v2:79e9ff149638f95b586457f4bb28f69f029d48ddce4bb6b81c8ec37873d5bd56", "ce88f80f-708c-508d-b671-f8a65b9bb9d4=v2:c5e510f6c5d1e54f22fb4eeb59cb449d66a623e3dc046242f337a169f118f0a5"]
 ---
 
 # Hook-supplied paths are absolute — relativize before keying
