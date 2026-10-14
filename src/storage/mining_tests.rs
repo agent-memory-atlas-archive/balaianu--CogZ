@@ -188,6 +188,59 @@ fn error_fix_signal() {
 }
 
 #[test]
+fn error_fix_redacts_secret_shaped_tool_output() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    let secret = "sk-abcdefghijklmnopqrstuvwx";
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "curl", "tool_result": format!("error: auth failed for {secret}")}),
+    )
+    .unwrap();
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "curl", "tool_result": "ok"}),
+    )
+    .unwrap();
+
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    let ef = out.iter().find(|s| s.signal == "error_fix").unwrap();
+    assert!(ef.suggested_content.contains("[redacted"));
+    assert!(!ef.suggested_content.contains(secret));
+}
+
+#[test]
+fn error_fix_quotes_tool_output_snippets() {
+    let s = Storage::open_memory().unwrap();
+    let conn = s.conn();
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "bash", "tool_result": "error: \"unexpected\" flag"}),
+    )
+    .unwrap();
+    record_event(
+        &conn,
+        EventType::PostToolUse,
+        None,
+        &serde_json::json!({"tool_name": "bash", "tool_result": "ok"}),
+    )
+    .unwrap();
+
+    let out = mine_suggestions(&conn, 7, 10).unwrap();
+    let ef = out.iter().find(|s| s.signal == "error_fix").unwrap();
+    assert!(
+        ef.suggested_content
+            .contains("\"error: 'unexpected' flag\"")
+    );
+}
+
+#[test]
 fn error_fix_dedup_anchors_on_tool_not_event() {
     let s = Storage::open_memory().unwrap();
     let conn = s.conn();

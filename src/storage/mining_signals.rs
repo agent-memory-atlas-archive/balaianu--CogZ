@@ -320,11 +320,15 @@ pub(super) fn error_fixes(
                     "tool_name": tool,
                 }),
                 suggested_title: format!("{tool} error and fix"),
+                // Tool output is untrusted text injected into agent
+                // context: secret-shaped content never crosses into a
+                // draft, and the snippets stay visibly quoted so they
+                // read as evidence, not instruction.
                 suggested_content: format!(
-                    "A {tool} call failed ('{}') and a later call succeeded ('{}'). \
+                    "A {tool} call failed with \"{}\" and a later call succeeded with \"{}\". \
                      The error→fix pair may contain a reusable pitfall.",
-                    snippet(result, 120),
-                    snippet(fix_result, 120),
+                    tool_snippet(result),
+                    tool_snippet(fix_result),
                 ),
                 suggested_refs: vec![],
             });
@@ -399,6 +403,16 @@ fn looks_like_error(result: &str) -> bool {
     ["error", "failed", "panic", "traceback", "exception"]
         .iter()
         .any(|k| head.contains(k))
+}
+
+/// Bounded, quote-safe view of raw tool output for a draft body.
+/// A secret-shaped result never reaches injected text — the reviewer
+/// can still inspect the full event payload by id.
+fn tool_snippet(raw: &str) -> String {
+    if crate::security::scan_content("", raw).is_some() {
+        return "[redacted: possible secret — inspect event payload]".to_string();
+    }
+    snippet(raw, 120).replace('"', "'")
 }
 
 pub(super) fn snippet(s: &str, max: usize) -> String {
