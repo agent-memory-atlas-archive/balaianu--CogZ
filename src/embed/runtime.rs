@@ -272,24 +272,20 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
     }
     info!("ONNX Runtime checksum verified against pinned hash");
 
-    // Extract the archive. `tar` is available on all supported platforms:
-    // - Linux/macOS: GNU tar (always present)
-    // - Windows 10 1803+: bsdtar (included with the OS)
-    // bsdtar on Windows handles .zip; GNU tar on Unix handles .tgz.
-    //
-    // --no-absolute-names (GNU tar) / --no-same-owner prevents
-    // path-traversal attacks from malicious archives (tar slip).
-    // On bsdtar (Windows), --no-absolute-names is also supported.
+    // Extract the archive. `tar` is available on all supported
+    // platforms, but the binary differs:
+    // - Linux: GNU tar — pass --no-absolute-names against tar slip.
+    // - macOS and Windows 10 1803+: bsdtar — strips absolute paths,
+    //   refuses `..`, and refuses symlink-altered targets by DEFAULT,
+    //   and has no --no-absolute-names flag (it would fail outright).
     let extract_dir = temp_dir.join("extracted");
     std::fs::create_dir_all(&extract_dir)?;
 
-    let output = std::process::Command::new("tar")
-        .arg("xf")
-        .arg(&archive_path)
-        .arg("-C")
-        .arg(&extract_dir)
-        .arg("--no-absolute-names")
-        .output()?;
+    let mut tar = std::process::Command::new("tar");
+    tar.arg("xf").arg(&archive_path).arg("-C").arg(&extract_dir);
+    #[cfg(target_os = "linux")]
+    tar.arg("--no-absolute-names");
+    let output = tar.output()?;
 
     if !output.status.success() {
         return Err(std::io::Error::other(format!(
