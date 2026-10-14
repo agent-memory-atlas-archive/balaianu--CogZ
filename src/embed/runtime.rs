@@ -190,9 +190,8 @@ fn find_existing_lib() -> Option<PathBuf> {
 }
 
 /// Download and extract the ONNX Runtime library to cogz's lib dir.
-/// Downloads the CPU-only build from GitHub releases.
-/// Verifies the SHA-256 checksum from the release's SHA256SUMS file
-/// before extracting.
+/// Downloads the CPU-only build from GitHub releases and verifies it
+/// against the pinned per-target SHA-256 before extracting.
 fn download_ort() -> Result<PathBuf, std::io::Error> {
     if !ort_download_supported() {
         return Err(std::io::Error::other(
@@ -216,9 +215,19 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
 
     info!("downloading ONNX Runtime {} from GitHub", ORT_VERSION);
 
-    // Use a temp directory under the system temp dir (no tempfile dependency).
-    let temp_dir = std::env::temp_dir().join(format!("cogz-ort-{}", std::process::id()));
-    std::fs::create_dir_all(&temp_dir)?;
+    // Stage inside the private cogz lib dir, not the shared system
+    // temp — a predictable temp_dir() path lets another user pre-plant
+    // a directory we then write the archive into. TempDir removes
+    // itself on every exit path.
+    let staging = tempfile::Builder::new()
+        .prefix("ort-")
+        .tempdir_in(&lib_dir)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(staging.path(), std::fs::Permissions::from_mode(0o700))?;
+    }
+    let temp_dir = staging.path();
 
     let archive_name = format!("onnxruntime.{}", ORT_ARCHIVE_EXT);
     let archive_path = temp_dir.join(&archive_name);
@@ -239,7 +248,6 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
     // network fetch: upstream doesn't always ship SHA256SUMS.
     let actual_hash = sha256_file(&archive_path)?;
     if actual_hash != ORT_SHA256 {
-        let _ = std::fs::remove_dir_all(&temp_dir);
         return Err(std::io::Error::other(format!(
             "ONNX Runtime checksum mismatch: expected {ORT_SHA256}, got {actual_hash} — \
              refusing to install unverified binary"
@@ -267,7 +275,6 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
         .output()?;
 
     if !output.status.success() {
-        let _ = std::fs::remove_dir_all(&temp_dir);
         return Err(std::io::Error::other(format!(
             "archive extraction failed: {}",
             String::from_utf8_lossy(&output.stderr)
@@ -288,7 +295,6 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
                 .unwrap_or_else(|_| extract_dir.clone());
             let canonical_path = path.canonicalize().unwrap_or_else(|_| path.clone());
             if !canonical_path.starts_with(&canonical_extract) {
-                let _ = std::fs::remove_dir_all(&temp_dir);
                 return Err(std::io::Error::other(
                     "archive contains path outside extraction directory — refusing to load",
                 ));
@@ -299,7 +305,6 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
     }
 
     let Some(src_lib) = found_lib else {
-        let _ = std::fs::remove_dir_all(&temp_dir);
         return Err(std::io::Error::new(
             std::io::ErrorKind::NotFound,
             format!("{} not found in archive", ORT_LIB_NAME),
@@ -330,9 +335,6 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
             }
         }
     }
-
-    // Clean up temp dir
-    let _ = std::fs::remove_dir_all(&temp_dir);
 
     info!(
         "ONNX Runtime installed to {} ({}KB)",
