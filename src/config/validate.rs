@@ -42,6 +42,20 @@ impl Config {
                 "embedding dimension must be greater than 0".to_string(),
             ));
         }
+        // Model IDs flow into HF download URLs and local cache paths.
+        // Require the owner/name shape before any of that happens.
+        for (model_id, label) in [
+            (&self.embedding.code_model, "code_model"),
+            (&self.embedding.knowledge_model, "knowledge_model"),
+            (&self.embedding.nli_model, "nli_model"),
+        ] {
+            if !model_id.is_empty() && !is_valid_model_id(model_id) {
+                return Err(ConfigError::Validation(format!(
+                    "embedding.{label} must be a HuggingFace repo id in owner/name form \
+                     (letters, digits, '.', '_', '-'), got '{model_id}'"
+                )));
+            }
+        }
         // Cross-reference configured dimension against the model registry.
         // A mismatch means the vec0 table is created at one dimension while
         // the model produces vectors at another — KNN will fail silently.
@@ -132,4 +146,27 @@ impl Config {
         }
         Ok(())
     }
+}
+
+/// Validate a HuggingFace model/repo id: `owner/name` where owner is
+/// `[A-Za-z0-9][A-Za-z0-9._-]*`, name is `[A-Za-z0-9._-]+`, with no
+/// `..` segments and no leading `/`. Mirrors the shape HF accepts —
+/// anything else would become a URL or cache path we didn't intend.
+fn is_valid_model_id(id: &str) -> bool {
+    let Some((owner, name)) = id.split_once('/') else {
+        return false;
+    };
+    if name.contains('/') || id.contains("..") || id.starts_with('/') {
+        return false;
+    }
+    let valid_owner = {
+        let mut chars = owner.chars();
+        matches!(chars.next(), Some(c) if c.is_ascii_alphanumeric())
+            && chars.all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-'))
+    };
+    let valid_name = !name.is_empty()
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '_' | '-'));
+    valid_owner && valid_name
 }

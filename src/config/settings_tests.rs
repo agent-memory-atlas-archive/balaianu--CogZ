@@ -19,8 +19,8 @@ name = "test"
 db_path = ".cogz/cogz.db"
 
 [embedding]
-code_model = "test"
-knowledge_model = "test"
+code_model = "test/code"
+knowledge_model = "test/knowledge"
 dimension = 384
 
 [search]
@@ -55,8 +55,8 @@ name = "test"
 db_path = ".cogz/cogz.db"
 
 [embedding]
-code_model = "test"
-knowledge_model = "test"
+code_model = "test/code"
+knowledge_model = "test/knowledge"
 dimension = 384
 
 [search]
@@ -111,4 +111,35 @@ fn validation_rejects_parent_dir_in_db_path() {
     config.storage.db_path = "../../etc/cogz.db".to_string();
     let err = config.validate().unwrap_err();
     assert!(err.to_string().contains("parent"));
+}
+
+#[test]
+fn validation_rejects_malformed_model_ids() {
+    for bad in [
+        "../x/y",
+        "/abs/path",
+        "a/b/c",
+        "noslash",
+        "o//n",
+        "o/",
+        "/n",
+    ] {
+        let mut config = Config::default_for("test");
+        config.embedding.code_model = bad.to_string();
+        let err = config.validate().unwrap_err();
+        assert!(
+            err.to_string().contains("owner/name"),
+            "'{bad}' should be rejected as a model id"
+        );
+    }
+}
+
+#[test]
+fn validation_accepts_hf_model_ids_and_empty_nli() {
+    let mut config = Config::default_for("test");
+    // Non-registry ids: format is validated, dimension is not.
+    config.embedding.code_model = "acme-corp/custom.code_model-1".to_string();
+    config.embedding.knowledge_model = "org.name/model_v2-1.0".to_string();
+    config.embedding.nli_model = String::new();
+    config.validate().unwrap();
 }
