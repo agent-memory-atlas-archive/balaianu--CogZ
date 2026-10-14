@@ -81,40 +81,12 @@ pub fn write_entity_file_atomic(
     })?;
 
     // If the file already exists and belongs to this entity, it's an
-    // update — write to a unique temp file in the same directory, then
-    // rename. The temp file uses exclusive creation (create_new) with
-    // a unique name to prevent symlink-based overwrite attacks: a
-    // deterministic temp name could be a symlink pointing outside .cogz.
+    // update — temp-write + rename via the shared atomic primitive.
     if initial_path.exists()
         && let Ok(existing) = read_entity_file(initial_path)
         && existing.id == entity.id
     {
-        let parent = initial_path.parent().unwrap_or(std::path::Path::new("."));
-        let temp_name = format!(
-            ".{}.{}.tmp",
-            initial_path
-                .file_name()
-                .and_then(|n| n.to_str())
-                .unwrap_or("entity"),
-            chrono::Utc::now().timestamp_millis(),
-        );
-        let temp_path = parent.join(&temp_name);
-        {
-            use std::io::Write;
-            let mut file = std::fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&temp_path)?;
-            file.write_all(content.as_bytes())?;
-            file.sync_all()?;
-        }
-        // Platform-aware atomic replace: on Unix, rename overwrites
-        // atomically. On Windows, rename fails if the destination
-        // exists, so remove it first.
-        if cfg!(windows) {
-            let _ = std::fs::remove_file(initial_path);
-        }
-        std::fs::rename(&temp_path, initial_path)?;
+        crate::files::atomic::atomic_write(initial_path, content.as_bytes())?;
         return Ok(initial_path.to_path_buf());
         // File exists but belongs to a different entity — file_path_safe
         // should have caught this. Fall through to create_new retry.
@@ -135,10 +107,17 @@ pub fn write_entity_file_atomic(
         {
             Ok(mut file) => {
                 use std::io::Write;
-                if let Err(e) = file.write_all(content.as_bytes()) {
+                let result = file
+                    .write_all(content.as_bytes())
+                    .and_then(|()| file.sync_all());
+                drop(file);
+                if let Err(e) = result {
                     // Clean up partial file on write failure.
                     let _ = std::fs::remove_file(&current_path);
                     return Err(e);
+                }
+                if let Some(parent) = current_path.parent() {
+                    crate::files::atomic::fsync_dir(parent);
                 }
                 return Ok(current_path);
             }
