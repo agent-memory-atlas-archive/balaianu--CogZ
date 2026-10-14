@@ -187,6 +187,16 @@ cogz doctor
 
 Checks DB integrity, model availability, file-sync consistency, observation content edits, orphaned supersedes, near-duplicate knowledge, and vector dimension mismatches.
 
+## Reviewing rules like code
+
+Rules under `.cogz/rules/` are injected into agent context as behavioral constraints — treat them with the same review discipline as source code. On shared repos, a `CODEOWNERS` entry keeps rule changes behind human review:
+
+```
+.cogz/rules/ @your-team
+```
+
+`cogz doctor` also lints active rules for URLs and pipe-to-shell patterns — content that asks an agent to fetch or execute remote code should always get a second look before it ships into a teammate's context.
+
 ## FTS-only mode
 
 If you don't want to download models, CogZ works in FTS-only mode. You lose vector search, embedding-based dedup, and contradiction detection, but everything else works: hooks, context packs, consolidation (title-based dedup only), doctor, prune.

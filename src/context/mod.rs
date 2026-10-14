@@ -10,6 +10,7 @@ mod baseline;
 pub mod code_map;
 pub mod compress;
 pub mod modes;
+pub mod provenance;
 mod query_sections;
 
 pub use crate::storage::usage::DeliveryTier;

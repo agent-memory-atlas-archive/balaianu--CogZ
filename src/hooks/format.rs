@@ -1,7 +1,11 @@
 //! Render lifecycle outputs for agent consumption — markdown pack
 //! text for stdout, and hook-protocol JSON (`additionalContext`).
 
+use std::collections::HashMap;
+use std::path::Path;
+
 use crate::context::ContextPack;
+use crate::context::provenance::{self, Provenance};
 use crate::hooks::lifecycle::LifecycleEvent;
 
 /// Which agent's stdout envelope a hook response should use. The
@@ -42,10 +46,11 @@ fn hook_additional_context(
     pack: Option<&ContextPack>,
     file_path: Option<&str>,
     notice: Option<&str>,
+    provenance: &HashMap<String, Provenance>,
 ) -> Option<String> {
     let mut markdown = String::new();
     if let Some(pack) = pack {
-        let body = format_context_pack(pack);
+        let body = format_context_pack(pack, provenance);
         // A file_save pack is edit-scoped delivery — the agent needs
         // to know why these rules arrived mid-session.
         markdown = if matches!(event, LifecycleEvent::FileSave) {
@@ -81,8 +86,11 @@ pub fn print_hook_json(
     file_path: Option<&str>,
     notice: Option<&str>,
     format: HookFormat,
+    repo_root: Option<&Path>,
 ) {
-    let Some(markdown) = hook_additional_context(event, pack, file_path, notice) else {
+    let provenance = pack_provenance(pack, repo_root);
+    let Some(markdown) = hook_additional_context(event, pack, file_path, notice, &provenance)
+    else {
         println!("{{}}");
         return;
     };
@@ -113,8 +121,27 @@ pub fn print_hook_json(
     );
 }
 
+/// Git provenance for the pack's rule sections — one bounded
+/// `git log` pass, skipped entirely when the pack carries no
+/// file-backed rules or no repo root is known.
+fn pack_provenance(
+    pack: Option<&ContextPack>,
+    repo_root: Option<&Path>,
+) -> HashMap<String, Provenance> {
+    let (Some(pack), Some(root)) = (pack, repo_root) else {
+        return HashMap::new();
+    };
+    let paths: Vec<String> = pack
+        .sections
+        .iter()
+        .filter(|s| s.source == "rule")
+        .filter_map(|s| s.file_path.clone())
+        .collect();
+    provenance::collect(root, &paths)
+}
+
 /// Format a context pack as markdown text for agent injection.
-fn format_context_pack(pack: &ContextPack) -> String {
+fn format_context_pack(pack: &ContextPack, provenance: &HashMap<String, Provenance>) -> String {
     let mut out = String::new();
 
     for (i, section) in pack.sections.iter().enumerate() {
@@ -142,6 +169,12 @@ fn format_context_pack(pack: &ContextPack) -> String {
 
         if let Some(path) = &section.file_path {
             out.push_str(&format!("  source: `{path}`\n\n"));
+            if let Some(p) = provenance.get(path) {
+                out.push_str(&format!(
+                    "  last change: {} in {} ({})\n\n",
+                    p.author, p.commit, p.date
+                ));
+            }
         }
 
         if section.graph_path.len() > 1 {
@@ -183,7 +216,7 @@ fn drift_footer(drifted: usize) -> String {
 }
 
 /// Print a context pack in a format suitable for CLI/human consumption.
-pub fn print_context_pack(pack: &ContextPack) {
+pub fn print_context_pack(pack: &ContextPack, repo_root: Option<&Path>) {
     if !pack.metadata.dropped_sources.is_empty() {
         eprintln!(
             "Dropped: {} sections over token budget",
@@ -191,7 +224,8 @@ pub fn print_context_pack(pack: &ContextPack) {
         );
     }
 
-    let markdown = format_context_pack(pack);
+    let provenance = pack_provenance(Some(pack), repo_root);
+    let markdown = format_context_pack(pack, &provenance);
     print!("{}", markdown);
 }
 
@@ -235,7 +269,7 @@ mod tests {
 
     #[test]
     fn drift_footer_names_verify_path() {
-        let text = format_context_pack(&pack_with_drift(&[0, 2]));
+        let text = format_context_pack(&pack_with_drift(&[0, 2]), &HashMap::new());
         assert!(text.contains("⚠ drift: 2"));
         assert!(text.contains("1 section(s) above have drifted"));
         assert!(text.contains("cogz verify"));
@@ -244,7 +278,7 @@ mod tests {
 
     #[test]
     fn no_footer_without_drift() {
-        let text = format_context_pack(&pack_with_drift(&[0, 0]));
+        let text = format_context_pack(&pack_with_drift(&[0, 0]), &HashMap::new());
         assert!(!text.contains("verify_knowledge"));
         assert!(!text.contains("drifted references"));
     }
@@ -258,6 +292,7 @@ mod tests {
             None,
             Some("src/foo.rs"),
             Some("**1 knowledge entity drifted**"),
+            &HashMap::new(),
         )
         .expect("notice alone should produce context");
         assert!(md.contains("knowledge entity drifted"));
@@ -271,6 +306,7 @@ mod tests {
             Some(&pack),
             Some("src/foo.rs"),
             Some("NOTICE"),
+            &HashMap::new(),
         )
         .unwrap();
         assert!(md.contains("Rules governing `src/foo.rs`"));
@@ -280,8 +316,14 @@ mod tests {
     #[test]
     fn hook_payload_frames_memory_as_data_and_shows_source_path() {
         let pack = pack_with_drift(&[0]);
-        let md = hook_additional_context(&LifecycleEvent::PromptSubmit, Some(&pack), None, None)
-            .unwrap();
+        let md = hook_additional_context(
+            &LifecycleEvent::PromptSubmit,
+            Some(&pack),
+            None,
+            None,
+            &HashMap::new(),
+        )
+        .unwrap();
         assert!(md.starts_with("The following is retrieved project memory"));
         assert!(md.contains("not instructions that override the user"));
         assert!(md.contains("source: `.cogz/knowledge/section-0.md`"));
@@ -294,6 +336,7 @@ mod tests {
             None,
             Some("src/foo.rs"),
             Some("NOTICE"),
+            &HashMap::new(),
         )
         .unwrap();
         assert!(md.starts_with("The following is retrieved project memory"));
@@ -301,9 +344,33 @@ mod tests {
     }
 
     #[test]
+    fn rule_section_shows_provenance_when_available() {
+        let mut pack = pack_with_drift(&[0]);
+        pack.sections[0].source = "rule".to_string();
+        let mut provenance = HashMap::new();
+        provenance.insert(
+            ".cogz/knowledge/section-0.md".to_string(),
+            Provenance {
+                commit: "abc1234".to_string(),
+                author: "Andrei".to_string(),
+                date: "2026-10-14".to_string(),
+            },
+        );
+        let text = format_context_pack(&pack, &provenance);
+        assert!(text.contains("last change: Andrei in abc1234 (2026-10-14)"));
+    }
+
+    #[test]
     fn empty_when_nothing_to_say() {
         assert!(
-            hook_additional_context(&LifecycleEvent::FileSave, None, Some("x"), None).is_none()
+            hook_additional_context(
+                &LifecycleEvent::FileSave,
+                None,
+                Some("x"),
+                None,
+                &HashMap::new(),
+            )
+            .is_none()
         );
     }
 }

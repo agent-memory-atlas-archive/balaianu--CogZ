@@ -219,10 +219,11 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
             file_path,
             output.notices.as_deref(),
             input.hook_format,
+            Some(input.repo),
         );
     } else {
         if let Some(ref pack) = output.context_pack {
-            crate::hooks::format::print_context_pack(pack);
+            crate::hooks::format::print_context_pack(pack, Some(input.repo));
         }
         if let Some(ref notice) = output.notices {
             println!("{notice}");
