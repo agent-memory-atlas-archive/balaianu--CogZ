@@ -75,9 +75,26 @@ The `release.yml` workflow:
 3. Generates SHA256 checksums per asset.
 4. Creates a GitHub release with the binaries.
 5. Generates a combined `SHA256SUMS` manifest.
-6. Builds the container image and pushes `ghcr.io/balaianu/cogz:{vX.Y.Z, X.Y.Z, latest}`.
+6. Attests build provenance for each binary and for `SHA256SUMS` via `actions/attest-build-provenance`.
+7. Builds the container image and pushes `ghcr.io/balaianu/cogz:{vX.Y.Z, X.Y.Z, latest}`.
 
 The install scripts (`install.sh`, `install.ps1`) download from the latest GitHub release and verify checksums against `SHA256SUMS`. `install.sh` works on Linux, macOS, and Windows (Git Bash / MSYS2). `install.ps1` is the PowerShell alternative for Windows.
+
+### Verifying a release artifact
+
+Every binary asset and the `SHA256SUMS` manifest carry a GitHub
+Sigstore build-provenance attestation. To verify a downloaded
+binary came from this repo's release workflow:
+
+```bash
+gh attestation verify cogz-x86_64-unknown-linux-gnu --repo balaianu/CogZ
+gh attestation verify SHA256SUMS --repo balaianu/CogZ
+```
+
+This proves the artifact was built by `release.yml` in this
+repository — it is a stronger guarantee than the checksum alone
+(which only proves the file matches whatever the release page
+hosted).
 
 ## MCP registry publish
 
