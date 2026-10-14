@@ -418,20 +418,18 @@ enum ModelsSub {
 }
 
 fn main() -> anyhow::Result<()> {
-    // MCP stdio uses stdout as the transport — tracing must go to
-    // stderr to avoid corrupting the protocol.
-    let is_mcp_stdio = std::env::args().any(|a| a == "mcp-stdio");
+    use std::io::IsTerminal;
 
-    let subscriber = tracing_subscriber::fmt().with_env_filter(
-        tracing_subscriber::EnvFilter::try_from_default_env()
-            .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn")),
-    );
-
-    if is_mcp_stdio {
-        subscriber.with_writer(std::io::stderr).init();
-    } else {
-        subscriber.init();
-    }
+    // Diagnostics never go to stdout: MCP stdio uses stdout as the
+    // transport, and hook commands emit machine-readable JSON there.
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn")),
+        )
+        .with_writer(std::io::stderr)
+        .with_ansi(std::io::stderr().is_terminal())
+        .init();
 
     let cli = Cli::parse();
 
