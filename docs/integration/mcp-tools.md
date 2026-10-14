@@ -118,7 +118,7 @@ Browse knowledge-layer entities of one type with optional filters. Use to enumer
 | `repo` | string | yes | Absolute path to project root |
 | `entity_type` | string | yes | `observation` \| `rule` \| `knowledge` |
 | `status` | string | no | Filter by status (default: `active`; `all` for every status) |
-| `references` | string | no | Observation/rule only: filter to entities referencing this target UUID or path |
+| `references` | string | no | Observation/rule only: filter to entities referencing this target — a UUID, or a file path when filtering by code-entity references. Paths are accepted only in this query filter; `references` passed to `create_entity`/`update_knowledge` must be UUIDs. |
 | `category` | string | no | Knowledge only: filter by category |
 | `tags` | array of strings | no | Knowledge only: filter by tags |
 | `limit` | integer | no | Max results (default 20) |
