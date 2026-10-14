@@ -223,7 +223,7 @@ fn merge_redirects_edges_and_marks_superseded() {
         }
     }
 
-    let results = run_merge(&storage, &cogz_dir, &config(), None, false).unwrap();
+    let results = run_merge(&storage, &cogz_dir, &config(), Some(&MockNliModel), false).unwrap();
     assert_eq!(results.len(), 1);
 
     let conn = storage.conn();
@@ -258,6 +258,68 @@ fn merge_redirects_edges_and_marks_superseded() {
             .any(|e| e.source_id == "a1b2c3d4-e5f6-4789-abcd-000000000043"
                 && e.edge_type == "references")
     );
+}
+
+#[test]
+fn no_merge_without_nli() {
+    // Embedding-identical observations are merge candidates — but
+    // with no NLI model a non-dry-run must report nothing and leave
+    // both statuses untouched. Superseding is irreversible.
+    let storage = setup();
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    let obs_dir = cogz_dir.join("observations").join("2026-01");
+    std::fs::create_dir_all(&obs_dir).unwrap();
+
+    let embedding = vec![0.1_f32; 768];
+    {
+        let conn = storage.conn();
+        for (id, title, created) in [
+            ("obs-1", "A", "2026-01-01T00:00:00Z"),
+            ("obs-2", "B", "2026-02-01T00:00:00Z"),
+        ] {
+            let mut e = Entity::new(id, "observation", title, "content");
+            e.created_at = created.to_string();
+            e.file_path = Some(format!("observations/2026-01/{id}.md"));
+            insert_entity(&conn, &e).unwrap();
+            insert_embedding(&conn, id, "observation", &embedding).unwrap();
+
+            let mut fm = Frontmatter::new();
+            fm.insert("id", FmValue::String(id.to_string()));
+            fm.insert("title", FmValue::String(title.to_string()));
+            fm.insert("type", FmValue::String("observation".to_string()));
+            fm.insert("status", FmValue::String("active".to_string()));
+            fm.insert("created_at", FmValue::String(created.to_string()));
+            fm.insert("updated_at", FmValue::String(created.to_string()));
+            fm.insert("references", FmValue::Array(vec![]));
+            std::fs::write(
+                obs_dir.join(format!("{id}.md")),
+                format!(
+                    "---\n{}---\n\ncontent",
+                    crate::files::frontmatter::serialize(&fm)
+                ),
+            )
+            .unwrap();
+        }
+    }
+
+    let results = run_merge(&storage, &cogz_dir, &config(), None, false).unwrap();
+    assert!(
+        results.is_empty(),
+        "no merge may run without NLI confirmation"
+    );
+
+    let conn = storage.conn();
+    for id in ["obs-1", "obs-2"] {
+        let e = crate::storage::crud::get_entity(&conn, id).unwrap();
+        assert_eq!(e.status, "active", "{id} must remain active");
+        assert!(
+            std::fs::read_to_string(obs_dir.join(format!("{id}.md")))
+                .unwrap()
+                .contains("status: active"),
+            "{id} file must keep active status"
+        );
+    }
 }
 
 #[test]

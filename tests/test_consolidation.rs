@@ -529,7 +529,7 @@ fn merge_supersedes_duplicate_and_redirects_edges() {
         "2026-02-01T00:00:00Z",
     );
 
-    let results = run_merge(&storage, &cogz_dir, &config(), None, false).unwrap();
+    let results = run_merge(&storage, &cogz_dir, &config(), Some(&MockNliModel), false).unwrap();
     assert_eq!(results.len(), 1);
 
     let conn = storage.conn();

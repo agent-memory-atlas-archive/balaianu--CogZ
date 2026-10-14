@@ -46,9 +46,10 @@ pub struct MergeResult {
 ///
 /// NLI confirmation gates auto-merge: embedding similarity finds
 /// candidates, then max-direction NLI entailment confirms true
-/// duplicates before any merge occurs. When `nli_model` is `None`,
-/// falls back to embedding-only (candidates are reported but not
-/// merged in non-dry-run mode — a warning is logged).
+/// duplicates before any merge occurs. When `nli_model` is `None`
+/// or fails to load, candidates are still reported in dry-run mode,
+/// but a non-dry-run returns without merging — superseding is
+/// irreversible, so confirmation is not optional.
 pub fn run_merge(
     storage: &crate::storage::Storage,
     cogz_dir: &Path,
@@ -56,6 +57,12 @@ pub fn run_merge(
     nli_model: Option<&dyn NliModel>,
     dry_run: bool,
 ) -> Result<Vec<MergeResult>, StorageError> {
+    // Probe the NLI model once here. The probe triggers lazy loading
+    // and distinguishes "configured but unavailable" from "available
+    // but didn't confirm" — a broken model must not silently merge.
+    let nli_available = nli_model.is_some_and(|m| m.classify("test", "test").is_ok());
+    let nli_model = if nli_available { nli_model } else { None };
+
     let pairs = find_merge_candidates(storage, config, nli_model)?;
 
     if dry_run {
@@ -67,6 +74,16 @@ pub fn run_merge(
                 reason: p.reason,
             })
             .collect());
+    }
+
+    if !nli_available && !pairs.is_empty() {
+        tracing::warn!(
+            "skipping {} merge candidate(s): NLI model unavailable — \
+             merges require NLI confirmation (re-run `cogz consolidate --dry-run` \
+             with models to review)",
+            pairs.len()
+        );
+        return Ok(Vec::new());
     }
 
     let mut results = Vec::new();
@@ -135,19 +152,6 @@ fn find_merge_candidates(
 
     let mut seen_pairs = std::collections::HashSet::new();
     let mut candidates = Vec::new();
-
-    // Probe the NLI model with a trivial classification to trigger
-    // lazy loading. If the model can't load (missing files, ONNX
-    // runtime error), fall back to embedding-only merge. This
-    // distinguishes "NLI configured but unavailable" from "NLI
-    // available but didn't confirm" — without it, a broken NLI
-    // model would silently disable all merges.
-    let nli_available = if let Some(model) = nli_model {
-        model.classify("test", "test").is_ok()
-    } else {
-        false
-    };
-    let nli_model = if nli_available { nli_model } else { None };
 
     // Acquire the connection once for all KNN searches, instead of
     // re-acquiring the mutex per observation.
