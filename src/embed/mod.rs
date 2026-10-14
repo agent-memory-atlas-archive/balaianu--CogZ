@@ -30,7 +30,7 @@ pub use model_type::ModelType;
 pub use nli::OnnxNliModel;
 pub use onnx::OnnxEmbeddingModel;
 pub use registry::{ModelKind, lookup, onnx_filename, onnx_relative_path, resolve_source};
-pub use runtime::ensure_ort;
+pub use runtime::{ensure_ort, set_ort_download_allowed};
 
 /// Get the models directory: `~/.local/share/cogz/models/` on Linux,
 /// `%LOCALAPPDATA%/cogz/models/` on Windows. Falls back to

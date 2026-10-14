@@ -294,6 +294,7 @@ pub fn open_repo(
 
     let config = crate::config::load(&config_path)
         .map_err(|e| mcp_internal_error("config", &e.to_string()))?;
+    crate::embed::set_ort_download_allowed(config.embedding.auto_download);
 
     let db_path = crate::config::resolve_db_path(canonical, &config.storage.db_path)
         .map_err(|e| mcp_internal_error("config", &e.to_string()))?;

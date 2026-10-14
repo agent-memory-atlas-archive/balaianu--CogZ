@@ -17,6 +17,17 @@ fn find_existing_lib_returns_none_when_nothing_installed() {
 }
 
 #[test]
+fn ort_download_gate_respects_flag() {
+    // ensure_ort's OnceLock caches its first outcome process-wide, so
+    // the download gate can't be exercised through it in-process —
+    // this covers the flag mechanism the gate reads.
+    set_ort_download_allowed(false);
+    assert!(!ort_download_permitted());
+    set_ort_download_allowed(true);
+    assert!(ort_download_permitted());
+}
+
+#[test]
 fn ort_sha256_is_pinned_for_supported_platforms() {
     // The hash is the trust root for the ORT download — it must be a
     // real 64-hex-char pin wherever a download can happen. An empty

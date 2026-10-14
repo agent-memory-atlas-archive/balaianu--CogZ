@@ -40,6 +40,9 @@ pub(crate) fn load_config(repo: &Path) -> anyhow::Result<(Config, std::path::Pat
     }
 
     let config = cogz::config::load(&config_path)?;
+    // The config also governs the ORT binary download inside model
+    // loading — `auto_download` must not leak past it.
+    cogz::embed::set_ort_download_allowed(config.embedding.auto_download);
     let db_path = cogz::config::resolve_db_path(repo, &config.storage.db_path)?;
     Ok((config, db_path))
 }
@@ -169,6 +172,9 @@ fn embed_targets(
 
 pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
     let (config, db_path) = load_config(repo)?;
+    // --no-download must also cover the ORT binary fetch inside model
+    // loading — not just the HuggingFace model downloads below.
+    cogz::embed::set_ort_download_allowed(config.embedding.auto_download && !no_download);
     let cogz_dir = repo.join(".cogz");
     let storage = cogz::storage::Storage::open(&db_path, config.embedding.dimension)?;
 

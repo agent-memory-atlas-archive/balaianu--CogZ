@@ -112,6 +112,23 @@ const fn ort_download_supported() -> bool {
     !ORT_ASSET.is_empty()
 }
 
+/// Whether the ORT auto-download is permitted for this process. Set
+/// once by entry points that know the download policy (config
+/// `embedding.auto_download`, `--no-download`); entry points that
+/// never set it get the permissive default.
+static ORT_DOWNLOAD_ALLOWED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(true);
+
+/// Allow or forbid the ORT auto-download for this process. When
+/// forbidden, `ensure_ort` uses only an already-installed library.
+pub fn set_ort_download_allowed(allowed: bool) {
+    ORT_DOWNLOAD_ALLOWED.store(allowed, std::sync::atomic::Ordering::Relaxed);
+}
+
+fn ort_download_permitted() -> bool {
+    ORT_DOWNLOAD_ALLOWED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
 /// Static init guard — ensures `ort::init_from` is called exactly once.
 static ORT_INIT: OnceLock<bool> = OnceLock::new();
 
@@ -360,6 +377,11 @@ pub fn ensure_ort() -> bool {
         let lib_path = match find_existing_lib() {
             Some(path) => path,
             None => {
+                if !ort_download_permitted() {
+                    warn!("ONNX Runtime not installed and auto-download is disabled");
+                    warn!("system will operate in FTS-only mode");
+                    return false;
+                }
                 // Try to download it.
                 match download_ort() {
                     Ok(path) => path,
