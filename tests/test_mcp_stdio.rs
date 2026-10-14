@@ -65,7 +65,9 @@ fn run_cogz_env(
 
 // ── JSON-RPC client ─────────────────────────────────────────────
 
-/// Read one JSON-RPC line from stdout, skipping any non-JSON lines.
+/// Read one JSON-RPC line from stdout. A non-empty line that is not
+/// valid JSON fails the test — MCP/hook stdout must be pure JSON, and
+/// silently skipping a line would hide protocol corruption.
 fn read_jsonrpc(reader: &mut BufReader<std::process::ChildStdout>) -> Option<serde_json::Value> {
     let mut line = String::new();
     match reader.read_line(&mut line) {
@@ -75,7 +77,9 @@ fn read_jsonrpc(reader: &mut BufReader<std::process::ChildStdout>) -> Option<ser
             if trimmed.is_empty() {
                 None
             } else {
-                serde_json::from_str(trimmed).ok()
+                Some(serde_json::from_str(trimmed).unwrap_or_else(|e| {
+                    panic!("non-JSON line on protocol stdout: {trimmed:?} ({e})")
+                }))
             }
         }
         Err(_) => None,
@@ -975,6 +979,50 @@ fn mcp_stdio_update_knowledge_invalid_references_rejected() {
 
     child.kill().unwrap();
     child.wait().unwrap();
+}
+
+#[test]
+fn cogz_hook_json_stdout_stays_pure_under_warn() {
+    let repo = TempRepo::new();
+
+    // A malformed entity file forces a warn! during file_save sync —
+    // the exact condition that used to contaminate hook stdout.
+    let bad_dir = repo.path.join(".cogz/knowledge/test");
+    std::fs::create_dir_all(&bad_dir).unwrap();
+    std::fs::write(
+        bad_dir.join("bad.md"),
+        "---\nid: not-a-uuid\ntitle: bad\n---\n\nbody\n",
+    )
+    .unwrap();
+
+    for (event, payload) in [
+        (
+            "file_save",
+            serde_json::json!({"file_path": ".cogz/knowledge/test/bad.md"}),
+        ),
+        ("prompt_submit", serde_json::json!({"prompt": "x"})),
+    ] {
+        let mut child = Command::new(COGZ_BIN)
+            .args(["capture-event", event, "--hook-json", "--fts-only"])
+            .arg("--repo")
+            .arg(repo.path_str())
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("failed to spawn capture-event");
+        child
+            .stdin
+            .take()
+            .unwrap()
+            .write_all(payload.to_string().as_bytes())
+            .unwrap();
+        let out = child.wait_with_output().unwrap();
+        assert!(out.status.success(), "capture-event {event} failed");
+        let text = String::from_utf8(out.stdout).unwrap();
+        serde_json::from_str::<serde_json::Value>(&text)
+            .unwrap_or_else(|e| panic!("{event} stdout must be one JSON value: {text:?} ({e})"));
+    }
 }
 
 // ── Tests: search and context (FTS-only mode) ───────────────────
