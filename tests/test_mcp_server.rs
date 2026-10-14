@@ -1382,6 +1382,112 @@ async fn update_knowledge_category_change_moves_file() {
     );
 }
 
+// ── update_knowledge rollback on sync failure ────────────────────
+
+/// A knowledge file synced to the DB, then forced into file↔DB
+/// status divergence: DB says `rejected`, file still says `active`
+/// (rejected → active is illegal, so the next sync must fail).
+fn setup_diverged_knowledge(dir: &tempfile::TempDir) -> (Arc<Storage>, std::path::PathBuf, String) {
+    let cogz_dir = dir.path().join(".cogz");
+    let file_path = cogz_dir.join("knowledge/architecture/orig-title.md");
+    std::fs::create_dir_all(file_path.parent().unwrap()).unwrap();
+    let id = "11111111-1111-1111-1111-111111111111";
+    let original = format!(
+        "---\nid: {id}\ntitle: \"Orig Title\"\ntype: knowledge\nstatus: active\ncreated_at: 2026-01-01T00:00:00Z\nupdated_at: 2026-01-01T00:00:00Z\nreferences: []\ncategory: architecture\n---\n\nOriginal body."
+    );
+    std::fs::write(&file_path, &original).unwrap();
+
+    let storage = Arc::new(Storage::open(&dir.path().join("cogz.db"), 768).unwrap());
+    let res =
+        cogz::files::sync_single_file(&storage, &cogz_dir, "knowledge/architecture/orig-title.md");
+    assert!(
+        res.errors.is_empty(),
+        "setup sync failed: {:?}",
+        res.errors
+            .iter()
+            .map(|e| e.error.to_string())
+            .collect::<Vec<_>>()
+    );
+
+    {
+        let conn = storage.conn();
+        cogz::storage::crud::update_status(&conn, id, "rejected").unwrap();
+    }
+    (storage, file_path, original)
+}
+
+#[test]
+fn update_knowledge_sync_failure_restores_original_on_new_path() {
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    let (storage, file_path, original) = setup_diverged_knowledge(&dir);
+
+    // Title change → the update would land at a NEW path. The sync
+    // must fail and the original file must survive with no stray
+    // new file left behind.
+    let params = cogz::mcp::params::UpdateKnowledgeParams {
+        repo: dir.path().to_str().unwrap().to_string(),
+        id: "11111111-1111-1111-1111-111111111111".to_string(),
+        content: "Body that must not persist.".to_string(),
+        title: Some("Renamed Title".to_string()),
+        category: None,
+        tags: None,
+        references: None,
+    };
+    let err =
+        cogz::mcp::helpers::update_knowledge_file(&storage, &cogz_dir, &params, None).unwrap_err();
+    assert!(
+        err.to_string().contains("Sync failed"),
+        "expected sync failure, got: {err}"
+    );
+
+    assert_eq!(
+        std::fs::read_to_string(&file_path).unwrap(),
+        original,
+        "original file must be intact after failed sync"
+    );
+    let leftovers: Vec<_> = std::fs::read_dir(file_path.parent().unwrap())
+        .unwrap()
+        .map(|e| e.unwrap().file_name())
+        .collect();
+    assert_eq!(
+        leftovers.len(),
+        1,
+        "failed update must leave no new file: {leftovers:?}"
+    );
+}
+
+#[test]
+fn update_knowledge_sync_failure_restores_original_on_same_path() {
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    let (storage, file_path, original) = setup_diverged_knowledge(&dir);
+
+    // No title change → the update replaces the file in place. The
+    // sync must fail and the original bytes must be restored.
+    let params = cogz::mcp::params::UpdateKnowledgeParams {
+        repo: dir.path().to_str().unwrap().to_string(),
+        id: "11111111-1111-1111-1111-111111111111".to_string(),
+        content: "Body that must not persist.".to_string(),
+        title: None,
+        category: None,
+        tags: None,
+        references: None,
+    };
+    let err =
+        cogz::mcp::helpers::update_knowledge_file(&storage, &cogz_dir, &params, None).unwrap_err();
+    assert!(
+        err.to_string().contains("Sync failed"),
+        "expected sync failure, got: {err}"
+    );
+
+    assert_eq!(
+        std::fs::read_to_string(&file_path).unwrap(),
+        original,
+        "original content must be restored after failed in-place sync"
+    );
+}
+
 #[tokio::test]
 async fn capture_event_session_start_returns_context_pack() {
     let (server, dir) = setup();
