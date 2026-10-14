@@ -70,6 +70,15 @@ pub fn write_entity_file_atomic(
     use crate::files::read_entity_file;
 
     let content = entity.to_file_content();
+    // Refuse to write content the parser cannot read back — a
+    // canonical file that fails from_content would poison every
+    // later sync.
+    EntityFile::from_content(&content).map_err(|e| {
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!("entity content does not round-trip through the parser: {e}"),
+        )
+    })?;
 
     // If the file already exists and belongs to this entity, it's an
     // update — write to a unique temp file in the same directory, then

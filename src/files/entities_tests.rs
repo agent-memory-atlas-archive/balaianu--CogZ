@@ -49,3 +49,26 @@ fn volatility_frontmatter_validated_on_parse() {
     let err = EntityFile::from_content(&base("bogus")).unwrap_err();
     assert!(format!("{err:?}").contains("volatility"));
 }
+
+#[test]
+fn write_refuses_unparseable_round_trip() {
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+
+    let mut ef = EntityFile::new("Bad refs", FileEntityType::Knowledge, "body");
+    ef.frontmatter
+        .insert("category", FmValue::String("test".to_string()));
+    // A non-UUID reference set programmatically — bypasses the MCP
+    // input validation and serializes into a file the parser rejects.
+    ef.references = vec!["src/foo.rs".to_string()];
+
+    let path = cogz_dir.join("knowledge/test/bad-refs.md");
+    let err = write_entity_file(&path, &ef).unwrap_err();
+    assert_eq!(err.kind(), std::io::ErrorKind::InvalidData);
+    assert!(!path.exists(), "rejected write must not create the file");
+
+    let err = crate::mcp::helpers::write_entity_file_atomic(&path, &ef, &cogz_dir).unwrap_err();
+    assert_eq!(err.kind(), std::io::ErrorKind::InvalidData);
+    assert!(!path.exists(), "rejected write must not create the file");
+}

@@ -386,11 +386,19 @@ pub fn read_entity_file(path: &Path) -> Result<EntityFile, FrontmatterError> {
 }
 
 /// Write an entity file to disk. Creates parent directories as needed.
+/// Refuses to write content the parser cannot read back — a canonical
+/// file that fails `from_content` would poison every later sync.
 pub fn write_entity_file(path: &Path, entity: &EntityFile) -> Result<(), std::io::Error> {
+    let content = entity.to_file_content();
+    EntityFile::from_content(&content).map_err(|e| {
+        std::io::Error::new(
+            std::io::ErrorKind::InvalidData,
+            format!("entity content does not round-trip through the parser: {e}"),
+        )
+    })?;
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;
     }
-    let content = entity.to_file_content();
     std::fs::write(path, content)
 }
 
