@@ -26,7 +26,7 @@ mod checksum;
 
 use super::suppress::suppress_stderr_during;
 pub use checksum::ort_lib_path;
-use checksum::{cogz_lib_dir, find_ort_checksum, lib_exists, sha256_file};
+use checksum::{cogz_lib_dir, lib_exists, sha256_file};
 use tracing::{info, warn};
 
 /// ONNX Runtime version to download. ort 2.0.0-rc.13 supports ORT 1.28;
@@ -58,6 +58,31 @@ const ORT_ASSET: &str = "onnxruntime-win-x64-1.27.0.zip";
     all(target_os = "windows", target_arch = "x86_64"),
 )))]
 const ORT_ASSET: &str = "";
+
+/// SHA-256 of the GitHub release asset for the current platform,
+/// pinned at ORT_VERSION bump time from the release's published
+/// digests. The pin is the trust root: a compromised CDN could serve
+/// a matching fake manifest alongside a bad binary, but can't make
+/// the bytes hash to the pinned value.
+#[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+const ORT_SHA256: &str = "547e40a48f1fe73e3f812d7c88a948612c23f896b91e4e2ee1e232d7b468246f";
+
+#[cfg(all(target_os = "linux", target_arch = "aarch64"))]
+const ORT_SHA256: &str = "3e4d83ac06924a32a07b6d7f91ce6f852876153fc0bbdf931bf517a140bfbe48";
+
+#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+const ORT_SHA256: &str = "545e81c58152353acb0d1e8bd6ce4b62f830c0961f5b3acfedc790ffd76e477a";
+
+#[cfg(all(target_os = "windows", target_arch = "x86_64"))]
+const ORT_SHA256: &str = "c5c81710938e68079ff1a192b04897faabe4b43830d48f39f27ecd4e16138bfc";
+
+#[cfg(not(any(
+    all(target_os = "linux", target_arch = "x86_64"),
+    all(target_os = "linux", target_arch = "aarch64"),
+    all(target_os = "macos", target_arch = "aarch64"),
+    all(target_os = "windows", target_arch = "x86_64"),
+)))]
+const ORT_SHA256: &str = "";
 
 /// The shared library file name for the current platform.
 #[cfg(target_os = "linux")]
@@ -208,51 +233,19 @@ fn download_ort() -> Result<PathBuf, std::io::Error> {
     std::io::copy(&mut body, &mut file)?;
     drop(file);
 
-    // Verify checksum from the release's SHA256SUMS file if available.
-    // If the manifest exists but lacks our asset, fail — that's a
-    // supply-chain red flag. If the manifest itself is unavailable
-    // (404), proceed with the HTTPS-only download as degraded mode.
-    let checksum_url = format!(
-        "https://github.com/microsoft/onnxruntime/releases/download/v{}/SHA256SUMS",
-        ORT_VERSION
-    );
-    match crate::net::api_agent().get(&checksum_url).call() {
-        Ok(checksum_resp) => {
-            let sums_content = checksum_resp
-                .into_body()
-                .read_to_string()
-                .map_err(|e| std::io::Error::other(format!("failed to read SHA256SUMS: {e}")))?;
-            match find_ort_checksum(&sums_content, ORT_ASSET) {
-                Some(expected_hash) => {
-                    let actual_hash = sha256_file(&archive_path)?;
-                    if expected_hash != actual_hash {
-                        let _ = std::fs::remove_dir_all(&temp_dir);
-                        return Err(std::io::Error::other(format!(
-                            "ONNX Runtime checksum mismatch: expected {expected_hash}, got {actual_hash}"
-                        )));
-                    }
-                    info!("ONNX Runtime checksum verified");
-                }
-                None => {
-                    let _ = std::fs::remove_dir_all(&temp_dir);
-                    return Err(std::io::Error::other(format!(
-                        "ONNX Runtime SHA256SUMS downloaded but no entry for {ORT_ASSET} — \
-                         refusing to install unverified binary"
-                    )));
-                }
-            }
-        }
-        Err(e) => {
-            // Manifest unavailable (404, network error) — degraded mode.
-            // The archive was downloaded over HTTPS from GitHub's release
-            // CDN. Microsoft ORT releases don't always ship SHA256SUMS.
-            warn!(
-                "ONNX Runtime SHA256SUMS not available ({}): \
-                   proceeding with unverified HTTPS download as degraded mode",
-                e
-            );
-        }
+    // Verify the archive against the pinned hash before extracting.
+    // Fail closed on any mismatch — an unverified ORT binary is never
+    // loaded. The pinned const also removes the need for a second
+    // network fetch: upstream doesn't always ship SHA256SUMS.
+    let actual_hash = sha256_file(&archive_path)?;
+    if actual_hash != ORT_SHA256 {
+        let _ = std::fs::remove_dir_all(&temp_dir);
+        return Err(std::io::Error::other(format!(
+            "ONNX Runtime checksum mismatch: expected {ORT_SHA256}, got {actual_hash} — \
+             refusing to install unverified binary"
+        )));
     }
+    info!("ONNX Runtime checksum verified against pinned hash");
 
     // Extract the archive. `tar` is available on all supported platforms:
     // - Linux/macOS: GNU tar (always present)

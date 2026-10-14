@@ -21,16 +21,6 @@ pub(crate) fn lib_exists(path: &Path) -> bool {
     path.exists() && path.is_file()
 }
 
-pub(crate) fn find_ort_checksum(sums_content: &str, asset_name: &str) -> Option<String> {
-    for line in sums_content.lines() {
-        let parts: Vec<&str> = line.split_whitespace().collect();
-        if parts.len() == 2 && parts[1] == asset_name {
-            return Some(parts[0].to_string());
-        }
-    }
-    None
-}
-
 /// Compute SHA-256 of a file.
 pub(crate) fn sha256_file(path: &Path) -> Result<String, std::io::Error> {
     use sha2::{Digest, Sha256};

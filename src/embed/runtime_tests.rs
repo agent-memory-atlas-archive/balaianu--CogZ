@@ -17,16 +17,14 @@ fn find_existing_lib_returns_none_when_nothing_installed() {
 }
 
 #[test]
-fn find_ort_checksum_matches_correct_asset() {
-    let sums = "abc123  onnxruntime-linux-x64-1.27.0.tgz\ndef456  onnxruntime-win-x64-1.27.0.zip\n";
-    assert_eq!(
-        find_ort_checksum(sums, "onnxruntime-linux-x64-1.27.0.tgz"),
-        Some("abc123".to_string())
-    );
-}
-
-#[test]
-fn find_ort_checksum_returns_none_for_missing_asset() {
-    let sums = "abc123  onnxruntime-linux-x64-1.27.0.tgz\n";
-    assert_eq!(find_ort_checksum(sums, "onnxruntime-windows.zip"), None);
+fn ort_sha256_is_pinned_for_supported_platforms() {
+    // The hash is the trust root for the ORT download — it must be a
+    // real 64-hex-char pin wherever a download can happen. An empty
+    // or malformed pin would either fail open or refuse every install.
+    if ort_download_supported() {
+        assert_eq!(ORT_SHA256.len(), 64);
+        assert!(ORT_SHA256.chars().all(|c| c.is_ascii_hexdigit()));
+    } else {
+        assert_eq!(ORT_SHA256, "");
+    }
 }
