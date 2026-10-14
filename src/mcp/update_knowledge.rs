@@ -22,6 +22,8 @@ pub fn update_knowledge_file(
     params: &UpdateKnowledgeParams,
     embed_model: Option<&OnnxEmbeddingModel>,
 ) -> Result<serde_json::Value, McpError> {
+    crate::mcp::validate::validate_uuid_list("references", params.references.as_deref())?;
+
     // 1. Get the existing entity from DB to find its file path
     let entity = {
         let conn = storage.conn();

@@ -882,6 +882,101 @@ fn mcp_stdio_update_knowledge_nonexistent_id() {
     child.wait().unwrap();
 }
 
+/// Snapshot of canonical entity files (path → length) under `.cogz/`.
+/// Rejected writes must leave this identical.
+fn cogz_entity_files(repo: &TempRepo) -> std::collections::BTreeMap<String, u64> {
+    let base = repo.path.join(".cogz");
+    let mut map = std::collections::BTreeMap::new();
+    let mut stack = vec![base.clone()];
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).unwrap().flatten() {
+            let p = entry.path();
+            if p.is_dir() {
+                stack.push(p);
+            } else if p.extension().is_some_and(|e| e == "md") {
+                let rel = p.strip_prefix(&base).unwrap().to_string_lossy().to_string();
+                map.insert(rel, std::fs::metadata(&p).unwrap().len());
+            }
+        }
+    }
+    map
+}
+
+#[test]
+fn mcp_stdio_create_entity_invalid_params_rejected() {
+    let repo = TempRepo::new();
+    let env = repo.mcp_env();
+    let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
+    client.initialize();
+
+    let before = cogz_entity_files(&repo);
+
+    let cases = [
+        serde_json::json!({"entity_type": "observation", "repo": repo.path_str(),
+            "content": "bad refs", "references": ["src/foo.rs"]}),
+        serde_json::json!({"entity_type": "rule", "repo": repo.path_str(),
+            "content": "bad refs", "references": ["not-a-uuid"]}),
+        serde_json::json!({"entity_type": "knowledge", "repo": repo.path_str(),
+            "title": "Bad refs", "content": "bad refs", "category": "architecture",
+            "references": ["/abs/path.md"]}),
+        serde_json::json!({"entity_type": "observation", "repo": repo.path_str(),
+            "content": "bad supporters", "supporting_ids": ["src/lib.rs"]}),
+        serde_json::json!({"entity_type": "rule", "repo": repo.path_str(),
+            "content": "bad confidence", "confidence": 1.5}),
+    ];
+    for args in cases {
+        let resp = client.call_tool("create_entity", args.clone());
+        assert!(
+            resp.get("error").is_some() || resp["result"]["isError"].as_bool().unwrap_or(false),
+            "create_entity should reject {args}, got: {resp}"
+        );
+    }
+
+    assert_eq!(
+        before,
+        cogz_entity_files(&repo),
+        "rejected calls must not create or change canonical files"
+    );
+
+    child.kill().unwrap();
+    child.wait().unwrap();
+}
+
+#[test]
+fn mcp_stdio_update_knowledge_invalid_references_rejected() {
+    let repo = TempRepo::new();
+    let env = repo.mcp_env();
+    let (mut client, mut child) = McpClient::spawn(&env).expect("failed to spawn");
+    client.initialize();
+
+    let file_path = repo
+        .path
+        .join(".cogz/knowledge/architecture/test-design.md");
+    let original = std::fs::read_to_string(&file_path).unwrap();
+
+    let resp = client.call_tool(
+        "update_knowledge",
+        serde_json::json!({
+            "repo": repo.path_str(),
+            "id": "11111111-1111-1111-1111-111111111111",
+            "content": "Content that must never be written.",
+            "references": ["src/foo.rs"],
+        }),
+    );
+    assert!(
+        resp.get("error").is_some() || resp["result"]["isError"].as_bool().unwrap_or(false),
+        "update_knowledge should reject non-UUID references, got: {resp}"
+    );
+    assert_eq!(
+        original,
+        std::fs::read_to_string(&file_path).unwrap(),
+        "rejected update must not modify the canonical file"
+    );
+
+    child.kill().unwrap();
+    child.wait().unwrap();
+}
+
 // ── Tests: search and context (FTS-only mode) ───────────────────
 
 #[test]

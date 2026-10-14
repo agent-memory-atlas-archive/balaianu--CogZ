@@ -17,12 +17,15 @@ use crate::mcp::helpers::{
 use crate::mcp::params::*;
 use crate::mcp::responses::tool_success;
 use crate::mcp::server::CogzServer;
+use crate::mcp::validate::{validate_confidence, validate_uuid_list};
 
 pub async fn record_observation(
     server: &CogzServer,
     Parameters(params): Parameters<RecordObservationParams>,
 ) -> Result<CallToolResult, McpError> {
     let title = params.title.unwrap_or_else(|| auto_title(&params.content));
+    validate_uuid_list("references", params.references.as_deref())?;
+    validate_uuid_list("supporting_ids", params.supporting_ids.as_deref())?;
     let repo = server.resolve_repo(&params.repo)?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
@@ -69,6 +72,8 @@ pub async fn create_rule(
     Parameters(params): Parameters<CreateRuleParams>,
 ) -> Result<CallToolResult, McpError> {
     let title = params.title.unwrap_or_else(|| auto_title(&params.content));
+    validate_uuid_list("references", params.references.as_deref())?;
+    validate_confidence(params.confidence)?;
     let repo = server.resolve_repo(&params.repo)?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
@@ -107,6 +112,7 @@ pub async fn create_knowledge(
     server: &CogzServer,
     Parameters(params): Parameters<CreateKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
+    validate_uuid_list("references", params.references.as_deref())?;
     let repo = server.resolve_repo(&params.repo)?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();

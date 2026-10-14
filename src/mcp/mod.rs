@@ -20,6 +20,7 @@ pub mod tools_search;
 pub mod tools_system;
 pub mod tools_write;
 pub mod update_knowledge;
+pub mod validate;
 
 pub use repo_cache::RepoState;
 pub use server::CogzServer;
