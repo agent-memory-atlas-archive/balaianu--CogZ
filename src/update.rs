@@ -52,19 +52,29 @@ pub enum VersionStatus {
     UpdateAvailable { current: String, latest: String },
 }
 
-/// Check the latest release version from GitHub.
-pub fn check_latest_version() -> Result<VersionStatus, UpdateError> {
+/// Fetch the latest release record once. The same JSON carries the
+/// tag for the version check and the asset URLs for the download —
+/// a second fetch could race a republished release.
+fn fetch_latest_release() -> Result<Release, UpdateError> {
     let resp = api_agent()
         .get(GITHUB_API)
         .header("User-Agent", "cogz-self-update")
         .call()
         .map_err(|e| UpdateError::Network(e.to_string()))?;
 
-    let release: Release = resp
-        .into_body()
+    resp.into_body()
         .read_json()
-        .map_err(|e| UpdateError::Network(e.to_string()))?;
+        .map_err(|e| UpdateError::Network(e.to_string()))
+}
 
+/// Check the latest release version from GitHub.
+pub fn check_latest_version() -> Result<VersionStatus, UpdateError> {
+    let release = fetch_latest_release()?;
+    Ok(version_status(&release))
+}
+
+/// Compare the release tag against the running version.
+fn version_status(release: &Release) -> VersionStatus {
     // Strip leading 'v' from tag name.
     let latest = release.tag_name.trim_start_matches('v').to_string();
 
@@ -77,12 +87,12 @@ pub fn check_latest_version() -> Result<VersionStatus, UpdateError> {
     };
 
     if newer {
-        Ok(VersionStatus::UpdateAvailable {
+        VersionStatus::UpdateAvailable {
             current: CURRENT_VERSION.to_string(),
             latest,
-        })
+        }
     } else {
-        Ok(VersionStatus::UpToDate(latest))
+        VersionStatus::UpToDate(latest)
     }
 }
 
@@ -186,22 +196,11 @@ fn current_binary_path() -> Result<PathBuf, UpdateError> {
 /// 3. Verify checksum
 /// 4. Atomically replace the current binary
 pub fn run_update() -> Result<String, UpdateError> {
-    let status = check_latest_version()?;
+    let release = fetch_latest_release()?;
 
-    match status {
+    match version_status(&release) {
         VersionStatus::UpToDate(v) => Ok(format!("CogZ is up to date (v{})", v)),
         VersionStatus::UpdateAvailable { current, latest } => {
-            // Fetch release info again to get asset URLs.
-            let resp = api_agent()
-                .get(GITHUB_API)
-                .header("User-Agent", "cogz-self-update")
-                .call()
-                .map_err(|e| UpdateError::Network(e.to_string()))?;
-            let release: Release = resp
-                .into_body()
-                .read_json()
-                .map_err(|e| UpdateError::Network(e.to_string()))?;
-
             let asset_name = platform_asset_name().ok_or_else(|| {
                 UpdateError::UnsupportedPlatform(format!(
                     "{} {}",
