@@ -388,6 +388,7 @@ pub fn read_entity_file(path: &Path) -> Result<EntityFile, FrontmatterError> {
 /// Write an entity file to disk. Creates parent directories as needed.
 /// Refuses to write content the parser cannot read back — a canonical
 /// file that fails `from_content` would poison every later sync.
+/// The write is atomic: the existing file is never truncated in place.
 pub fn write_entity_file(path: &Path, entity: &EntityFile) -> Result<(), std::io::Error> {
     let content = entity.to_file_content();
     EntityFile::from_content(&content).map_err(|e| {
@@ -399,7 +400,7 @@ pub fn write_entity_file(path: &Path, entity: &EntityFile) -> Result<(), std::io
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;
     }
-    std::fs::write(path, content)
+    crate::files::atomic::atomic_write(path, content.as_bytes())
 }
 
 #[cfg(test)]

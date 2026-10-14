@@ -4,6 +4,7 @@
 //! This module handles reading, writing, and syncing entity files
 //! to the storage layer.
 
+pub(crate) mod atomic;
 pub mod embed_sync;
 pub mod entities;
 pub mod events;
