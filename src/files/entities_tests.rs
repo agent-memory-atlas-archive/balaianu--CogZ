@@ -72,3 +72,48 @@ fn write_refuses_unparseable_round_trip() {
     assert_eq!(err.kind(), std::io::ErrorKind::InvalidData);
     assert!(!path.exists(), "rejected write must not create the file");
 }
+
+#[cfg(unix)]
+#[test]
+fn failed_write_leaves_original_file_intact() {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = tempfile::tempdir().unwrap();
+    let cogz_dir = dir.path().join(".cogz");
+    let entity_dir = cogz_dir.join("knowledge/test");
+    std::fs::create_dir_all(&entity_dir).unwrap();
+
+    let id = "11111111-1111-4111-8111-111111111111";
+    let path = entity_dir.join("original.md");
+    let original = format!(
+        "---\nid: {id}\ntitle: t\ntype: knowledge\nstatus: active\n\
+         created_at: \"2026-10-12T00:00:00Z\"\nupdated_at: \"2026-10-12T00:00:00Z\"\n\
+         references: []\n---\n\noriginal body"
+    );
+    std::fs::write(&path, &original).unwrap();
+
+    // Read-only directory: the temp file inside atomic_write can't be
+    // created, exercising the failure path a truncate-in-place writer
+    // would have already corrupted the canonical file on.
+    std::fs::set_permissions(&entity_dir, std::fs::Permissions::from_mode(0o555)).unwrap();
+
+    let mut ef = EntityFile::new("Updated", FileEntityType::Knowledge, "new body");
+    ef.frontmatter
+        .insert("category", FmValue::String("test".to_string()));
+    ef.id = id.to_string();
+
+    assert!(write_entity_file(&path, &ef).is_err());
+    assert_eq!(std::fs::read_to_string(&path).unwrap(), original);
+
+    // Same id → the update branch (shared atomic_write), not create_new.
+    assert!(crate::mcp::helpers::write_entity_file_atomic(&path, &ef, &cogz_dir).is_err());
+    assert_eq!(std::fs::read_to_string(&path).unwrap(), original);
+
+    let stray_tmps = std::fs::read_dir(&entity_dir)
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .filter(|e| e.file_name().to_string_lossy().ends_with(".tmp"))
+        .count();
+    assert_eq!(stray_tmps, 0, "failed writes must not leak temp files");
+
+    std::fs::set_permissions(&entity_dir, std::fs::Permissions::from_mode(0o755)).unwrap();
+}
