@@ -154,6 +154,7 @@ pub fn assemble_context(
             graph_path_description: String::new(),
             tier: DeliveryTier::Baseline,
             drift_count: 0,
+            file_path: None,
         });
         tier0.extend(baseline_rules(
             conn,
@@ -268,6 +269,7 @@ pub fn assemble_context(
                 graph_path_description: String::new(),
                 tier: DeliveryTier::Pointer,
                 drift_count: 0,
+                file_path: None,
             });
         }
         pointer_ids_out.extend(pointer_ids);

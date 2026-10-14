@@ -288,6 +288,7 @@ mod tests {
             graph_path_description: String::new(),
             tier: crate::storage::usage::DeliveryTier::Full,
             drift_count: 0,
+            file_path: None,
         }
     }
 

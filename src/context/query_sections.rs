@@ -109,6 +109,7 @@ fn search_result_to_section(result: SearchResult) -> ContextSection {
         graph_path_description: result.graph_path_description,
         tier: DeliveryTier::Full,
         drift_count: result.drift_count,
+        file_path: result.entity.file_path,
     }
 }
 

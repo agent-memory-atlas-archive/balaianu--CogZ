@@ -138,6 +138,7 @@ pub fn context_response_ref(pack: &crate::context::ContextPack) -> serde_json::V
                 "graph_path_description": s.graph_path_description,
                 "tier": s.tier.as_str(),
                 "drift_count": s.drift_count,
+                "file_path": s.file_path,
             })
         })
         .collect();

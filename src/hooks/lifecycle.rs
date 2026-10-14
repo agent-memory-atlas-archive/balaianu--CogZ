@@ -669,6 +669,7 @@ fn scoped_rules_pack(
                 graph_path_description: String::new(),
                 tier: crate::storage::usage::DeliveryTier::Full,
                 drift_count: drift.get(&rule.id).copied().unwrap_or(0),
+                file_path: rule.file_path.clone(),
             }
         })
         .collect();

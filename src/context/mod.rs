@@ -55,6 +55,10 @@ pub struct ContextSection {
     /// entity was last verified (`entity_drift` rows). 0 for code
     /// entities, structural sections, and fully-verified knowledge.
     pub drift_count: usize,
+    /// Canonical file backing the entity — `.cogz/...md` for file
+    /// entities, the source path for code entities. `None` for
+    /// structural sections (identity, indexes, code maps).
+    pub file_path: Option<String>,
 }
 
 /// Metadata about a context pack's construction.
