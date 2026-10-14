@@ -196,6 +196,17 @@ fn current_binary_path() -> Result<PathBuf, UpdateError> {
 /// 3. Verify checksum
 /// 4. Atomically replace the current binary
 pub fn run_update() -> Result<String, UpdateError> {
+    // A previous Windows update may have left the moved-aside binary
+    // beside the exe — the running image can be renamed but not
+    // deleted, so cleanup happens on the next run.
+    #[cfg(windows)]
+    if let Ok(exe) = current_binary_path() {
+        let old = exe.with_extension("exe.old");
+        if old.exists() {
+            let _ = std::fs::remove_file(&old);
+        }
+    }
+
     let release = fetch_latest_release()?;
 
     match version_status(&release) {
@@ -270,18 +281,42 @@ pub fn run_update() -> Result<String, UpdateError> {
 
             // Atomic replace: the staged file is already in the
             // destination directory, so the rename is same-filesystem.
-            // On Windows, rename over an existing file can fail —
-            // remove the target first and restore from backup if the
-            // second rename also fails.
-            if let Err(e) = std::fs::rename(&temp_binary, &bin_path) {
-                let _ = std::fs::remove_file(&bin_path);
-                if let Err(e2) = std::fs::rename(&temp_binary, &bin_path) {
-                    if backup.exists() {
-                        let _ = std::fs::rename(&backup, &bin_path);
-                    }
+            #[cfg(windows)]
+            {
+                // A running exe can't be deleted or overwritten on
+                // Windows, but it CAN be renamed. Move it aside,
+                // place the new binary, and remove the stale .old on
+                // the next run (cleanup at the top of run_update).
+                let old = bin_path.with_extension("exe.old");
+                if old.exists() {
+                    let _ = std::fs::remove_file(&old);
+                }
+                std::fs::rename(&bin_path, &old).map_err(|e| {
+                    UpdateError::Io(std::io::Error::other(format!(
+                        "failed to move running binary aside: {e}"
+                    )))
+                })?;
+                if let Err(e) = std::fs::rename(&temp_binary, &bin_path) {
+                    let _ = std::fs::rename(&old, &bin_path);
                     return Err(UpdateError::Io(std::io::Error::other(format!(
-                        "failed to replace binary (rename1: {e}, rename2: {e2})"
+                        "failed to place new binary: {e}"
                     ))));
+                }
+            }
+            #[cfg(not(windows))]
+            {
+                // Unix rename overwrites atomically — this also works
+                // while the target is the running process.
+                if let Err(e) = std::fs::rename(&temp_binary, &bin_path) {
+                    let _ = std::fs::remove_file(&bin_path);
+                    if let Err(e2) = std::fs::rename(&temp_binary, &bin_path) {
+                        if backup.exists() {
+                            let _ = std::fs::rename(&backup, &bin_path);
+                        }
+                        return Err(UpdateError::Io(std::io::Error::other(format!(
+                            "failed to replace binary (rename1: {e}, rename2: {e2})"
+                        ))));
+                    }
                 }
             }
 
