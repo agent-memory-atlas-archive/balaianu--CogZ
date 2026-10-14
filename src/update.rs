@@ -68,14 +68,37 @@ pub fn check_latest_version() -> Result<VersionStatus, UpdateError> {
     // Strip leading 'v' from tag name.
     let latest = release.tag_name.trim_start_matches('v').to_string();
 
-    if latest == CURRENT_VERSION {
-        Ok(VersionStatus::UpToDate(latest))
-    } else {
+    // Semver compare, not string equality: a locally-built version
+    // ahead of the latest release (e.g. building master between
+    // releases) must report UpToDate, not "downgrade available".
+    let newer = match (semver_triple(&latest), semver_triple(CURRENT_VERSION)) {
+        (Some(l), Some(c)) => l > c,
+        _ => latest != CURRENT_VERSION,
+    };
+
+    if newer {
         Ok(VersionStatus::UpdateAvailable {
             current: CURRENT_VERSION.to_string(),
             latest,
         })
+    } else {
+        Ok(VersionStatus::UpToDate(latest))
     }
+}
+
+/// Parse "major.minor.patch", ignoring any pre-release or build
+/// suffix. Release tags are always vX.Y.Z; a malformed version
+/// returns None and the caller falls back to string equality.
+fn semver_triple(v: &str) -> Option<(u64, u64, u64)> {
+    let core = v.split(['-', '+']).next()?;
+    let mut parts = core.split('.');
+    let maj = parts.next()?.parse().ok()?;
+    let min = parts.next()?.parse().ok()?;
+    let pat = parts.next()?.parse().ok()?;
+    if parts.next().is_some() {
+        return None;
+    }
+    Some((maj, min, pat))
 }
 
 /// Detect the current platform's asset name.
@@ -343,6 +366,35 @@ mod tests {
             find_checksum(sums, "cogz-x86_64-unknown-linux-gnu"),
             Some("abc123".to_string())
         );
+    }
+
+    #[test]
+    fn semver_triple_parses_release_shapes() {
+        assert_eq!(semver_triple("0.5.8"), Some((0, 5, 8)));
+        assert_eq!(semver_triple("1.27.0"), Some((1, 27, 0)));
+        assert_eq!(semver_triple("0.6.0-rc.1"), Some((0, 6, 0)));
+        assert_eq!(semver_triple("v0.5.8"), None);
+        assert_eq!(semver_triple("0.5"), None);
+        assert_eq!(semver_triple("0.5.8.1"), None);
+        assert_eq!(semver_triple("latest"), None);
+    }
+
+    #[test]
+    fn semver_ordering_handles_version_bumps() {
+        let newer =
+            |latest: &str, current: &str| match (semver_triple(latest), semver_triple(current)) {
+                (Some(l), Some(c)) => l > c,
+                _ => latest != current,
+            };
+        assert!(newer("0.5.9", "0.5.8"));
+        assert!(newer("0.6.0", "0.5.9"));
+        assert!(newer("1.0.0", "0.9.9"));
+        assert!(!newer("0.5.8", "0.5.8"));
+        // Local build ahead of the release must not offer a downgrade.
+        assert!(!newer("0.5.8", "0.5.9-dev"));
+        assert!(!newer("0.5.8", "0.6.0"));
+        // Malformed falls back to string inequality.
+        assert!(!newer("0.5.8", "0.5.8"));
     }
 
     #[test]
