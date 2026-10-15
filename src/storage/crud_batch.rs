@@ -173,21 +173,21 @@ pub fn tombstone_entity_with_timestamp(
         params![updated_at, id],
     )?;
     if affected == 0 {
-        // Either the entity doesn't exist or it's not in a prunable status.
-        // Check which one for a precise error.
-        let exists: bool = conn
+        // Either the entity doesn't exist or it's not in a prunable
+        // status — one lookup resolves which and reports it.
+        let status: Option<String> = conn
             .query_row(
-                "SELECT EXISTS(SELECT 1 FROM entities WHERE id = ?1)",
+                "SELECT status FROM entities WHERE id = ?1",
                 params![id],
                 |r| r.get(0),
             )
-            .unwrap_or(false);
-        if !exists {
-            return Err(StorageError::EntityNotFound(id.to_string()));
-        }
-        return Err(StorageError::IllegalTransition {
-            from: "current".to_string(),
-            to: "pruned".to_string(),
+            .ok();
+        return Err(match status {
+            None => StorageError::EntityNotFound(id.to_string()),
+            Some(from) => StorageError::IllegalTransition {
+                from,
+                to: "pruned".to_string(),
+            },
         });
     }
     // Strip the entity's content from its event payloads — pruning

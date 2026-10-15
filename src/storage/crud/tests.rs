@@ -119,6 +119,13 @@ fn tombstone_entity_rejects_active_status() {
 
     let result = tombstone_entity(&conn, "uuid-active");
     assert!(result.is_err(), "tombstoning an active entity should fail");
+    // The error must name the actual status, not a placeholder —
+    // prune reports surface it verbatim.
+    assert!(matches!(
+        result,
+        Err(StorageError::IllegalTransition { ref from, ref to })
+            if from == "active" && to == "pruned"
+    ));
 }
 
 #[test]
