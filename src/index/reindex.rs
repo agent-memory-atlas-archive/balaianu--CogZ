@@ -75,9 +75,15 @@ pub fn reindex_files(
     result.marked_stale = sync_result.marked_stale;
     result.deleted_code_ids = sync_result.removed_entity_ids;
 
-    // Re-extract structural edges for changed files only (incremental).
-    if !parsed.source_files_for_edges.is_empty() {
-        code_graph::sync_code_edges_incremental(storage, &parsed.source_files_for_edges);
+    // Re-sync structural edges for changed files only (incremental).
+    // Entities and raw edges come from the parse pass above — the
+    // file sources are not retained or re-read.
+    if !parsed.entities_by_file.is_empty() {
+        code_graph::sync_code_edges_incremental(
+            storage,
+            &parsed.entities_by_file,
+            &parsed.raw_edges_by_file,
+        );
     }
 
     // Rebuild auto-links. Code entity names/paths may have changed,

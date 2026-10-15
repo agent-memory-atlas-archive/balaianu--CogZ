@@ -28,6 +28,10 @@ use crate::storage::{Storage, StorageError};
 /// positions anyway (line drift grows with age).
 const MAX_COMMITS: usize = 20_000;
 
+/// Commits flushed to the staging table at a time — bounds the
+/// parse buffer so 20k-commit histories don't live in memory.
+const STAGE_BATCH: usize = 64;
+
 /// \x1f separates commit-header fields; it cannot appear inside a
 /// diff line, so it never collides with hunk or file markers.
 const HDR: char = '\u{1f}';
@@ -64,9 +68,29 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
         return Ok(0);
     };
 
-    let mut commits: Vec<Commit> = Vec::new();
+    // Rows are staged per batch into a connection-local temp table —
+    // the stream keeps at most STAGE_BATCH commits in memory instead
+    // of buffering all of git history. The final swap keeps the
+    // rebuild atomic for readers.
+    {
+        let conn = storage.conn();
+        conn.execute_batch(
+            "DROP TABLE IF EXISTS cochange_stage;
+             CREATE TEMP TABLE cochange_stage (
+                 term      TEXT NOT NULL,
+                 entity_id TEXT NOT NULL,
+                 commit_id TEXT NOT NULL,
+                 commit_ts INTEGER NOT NULL
+             );",
+        )?;
+    }
+
+    let mut pending: Vec<Commit> = Vec::new();
+    let mut entities_by_file: HashMap<String, Vec<(String, i64, i64)>> = HashMap::new();
+    let mut n = 0usize;
     let mut cur: Option<Commit> = None;
     let mut cur_file: Option<String> = None;
+    let mut saw_commit = false;
 
     // Byte-split + lossy decode: binary patches would abort a strict
     // UTF-8 `lines()` iterator mid-history.
@@ -75,7 +99,7 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
         let line = String::from_utf8_lossy(&raw);
         if let Some(rest) = line.strip_prefix(HDR) {
             if let Some(c) = cur.take() {
-                commits.push(c);
+                pending.push(c);
             }
             let mut it = rest.splitn(3, HDR);
             let sha = it.next().unwrap_or_default().to_string();
@@ -90,6 +114,12 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
                 files: HashMap::new(),
             });
             cur_file = None;
+            saw_commit = true;
+            if pending.len() >= STAGE_BATCH {
+                let conn = storage.conn();
+                n += stage_batch(&conn, &pending, &mut entities_by_file)?;
+                pending.clear();
+            }
         } else if let Some(path) = line.strip_prefix("+++ b/") {
             cur_file = Some(path.trim().to_string());
         } else if line.starts_with("+++ ") {
@@ -105,10 +135,11 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
         }
     }
     if let Some(c) = cur.take() {
-        commits.push(c);
+        pending.push(c);
+        saw_commit = true;
     }
     let git_status = child.wait();
-    if commits.is_empty() {
+    if !saw_commit {
         return Ok(0);
     }
     // A mid-stream failure yields silently truncated history — the
@@ -117,26 +148,59 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
         tracing::warn!("git log exited early; co-change history is truncated");
     }
 
-    // Entity lookup per file: (id, line_start, line_end), cached —
-    // a file touched by 500 commits is queried once. One transaction
-    // covers delete, lookup, and insert so the table never sits empty
-    // for a concurrent reader mid-rebuild.
-    let files_needed: HashSet<&String> = commits.iter().flat_map(|c| c.files.keys()).collect();
+    if !pending.is_empty() {
+        let conn = storage.conn();
+        n += stage_batch(&conn, &pending, &mut entities_by_file)?;
+    }
+
+    // Atomic swap: delete + insert in one transaction so the table
+    // never sits empty (or half-new) for a concurrent reader.
+    let mut conn = storage.conn();
+    let tx = conn.transaction()?;
+    tx.execute("DELETE FROM cochange", [])?;
+    tx.execute(
+        "INSERT OR REPLACE INTO cochange (term, entity_id, commit_id, commit_ts) \
+         SELECT term, entity_id, commit_id, commit_ts FROM cochange_stage",
+        [],
+    )?;
+    tx.commit()?;
+    conn.execute_batch("DROP TABLE IF EXISTS cochange_stage")?;
+    Ok(n)
+}
+
+/// Intersect one batch of commits' hunks with their files' entities
+/// and stage the resulting rows into `cochange_stage`. Entity lookup
+/// is per-file and cached across batches — a file touched by 500
+/// commits is queried once.
+fn stage_batch(
+    conn: &rusqlite::Connection,
+    batch: &[Commit],
+    entities_by_file: &mut HashMap<String, Vec<(String, i64, i64)>>,
+) -> Result<usize, StorageError> {
     let ent_stmt = "SELECT id, json_extract(properties, '$.line_start'), \
                 json_extract(properties, '$.line_end') \
          FROM entities \
          WHERE file_path = ? AND type IN ('function', 'class') \
          AND status = 'active'";
 
-    let mut entities_by_file: HashMap<String, Vec<(String, i64, i64)>> = HashMap::new();
-    let mut conn = storage.conn();
-    let tx = conn.transaction()?;
+    let mut es = conn.prepare(ent_stmt)?;
+    let mut ins = conn.prepare(
+        "INSERT INTO cochange_stage (term, entity_id, commit_id, commit_ts) \
+         VALUES (?, ?, ?, ?)",
+    )?;
+
     let mut n = 0usize;
-    {
-        tx.execute("DELETE FROM cochange", [])?;
-        let mut es = tx.prepare(ent_stmt)?;
-        for fp in files_needed {
-            let rows = es
+    for c in batch {
+        if c.terms.is_empty() {
+            continue;
+        }
+        // Fill the entity cache for this commit's files before
+        // borrowing it for the intersect pass.
+        for fp in c.files.keys() {
+            if entities_by_file.contains_key(fp) {
+                continue;
+            }
+            let rows: Vec<(String, i64, i64)> = es
                 .query_map([fp.as_str()], |r| {
                     Ok((
                         r.get::<_, String>(0)?,
@@ -144,45 +208,30 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
                         r.get::<_, Option<i64>>(2)?,
                     ))
                 })?
-                .collect::<Result<Vec<_>, _>>()?;
-            entities_by_file.insert(
-                fp.clone(),
-                rows.into_iter()
-                    .filter_map(|(id, ls, le)| Some((id, ls?, le?)))
-                    .collect(),
-            );
+                .collect::<Result<Vec<_>, _>>()?
+                .into_iter()
+                .filter_map(|(id, ls, le)| Some((id, ls?, le?)))
+                .collect();
+            entities_by_file.insert(fp.clone(), rows);
         }
-        drop(es);
-
-        // Intersect each commit's hunks with its files' entities.
-        let mut ins = tx.prepare(
-            "INSERT OR REPLACE INTO cochange (term, entity_id, commit_id, commit_ts) \
-             VALUES (?, ?, ?, ?)",
-        )?;
-        for c in &commits {
-            if c.terms.is_empty() {
+        let mut touched: HashSet<&String> = HashSet::new();
+        for (fp, ranges) in &c.files {
+            let Some(ents) = entities_by_file.get(fp) else {
                 continue;
-            }
-            let mut touched: HashSet<&String> = HashSet::new();
-            for (fp, ranges) in &c.files {
-                let Some(ents) = entities_by_file.get(fp) else {
-                    continue;
-                };
-                for (id, ls, le) in ents {
-                    if ranges.iter().any(|(hs, he)| ls <= he && le >= hs) {
-                        touched.insert(id);
-                    }
+            };
+            for (id, ls, le) in ents {
+                if ranges.iter().any(|(hs, he)| ls <= he && le >= hs) {
+                    touched.insert(id);
                 }
             }
-            for t in &c.terms {
-                for e in &touched {
-                    ins.execute(rusqlite::params![t, e, c.sha, c.ts])?;
-                    n += 1;
-                }
+        }
+        for t in &c.terms {
+            for e in &touched {
+                ins.execute(rusqlite::params![t, e, c.sha, c.ts])?;
+                n += 1;
             }
         }
     }
-    tx.commit()?;
     Ok(n)
 }
 
@@ -296,6 +345,62 @@ mod tests {
         let storage = Storage::open(&dir.join("state.db"), 384).unwrap();
         let n = sync_cochange(&storage, &dir).unwrap();
         assert_eq!(n, 0);
+        fs::remove_dir_all(&dir).ok();
+    }
+
+    #[test]
+    fn sync_cochange_stages_across_batch_boundary() {
+        // > STAGE_BATCH commits — rows from both the mid-stream flush
+        // and the tail flush must land in cochange.
+        let dir = std::env::temp_dir().join(format!("cogz_co_b_{}", std::process::id()));
+        let repo = dir.join("repo");
+        fs::create_dir_all(&repo).unwrap();
+        let sh = |args: &[&str]| {
+            Command::new("git")
+                .arg("-C")
+                .arg(&repo)
+                .args(args)
+                .output()
+                .unwrap();
+        };
+        sh(&["init", "-q"]);
+        sh(&["config", "user.email", "t@t"]);
+        sh(&["config", "user.name", "t"]);
+
+        const COMMITS: usize = 70;
+        for i in 0..COMMITS {
+            // Flip line 2 each commit so every hunk intersects the
+            // entity's 1-2 line range.
+            let content = format!("def auth():\n    pass  # {i}\n");
+            fs::write(repo.join("a.py"), content).unwrap();
+            sh(&["add", "."]);
+            let msg = if i == 0 {
+                "seed baseline auth".to_string()
+            } else if i == COMMITS - 1 {
+                "final polish auth".to_string()
+            } else {
+                format!("tweak iteration {i}")
+            };
+            sh(&["commit", "-q", "-m", &msg]);
+        }
+
+        let storage = Storage::open(&dir.join("state.db"), 384).unwrap();
+        insert_fn_entity(&storage, "ent-a", "a.py", 1, 2);
+
+        let n = sync_cochange(&storage, &repo).unwrap();
+        assert!(n > 0);
+        let conn = storage.conn();
+        let terms: std::collections::HashSet<String> = conn
+            .prepare("SELECT DISTINCT term FROM cochange")
+            .unwrap()
+            .query_map([], |r| r.get(0))
+            .unwrap()
+            .collect::<Result<_, _>>()
+            .unwrap();
+        // First commit was flushed mid-stream; last was flushed in
+        // the tail pass — both terms must survive the swap.
+        assert!(terms.contains("seed"), "mid-stream batch rows missing");
+        assert!(terms.contains("polish"), "tail batch rows missing");
         fs::remove_dir_all(&dir).ok();
     }
 }

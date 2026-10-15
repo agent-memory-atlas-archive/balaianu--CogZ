@@ -16,8 +16,6 @@ pub struct ParsedFiles {
     pub entities_by_file: Vec<(String, Vec<CodeEntity>)>,
     /// (relative_path, raw_edges) for full edge sync.
     pub raw_edges_by_file: Vec<(String, Vec<RawEdge>)>,
-    /// (rel_path, source, language) for incremental edge sync.
-    pub source_files_for_edges: Vec<(PathBuf, String, Language)>,
     /// Paths that failed to read or parse. Excluded from stale marking
     /// in full scan mode — a read failure does not mean the file was
     /// deleted, and marking its entities stale would lose valid edges.
@@ -42,7 +40,6 @@ pub struct ParsedFiles {
 pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf], max_bytes: u64) -> ParsedFiles {
     let mut entities_by_file: Vec<(String, Vec<CodeEntity>)> = Vec::new();
     let mut raw_edges_by_file: Vec<(String, Vec<RawEdge>)> = Vec::new();
-    let mut source_files_for_edges: Vec<(PathBuf, String, Language)> = Vec::new();
     let mut failed_paths: HashSet<String> = HashSet::new();
     let mut had_read_failures = false;
 
@@ -95,13 +92,11 @@ pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf], max_bytes: u6
         let path_str = path_to_string(rel_path);
         entities_by_file.push((path_str.clone(), entities));
         raw_edges_by_file.push((path_str, raw_edges));
-        source_files_for_edges.push((rel_path.clone(), source, language));
     }
 
     ParsedFiles {
         entities_by_file,
         raw_edges_by_file,
-        source_files_for_edges,
         failed_paths,
         had_read_failures,
     }

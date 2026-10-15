@@ -358,12 +358,15 @@ fn incremental_reindex_preserves_import_edges() {
     )];
 
     let mut entities_by_file = Vec::new();
+    let mut raw_edges_by_file = Vec::new();
     for (path, source, lang) in &changed {
-        let (entities, _) = extract_all(path, source, *lang);
-        entities_by_file.push((crate::index::path_to_string(path), entities));
+        let (entities, raw_edges) = extract_all(path, source, *lang);
+        let path_str = crate::index::path_to_string(path);
+        entities_by_file.push((path_str.clone(), entities));
+        raw_edges_by_file.push((path_str, raw_edges));
     }
     sync_code_entities_incremental(&storage, &entities_by_file);
-    sync_code_edges_incremental(&storage, &changed);
+    sync_code_edges_incremental(&storage, &entities_by_file, &raw_edges_by_file);
 
     let imports_after_incremental: i64 = {
         let conn = storage.conn();

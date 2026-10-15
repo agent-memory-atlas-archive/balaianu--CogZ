@@ -1,11 +1,11 @@
-//! Incremental edge sync — only re-extracts edges for changed files,
+//! Incremental edge sync — only re-syncs edges for changed files,
 //! preserving edges from unchanged files.
 
 use std::collections::HashMap;
 
 use crate::index::code_graph::{CodeEdge, build_contains_edges, resolve_edges};
 use crate::index::sync::code_entity_uuid;
-use crate::index::tree_sitter::{Language, RawEdge};
+use crate::index::tree_sitter::{CodeEntity, RawEdge};
 use crate::storage;
 use crate::storage::edges::Edge;
 
@@ -13,14 +13,16 @@ use crate::storage::edges::Edge;
 /// entities in the changed files. Preserves edges from unchanged files.
 ///
 /// Must be called after `sync_code_entities_incremental` so that
-/// entities exist in the DB.
+/// entities exist in the DB. Takes the entities and raw edges the
+/// parse pass already produced — sources are not re-read or re-parsed.
 ///
 /// The name → UUID map is built from all code entities in the DB (not
 /// just changed files) so that cross-file call targets in unchanged
 /// files can be resolved.
 pub fn sync_code_edges_incremental(
     storage: &storage::Storage,
-    source_files: &[(std::path::PathBuf, String, Language)],
+    entities_by_file: &[(String, Vec<CodeEntity>)],
+    raw_edges_by_file: &[(String, Vec<RawEdge>)],
 ) {
     // Build name → UUID map from ALL code entities in the DB.
     // One-to-many: duplicate names produce multiple candidates,
@@ -74,21 +76,13 @@ pub fn sync_code_edges_incremental(
     }
     drop(conn);
 
-    // Single-pass parse of changed files: extract entities + raw edges.
+    // Entities and raw edges come from the parse pass — the same
+    // AST walk, no re-read of sources.
     let mut changed_entity_ids: Vec<String> = Vec::new();
     let mut file_to_children: HashMap<String, Vec<String>> = HashMap::new();
-    let mut all_raw_edges: Vec<(String, Vec<RawEdge>)> = Vec::new();
 
-    for (rel_path, source, language) in source_files {
-        // Pass rel_path (not abs_path) to extract_all so that raw edge
-        // source_name matches the DB's file_path column. extract_all
-        // doesn't read the file — source is passed in — so the path is
-        // only used for string representation in entities and edges.
-        let (entities, raw_edges) =
-            crate::index::tree_sitter::extract_all(rel_path, source, *language);
-
-        let file_path_str = crate::index::path_to_string(rel_path);
-        for ce in &entities {
+    for (file_path_str, entities) in entities_by_file {
+        for ce in entities {
             let qualified_name = if ce.entity_type == "file" {
                 file_path_str.clone()
             } else {
@@ -100,7 +94,7 @@ pub fn sync_code_edges_incremental(
                     .to_string()
             };
 
-            let id = code_entity_uuid(&file_path_str, ce.entity_type, &qualified_name);
+            let id = code_entity_uuid(file_path_str, ce.entity_type, &qualified_name);
             changed_entity_ids.push(id.clone());
 
             if ce.entity_type == "function" || ce.entity_type == "class" {
@@ -110,13 +104,11 @@ pub fn sync_code_edges_incremental(
                     .push(id);
             }
         }
-
-        all_raw_edges.push((file_path_str, raw_edges));
     }
 
     // Resolve raw edges using the global name map.
     let mut edges: Vec<CodeEdge> = Vec::new();
-    for (_, raw_edges) in &all_raw_edges {
+    for (_, raw_edges) in raw_edges_by_file {
         edges.extend(resolve_edges(
             raw_edges,
             &name_to_uuid,
