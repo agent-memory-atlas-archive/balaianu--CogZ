@@ -27,6 +27,20 @@ fn knowledge_file_path_stays_within_cogz_dir() {
     );
 }
 
+/// A title with no transliterable characters (emoji- or
+/// punctuation-only) slugifies to empty and must not produce
+/// `<dir>/.md` — the entity UUID is the fallback so every such
+/// entity gets a unique, meaningful filename.
+#[test]
+fn empty_slug_title_falls_back_to_uuid() {
+    for ty in [FileEntityType::Knowledge, FileEntityType::Rule] {
+        let ef = EntityFile::new("!!! --- ...", ty, "body");
+        let path = ef.file_path(Path::new("/tmp/cogz"));
+        assert_eq!(path.file_stem().unwrap(), ef.id.as_str(), "{ty:?}");
+        assert_ne!(path.file_name().unwrap(), ".md");
+    }
+}
+
 #[test]
 fn sanitize_category_truncates_long_input() {
     let long = "a".repeat(300);

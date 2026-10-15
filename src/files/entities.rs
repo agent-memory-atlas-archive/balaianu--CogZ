@@ -39,6 +39,18 @@ pub fn slugify(title: &str) -> String {
     truncate_slug(&slugified)
 }
 
+/// Slug for filenames, falling back to the entity UUID when the
+/// title slugifies to empty (no transliterable characters) — the
+/// same fallback observations use unconditionally.
+fn slug_or_id(title: &str, id: &str) -> String {
+    let slug = slugify(title);
+    if slug.is_empty() {
+        id.to_string()
+    } else {
+        slug
+    }
+}
+
 /// Sanitize a knowledge category for use as a directory name.
 /// Rejects path traversal attempts (.., /, \, absolute paths) by
 /// slugifying the value, which strips all path separators and
@@ -329,14 +341,17 @@ impl EntityFile {
                     .and_then(|v| v.as_str())
                     .unwrap_or("uncategorized");
                 let safe_category = sanitize_category(category);
-                let slug = slugify(&self.title);
+                // A title with no transliterable characters slugifies
+                // to empty — fall back to the UUID or every such
+                // entity collides on `<category>/.md`.
+                let slug = slug_or_id(&self.title, &self.id);
                 cogz_dir
                     .join("knowledge")
                     .join(safe_category)
                     .join(format!("{}.md", slug))
             }
             FileEntityType::Rule => {
-                let slug = slugify(&self.title);
+                let slug = slug_or_id(&self.title, &self.id);
                 cogz_dir.join("rules").join(format!("{}.md", slug))
             }
             FileEntityType::Observation => {

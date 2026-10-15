@@ -17,13 +17,14 @@ use crate::mcp::helpers::{
 use crate::mcp::params::*;
 use crate::mcp::responses::tool_success;
 use crate::mcp::server::{CogzServer, resolve_repo_blocking};
-use crate::mcp::validate::{validate_confidence, validate_uuid_list};
+use crate::mcp::validate::{validate_confidence, validate_uuid_list, validate_write_fields};
 
 pub async fn record_observation(
     server: &CogzServer,
     Parameters(params): Parameters<RecordObservationParams>,
 ) -> Result<CallToolResult, McpError> {
     let title = params.title.unwrap_or_else(|| auto_title(&params.content));
+    validate_write_fields(&title, &params.content, None)?;
     validate_uuid_list("references", params.references.as_deref())?;
     validate_uuid_list("supporting_ids", params.supporting_ids.as_deref())?;
     let repo = resolve_repo_blocking(server, &params.repo).await?;
@@ -72,6 +73,7 @@ pub async fn create_rule(
     Parameters(params): Parameters<CreateRuleParams>,
 ) -> Result<CallToolResult, McpError> {
     let title = params.title.unwrap_or_else(|| auto_title(&params.content));
+    validate_write_fields(&title, &params.content, None)?;
     validate_uuid_list("references", params.references.as_deref())?;
     validate_confidence(params.confidence)?;
     let repo = resolve_repo_blocking(server, &params.repo).await?;
@@ -112,6 +114,7 @@ pub async fn create_knowledge(
     server: &CogzServer,
     Parameters(params): Parameters<CreateKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
+    validate_write_fields(&params.title, &params.content, params.tags.as_deref())?;
     validate_uuid_list("references", params.references.as_deref())?;
     let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
@@ -156,6 +159,11 @@ pub async fn update_knowledge(
     server: &CogzServer,
     Parameters(params): Parameters<UpdateKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
+    validate_write_fields(
+        params.title.as_deref().unwrap_or(""),
+        &params.content,
+        params.tags.as_deref(),
+    )?;
     let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let cogz_dir = repo.cogz_dir.clone();
