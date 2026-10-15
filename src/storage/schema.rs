@@ -20,6 +20,25 @@ pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), Sto
     // before the version check — an already-current DB still needs them.
     crate::storage::register_functions(conn)?;
 
+    // Migrations run inside one IMMEDIATE transaction: the write lock
+    // is taken before `user_version` is read, so a second opener can't
+    // race the version check, and a failed migration rolls back fully
+    // instead of leaving half-applied DDL with the old version stamp.
+    conn.execute_batch("BEGIN IMMEDIATE")?;
+    let result = migrate_inner(conn, embedding_dim);
+    match result {
+        Ok(()) => {
+            conn.execute_batch("COMMIT")?;
+            Ok(())
+        }
+        Err(e) => {
+            let _ = conn.execute_batch("ROLLBACK");
+            Err(e)
+        }
+    }
+}
+
+fn migrate_inner(conn: &Connection, embedding_dim: usize) -> Result<(), StorageError> {
     let current: u32 = conn.query_row("PRAGMA user_version", [], |r| r.get(0))?;
 
     if current >= SCHEMA_VERSION {
@@ -432,8 +451,9 @@ mod tests {
 
     #[test]
     fn fresh_db_has_all_tables() {
-        let conn = Connection::open_in_memory().unwrap();
         crate::storage::ensure_vec_extension();
+        crate::storage::ensure_vec_extension();
+        let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
 
         let tables: Vec<String> = conn
@@ -458,6 +478,7 @@ mod tests {
 
     #[test]
     fn fts_triggers_sync_on_insert() {
+        crate::storage::ensure_vec_extension();
         let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
 
@@ -476,6 +497,7 @@ mod tests {
 
     #[test]
     fn fts_triggers_sync_on_delete() {
+        crate::storage::ensure_vec_extension();
         let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
 
@@ -497,6 +519,7 @@ mod tests {
 
     #[test]
     fn fts_triggers_sync_on_update() {
+        crate::storage::ensure_vec_extension();
         let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
 
@@ -525,6 +548,7 @@ mod tests {
 
     #[test]
     fn migrations_are_idempotent() {
+        crate::storage::ensure_vec_extension();
         let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
         // Running again should not error
@@ -533,8 +557,9 @@ mod tests {
 
     #[test]
     fn migrations_are_idempotent_and_forward_only() {
-        let conn = Connection::open_in_memory().unwrap();
         crate::storage::ensure_vec_extension();
+        crate::storage::ensure_vec_extension();
+        let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
 
         let version: u32 = conn
@@ -561,10 +586,48 @@ mod tests {
         assert!(tier_col, "entity_usage should have a tier column");
     }
 
+    /// A mid-migration failure must roll back the whole transaction:
+    /// no partial tables, `user_version` untouched — a second opener
+    /// retries cleanly instead of colliding with half-applied DDL.
+    #[test]
+    fn failed_migration_rolls_back() {
+        crate::storage::ensure_vec_extension();
+        let conn = Connection::open_in_memory().unwrap();
+        // v1–v4 CREATEs all use IF NOT EXISTS — a same-named view is
+        // skipped by them, but v5's `ALTER TABLE entity_usage` cannot
+        // alter a view and fails after four migrations of DDL ran.
+        conn.execute_batch("CREATE VIEW entity_usage AS SELECT 1 AS x")
+            .unwrap();
+
+        assert!(run_migrations(&conn, 768).is_err());
+
+        let version: u32 = conn
+            .query_row("PRAGMA user_version", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(version, 0, "rolled-back migration bumps no version");
+        let entities: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master WHERE name = 'entities'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(entities, 0, "partial migration must roll back");
+
+        // And the sabotage cleared, the retry completes.
+        conn.execute_batch("DROP VIEW entity_usage").unwrap();
+        run_migrations(&conn, 768).unwrap();
+        let version: u32 = conn
+            .query_row("PRAGMA user_version", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(version, SCHEMA_VERSION);
+    }
+
     #[test]
     fn v8_normalizes_legacy_timestamps_and_adds_indexes() {
-        let conn = Connection::open_in_memory().unwrap();
         crate::storage::ensure_vec_extension();
+        crate::storage::ensure_vec_extension();
+        let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();
 
         // Rows like this existed pre-v8 — re-running the migration's
