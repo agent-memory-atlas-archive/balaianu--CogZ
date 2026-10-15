@@ -13,6 +13,12 @@ const HOT_FILE_MIN: i64 = 3;
 /// How many later events to scan for the fixing call after an error.
 const ERROR_FIX_WINDOW: i64 = 20;
 
+/// RFC 3339 timestamp `days` ago — the indexable cutoff the v8
+/// migration makes possible (datetime() on the column was not).
+fn cutoff(days: u32) -> String {
+    (chrono::Utc::now() - chrono::Duration::days(days as i64)).to_rfc3339()
+}
+
 /// A silenced or empty search followed by indexable file edits before
 /// the next prompt boundary — the agent needed an answer the corpus
 /// didn't have and found it in the code. The strongest write-back
@@ -25,11 +31,11 @@ pub(super) fn search_misses(
     let mut stmt = conn.prepare(
         "SELECT id, payload FROM events
          WHERE event_type = 'search_performed'
-           AND datetime(created_at) > datetime('now', '-' || ? || ' days')
+           AND created_at > ?
          ORDER BY id DESC",
     )?;
     let searches: Vec<(i64, String, i64)> = stmt
-        .query_map(rusqlite::params![days], |r| {
+        .query_map(rusqlite::params![cutoff(days)], |r| {
             let payload: String = r.get(1)?;
             let v: serde_json::Value = serde_json::from_str(&payload).unwrap_or_default();
             Ok((
@@ -92,7 +98,7 @@ pub(super) fn uncharted_edits(
          FROM deliveries d
          JOIN events e ON e.id = d.event_id
          WHERE d.kind = 'pack'
-           AND datetime(d.created_at) > datetime('now', '-' || ? || ' days')
+           AND d.created_at > ?
            AND NOT EXISTS (
                SELECT 1 FROM entity_usage u
                WHERE u.delivery_id = d.id AND u.outcome = 'hit'
@@ -101,7 +107,7 @@ pub(super) fn uncharted_edits(
          LIMIT ?",
     )?;
     let zero_hit = stmt
-        .query_map(rusqlite::params![days, limit as i64], |r| {
+        .query_map(rusqlite::params![cutoff(days), limit as i64], |r| {
             Ok((
                 r.get::<_, i64>(0)?,
                 r.get::<_, i64>(1)?,
@@ -170,7 +176,7 @@ pub(super) fn recurring_use(
          FROM entity_usage u
          JOIN entities e ON e.id = u.entity_id
          WHERE u.outcome = 'hit'
-           AND datetime(u.created_at) > datetime('now', '-' || ? || ' days')
+           AND u.created_at > ?
          GROUP BY u.entity_id
          HAVING hits >= ?
          ORDER BY hits DESC
@@ -178,7 +184,7 @@ pub(super) fn recurring_use(
     )?;
     let rows = stmt
         .query_map(
-            rusqlite::params![days, RECURRING_HIT_MIN, limit as i64],
+            rusqlite::params![cutoff(days), RECURRING_HIT_MIN, limit as i64],
             |r| {
                 Ok((
                     r.get::<_, String>(0)?,
@@ -234,20 +240,23 @@ pub(super) fn hot_files(
              COUNT(*), COUNT(DISTINCT date(created_at))
          FROM events
          WHERE event_type = 'file_save'
-           AND datetime(created_at) > datetime('now', '-' || ? || ' days')
+           AND created_at > ?
          GROUP BY 1
          HAVING COUNT(*) >= ? AND COUNT(DISTINCT date(created_at)) >= 2
          ORDER BY 2 DESC
          LIMIT ?",
     )?;
     let rows = stmt
-        .query_map(rusqlite::params![days, HOT_FILE_MIN, limit as i64], |r| {
-            Ok((
-                r.get::<_, Option<String>>(0)?,
-                r.get::<_, i64>(1)?,
-                r.get::<_, i64>(2)?,
-            ))
-        })?
+        .query_map(
+            rusqlite::params![cutoff(days), HOT_FILE_MIN, limit as i64],
+            |r| {
+                Ok((
+                    r.get::<_, Option<String>>(0)?,
+                    r.get::<_, i64>(1)?,
+                    r.get::<_, i64>(2)?,
+                ))
+            },
+        )?
         .collect::<Result<Vec<_>, _>>()?;
 
     // Churn on files the index cannot contain (docs, fixtures,
@@ -282,11 +291,11 @@ pub(super) fn error_fixes(
     let mut stmt = conn.prepare(
         "SELECT id, payload FROM events
          WHERE event_type = 'post_tool_use'
-           AND datetime(created_at) > datetime('now', '-' || ? || ' days')
+           AND created_at > ?
          ORDER BY id",
     )?;
     let calls: Vec<(i64, String, String)> = stmt
-        .query_map(rusqlite::params![days], |r| {
+        .query_map(rusqlite::params![cutoff(days)], |r| {
             let payload: String = r.get(1)?;
             let v: serde_json::Value = serde_json::from_str(&payload).unwrap_or_default();
             Ok((

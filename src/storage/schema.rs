@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 7;
+pub const SCHEMA_VERSION: u32 = 8;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -16,6 +16,10 @@ pub const SCHEMA_VERSION: u32 = 7;
 /// `embedding_dim` is used for the vec0 virtual table dimension.
 /// It must match the configured model dimension.
 pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), StorageError> {
+    // Connection-scoped functions the query layer relies on. Registered
+    // before the version check — an already-current DB still needs them.
+    crate::storage::register_functions(conn)?;
+
     let current: u32 = conn.query_row("PRAGMA user_version", [], |r| r.get(0))?;
 
     if current >= SCHEMA_VERSION {
@@ -48,6 +52,10 @@ pub fn run_migrations(conn: &Connection, embedding_dim: usize) -> Result<(), Sto
 
     if current < 7 {
         migrate_v7(conn)?;
+    }
+
+    if current < 8 {
+        migrate_v8(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -394,6 +402,30 @@ fn migrate_v7(conn: &Connection) -> Result<(), StorageError> {
     Ok(())
 }
 
+/// Migration v8: telemetry timestamp normalization + retention
+/// indexes. Rows written before the format unification carry
+/// 'YYYY-MM-DD HH:MM:SS', which forced every cutoff filter to wrap
+/// the column in datetime() — unindexable. Normalize them to the
+/// RFC 3339 '+00:00' form all writers now emit, then plain string
+/// comparison is both correct and index-servable.
+fn migrate_v8(conn: &Connection) -> Result<(), StorageError> {
+    conn.execute_batch(
+        r#"
+        UPDATE events SET created_at = replace(created_at, ' ', 'T') || '+00:00'
+         WHERE created_at LIKE '% %';
+        UPDATE deliveries SET created_at = replace(created_at, ' ', 'T') || '+00:00'
+         WHERE created_at LIKE '% %';
+        UPDATE entity_usage SET created_at = replace(created_at, ' ', 'T') || '+00:00'
+         WHERE created_at LIKE '% %';
+
+        CREATE INDEX IF NOT EXISTS idx_events_created_at      ON events(created_at);
+        CREATE INDEX IF NOT EXISTS idx_events_type_created    ON events(event_type, created_at);
+        CREATE INDEX IF NOT EXISTS idx_deliveries_created_at  ON deliveries(created_at);
+        "#,
+    )?;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -527,5 +559,44 @@ mod tests {
             .unwrap()
             .any(|name| name.ok().as_deref() == Some("tier"));
         assert!(tier_col, "entity_usage should have a tier column");
+    }
+
+    #[test]
+    fn v8_normalizes_legacy_timestamps_and_adds_indexes() {
+        let conn = Connection::open_in_memory().unwrap();
+        crate::storage::ensure_vec_extension();
+        run_migrations(&conn, 768).unwrap();
+
+        // Rows like this existed pre-v8 — re-running the migration's
+        // normalization is what converts them (idempotent by design).
+        conn.execute(
+            "INSERT INTO events (event_type, created_at) VALUES ('x', '2024-01-02 03:04:05')",
+            [],
+        )
+        .unwrap();
+        migrate_v8(&conn).unwrap();
+        let ts: String = conn
+            .query_row(
+                "SELECT created_at FROM events WHERE event_type = 'x'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(ts, "2024-01-02T03:04:05+00:00");
+
+        for name in [
+            "idx_events_created_at",
+            "idx_events_type_created",
+            "idx_deliveries_created_at",
+        ] {
+            let n: i64 = conn
+                .query_row(
+                    "SELECT COUNT(*) FROM sqlite_master WHERE type = 'index' AND name = ?",
+                    [name],
+                    |r| r.get(0),
+                )
+                .unwrap();
+            assert_eq!(n, 1, "missing index {name}");
+        }
     }
 }

@@ -57,7 +57,7 @@ fn hot_file_signal() {
 
     // Backdate two of the hot.rs saves → cross-day recurrence fires.
     conn.execute(
-        "UPDATE events SET created_at = datetime('now', '-2 days')
+        "UPDATE events SET created_at = strftime('%Y-%m-%dT%H:%M:%S+00:00', 'now', '-2 days')
          WHERE id IN (
              SELECT id FROM events
              WHERE event_type = 'file_save'

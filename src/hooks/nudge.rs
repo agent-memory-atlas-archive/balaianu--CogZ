@@ -20,7 +20,7 @@ const NUDGE_DAYS: u32 = 1;
 const NUDGE_POOL: usize = 8;
 /// A fingerprint shown inside this window is suppressed — the same
 /// candidate re-surfaces at most daily while it stays mined.
-const SUPPRESS_HOURS: &str = "-24 hours";
+const SUPPRESS_HOURS: i64 = 24;
 
 /// Mine candidates and keep only those not nudged within the suppress
 /// window. When any remain, records a `write_nudge_shown` event carrying
@@ -66,10 +66,11 @@ pub fn fresh_suggestions(conn: &Connection, surface: &str) -> Vec<Suggestion> {
 /// Fingerprints shown inside the suppress window, from
 /// `write_nudge_shown` payloads.
 fn shown_fingerprints(conn: &Connection) -> std::collections::HashSet<String> {
+    let cutoff = (chrono::Utc::now() - chrono::Duration::hours(SUPPRESS_HOURS)).to_rfc3339();
     let mut stmt = match conn.prepare(
         "SELECT payload FROM events
          WHERE event_type = 'write_nudge_shown'
-           AND datetime(created_at) > datetime('now', ?)",
+           AND created_at > ?",
     ) {
         Ok(s) => s,
         Err(e) => {
@@ -77,7 +78,7 @@ fn shown_fingerprints(conn: &Connection) -> std::collections::HashSet<String> {
             return std::collections::HashSet::new();
         }
     };
-    let rows = stmt.query_map(rusqlite::params![SUPPRESS_HOURS], |r| r.get::<_, String>(0));
+    let rows = stmt.query_map(rusqlite::params![cutoff], |r| r.get::<_, String>(0));
     let mut shown = std::collections::HashSet::new();
     match rows {
         Ok(rows) => {

@@ -69,6 +69,28 @@ pub(crate) fn ensure_vec_extension() {
     });
 }
 
+/// Register connection-scoped SQL functions the query layer calls.
+/// Scalar functions live on the Connection, not the schema, so every
+/// open path — `Storage::open` and bare-Connection test harnesses —
+/// must run this. `run_migrations` calls it for all of them.
+///
+/// `is_test_path` wraps `index::gitignore::is_test_file` — the single
+/// test-file predicate. SQL filters call it instead of re-encoding
+/// the convention as LIKE wildcards (where `_` and `%` silently
+/// over-match production paths like `latest.go`/`testing.py`).
+pub(crate) fn register_functions(conn: &Connection) -> Result<(), StorageError> {
+    conn.create_scalar_function(
+        "is_test_path",
+        1,
+        rusqlite::functions::FunctionFlags::SQLITE_DETERMINISTIC,
+        |ctx| {
+            let path: Option<String> = ctx.get(0)?;
+            Ok(path.is_some_and(|p| crate::index::gitignore::is_test_file(&p)) as i64)
+        },
+    )?;
+    Ok(())
+}
+
 /// The storage layer. Owns a single SQLite connection behind a Mutex.
 ///
 /// Also owns a `file_mutex` that serializes canonical file
@@ -116,20 +138,6 @@ impl Storage {
         // background processes (reindex-bg, embed-bg) get immediate
         // "database is locked" errors instead of retrying.
         conn.pragma_update(None, "busy_timeout", "5000")?;
-
-        // Single source of truth for test-file exclusion: SQL filters
-        // call is_test_path(file_path) instead of re-encoding the
-        // convention as LIKE wildcards (where `_` and `%` silently
-        // over-match production paths like `latest.go`/`testing.py`).
-        conn.create_scalar_function(
-            "is_test_path",
-            1,
-            rusqlite::functions::FunctionFlags::SQLITE_DETERMINISTIC,
-            |ctx| {
-                let path: Option<String> = ctx.get(0)?;
-                Ok(path.is_some_and(|p| crate::index::gitignore::is_test_file(&p)) as i64)
-            },
-        )?;
 
         schema::run_migrations(&conn, embedding_dim)?;
         schema::check_version(&conn)?;

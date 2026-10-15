@@ -117,7 +117,7 @@ fn new_candidate_still_surfaces_after_dedup() {
     // timestamp just short of a day ago satisfies both (a full -1 day
     // lands exactly on/outside the window edge).
     conn.execute(
-        "UPDATE events SET created_at = datetime('now', '-86390 seconds')
+        "UPDATE events SET created_at = strftime('%Y-%m-%dT%H:%M:%S+00:00', 'now', '-86390 seconds')
          WHERE id IN (
              SELECT id FROM events
              WHERE event_type = 'file_save'
@@ -174,7 +174,7 @@ fn fingerprint_is_stable_across_volatile_evidence() {
     // save to just inside the 24h window so the signal fires (a full
     // -1 day lands on/outside the window edge).
     conn.execute(
-        "UPDATE events SET created_at = datetime('now', '-86390 seconds')
+        "UPDATE events SET created_at = strftime('%Y-%m-%dT%H:%M:%S+00:00', 'now', '-86390 seconds')
          WHERE id = (
              SELECT MIN(id) FROM events
              WHERE event_type = 'file_save'
