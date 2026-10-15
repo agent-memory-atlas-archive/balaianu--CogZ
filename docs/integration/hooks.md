@@ -28,12 +28,20 @@ If no `.cogz/` directory is found in the current repo, CogZ prints `{}` and exit
 
 ## The `--fts-only` flag
 
-The `--fts-only` flag skips ONNX model loading and uses FTS-only search for context assembly. This is critical for hook use:
+The `--fts-only` flag skips ONNX model loading and uses FTS-only search for context assembly. This is critical for hook use — the CLI loads models into a fresh process on every call, and the embedding models dominate both wall time and memory.
 
-- **Without `--fts-only`:** each hook call loads the ONNX runtime (~40s on first load, ~2s on subsequent calls with warm models).
-- **With `--fts-only`:** hook calls complete in ~0.5s using FTS-only search.
+Measured on reference hardware (x86-64 Linux, models already installed, v0.5.8 release binary, median of 3 runs after a first warm-up):
 
-For hooks, speed matters more than ranking quality. The MCP server (persistent process) is the preferred path when vector search is needed — it keeps models loaded across calls.
+| Call | Wall time | Peak RSS |
+|---|---|---|
+| `session_start --fts-only` | ~0.4 s | ~15 MB |
+| `session_start` (full) | ~0.4–2.5 s | ~15 MB |
+| `prompt_submit --fts-only` | ~2.7 s | ~23 MB |
+| `prompt_submit` (full) | ~6 s | ~790 MB |
+
+`session_start` stays fast in full mode because the cold-start pack does not query the index — models load lazily and are never used. `prompt_submit` runs a real query, so full mode pays ORT init plus model load in every call. First-ever runs (model download, cold page cache) can take tens of seconds; steady-state numbers above are what hooks see in practice.
+
+For hooks, speed matters more than ranking quality — generated hook configs include `--fts-only` by default. The MCP server (persistent process) is the preferred path when vector search is needed — it keeps models loaded across calls.
 
 ## Event types
 
