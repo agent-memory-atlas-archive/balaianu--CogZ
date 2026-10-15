@@ -255,40 +255,57 @@ fn parse_hook_stdin() -> (
     Option<String>,
     Option<String>,
 ) {
-    use std::io::Read;
-
-    // Cap stdin at 1MB to avoid memory pressure from large tool outputs
-    // on resource-constrained hardware. Tool results larger than this
-    // are truncated — the event is still recorded with the truncated payload.
-    const MAX_STDIN_BYTES: usize = 1024 * 1024;
-    let mut stdin = String::new();
     let mut stdin_buf = std::io::stdin();
-    // Read in chunks up to the cap, then drain the rest.
+    let (bytes, capped) = read_stdin_capped(&mut stdin_buf);
+    if bytes.is_empty() {
+        return (None, None, None, None);
+    }
+
+    let stdin = String::from_utf8_lossy(&bytes);
+    parse_hook_payload(&stdin, capped)
+}
+
+/// Read a hook payload into a byte buffer capped at 1 MiB. Returns
+/// (bytes, capped) — `capped` is true when the input exceeded the
+/// cap, in which case the remainder is drained to a sink so the
+/// writer's pipe doesn't break. Decoding happens once, at the
+/// caller: per-chunk `from_utf8_lossy` corrupts multi-byte
+/// characters that span a read boundary.
+fn read_stdin_capped(reader: &mut impl std::io::Read) -> (Vec<u8>, bool) {
+    const MAX_STDIN_BYTES: usize = 1024 * 1024;
+    let mut bytes = Vec::new();
     let mut buf = vec![0u8; 8192];
     loop {
-        let n = match stdin_buf.read(&mut buf) {
+        let n = match reader.read(&mut buf) {
             Ok(0) => break,
             Ok(n) => n,
             Err(_) => break,
         };
-        if stdin.len() + n > MAX_STDIN_BYTES {
-            let remaining = MAX_STDIN_BYTES - stdin.len();
-            stdin.push_str(&String::from_utf8_lossy(&buf[..remaining]));
-            // Drain remaining stdin so the pipe doesn't break.
-            // Use io::sink() to avoid materializing the remaining
-            // bytes in memory — read_to_end(&mut Vec::new()) would
-            // allocate the full remaining payload.
-            let _ = std::io::copy(&mut stdin_buf, &mut std::io::sink());
-            break;
+        if bytes.len() + n > MAX_STDIN_BYTES {
+            let remaining = MAX_STDIN_BYTES - bytes.len();
+            bytes.extend_from_slice(&buf[..remaining]);
+            let _ = std::io::copy(reader, &mut std::io::sink());
+            return (bytes, true);
         }
-        stdin.push_str(&String::from_utf8_lossy(&buf[..n]));
+        bytes.extend_from_slice(&buf[..n]);
     }
-    if stdin.is_empty() {
-        return (None, None, None, None);
-    }
+    (bytes, false)
+}
 
-    let Ok(json) = serde_json::from_str::<serde_json::Value>(&stdin) else {
-        return (None, None, None, None);
+/// Extract hook fields from a decoded payload. `capped` marks input
+/// that was cut at the read cap — a failed parse then falls back to
+/// recovering whichever complete string fields survived.
+fn parse_hook_payload(
+    raw: &str,
+    capped: bool,
+) -> (
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+) {
+    let Ok(json) = serde_json::from_str::<serde_json::Value>(raw) else {
+        return extract_fields_from_truncated(raw, capped);
     };
 
     let prompt = json
@@ -347,4 +364,116 @@ fn parse_hook_stdin() -> (
         });
 
     (prompt, tool_name, tool_result, file_path)
+}
+
+/// Recover fields from a stdin payload cut at the size cap. The tail
+/// — usually `tool_response.output` — ends mid-string, so a full
+/// parse fails. Scan for complete JSON string tokens and decode them
+/// through serde so escapes unmarshal correctly. Fields that didn't
+/// survive whole return None; the event still records prompt, tool
+/// name, and file path instead of dropping entirely.
+fn extract_fields_from_truncated(
+    raw: &str,
+    capped: bool,
+) -> (
+    Option<String>,
+    Option<String>,
+    Option<String>,
+    Option<String>,
+) {
+    if !capped {
+        return (None, None, None, None);
+    }
+    let prompt = scan_json_string_field(raw, "prompt");
+    let tool_name = scan_json_string_field(raw, "tool_name");
+    let tool_result = scan_json_string_field(raw, "output")
+        .or_else(|| scan_json_string_field(raw, "error"))
+        .or_else(|| scan_json_string_field(raw, "content"))
+        .or_else(|| scan_json_string_field(raw, "tool_result"))
+        .or_else(|| scan_json_string_field(raw, "tool_output"));
+    let file_path = raw
+        .find("\"tool_input\"")
+        .and_then(|anchor| scan_json_string_field(&raw[anchor..], "file_path"))
+        .or_else(|| scan_json_string_field(raw, "file_path"));
+    (prompt, tool_name, tool_result, file_path)
+}
+
+/// Find `"key": "..."` and return the decoded string value, skipping
+/// key occurrences whose value is missing, non-string, or truncated.
+fn scan_json_string_field(raw: &str, key: &str) -> Option<String> {
+    let needle = format!("\"{key}\"");
+    for (idx, _) in raw.match_indices(&needle) {
+        let after = raw[idx + needle.len()..].trim_start();
+        let Some(after) = after.strip_prefix(':').map(str::trim_start) else {
+            continue;
+        };
+        if !after.starts_with('"') {
+            continue;
+        }
+        let mut escaped = false;
+        for (i, c) in after[1..].char_indices() {
+            if escaped {
+                escaped = false;
+            } else if c == '\\' {
+                escaped = true;
+            } else if c == '"' {
+                return serde_json::from_str::<String>(&after[..i + 2]).ok();
+            }
+        }
+    }
+    None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn oversized_payload_still_yields_fields() {
+        // A PostToolUse over the 1 MiB cap: the output tail is cut
+        // mid-string so serde can't parse, but the leading fields
+        // survive whole and must still be recorded.
+        let big_output = "x".repeat(2 * 1024 * 1024);
+        let payload = format!(
+            r#"{{"tool_name":"Write","tool_input":{{"file_path":"/repo/src/lib.rs"}},"tool_response":{{"success":true,"output":"{big_output}"}}}}"#
+        );
+        let mut cursor = std::io::Cursor::new(payload.into_bytes());
+        let (bytes, capped) = read_stdin_capped(&mut cursor);
+        assert!(capped);
+        assert_eq!(bytes.len(), 1024 * 1024);
+
+        let raw = String::from_utf8_lossy(&bytes);
+        let (prompt, tool_name, tool_result, file_path) = parse_hook_payload(&raw, capped);
+        assert_eq!(tool_name.as_deref(), Some("Write"));
+        assert_eq!(file_path.as_deref(), Some("/repo/src/lib.rs"));
+        // The output string was cut mid-value — it must not leak
+        // a half-decode into the event.
+        assert_eq!(tool_result, None);
+        assert_eq!(prompt, None);
+    }
+
+    #[test]
+    fn multibyte_char_survives_chunk_boundary() {
+        // Place a 4-byte char so its bytes straddle the 8192-byte
+        // read boundary — per-chunk lossy decode used to emit U+FFFD
+        // here. U+1D11E is 4 bytes (F0 9D 84 9E).
+        let prefix_len = 8192 - 2 - "{\"prompt\":\"".len();
+        let pad = "a".repeat(prefix_len);
+        let payload = format!("{{\"prompt\":\"{pad}𝄞end\"}}");
+        assert!(
+            payload.as_bytes()[8190..8196]
+                .windows(4)
+                .any(|w| w == "𝄞".as_bytes()),
+            "char must straddle the boundary"
+        );
+
+        let mut cursor = std::io::Cursor::new(payload.into_bytes());
+        let (bytes, capped) = read_stdin_capped(&mut cursor);
+        assert!(!capped);
+        let raw = String::from_utf8_lossy(&bytes);
+        let (prompt, ..) = parse_hook_payload(&raw, capped);
+        let prompt = prompt.unwrap();
+        assert!(prompt.contains('𝄞'));
+        assert!(!prompt.contains('\u{FFFD}'));
+    }
 }
