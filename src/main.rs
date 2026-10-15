@@ -372,6 +372,11 @@ enum Commands {
         #[arg(long)]
         ids_file: PathBuf,
 
+        /// Repo .cogz directory — holds .bg.lock for the
+        /// single-background-worker gate.
+        #[arg(long)]
+        cogz_dir: PathBuf,
+
         /// Code model ID.
         #[arg(long)]
         code_model: String,
@@ -387,6 +392,10 @@ enum Commands {
         /// Minimum free memory in MB to load a model (0 = no check).
         #[arg(long, default_value_t = 512)]
         min_free_mb: u64,
+
+        /// Parent already holds .bg.lock — run as the designated worker.
+        #[arg(long)]
+        lock_held: bool,
     },
 }
 
@@ -617,18 +626,22 @@ fn main() -> anyhow::Result<()> {
         Commands::EmbedBg {
             db,
             ids_file,
+            cogz_dir,
             code_model,
             dimension,
             idle_ttl,
             min_free_mb,
-        } => commands::run_embed_bg(
-            &db,
-            &ids_file,
-            &code_model,
+            lock_held,
+        } => commands::run_embed_bg(&commands::embed_bg::EmbedBgArgs {
+            db_path: db,
+            ids_file,
+            cogz_dir,
+            code_model,
             dimension,
             idle_ttl,
             min_free_mb,
-        ),
+            lock_held,
+        }),
         Commands::ReindexBg { repo, db } => {
             if let Err(e) = commands::run_reindex_bg(&repo, &db) {
                 eprintln!("reindex-bg: error: {}", e);

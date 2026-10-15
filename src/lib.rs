@@ -3,6 +3,7 @@
 //! This crate provides the library API used by the CLI and MCP server.
 //! The public surface grows phase by phase per the implementation plan.
 
+pub mod bg_lock;
 pub mod config;
 pub mod configure;
 pub mod consolidate;

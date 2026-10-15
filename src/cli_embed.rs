@@ -2,6 +2,8 @@
 //! lock-drop-reacquire pattern for embedding synced entities and
 //! search queries.
 
+use std::path::Path;
+
 use cogz::config::Config;
 use cogz::storage::Storage;
 
@@ -17,7 +19,13 @@ use cogz::storage::Storage;
 ///
 /// Entity data is fetched under the DB lock, then the lock is dropped
 /// during model inference, then re-acquired to store vectors.
-pub fn embed_synced(storage: &Storage, config: &Config, entity_ids: &[String]) -> usize {
+pub fn embed_synced(
+    storage: &Storage,
+    config: &Config,
+    entity_ids: &[String],
+    cogz_dir: &Path,
+    bg_lock_held: bool,
+) -> usize {
     use cogz::embed::{EmbeddingCache, ModelType, OnnxEmbeddingModel};
     use cogz::storage::crud::EntityType;
 
@@ -97,7 +105,7 @@ pub fn embed_synced(storage: &Storage, config: &Config, entity_ids: &[String]) -
 
     // Defer code embedding to a background process.
     let code_ids: Vec<String> = code_entities.iter().map(|e| e.id.clone()).collect();
-    spawn_code_embed_background(storage, config, &code_ids);
+    spawn_code_embed_background(storage, config, &code_ids, cogz_dir, bg_lock_held);
     all_embeddings.len()
 }
 
@@ -143,6 +151,8 @@ pub(crate) fn spawn_code_embed_background(
     storage: &Storage,
     config: &Config,
     entity_ids: &[String],
+    cogz_dir: &Path,
+    bg_lock_held: bool,
 ) {
     // Write the entity IDs under the per-user state dir — project
     // data has no business in a world-readable shared temp.
@@ -185,13 +195,17 @@ pub(crate) fn spawn_code_embed_background(
     // Find the cogz binary.
     let exe = std::env::current_exe().unwrap_or_else(|_| std::path::PathBuf::from("cogz"));
 
-    // Spawn the background process.
-    let result = std::process::Command::new(&exe)
-        .arg("embed-bg")
+    // Spawn the background process. `--lock-held` marks the parent as
+    // already holding `.bg.lock` — the child is then the designated
+    // worker and skips its own lock acquisition.
+    let mut cmd = std::process::Command::new(&exe);
+    cmd.arg("embed-bg")
         .arg("--db")
         .arg(&db_path)
         .arg("--ids-file")
         .arg(&id_file)
+        .arg("--cogz-dir")
+        .arg(cogz_dir)
         .arg("--code-model")
         .arg(&config.embedding.code_model)
         .arg("--dimension")
@@ -199,7 +213,11 @@ pub(crate) fn spawn_code_embed_background(
         .arg("--idle-ttl")
         .arg(config.embedding.model_idle_ttl.to_string())
         .arg("--min-free-mb")
-        .arg(config.embedding.model_min_free_mb.to_string())
+        .arg(config.embedding.model_min_free_mb.to_string());
+    if bg_lock_held {
+        cmd.arg("--lock-held");
+    }
+    let result = cmd
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())

@@ -1,10 +1,24 @@
 //! Background code embedding — spawned by `cogz index` to embed code
 //! entities after the foreground indexing completes.
 
-use std::path::Path;
+use std::path::PathBuf;
 use std::time::{Duration, SystemTime};
 
 use crate::cli;
+
+/// Parameters for a `cogz embed-bg` invocation — mirrors the CLI
+/// flags of the same names.
+pub struct EmbedBgArgs {
+    pub db_path: PathBuf,
+    pub ids_file: PathBuf,
+    pub cogz_dir: PathBuf,
+    pub code_model: String,
+    pub dimension: usize,
+    pub idle_ttl: u64,
+    pub min_free_mb: u64,
+    /// Parent already holds `.bg.lock` — run as the designated worker.
+    pub lock_held: bool,
+}
 
 /// Embed code entities in the background after indexing.
 ///
@@ -16,16 +30,28 @@ use crate::cli;
 /// On startup, sweeps the temp directory for stale `cogz-embed-bg-*.txt`
 /// files older than 1 hour — these accumulate when background embed
 /// processes crash before cleaning up their ID files.
-pub fn run_embed_bg(
-    db_path: &Path,
-    ids_file: &Path,
-    code_model: &str,
-    dimension: usize,
-    idle_ttl: u64,
-    min_free_mb: u64,
-) -> anyhow::Result<()> {
+pub fn run_embed_bg(args: &EmbedBgArgs) -> anyhow::Result<()> {
     use cogz::embed::{EmbeddingCache, ModelType, OnnxEmbeddingModel};
     use cogz::storage::crud::get_entities_batch;
+
+    let ids_file = &args.ids_file;
+
+    // One background worker per repo — a second spawn exits instead
+    // of redoing the same embedding work. `lock_held` means the parent
+    // process already holds `.bg.lock` (reindex-bg defers embedding to
+    // this worker), so this process is the designated worker.
+    let _bg_lock = if args.lock_held {
+        None
+    } else {
+        match cogz::bg_lock::try_acquire(&args.cogz_dir) {
+            Some(lock) => Some(lock),
+            None => {
+                tracing::debug!("embed-bg: another background worker holds .bg.lock, exiting");
+                let _ = std::fs::remove_file(ids_file);
+                return Ok(());
+            }
+        }
+    };
 
     // Clean up stale ID files from crashed background embed processes.
     cleanup_stale_id_files();
@@ -45,7 +71,7 @@ pub fn run_embed_bg(
 
     // Open the DB. The dimension parameter must match the vec0 table
     // created during the initial index. It's passed from the parent.
-    let storage = cogz::storage::Storage::open(db_path, dimension)?;
+    let storage = cogz::storage::Storage::open(&args.db_path, args.dimension)?;
 
     // Fetch entity data under the lock, then drop it.
     let entities: Vec<_> = {
@@ -63,10 +89,10 @@ pub fn run_embed_bg(
     let model = OnnxEmbeddingModel::with_resource_config(
         ModelType::Code,
         &models_dir,
-        dimension,
-        code_model,
-        idle_ttl,
-        min_free_mb,
+        args.dimension,
+        &args.code_model,
+        args.idle_ttl,
+        args.min_free_mb,
     );
 
     if !model.model_files_exist() {

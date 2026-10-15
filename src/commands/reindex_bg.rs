@@ -21,6 +21,16 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
     let cogz_dir = repo.join(".cogz");
     let config_path = cogz_dir.join("config.toml");
 
+    // One background worker per repo — a second spawn exits instead
+    // of redoing the same indexing work.
+    let _bg_lock = match cogz::bg_lock::try_acquire(&cogz_dir) {
+        Some(lock) => lock,
+        None => {
+            eprintln!("reindex-bg: another background worker holds .bg.lock, exiting");
+            return Ok(());
+        }
+    };
+
     let config = config::load(&config_path)?;
     let storage = Storage::open(db_path, config.embedding.dimension)?;
 
@@ -78,7 +88,9 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
     let mut targets = file_targets;
     targets.extend(code_targets);
     if !targets.is_empty() {
-        let embedded = crate::cli_embed::embed_synced(&storage, &config, &targets);
+        // `.bg.lock` is already held by this process — an embed-bg
+        // spawn defers to it as the designated worker.
+        let embedded = crate::cli_embed::embed_synced(&storage, &config, &targets, &cogz_dir, true);
         if embedded > 0 {
             eprintln!("reindex-bg: {} embedded", embedded);
         }

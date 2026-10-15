@@ -203,7 +203,7 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         cogz::storage::embeddings::EmbeddingSpace::Knowledge,
     );
     if !file_targets.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &file_targets);
+        let embedded = cli::embed_synced(&storage, &config, &file_targets, &cogz_dir, false);
         if embedded > 0 {
             println!("  Embedded: {}", embedded);
         }
@@ -226,7 +226,7 @@ pub fn run_index(repo: &Path, no_download: bool) -> anyhow::Result<()> {
         cogz::storage::embeddings::EmbeddingSpace::Code,
     );
     if !code_targets.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &code_targets);
+        let embedded = cli::embed_synced(&storage, &config, &code_targets, &cogz_dir, false);
         if embedded > 0 {
             println!("  Code embedded: {}", embedded);
         }
@@ -306,7 +306,7 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
         cogz::storage::embeddings::EmbeddingSpace::Knowledge,
     );
     if !file_targets.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &file_targets);
+        let embedded = cli::embed_synced(&storage, &config, &file_targets, &cogz_dir, false);
         if embedded > 0 {
             println!("  Embedded: {}", embedded);
         }
@@ -335,7 +335,7 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
         cogz::storage::embeddings::EmbeddingSpace::Code,
     );
     if !code_targets.is_empty() {
-        let embedded = cli::embed_synced(&storage, &config, &code_targets);
+        let embedded = cli::embed_synced(&storage, &config, &code_targets, &cogz_dir, false);
         if embedded > 0 {
             println!("  Code embedded: {}", embedded);
         }
