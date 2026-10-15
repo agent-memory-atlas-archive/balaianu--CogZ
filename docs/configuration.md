@@ -55,6 +55,7 @@ dedup_nli_threshold = 0.55
 [index]
 allow = []
 deny = []
+max_file_bytes = 1048576
 
 [retention]
 observation_prune_after_days = 90
@@ -164,6 +165,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 |---|---|---|---|
 | `allow` | array of strings | `[]` | Glob patterns for files to index despite being gitignored. Patterns are relative to repo root (`*`, `**`, `?`, `[abc]`). |
 | `deny` | array of strings | `[]` | Glob patterns for files to exclude from indexing even if not gitignored. Use cases: vendored code, generated files. Allow takes precedence over deny. |
+| `max_file_bytes` | u64 | `1048576` | Maximum source file size in bytes. Larger files are skipped before reading (size checked via metadata, never loaded) and recorded as permanent skips — they do not pin the incremental baseline. |
 
 ### `[retention]`
 

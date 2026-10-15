@@ -34,7 +34,12 @@ pub struct ParsedFiles {
 ///
 /// Both full scan and incremental reindex call this. Callers decide
 /// which output fields to use based on their sync mode.
-pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf]) -> ParsedFiles {
+///
+/// Files larger than `max_bytes` are skipped by size before reading —
+/// a minified bundle or generated file should never load into memory.
+/// They land in `failed_paths` (no stale marking) but are permanent
+/// skips, so they do not pin the incremental baseline.
+pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf], max_bytes: u64) -> ParsedFiles {
     let mut entities_by_file: Vec<(String, Vec<CodeEntity>)> = Vec::new();
     let mut raw_edges_by_file: Vec<(String, Vec<RawEdge>)> = Vec::new();
     let mut source_files_for_edges: Vec<(PathBuf, String, Language)> = Vec::new();
@@ -43,6 +48,18 @@ pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf]) -> ParsedFile
 
     for rel_path in rel_paths {
         let abs_path = repo_root.join(rel_path);
+        if let Ok(meta) = std::fs::metadata(&abs_path)
+            && meta.len() > max_bytes
+        {
+            tracing::warn!(
+                "skipping {}: {} bytes exceeds index.max_file_bytes ({})",
+                abs_path.display(),
+                meta.len(),
+                max_bytes
+            );
+            failed_paths.insert(path_to_string(rel_path));
+            continue;
+        }
         let source = match std::fs::read_to_string(&abs_path) {
             Ok(s) => s,
             Err(e) => {
@@ -106,6 +123,7 @@ mod tests {
         let parsed = parse_source_files(
             dir.path(),
             &[PathBuf::from("bad.py"), PathBuf::from("ok.py")],
+            u64::MAX,
         );
 
         assert!(parsed.failed_paths.contains("bad.py"));
@@ -113,6 +131,27 @@ mod tests {
             !parsed.had_read_failures,
             "permanent read error must not pin the baseline"
         );
+        assert_eq!(parsed.entities_by_file.len(), 1);
+    }
+
+    #[test]
+    fn oversized_file_is_a_permanent_skip() {
+        // An over-cap file must land in failed_paths (its entities are
+        // not stale-marked) without setting had_read_failures — the
+        // skip is permanent, so pinning the baseline would freeze
+        // incremental reindex forever.
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("big.py"), "# padding\n".repeat(1024)).unwrap();
+        std::fs::write(dir.path().join("ok.py"), "def f():\n    pass\n").unwrap();
+
+        let parsed = parse_source_files(
+            dir.path(),
+            &[PathBuf::from("big.py"), PathBuf::from("ok.py")],
+            1024,
+        );
+
+        assert!(parsed.failed_paths.contains("big.py"));
+        assert!(!parsed.had_read_failures);
         assert_eq!(parsed.entities_by_file.len(), 1);
     }
 }

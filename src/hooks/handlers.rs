@@ -164,8 +164,8 @@ fn handle_source_file_save(
 
     tracing::debug!("file_save hook: triggering reindex for {}", path);
 
-    let _ = config; // Config not needed for single-file reindex.
-    let result = crate::index::reindex_single_file(storage, repo_root, path);
+    let result =
+        crate::index::reindex_single_file(storage, repo_root, path, config.index.max_file_bytes);
 
     let post = crate::index::drift::post_index_pass(storage, cogz_dir);
     let stale_flagged = post.stale_flagged;

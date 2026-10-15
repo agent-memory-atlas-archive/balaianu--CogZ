@@ -68,7 +68,7 @@ pub fn index_code(storage: &storage::Storage, repo_root: &Path, config: &Config)
     // Phase 2: read and parse all source files in a single pass.
     // extract_all produces both entities and raw edges from one AST
     // walk, eliminating the need for a second parse during edge sync.
-    let parsed = parse::parse_source_files(repo_root, &source_paths);
+    let parsed = parse::parse_source_files(repo_root, &source_paths, config.index.max_file_bytes);
 
     // Phase 3: sync code entities to DB (lock held). Pass failed_paths
     // so that stale marking excludes files that failed to read — their
@@ -137,7 +137,8 @@ pub fn reindex_code(
 
     match changed {
         Some(files) if !files.is_empty() => {
-            let result = reindex::reindex_files(storage, repo_root, &files);
+            let result =
+                reindex::reindex_files(storage, repo_root, &files, config.index.max_file_bytes);
             // Advance the baseline only if all changed files were
             // successfully read. On partial failure, preserve the
             // previous baseline so the next reindex retries them.
@@ -192,6 +193,7 @@ pub fn reindex_single_file(
     storage: &storage::Storage,
     repo_root: &Path,
     file_path: &str,
+    max_file_bytes: u64,
 ) -> ReindexResult {
     let path = std::path::PathBuf::from(file_path);
     // Hooks report absolute paths; entities must key on repo-relative
@@ -225,7 +227,7 @@ pub fn reindex_single_file(
         path: rel,
         change: detection::ChangeType::Modified,
     }];
-    reindex::reindex_files(storage, repo_root, &changed)
+    reindex::reindex_files(storage, repo_root, &changed, max_file_bytes)
 }
 
 /// Query all stale code entity IDs (function, class, file, module).

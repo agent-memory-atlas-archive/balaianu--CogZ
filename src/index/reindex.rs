@@ -45,6 +45,7 @@ pub fn reindex_files(
     storage: &storage::Storage,
     repo_root: &Path,
     changed: &[detection::ChangedFile],
+    max_file_bytes: u64,
 ) -> ReindexResult {
     let mut result = ReindexResult {
         incremental: true,
@@ -58,7 +59,7 @@ pub fn reindex_files(
 
     // Read and parse only changed files in a single pass (no lock held).
     let parse_paths: Vec<PathBuf> = to_parse.iter().map(|f| f.path.clone()).collect();
-    let parsed = parse::parse_source_files(repo_root, &parse_paths);
+    let parsed = parse::parse_source_files(repo_root, &parse_paths, max_file_bytes);
     result.had_read_failures = parsed.had_read_failures;
 
     // Sync changed entities to DB (no full stale sweep).

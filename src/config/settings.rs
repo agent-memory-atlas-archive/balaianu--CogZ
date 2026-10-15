@@ -364,7 +364,11 @@ fn default_dedup_nli_threshold() -> f64 {
     0.55
 }
 
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+fn default_max_file_bytes() -> u64 {
+    1024 * 1024
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct IndexConfig {
     /// Glob patterns for files to index despite being gitignored.
     /// Patterns are relative to the repo root and use standard glob
@@ -379,6 +383,22 @@ pub struct IndexConfig {
     /// Allow patterns take precedence over deny.
     #[serde(default)]
     pub deny: Vec<String>,
+    /// Maximum source file size in bytes — larger files are skipped
+    /// before reading. A minified bundle or generated file can dwarf
+    /// the rest of the corpus; capping keeps index memory bounded.
+    /// Default 1 MiB.
+    #[serde(default = "default_max_file_bytes")]
+    pub max_file_bytes: u64,
+}
+
+impl Default for IndexConfig {
+    fn default() -> Self {
+        Self {
+            allow: vec![],
+            deny: vec![],
+            max_file_bytes: default_max_file_bytes(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -514,10 +534,7 @@ impl Config {
                 contradiction_length_ratio: default_contradiction_length_ratio(),
                 dedup_nli_threshold: default_dedup_nli_threshold(),
             },
-            index: IndexConfig {
-                allow: vec![],
-                deny: vec![],
-            },
+            index: IndexConfig::default(),
             retention: RetentionConfig {
                 observation_prune_after_days: 90,
                 tombstone_max_count: 1000,

@@ -271,7 +271,7 @@ fn allow_overrides_gitignore() {
     let config = Config {
         index: cogz::config::IndexConfig {
             allow: vec!["src/secret.rs".to_string()],
-            deny: vec![],
+            ..cogz::config::IndexConfig::default()
         },
         ..default_config()
     };
@@ -623,7 +623,7 @@ fn reindex_single_file_relativizes_absolute_hook_path() {
 
     let storage = Storage::open_memory().unwrap();
     let abs = root.join("src/foo.py").to_string_lossy().to_string();
-    cogz::index::reindex_single_file(&storage, root, &abs);
+    cogz::index::reindex_single_file(&storage, root, &abs, u64::MAX);
 
     let conn = storage.conn();
     let ghost: i64 = conn
@@ -652,7 +652,7 @@ fn reindex_single_file_normalizes_dot_relative_path() {
     std::fs::write(root.join("src/foo.py"), "def helper():\n    return 1\n").unwrap();
 
     let storage = Storage::open_memory().unwrap();
-    cogz::index::reindex_single_file(&storage, root, "./src/foo.py");
+    cogz::index::reindex_single_file(&storage, root, "./src/foo.py", u64::MAX);
 
     let conn = storage.conn();
     let rel: i64 = conn
