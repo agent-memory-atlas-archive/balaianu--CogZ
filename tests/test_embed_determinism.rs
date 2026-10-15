@@ -325,59 +325,6 @@ fn code_corpus_bucketed_vs_chunked() {
     );
 }
 
-/// One-shot normalization: re-embed every code entity in the live
-/// `.cogz` DB through the canonical solo path. Surgical alternative
-/// to `reset`+`index` — leaves entities, telemetry, and knowledge
-/// vectors untouched.
-#[test]
-#[ignore = "needs real ONNX model + .cogz corpus; mutates the live DB"]
-fn reembed_code_entities_canonical() {
-    let Some(model) = model(ModelType::Code, 768) else {
-        eprintln!("code model not found — skipping");
-        return;
-    };
-    // Storage::open registers the sqlite-vec extension — the vec0
-    // embedding tables don't exist on a plain rusqlite connection.
-    // COGZ_REEMBED_DB overrides the default self-corpus so external
-    // benchmark corpora can be normalized with the same path.
-    let db = std::env::var("COGZ_REEMBED_DB").unwrap_or_else(|_| ".cogz/cogz.db".into());
-    let storage = cogz::storage::Storage::open(std::path::Path::new(&db), 768).unwrap();
-    let entities: Vec<cogz::storage::crud::Entity> = {
-        let conn = storage.conn();
-        let mut stmt = conn
-            .prepare(
-                "SELECT id, type, title, content FROM entities \
-                 WHERE type IN ('function','file','class','module','method') \
-                 AND status != 'pruned'",
-            )
-            .unwrap();
-        stmt.query_map([], |r| {
-            let mut e = cogz::storage::crud::Entity::new(
-                &r.get::<_, String>(0)?,
-                &r.get::<_, String>(1)?,
-                "",
-                &r.get::<_, String>(3)?,
-            );
-            e.title = r.get::<_, Option<String>>(2)?;
-            Ok(e)
-        })
-        .unwrap()
-        .collect::<Result<Vec<_>, _>>()
-        .unwrap()
-    };
-    eprintln!("re-embedding {} code entities solo", entities.len());
-
-    let t0 = std::time::Instant::now();
-    let cache = cogz::embed::EmbeddingCache::new();
-    let embedded = cogz::files::embed_sync::embed_entities(&model, &cache, &entities);
-    eprintln!(
-        "embedded {}/{} in {:?} — storing",
-        embedded.len(),
-        entities.len(),
-        t0.elapsed()
-    );
-    let mut conn = storage.conn();
-    let stored = cogz::files::embed_sync::store_embeddings(&mut conn, &embedded);
-    eprintln!("stored {}/{}", stored, entities.len());
-    assert_eq!(stored, entities.len());
-}
+// The re-embed normalization utility moved to
+// `examples/reembed_code_entities.rs` — it mutates a live DB and is a
+// tool, not a test.
