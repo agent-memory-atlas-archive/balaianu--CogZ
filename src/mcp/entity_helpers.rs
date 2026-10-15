@@ -58,8 +58,10 @@ pub fn write_and_sync(
 
     // 0. Scan for secrets before writing to disk. Knowledge and rules
     // are committed to git — a secret there is nearly impossible to
-    // remove from version history.
-    if let Some(scan) = crate::security::scan_content(&entity.title, &entity.body) {
+    // remove from version history. The scan covers the whole
+    // serialized file: a credential can hide in frontmatter, not just
+    // the body.
+    if let Some(scan) = crate::security::scan_content("", &entity.to_file_content()) {
         return Err(mcp_error(
             "secret_detected",
             &format!(

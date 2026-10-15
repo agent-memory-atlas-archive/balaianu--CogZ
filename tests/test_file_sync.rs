@@ -6,6 +6,7 @@
 
 use std::path::{Path, PathBuf};
 
+use cogz::files::sync::SyncError;
 use cogz::files::{content_hash, scan_entity_files, sync_all, sync_incremental, sync_single_file};
 use cogz::storage::{self, Storage};
 
@@ -125,6 +126,31 @@ fn sync_rejects_file_containing_secret() {
 
     assert_eq!(result.created, 0);
     assert_eq!(result.errors.len(), 1);
+    let conn = storage.conn();
+    assert_eq!(storage::crud::count_all(&conn).unwrap(), 0);
+}
+
+#[test]
+fn sync_rejects_file_with_secret_in_frontmatter() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    // Scanning title+body alone misses secrets in other frontmatter
+    // fields — the serialized file is the scan boundary.
+    write_file(
+        dir.path(),
+        "knowledge/gotchas/leaked-fm.md",
+        "---\nid: a1b2c3d4-e5f6-4789-abcd-000000000043\ntitle: \"Deploy notes\"\ntype: knowledge\nstatus: active\ncreated_at: 2026-08-27T14:30:00Z\nupdated_at: 2026-08-27T14:30:00Z\nreferences: []\ncategory: gotchas\ndeploy_key: glpat-\x5ax9Qw8Er7Ty6Ui5Op4As\n---\n\nRotate the deploy key quarterly.",
+    );
+
+    let result = sync_all(&storage, dir.path());
+
+    assert_eq!(result.created, 0);
+    assert_eq!(result.errors.len(), 1);
+    assert!(matches!(
+        result.errors[0].error,
+        SyncError::SecretDetected(_)
+    ));
     let conn = storage.conn();
     assert_eq!(storage::crud::count_all(&conn).unwrap(), 0);
 }

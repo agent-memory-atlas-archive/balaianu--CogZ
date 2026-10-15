@@ -19,7 +19,7 @@ pub(crate) fn read_and_parse(
     // pull, so the scan must live at the sync boundary too. A file
     // carrying a secret must not reach FTS, embeddings, or (in team
     // mode) the commit — it stays on disk as a retained error.
-    if let Some(scan) = crate::security::scan_content(&entity_file.title, &entity_file.body) {
+    if let Some(scan) = crate::security::scan_content("", &raw_content) {
         return Err(SyncError::SecretDetected(scan.kind));
     }
     let hash = content_hash(&raw_content);

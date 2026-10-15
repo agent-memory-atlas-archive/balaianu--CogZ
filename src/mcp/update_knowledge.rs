@@ -114,8 +114,9 @@ pub fn update_knowledge_file(
 
         // 3.5. Scan for secrets before writing. Knowledge files are
         // committed to git — a secret there is nearly impossible to
-        // remove from version history.
-        if let Some(scan) = crate::security::scan_content(&entity_file.title, &entity_file.body) {
+        // remove from version history. Scan the whole serialized
+        // file so frontmatter can't smuggle a credential through.
+        if let Some(scan) = crate::security::scan_content("", &entity_file.to_file_content()) {
             return Err(mcp_error(
                 "secret_detected",
                 &format!(
