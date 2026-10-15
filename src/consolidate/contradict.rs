@@ -244,25 +244,22 @@ pub fn record_contradictions(
     // contradicts frontmatter.
     let _file_lock = storage
         .file_lock()
-        .map_err(|e| crate::storage::StorageError::File(e.to_string()))?;
+        .map_err(crate::storage::StorageError::FileLock)?;
 
-    let mut entity_file = read_entity_file(file_path).map_err(|e| {
-        crate::storage::StorageError::File(format!(
-            "failed to read entity file {}: {}",
-            file_path.display(),
-            e
-        ))
-    })?;
+    let mut entity_file =
+        read_entity_file(file_path).map_err(|e| crate::storage::StorageError::EntityFileRead {
+            path: file_path.to_path_buf(),
+            source: e,
+        })?;
     entity_file
         .frontmatter
         .insert("contradicts", FmValue::Array(contradicts_ids.to_vec()));
     entity_file.updated_at = chrono::Utc::now().to_rfc3339();
     write_entity_file(file_path, &entity_file).map_err(|e| {
-        crate::storage::StorageError::File(format!(
-            "failed to write entity file {}: {}",
-            file_path.display(),
-            e
-        ))
+        crate::storage::StorageError::EntityFileWrite {
+            path: file_path.to_path_buf(),
+            source: e,
+        }
     })?;
 
     // 2. Sync the updated file to the DB. This updates the entity's
@@ -275,12 +272,11 @@ pub fn record_contradictions(
         .to_string_lossy()
         .to_string();
     let sync_result = crate::files::sync_single_file(storage, cogz_dir, &relative_path);
-    if let Some(err) = sync_result.errors.first() {
-        return Err(crate::storage::StorageError::File(format!(
-            "sync failed for {}: {}",
-            file_path.display(),
-            err.error
-        )));
+    if let Some(err) = sync_result.errors.into_iter().next() {
+        return Err(crate::storage::StorageError::FileSync {
+            path: file_path.to_path_buf(),
+            source: Box::new(err.error),
+        });
     }
 
     // 3. Record the contradiction_found event (under lock).

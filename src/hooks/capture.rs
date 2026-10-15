@@ -27,6 +27,15 @@ pub enum CaptureError {
     Config(#[from] crate::config::ConfigError),
     #[error("storage error: {0}")]
     Storage(#[from] crate::storage::StorageError),
+    #[error(
+        "invalid event type '{0}': expected session_start, prompt_submit, pre_tool_use, post_tool_use, file_save, session_end, or stop"
+    )]
+    InvalidEvent(String),
+    #[error("failed to read prompt file {path}: {source}")]
+    PromptFile {
+        path: String,
+        source: std::io::Error,
+    },
 }
 
 /// Result of a capture-event call.
@@ -92,12 +101,8 @@ pub struct CaptureInput<'a> {
 /// - Skips ONNX model creation entirely (no model loading overhead).
 /// - Context assembly uses FTS-only search (fast, ~2s instead of ~40s).
 pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureError> {
-    let event = LifecycleEvent::parse(input.event_str).ok_or_else(|| {
-        CaptureError::Config(crate::config::ConfigError::Validation(format!(
-            "invalid event type '{}': expected session_start, prompt_submit, pre_tool_use, post_tool_use, file_save, session_end, or stop",
-            input.event_str
-        )))
-    })?;
+    let event = LifecycleEvent::parse(input.event_str)
+        .ok_or_else(|| CaptureError::InvalidEvent(input.event_str.to_string()))?;
 
     // When --hook-json is set, read stdin for hook payload fields.
     // Agent hook systems (Devin, Claude Code) pass event data as JSON
@@ -122,10 +127,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
             return Ok(CaptureResult::empty("{}"));
         }
         return Err(CaptureError::Config(
-            crate::config::ConfigError::Validation(format!(
-                "No .cogz/ directory found in {}. Run `cogz init` first.",
-                input.repo.display()
-            )),
+            crate::config::ConfigError::CogzDirMissing(cogz_dir.clone()),
         ));
     }
 
@@ -137,24 +139,23 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         if input.hook_json {
             return Ok(CaptureResult::empty("{}"));
         }
-        return Err(CaptureError::Config(
-            crate::config::ConfigError::Validation(format!(
-                "Database not found at {}. Run `cogz index` first.",
-                db_path.display()
-            )),
-        ));
+        return Err(CaptureError::Config(crate::config::ConfigError::DbMissing(
+            db_path.clone(),
+        )));
     }
 
     let storage = Arc::new(Storage::open(&db_path, config.embedding.dimension)?);
 
     // Read prompt from file if specified, otherwise use inline prompt.
     let prompt_text = match input.prompt_file {
-        Some(path) => Some(std::fs::read_to_string(path).map_err(|e| {
-            CaptureError::Config(crate::config::ConfigError::Validation(format!(
-                "failed to read prompt file {}: {}",
-                path, e
-            )))
-        })?),
+        Some(path) => {
+            Some(
+                std::fs::read_to_string(path).map_err(|e| CaptureError::PromptFile {
+                    path: path.to_string(),
+                    source: e,
+                })?,
+            )
+        }
         None => prompt.map(|s| s.to_string()),
     };
 

@@ -20,8 +20,32 @@ pub enum ConfigError {
     Read(#[from] std::io::Error),
     #[error("failed to parse config TOML: {0}")]
     Parse(#[from] toml::de::Error),
-    #[error("config validation failed: {0}")]
-    Validation(String),
+    #[error("invalid value for {field}: expected {expected}, got {got}")]
+    InvalidValue {
+        field: &'static str,
+        expected: &'static str,
+        got: String,
+    },
+    #[error(
+        "embedding.dimension ({configured}) does not match {field} registry dimension ({registry}) for model '{model}' — set dimension to {registry} or change the model"
+    )]
+    DimensionMismatch {
+        field: &'static str,
+        configured: usize,
+        registry: usize,
+        model: String,
+    },
+    #[error(".cogz/ directory not found at {} — run `cogz init` first", .0.display())]
+    CogzDirMissing(std::path::PathBuf),
+    #[error("DB parent directory not found: {}", .0.display())]
+    DbParentMissing(std::path::PathBuf),
+    #[error("DB path resolves outside .cogz/ (symlink escape?): {} -> {}", .resolved.display(), .canonical.display())]
+    DbPathEscapes {
+        resolved: std::path::PathBuf,
+        canonical: std::path::PathBuf,
+    },
+    #[error("database not found at {} — run `cogz index` first", .0.display())]
+    DbMissing(std::path::PathBuf),
 }
 
 /// Load config from a `.cogz/config.toml` file.
@@ -93,29 +117,22 @@ pub fn resolve_db_path(repo_root: &Path, db_path: &str) -> Result<std::path::Pat
     let resolved = repo_root.join(db_path);
 
     // Canonicalize the .cogz directory (must exist).
-    let canonical_cogz = cogz_dir.canonicalize().map_err(|_| {
-        ConfigError::Validation(format!(
-            ".cogz/ directory not found at {}",
-            cogz_dir.display()
-        ))
-    })?;
+    let canonical_cogz = cogz_dir
+        .canonicalize()
+        .map_err(|_| ConfigError::CogzDirMissing(cogz_dir.clone()))?;
 
     // Canonicalize the nearest existing parent of the DB path.
     let parent = resolved.parent().unwrap_or(&cogz_dir);
-    let canonical_parent = parent.canonicalize().map_err(|_| {
-        ConfigError::Validation(format!(
-            "DB parent directory not found: {}",
-            parent.display()
-        ))
-    })?;
+    let canonical_parent = parent
+        .canonicalize()
+        .map_err(|_| ConfigError::DbParentMissing(parent.to_path_buf()))?;
 
     // Verify the canonical parent is beneath the canonical .cogz dir.
     if !canonical_parent.starts_with(&canonical_cogz) {
-        return Err(ConfigError::Validation(format!(
-            "DB path resolves outside .cogz/ (symlink escape?): {} -> {}",
-            resolved.display(),
-            canonical_parent.display()
-        )));
+        return Err(ConfigError::DbPathEscapes {
+            resolved,
+            canonical: canonical_parent,
+        });
     }
 
     Ok(resolved)
@@ -149,7 +166,13 @@ mod tests {
         let mut config = Config::default_for("test");
         config.project.name = String::new();
         let err = config.validate().unwrap_err();
-        assert!(err.to_string().contains("project name"));
+        assert!(matches!(
+            err,
+            ConfigError::InvalidValue {
+                field: "project.name",
+                ..
+            }
+        ));
     }
 
     #[test]
@@ -166,6 +189,83 @@ mod tests {
         config.embedding.dimension = 0;
         let err = config.validate().unwrap_err();
         assert!(err.to_string().contains("dimension"));
+    }
+
+    #[test]
+    fn validation_errors_carry_machine_readable_fields() {
+        let mut cases = Vec::new();
+        for value in ["/abs/db", "db.sqlite", ".cogz/../db.sqlite"] {
+            let mut c = Config::default_for("test");
+            c.storage.db_path = value.to_string();
+            cases.push((c, "storage.db_path"));
+        }
+        let mut c = Config::default_for("test");
+        c.search.min_relevance = 1.5;
+        cases.push((c, "search.min_relevance"));
+        let mut c = Config::default_for("test");
+        c.context.task_token_budget = 0;
+        cases.push((c, "context.task_token_budget"));
+        let mut c = Config::default_for("test");
+        c.embedding.code_model = "bad id!".to_string();
+        cases.push((c, "embedding.code_model"));
+
+        for (config, field) in cases {
+            let err = config.validate().unwrap_err();
+            match err {
+                ConfigError::InvalidValue {
+                    field: f, expected, ..
+                } => {
+                    assert_eq!(f, field);
+                    assert!(!expected.is_empty());
+                }
+                other => panic!("expected InvalidValue for {field}, got {other}"),
+            }
+        }
+    }
+
+    #[test]
+    fn validation_reports_dimension_mismatch_typed() {
+        let mut config = Config::default_for("test");
+        config.embedding.code_model = "BAAI/bge-base-en-v1.5".to_string();
+        config.embedding.dimension = 1;
+        let err = config.validate().unwrap_err();
+        match err {
+            ConfigError::DimensionMismatch {
+                configured, model, ..
+            } => {
+                assert_eq!(configured, 1);
+                assert!(!model.is_empty());
+            }
+            other => panic!("expected DimensionMismatch, got {other}"),
+        }
+    }
+
+    #[test]
+    fn resolve_db_path_reports_missing_and_escaping() {
+        let dir = tempfile::tempdir().unwrap();
+        let repo = dir.path();
+
+        // No .cogz at all → CogzDirMissing.
+        let err = resolve_db_path(repo, ".cogz/cogz.db").unwrap_err();
+        assert!(matches!(err, ConfigError::CogzDirMissing(_)), "got {err}");
+
+        // .cogz exists but the db parent dir does not → DbParentMissing.
+        std::fs::create_dir_all(repo.join(".cogz")).unwrap();
+        let err = resolve_db_path(repo, ".cogz/nodir/cogz.db").unwrap_err();
+        assert!(matches!(err, ConfigError::DbParentMissing(_)), "got {err}");
+
+        // A symlinked directory escaping .cogz → DbPathEscapes.
+        #[cfg(unix)]
+        {
+            let outside = dir.path().join("outside");
+            std::fs::create_dir_all(&outside).unwrap();
+            std::os::unix::fs::symlink(&outside, repo.join(".cogz/escape")).unwrap();
+            let err = resolve_db_path(repo, ".cogz/escape/cogz.db").unwrap_err();
+            assert!(
+                matches!(err, ConfigError::DbPathEscapes { .. }),
+                "got {err}"
+            );
+        }
     }
 
     #[test]

@@ -188,10 +188,10 @@ fn promote_one(
             candidate.observation.id,
             scan.kind
         );
-        return Err(StorageError::File(format!(
-            "observation {} contains a suspected {} — not promoting to a committed rule file",
-            candidate.observation.id, scan.kind
-        )));
+        return Err(StorageError::SecretInContent {
+            entity_id: candidate.observation.id.clone(),
+            kind: scan.kind,
+        });
     }
 
     // Write the file first (file-first invariant). Use file_path_safe
@@ -199,7 +199,10 @@ fn promote_one(
     // prevent concurrent consolidations from overwriting each other.
     let file_path = rule_file.file_path_safe(cogz_dir);
     let file_path = crate::mcp::helpers::write_entity_file_atomic(&file_path, &rule_file, cogz_dir)
-        .map_err(|e| StorageError::File(format!("{}: {}", file_path.display(), e)))?;
+        .map_err(|e| StorageError::EntityFileWrite {
+            path: file_path.clone(),
+            source: e,
+        })?;
 
     let rule_id = rule_file.id.clone();
 
@@ -214,12 +217,11 @@ fn promote_one(
         .to_string_lossy()
         .to_string();
     let sync_result = crate::files::sync_single_file(storage, cogz_dir, &relative_path);
-    if let Some(err) = sync_result.errors.first() {
-        return Err(StorageError::File(format!(
-            "sync failed for promoted rule {}: {}",
-            file_path.display(),
-            err.error
-        )));
+    if let Some(err) = sync_result.errors.into_iter().next() {
+        return Err(StorageError::FileSync {
+            path: file_path.clone(),
+            source: Box::new(err.error),
+        });
     }
 
     // Supersede the source observation — its claim now lives in the
@@ -269,20 +271,22 @@ fn supersede_source(
 
     // Canonical-file write lock scopes the read-modify-write-sync
     // sequence so a concurrent writer cannot interleave.
-    let _file_lock = storage
-        .file_lock()
-        .map_err(|e| StorageError::File(e.to_string()))?;
+    let _file_lock = storage.file_lock().map_err(StorageError::FileLock)?;
 
-    let mut entity_file = read_entity_file(&path)
-        .map_err(|e| StorageError::File(format!("read {}: {e}", path.display())))?;
+    let mut entity_file = read_entity_file(&path).map_err(|e| StorageError::EntityFileRead {
+        path: path.clone(),
+        source: e,
+    })?;
     entity_file
         .frontmatter
         .insert("superseded_by", FmValue::String(rule_id.to_string()));
     entity_file.status = "superseded".to_string();
     entity_file.updated_at = chrono::Utc::now().to_rfc3339();
 
-    write_entity_file(&path, &entity_file)
-        .map_err(|e| StorageError::File(format!("write {}: {e}", path.display())))?;
+    write_entity_file(&path, &entity_file).map_err(|e| StorageError::EntityFileWrite {
+        path: path.clone(),
+        source: e,
+    })?;
 
     // Sync creates the superseded_by edge from frontmatter via
     // sync_references and validates the transition in the lattice.
@@ -292,12 +296,11 @@ fn supersede_source(
         .to_string_lossy()
         .to_string();
     let sync_result = crate::files::sync_single_file(storage, cogz_dir, &relative_path);
-    if let Some(err) = sync_result.errors.first() {
-        return Err(StorageError::File(format!(
-            "sync failed for superseded observation {}: {}",
-            path.display(),
-            err.error
-        )));
+    if let Some(err) = sync_result.errors.into_iter().next() {
+        return Err(StorageError::FileSync {
+            path: path.clone(),
+            source: Box::new(err.error),
+        });
     }
     Ok(())
 }

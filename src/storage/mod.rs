@@ -42,8 +42,28 @@ pub enum StorageError {
     InvalidEntityType(String),
     #[error("schema version mismatch: db has {db}, binary expects {expected}")]
     SchemaVersionMismatch { db: u32, expected: u32 },
-    #[error("file operation failed: {0}")]
-    File(String),
+    #[error("canonical file lock failed: {0}")]
+    FileLock(#[source] std::io::Error),
+    #[error("failed to read entity file {path}: {source}")]
+    EntityFileRead {
+        path: std::path::PathBuf,
+        source: crate::files::FrontmatterError,
+    },
+    #[error("failed to write entity file {path}: {source}")]
+    EntityFileWrite {
+        path: std::path::PathBuf,
+        source: std::io::Error,
+    },
+    #[error("sync failed for {path}: {source}")]
+    FileSync {
+        path: std::path::PathBuf,
+        source: Box<crate::files::SyncError>,
+    },
+    #[error("entity {entity_id} contains a suspected {kind} — refusing to write it to a rule file")]
+    SecretInContent {
+        entity_id: String,
+        kind: crate::security::scan::SecretKind,
+    },
 }
 
 /// Ensures sqlite-vec extension is registered exactly once before any

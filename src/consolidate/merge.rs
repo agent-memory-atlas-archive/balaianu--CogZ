@@ -321,12 +321,11 @@ fn merge_one(
         .to_string_lossy()
         .to_string();
     let sync_result = crate::files::sync_single_file(storage, cogz_dir, &relative_path);
-    if let Some(err) = sync_result.errors.first() {
-        return Err(StorageError::File(format!(
-            "sync failed for superseded entity {}: {}",
-            path.display(),
-            err.error
-        ))
+    if let Some(err) = sync_result.errors.into_iter().next() {
+        return Err(StorageError::FileSync {
+            path: path.clone(),
+            source: Box::new(err.error),
+        }
         .into());
     }
 
