@@ -107,6 +107,11 @@ where
 mod tests {
     use super::*;
 
+    // fd 2 redirection is process-global — parallel tests that each
+    // redirect would snapshot one another's tempfiles. Serialize the
+    // fd-touching tests.
+    static FD2_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
     fn stderr_target() -> (u64, u64) {
         let mut st: libc::stat = unsafe { std::mem::zeroed() };
         assert_eq!(unsafe { libc::fstat(libc::STDERR_FILENO, &mut st) }, 0);
@@ -115,6 +120,7 @@ mod tests {
 
     #[test]
     fn restores_stderr_after_panic() {
+        let _fd2 = FD2_LOCK.lock().unwrap();
         let before = stderr_target();
         let _ = std::panic::catch_unwind(|| capture_stderr_during(|| panic!("boom")));
         assert_eq!(stderr_target(), before);
@@ -134,6 +140,7 @@ mod tests {
 
     #[test]
     fn returns_closure_result_and_capture() {
+        let _fd2 = FD2_LOCK.lock().unwrap();
         let (result, captured) = capture_stderr_during(|| {
             write_fd2("ort-warning-test-marker\n");
             42
@@ -144,6 +151,7 @@ mod tests {
 
     #[test]
     fn capture_is_tail_bounded() {
+        let _fd2 = FD2_LOCK.lock().unwrap();
         let big = "x".repeat((CAPTURE_TAIL_BYTES * 2) as usize);
         let (_r, captured) = capture_stderr_during(|| write_fd2(&big));
         assert!(captured.len() <= CAPTURE_TAIL_BYTES as usize + 8);
