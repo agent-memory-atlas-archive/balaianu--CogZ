@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 2589 entities
+  cn01: 45 results, 3336ms
+  cn02: 45 results, 565ms
+  cn03: 0 results, 563ms
+  cn04: 45 results, 611ms
+  cn05: 0 results, 317ms
+  cn06: 0 results, 331ms
+  cn07: 45 results, 371ms
+  cn08: 0 results, 291ms
+  cn09: 45 results, 404ms
+  cn10: 0 results, 321ms
+  cn11: 0 results, 329ms
+  cn12: 45 results, 406ms
+  cn13: 45 results, 399ms
+  cn14: 45 results, 498ms
+  cn15: 0 results, 374ms
+wrote modernbert_negatives.json

@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hk01: 36 results, 3236ms
+  hk02: 45 results, 266ms
+  hk03: 43 results, 285ms
+  hk04: 45 results, 270ms
+  hk05: 45 results, 269ms
+  hk06: 45 results, 259ms
+  hk07: 45 results, 204ms
+  hk08: 0 results, 224ms
+  hk09: 39 results, 223ms
+  hk10: 43 results, 226ms
+  hk11: 45 results, 243ms
+  hk12: 38 results, 236ms
+  hk13: 45 results, 255ms
+  hk14: 45 results, 228ms
+  hk15: 45 results, 267ms
+wrote modernbert_seeded.json

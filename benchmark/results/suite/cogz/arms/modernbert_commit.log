@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2589 entities
+  cb2a66b33: 45 results, 3431ms
+  c2936aae2: 45 results, 427ms
+  c889edec4: 45 results, 384ms
+  c7621eace: 45 results, 497ms
+  ced78398f: 45 results, 383ms
+  c83db0140: 45 results, 444ms
+  c1967e086: 45 results, 398ms
+  c7a57828b: 45 results, 391ms
+  c7fcffe59: 45 results, 423ms
+  c60e252f0: 45 results, 415ms
+  ce41f06c9: 45 results, 398ms
+  c043021a8: 45 results, 430ms
+  c0b28e111: 45 results, 449ms
+  c86e70363: 45 results, 409ms
+  c72678b97: 0 results, 395ms
+  c2e0b8b3a: 40 results, 403ms
+  cdc8ffbed: 45 results, 409ms
+  c85130a9e: 45 results, 422ms
+  cc97a642e: 45 results, 401ms
+  c3333e354: 45 results, 381ms
+  c8ccb962d: 45 results, 434ms
+  c111d85ea: 45 results, 384ms
+  cace7c26f: 45 results, 489ms
+  c371880b9: 45 results, 386ms
+  c0207bab1: 45 results, 439ms
+wrote modernbert_commit.json

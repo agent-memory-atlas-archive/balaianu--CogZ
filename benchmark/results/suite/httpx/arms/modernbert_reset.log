@@ -1,0 +1,6 @@
+Dropped database: /home/andy/dev/buffer/cogz_bench/corpora/httpx/.cogz/cogz.db
+
+Run `cogz index` to rebuild the database from files.
+Restart any running `cogz mcp-stdio` servers — they hold a handle to the deleted DB file.
+2026-10-15T13:09:23.619713Z  WARN cogz::config: unknown config key `search.silence_strength_floor` in /home/andy/dev/buffer/cogz_bench/corpora/httpx/.cogz/config.toml — ignored
+2026-10-15T13:09:23.619745Z  WARN cogz::config: unknown config key `search.silence_threshold` in /home/andy/dev/buffer/cogz_bench/corpora/httpx/.cogz/config.toml — ignored

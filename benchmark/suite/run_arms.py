@@ -60,6 +60,19 @@ ARMS = [
         "knowledge_model": '"BAAI/bge-small-en-v1.5"',
         "dimension": "384",
     }}, True),
+    # small + split: does identifier FTS recover small's gap losses?
+    ("small_split", {"index": {"split_identifiers": "true"},
+                     "embedding": {
+        "code_model": '"BAAI/bge-small-en-v1.5"',
+        "knowledge_model": '"BAAI/bge-small-en-v1.5"',
+        "dimension": "384",
+    }}, True),
+    # modernbert: newer encoder (gte-modernbert-base, 2024, 768d) for the
+    # knowledge channel only — code stays CodeRankEmbed so the delta
+    # isolates the knowledge model. Drop-in via the OnnxSubdir fallback.
+    ("modernbert", {"embedding": {
+        "knowledge_model": '"Alibaba-NLP/gte-modernbert-base"',
+    }}, True),
 ]
 
 

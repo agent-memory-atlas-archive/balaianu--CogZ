@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 759 entities
+  ck01: 36 results, 3487ms
+  ck02: 35 results, 208ms
+  ck03: 45 results, 206ms
+  ck04: 45 results, 217ms
+  ck05: 36 results, 206ms
+  ck06: 45 results, 231ms
+  ck07: 34 results, 192ms
+  ck08: 37 results, 215ms
+  ck09: 33 results, 190ms
+  ck10: 40 results, 242ms
+  ck11: 45 results, 222ms
+  ck12: 39 results, 211ms
+  ck13: 0 results, 189ms
+  ck14: 38 results, 198ms
+  ck15: 42 results, 264ms
+wrote modernbert_seeded.json

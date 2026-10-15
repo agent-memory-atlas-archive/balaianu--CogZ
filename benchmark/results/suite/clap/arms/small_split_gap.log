@@ -1,0 +1,24 @@
+collecting corpus ids...
+corpus: 4655 entities
+  cg01: 40 results, 847ms
+  cg02: 40 results, 384ms
+  cg03: 0 results, 301ms
+  cg04: 0 results, 306ms
+  cg05: 40 results, 380ms
+  cg06: 40 results, 393ms
+  cg07: 0 results, 307ms
+  cg08: 40 results, 354ms
+  cg09: 40 results, 366ms
+  cg10: 40 results, 413ms
+  cg11: 40 results, 398ms
+  cg12: 40 results, 355ms
+  cg13: 40 results, 384ms
+  cg14: 40 results, 404ms
+  cg15: 40 results, 374ms
+  cg16: 40 results, 371ms
+  cg17: 40 results, 365ms
+  cg18: 40 results, 392ms
+  cg19: 40 results, 358ms
+  cg20: 40 results, 384ms
+  cg21: 40 results, 358ms
+wrote small_split_gap.json

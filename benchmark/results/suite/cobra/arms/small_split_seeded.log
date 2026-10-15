@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 759 entities
+  ck01: 42 results, 619ms
+  ck02: 40 results, 145ms
+  ck03: 45 results, 142ms
+  ck04: 45 results, 150ms
+  ck05: 37 results, 156ms
+  ck06: 45 results, 146ms
+  ck07: 43 results, 144ms
+  ck08: 45 results, 145ms
+  ck09: 35 results, 221ms
+  ck10: 43 results, 241ms
+  ck11: 45 results, 234ms
+  ck12: 45 results, 239ms
+  ck13: 0 results, 232ms
+  ck14: 45 results, 227ms
+  ck15: 45 results, 162ms
+wrote small_split_seeded.json

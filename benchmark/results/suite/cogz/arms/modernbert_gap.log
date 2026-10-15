@@ -1,0 +1,19 @@
+collecting corpus ids...
+corpus: 2589 entities
+  zg01: 40 results, 3689ms
+  zg02: 45 results, 377ms
+  zg03: 45 results, 407ms
+  zg04: 0 results, 325ms
+  zg05: 0 results, 304ms
+  zg06: 0 results, 318ms
+  zg07: 45 results, 381ms
+  zg08: 0 results, 545ms
+  zg09: 45 results, 524ms
+  zg10: 45 results, 450ms
+  zg11: 45 results, 420ms
+  zg12: 0 results, 342ms
+  zg13: 45 results, 488ms
+  zg14: 45 results, 621ms
+  zg15: 45 results, 440ms
+  zg16: 0 results, 317ms
+wrote modernbert_gap.json

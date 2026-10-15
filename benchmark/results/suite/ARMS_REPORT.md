@@ -108,3 +108,108 @@ Seeded MRR: fts wins everywhere (0.78/0.42/0.59 vs hybrid
 - **Offer small-model profile** — bge-small halves the cost and keeps
   ~most of the quality; could be `[embedding] profile = "light"`.
 - **Do NOT ship knowledge_only** — measured strictly harmful.
+
+## Follow-up: paired per-query diff (hybrid vs small)
+
+`compare_arms.py` — paired bootstrap CI on per-query deltas.
+Significant deltas (* = 95% CI excludes 0):
+
+| corpus × set | Δ (small − hybrid) | interpretation |
+|---|---|---|
+| cobra gap pack | −0.393* (11L/0W) | small loses gap-pack seeding |
+| cobra commit rr | −0.109* | weaker commit ranking |
+| cobra commit hit5 | −0.150* | |
+| clap commit rr | −0.048* | |
+| httpx gap hit20 | +0.208* | small *wins* on docstring-rich corpus |
+| seeded all corpora | ties | within noise |
+
+Exact diff: small preserves direct-KNN quality but loses
+gap-pack seeding on sparse-body corpora (cobra −0.39 pack recall).
+Not uniform degradation — corpus-conditional.
+
+## Follow-up: `small_split` (does split-FTS rescue small's gap?)
+
+cobra: gap pack 0.464 — **identical to small**, still ≪ hybrid 0.857.
+Split identifiers do NOT recover gap-pack loss: pack seeding comes
+from code-vec hits → graph expansion, which lexical channels cannot
+replicate. split helps *direct* R@20 only.
+
+## Model-landscape research (2024→2025)
+
+Integration contract: encoder arch (mean-pool `last_hidden_state`
+or pre-pooled `[batch,dim]`), `tokenizer.json` at repo root,
+`onnx/model.onnx`, `query_prefix` supported — no doc-prefix,
+no last-token pooling, single global dimension.
+
+**Code channel — no viable drop-in upgrade:**
+- CodeRankEmbed-int8 (137M) still class-leading at CPU scale:
+  CoIR ~60.1. Everything better needs ≥400M params AND decoder
+  archs (last-token pooling) + 3-50x compute.
+- jina-code-embeddings-0.5b (494M, CoIR ~78% avg): GGUF-primary,
+  community ONNX only for 1.5b, last-token pooling — not drop-in.
+- SFR-Embedding-Code-400M: +~4 CoIR pts, decoder — not drop-in.
+- CodeSage-large-v2 (1.3B): CoIR 64.2, 9.5x params.
+- nomic-embed-code (7B): SOTA CSN, LLM-scale.
+- jina-v2-base-code (161M): CoIR 58.4 — *worse* than CodeRankEmbed.
+
+**Knowledge channel — one real drop-in candidate:**
+- gte-modernbert-base (149M, 768d, Alibaba, 2024): MTEB ~80+ vs
+  bge-base ~77. Encoder arch, official `onnx/model.onnx` in repo,
+  no token_type_ids (auto-detected). Zero-code measurable —
+  `modernbert` arm added (knowledge_model only, code stays
+  CodeRankEmbed for channel isolation).
+- EmbeddingGemma-300M (768d, q8): higher ceiling, needs
+  doc-prefix plumbing (`title: none | text:`) — registry has
+  only `query_prefix`. Deferred pending decision.
+- Qwen3-Embedding-0.6B: last-token pooling — not drop-in.
+- bge-m3: multilingual overhead we don't need.
+
+**NLI**: cross-encoder/nli-deberta-v3-xsmall stays — not a cost
+driver, no meaningful upgrade at that size.
+
+## Final verdicts (paired analysis, all arms deterministic)
+
+### small (BAAI/bge-small-en-v1.5, 384d both channels)
+
+Paired per-query bootstrap (compare_arms.py) vs hybrid:
+
+- **Loses** cobra gap pack −0.393*, cobra commit rr −0.109*,
+  cobra commit hit5 −0.150*, clap commit rr −0.048*.
+- **Wins** httpx gap hit20 +0.208*.
+- Ties everywhere else (seeded all corpora, most commit/gap).
+
+Cost: drain ~2.4x cheaper, index RSS ~2.6x lower, db ~30% smaller,
+query p50 ~40% faster.
+
+**Verdict: legitimate `profile = "light"` candidate, not a default.**
+Quality loss is corpus-conditional: sparse-body corpora (Go/sparse
+Rust) lose gap-pack seeding; docstring-rich corpora are unaffected
+or better. Ship as opt-in profile for constrained environments.
+
+### small_split (bge-small + split_identifiers)
+
+vs small: only non-negative deltas (clap commit rr +0.011*).
+vs hybrid: cobra gap pack −0.393* persists — **split cannot
+substitute for code-vec seeding of graph expansion.** The two
+mechanisms are complementary, not substitutes.
+
+### modernbert (gte-modernbert-base as knowledge_model, 768d)
+
+vs hybrid: **zero significant deltas on 338 shared queries.**
+Directionally slightly worse seeded rr on 3/4 corpora; occasional
+n.s. wins. Commit/gap identical (code channel unchanged — confirms
+attribution). Cost strictly worse: fp32 573MB vs bge-base 210MB.
+
+**Verdict: keep bge-base.** The knowledge channel is not
+quality-bound at 768d on this task distribution; a lateral model
+swap buys nothing. Future upgrades need architectural headroom
+(EmbeddingGemma with doc-prefix plumbing) — not worth it today.
+
+### Defaults (unchanged, confirmed by data)
+
+- hybrid (CodeRankEmbed-int8 code + bge-base knowledge) stays default
+- NLI stays nli-deberta-v3-xsmall (not a cost driver)
+- `code_embeddings=false` + `split_identifiers` shipped as knobs
+- `profile = "light"` → bge-small: documented option, not default
+- Do NOT ship knowledge_only (measured strictly harmful)
+- No centrality arm (gap-pack value is vec-seeded, not rank-based)

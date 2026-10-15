@@ -1,0 +1,38 @@
+Indexing /home/andy/dev/buffer/cogz_bench/corpora/cobra/.cogz...
+  Created: 84
+  Updated: 0
+  Stale: 0
+  Skipped: 0
+  Embedded: 84
+
+Indexing source code...
+  Code entities: 684 created, 0 updated, 0 stale, 0 skipped, 0 hash-migrated
+  Code embedding deferred to background (684 entities, pid=839862)
+  Co-change index: 8393 rows
+
+  Total entities: 768
+2026-10-15T12:31:49.550713Z  WARN cogz::config: unknown config key `search.silence_strength_floor` in /home/andy/dev/buffer/cogz_bench/corpora/cobra/.cogz/config.toml — ignored
+2026-10-15T12:31:49.550762Z  WARN cogz::config: unknown config key `search.silence_threshold` in /home/andy/dev/buffer/cogz_bench/corpora/cobra/.cogz/config.toml — ignored
+	Command being timed: "/home/andy/dev/personal/CogZ/target/release/cogz index --repo /home/andy/dev/buffer/cogz_bench/corpora/cobra"
+	User time (seconds): 56.17
+	System time (seconds): 0.93
+	Percent of CPU this job got: 379%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:15.02
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 298004
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 4
+	Minor (reclaiming a frame) page faults: 83331
+	Voluntary context switches: 13561
+	Involuntary context switches: 11247
+	Swaps: 0
+	File system inputs: 138448
+	File system outputs: 22976
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

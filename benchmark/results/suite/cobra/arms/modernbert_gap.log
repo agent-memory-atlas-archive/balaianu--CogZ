@@ -1,0 +1,31 @@
+collecting corpus ids...
+corpus: 759 entities
+  bg01: 0 results, 3126ms
+  bg02: 45 results, 223ms
+  bg03: 45 results, 223ms
+  bg04: 0 results, 183ms
+  bg05: 0 results, 179ms
+  bg06: 45 results, 199ms
+  bg07: 45 results, 240ms
+  bg08: 45 results, 234ms
+  bg09: 45 results, 244ms
+  bg10: 45 results, 229ms
+  bg11: 0 results, 208ms
+  bg12: 0 results, 185ms
+  bg13: 45 results, 214ms
+  bg14: 0 results, 183ms
+  bg15: 45 results, 245ms
+  bg16: 39 results, 220ms
+  bg17: 43 results, 221ms
+  bg18: 45 results, 233ms
+  bg19: 42 results, 201ms
+  bg20: 0 results, 174ms
+  bg21: 0 results, 197ms
+  bg22: 0 results, 190ms
+  bg23: 39 results, 232ms
+  bg24: 45 results, 228ms
+  bg25: 45 results, 217ms
+  bg26: 0 results, 174ms
+  bg27: 45 results, 219ms
+  bg28: 0 results, 199ms
+wrote modernbert_gap.json
