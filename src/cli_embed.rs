@@ -146,7 +146,7 @@ pub(crate) fn spawn_code_embed_background(
 ) {
     // Write the entity IDs under the per-user state dir — project
     // data has no business in a world-readable shared temp.
-    let state_dir = crate::paths::state_dir();
+    let state_dir = cogz::paths::state_dir();
     let id_file = state_dir.join(format!(
         "cogz-embed-bg-{}-{}.txt",
         std::process::id(),
