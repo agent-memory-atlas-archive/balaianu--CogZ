@@ -99,8 +99,7 @@ pub fn graph_retrieve(
         .collect();
     candidates.sort_by(|a, b| {
         b.score
-            .partial_cmp(&a.score)
-            .unwrap_or(std::cmp::Ordering::Equal)
+            .total_cmp(&a.score)
             .then_with(|| a.entity_id.cmp(&b.entity_id))
     });
     // Score floor: a candidate needs at least one strong path or

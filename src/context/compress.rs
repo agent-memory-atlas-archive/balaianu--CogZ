@@ -51,8 +51,7 @@ pub fn sort_by_priority(sections: &mut [ContextSection], mode: ContextMode) {
         ContextMode::Task | ContextMode::Escalation => {
             sections.sort_by(|a, b| {
                 b.relevance
-                    .partial_cmp(&a.relevance)
-                    .unwrap_or(std::cmp::Ordering::Equal)
+                    .total_cmp(&a.relevance)
                     .then_with(|| source_priority(&a.source).cmp(&source_priority(&b.source)))
                     .then_with(|| a.entity_id.cmp(&b.entity_id))
             });
@@ -61,11 +60,7 @@ pub fn sort_by_priority(sections: &mut [ContextSection], mode: ContextMode) {
             sections.sort_by(|a, b| {
                 source_priority(&a.source)
                     .cmp(&source_priority(&b.source))
-                    .then_with(|| {
-                        b.relevance
-                            .partial_cmp(&a.relevance)
-                            .unwrap_or(std::cmp::Ordering::Equal)
-                    })
+                    .then_with(|| b.relevance.total_cmp(&a.relevance))
                     .then_with(|| a.entity_id.cmp(&b.entity_id))
             });
         }

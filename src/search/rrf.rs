@@ -32,11 +32,7 @@ pub fn fuse(ranked_lists: &[(&[String], f64)], k: u32) -> Vec<(String, f64)> {
     // Total order: score desc, then id asc. HashMap iteration order is
     // arbitrary, so exact-score ties must not leak map order into the
     // ranked list — downstream RRF positions feed positional scoring.
-    results.sort_by(|a, b| {
-        b.1.partial_cmp(&a.1)
-            .unwrap_or(std::cmp::Ordering::Equal)
-            .then_with(|| a.0.cmp(&b.0))
-    });
+    results.sort_by(|a, b| b.1.total_cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
     results
 }
 
@@ -59,6 +55,23 @@ mod tests {
         // 'c' only in FTS, 'd' only in vec
         assert!(fused.iter().any(|(id, _)| id == "c"));
         assert!(fused.iter().any(|(id, _)| id == "d"));
+    }
+
+    /// A NaN weight yields NaN contributions — total_cmp keeps the
+    /// sort deterministic (NaN orders last) instead of comparing
+    /// Equal to every row and scrambling positions.
+    #[test]
+    fn nan_weight_sorts_deterministically() {
+        let list = vec!["a".to_string(), "b".to_string(), "c".to_string()];
+        let fused = fuse(&[(&list, f64::NAN)], 60);
+        assert_eq!(fused.len(), 3);
+        // Same input, same output — twice.
+        let fused2 = fuse(&[(&list, f64::NAN)], 60);
+        // NaN scores can't be assert_eq'd (NaN != NaN) — compare the
+        // id ordering, which is the deterministic guarantee.
+        let ids = |v: &[(String, f64)]| v.iter().map(|(id, _)| id.clone()).collect::<Vec<_>>();
+        assert_eq!(ids(&fused), ids(&fused2));
+        assert!(fused.iter().all(|(_, s)| s.is_nan()));
     }
 
     #[test]

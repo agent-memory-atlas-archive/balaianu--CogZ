@@ -242,8 +242,7 @@ pub fn assemble_context(
         avail = avail.saturating_sub(super::compress::estimate_tokens(title));
         overflow.sort_by(|a, b| {
             b.relevance
-                .partial_cmp(&a.relevance)
-                .unwrap_or(std::cmp::Ordering::Equal)
+                .total_cmp(&a.relevance)
                 .then_with(|| a.entity_id.cmp(&b.entity_id))
         });
         let mut index: Vec<String> = Vec::new();

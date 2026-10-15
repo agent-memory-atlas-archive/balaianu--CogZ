@@ -118,8 +118,7 @@ pub fn expand_with_paths(
         // from the weaker seed + weaker edge type.
         edges.sort_by(|a, b| {
             edge_weight(&b.2)
-                .partial_cmp(&edge_weight(&a.2))
-                .unwrap_or(std::cmp::Ordering::Equal)
+                .total_cmp(&edge_weight(&a.2))
                 // The edge query has no ORDER BY — SQL row order is
                 // unspecified, so equal-weight edges need a total order
                 // or first-discovery claims become nondeterministic.

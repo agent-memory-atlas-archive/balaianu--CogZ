@@ -72,11 +72,7 @@ pub(super) fn cold_start_sections(
             (score, e)
         })
         .collect();
-    scored_knowledge.sort_by(|a, b| {
-        b.0.partial_cmp(&a.0)
-            .unwrap_or(std::cmp::Ordering::Equal)
-            .then_with(|| a.1.id.cmp(&b.1.id))
-    });
+    scored_knowledge.sort_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.id.cmp(&b.1.id)));
 
     // Full content for top entry, titles only for the rest.
     if let Some((score, top)) = scored_knowledge.first() {
@@ -159,11 +155,7 @@ pub(super) fn baseline_rules(
             (score, e)
         })
         .collect();
-    scored_rules.sort_by(|a, b| {
-        b.0.partial_cmp(&a.0)
-            .unwrap_or(std::cmp::Ordering::Equal)
-            .then_with(|| a.1.id.cmp(&b.1.id))
-    });
+    scored_rules.sort_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.id.cmp(&b.1.id)));
 
     let mut out = Vec::new();
     for (score, entity) in scored_rules.iter().take(limit) {

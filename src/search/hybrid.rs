@@ -270,11 +270,7 @@ pub fn search(
         // Total order required: truncate() drops the tail of a tie
         // block, so tied seeds must resolve by id — otherwise the seed
         // set (and everything downstream of it) is nondeterministic.
-        seeds.sort_by(|a, b| {
-            b.1.partial_cmp(&a.1)
-                .unwrap_or(std::cmp::Ordering::Equal)
-                .then_with(|| a.0.cmp(&b.0))
-        });
+        seeds.sort_by(|a, b| b.1.total_cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
         seeds.truncate(config.graph_max_seeds * 3);
 
         // Only the direct window is excluded from graph candidacy —
@@ -735,8 +731,7 @@ pub fn search(
             let sort_desc = |v: &mut Vec<SearchResult>| {
                 v.sort_by(|a, b| {
                     b.relevance
-                        .partial_cmp(&a.relevance)
-                        .unwrap_or(std::cmp::Ordering::Equal)
+                        .total_cmp(&a.relevance)
                         .then_with(|| a.entity.id.cmp(&b.entity.id))
                 });
             };

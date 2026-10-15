@@ -288,12 +288,7 @@ pub(super) fn emit_sibling_expansions(
     // emission order (and therefore rank under the cap) is
     // deterministic.
     let mut best_sorted: Vec<(String, (String, f32))> = best.into_iter().collect();
-    best_sorted.sort_by(|a, b| {
-        b.1.1
-            .partial_cmp(&a.1.1)
-            .unwrap_or(std::cmp::Ordering::Equal)
-            .then_with(|| a.0.cmp(&b.0))
-    });
+    best_sorted.sort_by(|a, b| b.1.1.total_cmp(&a.1.1).then_with(|| a.0.cmp(&b.0)));
     for (sib_id, (anchor_id, seed)) in best_sorted {
         let Some(entity) = entity_map.get(&sib_id) else {
             continue;

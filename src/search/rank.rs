@@ -182,11 +182,7 @@ pub fn apply_post_merge(
                 let n = in_degrees.get(id).copied().unwrap_or(0);
                 *score *= 1.0 + b * (1.0 + n as f64).ln();
             }
-            fused.sort_by(|a, b| {
-                b.1.partial_cmp(&a.1)
-                    .unwrap_or(std::cmp::Ordering::Equal)
-                    .then_with(|| a.0.cmp(&b.0))
-            });
+            fused.sort_by(|a, b| b.1.total_cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
         }
     }
 
@@ -271,11 +267,7 @@ pub fn merge_channels(
     if min_relevance > 0.0 {
         fused.retain(|(_, s, _)| *s >= min_relevance);
     }
-    fused.sort_by(|a, b| {
-        b.1.partial_cmp(&a.1)
-            .unwrap_or(std::cmp::Ordering::Equal)
-            .then_with(|| a.0.cmp(&b.0))
-    });
+    fused.sort_by(|a, b| b.1.total_cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
     let filtered = pre - fused.len();
     (fused, filtered)
 }
