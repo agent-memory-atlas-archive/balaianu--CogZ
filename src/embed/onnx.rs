@@ -97,6 +97,13 @@ impl OnnxEmbeddingModel {
         idle_ttl_secs: u64,
         min_free_mb: u64,
     ) -> Self {
+        // `force_fts_only` produces a permanently-unavailable model:
+        // try_load's empty-model_dir fast path skips ONNX init entirely.
+        if super::runtime::fts_only() {
+            let mut m = Self::unavailable();
+            m.model_type = model_type;
+            return m;
+        }
         let (model_dir, resolved_id) = if model_id.is_empty() {
             (
                 model_type.model_dir(models_base),

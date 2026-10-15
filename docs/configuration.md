@@ -96,7 +96,8 @@ tier0_rules = 3
 | `knowledge_model` | string | `BAAI/bge-base-en-v1.5` | Model ID for knowledge entity embeddings. Must match `dimension`. |
 | `dimension` | usize | `768` | Embedding dimension. Must match both models' registry dimensions. |
 | `nli_model` | string | `cross-encoder/nli-deberta-v3-xsmall` | NLI model for contradiction detection and merge confirmation. |
-| `auto_download` | bool | `true` | Download models from HuggingFace on first use. Set `false` for FTS-only or air-gapped setups. |
+| `auto_download` | bool | `true` | Download models from HuggingFace on first use. Set `false` to forbid downloads — already-installed models still load. |
+| `force_fts_only` | bool | `false` | Never load embedding or NLI models — retrieval runs FTS-only even when models are installed. For air-gapped or memory-constrained deployments; skips model resolution entirely. |
 | `model_idle_ttl` | u64 | `300` | Seconds before idle ONNX models unload from memory. `0` = never unload. |
 | `model_min_free_mb` | u64 | `512` | Minimum free RAM (MB) to load a model. Below this, degrades to FTS-only. `0` = no check. |
 

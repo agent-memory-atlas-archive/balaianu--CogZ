@@ -33,12 +33,16 @@ PROBE_EXT = {"rust": "rs", "go": "go", "python": "py"}
 
 
 def fts_only_config(text: str) -> str:
-    text = re.sub(r'^code_model\s*=.*$', 'code_model = "fts_only_probe"',
+    # Supported no-model switch: skips model resolution entirely, so
+    # the FTS arm measures the degraded path rather than a failed-load
+    # fallback. Replaces the old bogus-model-name probe, which config
+    # validation now rejects.
+    text = re.sub(r'^force_fts_only\s*=.*$', 'force_fts_only = true',
                   text, flags=re.M)
-    text = re.sub(r'^knowledge_model\s*=.*$',
-                  'knowledge_model = "fts_only_probe"', text, flags=re.M)
-    return re.sub(r'^auto_download\s*=.*$', 'auto_download = false',
-                  text, flags=re.M)
+    if 'force_fts_only' not in text:
+        text = re.sub(r'^(\[embedding\]\s*)$', r'\1force_fts_only = true\n',
+                      text, flags=re.M)
+    return text
 
 
 def run(cmd: list[str], out: Path | None = None) -> int:

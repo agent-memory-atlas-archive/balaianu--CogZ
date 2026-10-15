@@ -133,6 +133,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
 
     let config = crate::config::load(&config_path)?;
     crate::embed::set_ort_download_allowed(config.embedding.auto_download);
+    crate::embed::set_fts_only(config.embedding.force_fts_only);
     let db_path = crate::config::resolve_db_path(input.repo, &config.storage.db_path)?;
 
     if !db_path.exists() {

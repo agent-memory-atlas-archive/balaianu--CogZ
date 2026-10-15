@@ -1,4 +1,6 @@
 use super::*;
+use crate::embed::model::{EmbeddingError, EmbeddingModel, NliModel};
+use crate::embed::{OnnxEmbeddingModel, OnnxNliModel};
 
 #[test]
 fn ort_lib_path_is_under_cogz_lib() {
@@ -25,6 +27,37 @@ fn ort_download_gate_respects_flag() {
     assert!(!ort_download_permitted());
     set_ort_download_allowed(true);
     assert!(ort_download_permitted());
+}
+
+#[test]
+fn fts_only_flag_produces_unavailable_models() {
+    // `force_fts_only` must disable embedding AND NLI models at the
+    // constructor — that's what keeps model resolution (and ONNX init)
+    // from running at all in degraded mode. Flag is process-global;
+    // reset it before asserting so a leaked true can't pass vacuously.
+    set_fts_only(false);
+    assert!(!fts_only());
+
+    set_fts_only(true);
+    let emb = OnnxEmbeddingModel::with_resource_config(
+        crate::embed::ModelType::Code,
+        std::path::Path::new("/nonexistent"),
+        768,
+        "test/model",
+        0,
+        0,
+    );
+    assert!(!emb.is_available());
+    assert!(matches!(
+        emb.embed(&["x"]),
+        Err(EmbeddingError::ModelUnavailable(_))
+    ));
+    let nli = OnnxNliModel::with_resource_config(std::path::Path::new("/nonexistent"), "", 0, 0);
+    assert!(matches!(
+        nli.classify("a", "b"),
+        Err(EmbeddingError::ModelUnavailable(_))
+    ));
+    set_fts_only(false);
 }
 
 #[test]

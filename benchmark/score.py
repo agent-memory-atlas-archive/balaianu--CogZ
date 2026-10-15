@@ -169,7 +169,7 @@ def score_run(raw: dict, qset: dict, k: int, floor: float) -> dict:
             "p_at_k": agg(rows, "p_at_k"),
             "mrr": agg(rows, "mrr"),
             "recall_at_20": agg(rows, "recall_at_20"),
-            "avg_expanded": round(sum(x["n_expanded"] for x in rows) / len(rows), 1),
+            "avg_expanded": round(sum(x.get("n_expanded", 0) for x in rows) / len(rows), 1),
             "avg_latency_ms": agg(rows, "latency_ms"),
         }
         if intent == "negative":

@@ -129,6 +129,21 @@ fn ort_download_permitted() -> bool {
     ORT_DOWNLOAD_ALLOWED.load(std::sync::atomic::Ordering::Relaxed)
 }
 
+/// Whether all model loading is forbidden for this process. Set once
+/// by entry points from config `embedding.force_fts_only`; model
+/// constructors check it and produce permanently-unavailable models.
+static FTS_ONLY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Allow or forbid all model loading for this process (config
+/// `embedding.force_fts_only`). Default: loading allowed.
+pub fn set_fts_only(fts_only: bool) {
+    FTS_ONLY.store(fts_only, std::sync::atomic::Ordering::Relaxed);
+}
+
+pub(crate) fn fts_only() -> bool {
+    FTS_ONLY.load(std::sync::atomic::Ordering::Relaxed)
+}
+
 /// Static init guard — ensures `ort::init_from` is called exactly once.
 static ORT_INIT: OnceLock<bool> = OnceLock::new();
 

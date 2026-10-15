@@ -114,13 +114,15 @@ def run_state(repo, queries, silence, pack_tokens, label):
 
 def set_fts_only(repo, on):
     cfg = os.path.join(repo, ".cogz", "config.toml")
+    if not on:
+        open(cfg, "w").write(open(cfg + ".bak").read())
+        return
     txt = open(cfg).read()
-    if on:
-        txt = re.sub(r'^code_model\s*=.*$', 'code_model = "fts_only_probe"', txt, flags=re.M)
-        txt = re.sub(r'^knowledge_model\s*=.*$', 'knowledge_model = "fts_only_probe"', txt, flags=re.M)
-        txt = re.sub(r'^auto_download\s*=.*$', 'auto_download = false', txt, flags=re.M)
-    else:
-        txt = open(cfg + ".bak").read()
+    # Supported no-model switch (replaces the bogus-model-name probe,
+    # which config validation now rejects).
+    txt = re.sub(r'^force_fts_only\s*=.*$', 'force_fts_only = true', txt, flags=re.M)
+    if 'force_fts_only' not in txt:
+        txt = re.sub(r'^(\[embedding\]\s*)$', r'\1force_fts_only = true\n', txt, flags=re.M)
     open(cfg, "w").write(txt)
 
 def main():

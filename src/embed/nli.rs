@@ -94,8 +94,15 @@ impl OnnxNliModel {
         } else {
             model_id
         };
+        // `force_fts_only` leaves model_dir empty — try_load's fast
+        // path returns ModelUnavailable without touching ONNX.
+        let model_dir = if super::runtime::fts_only() {
+            PathBuf::new()
+        } else {
+            models_base.join(id)
+        };
         Self {
-            model_dir: models_base.join(id),
+            model_dir,
             session: Mutex::new(None),
             tokenizer: Mutex::new(None),
             available: Mutex::new(false),
@@ -140,6 +147,14 @@ impl OnnxNliModel {
         {
             self.idle_tracker.touch();
             return Ok(());
+        }
+
+        // Fast path: no model configured (FTS-only mode). Skip ONNX
+        // Runtime initialization entirely — it's the slow part.
+        if self.model_dir.as_os_str().is_empty() {
+            return Err(EmbeddingError::ModelUnavailable(
+                "no model configured (FTS-only mode)".to_string(),
+            ));
         }
 
         // Unload idle model to free memory before reloading.
