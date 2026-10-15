@@ -242,7 +242,9 @@ pub fn record_contradictions(
     // Hold the canonical-file write lock across the read-modify-write
     // sequence to prevent concurrent writers from clobbering the
     // contradicts frontmatter.
-    let _file_lock = storage.file_lock();
+    let _file_lock = storage
+        .file_lock()
+        .map_err(|e| crate::storage::StorageError::File(e.to_string()))?;
 
     let mut entity_file = read_entity_file(file_path).map_err(|e| {
         crate::storage::StorageError::File(format!(

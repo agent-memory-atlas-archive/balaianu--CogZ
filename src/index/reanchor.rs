@@ -151,7 +151,11 @@ pub fn reanchor_moved_entities(
         return stats;
     }
 
-    let _file_lock = storage.file_lock();
+    let Ok(_file_lock) = storage.file_lock() else {
+        // Maintenance path — a contended lock is retried next pass.
+        tracing::warn!("reanchor_moved_entities: write lock timed out, skipping");
+        return stats;
+    };
 
     // Rewrite every living referrer that declares the stale id.
     for (entity_id, refs) in declared.iter_mut() {

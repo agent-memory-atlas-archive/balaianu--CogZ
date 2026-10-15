@@ -187,22 +187,50 @@ impl Storage {
     /// This acquires both an in-process mutex (fast path) and an
     /// OS-backed advisory lock on `.cogz/.lock` (cross-process safety).
     /// The OS lock is released when the guard is dropped.
-    pub fn file_lock(&self) -> FileLockGuard<'_> {
+    ///
+    /// The wait is bounded: `Err` after ~10 s of contention — a stuck
+    /// worker must not wedge every other process on this repo.
+    /// Callers that can degrade (background/hook paths) should; write
+    /// paths should propagate rather than proceed unlocked.
+    pub fn file_lock(&self) -> std::io::Result<FileLockGuard<'_>> {
+        self.file_lock_deadline(std::time::Duration::from_secs(10))
+    }
+
+    /// `file_lock` with an explicit deadline — kept `pub(crate)` so
+    /// tests don't sit on the 10 s default.
+    pub(crate) fn file_lock_deadline(
+        &self,
+        timeout: std::time::Duration,
+    ) -> std::io::Result<FileLockGuard<'_>> {
         let mutex_guard = self.file_mutex.lock().unwrap_or_else(|e| e.into_inner());
         if let Some(ref lock_file) = self.lock_file {
             use fs2::FileExt;
-            // Block until we get an exclusive lock. This serializes
-            // canonical writes across processes.
-            if let Err(e) = lock_file.lock_exclusive() {
-                tracing::warn!(
-                    "file lock failed — writes are not serialized across processes: {e}"
-                );
+            let start = std::time::Instant::now();
+            let mut backoff = std::time::Duration::from_millis(10);
+            loop {
+                match lock_file.try_lock_exclusive() {
+                    Ok(()) => break,
+                    Err(e)
+                        if e.kind() == std::io::ErrorKind::WouldBlock
+                            // Windows try-lock failure is
+                            // ERROR_LOCK_VIOLATION, not WouldBlock.
+                            || (cfg!(windows) && e.raw_os_error() == Some(33)) =>
+                    {
+                        let elapsed = start.elapsed();
+                        if elapsed >= timeout {
+                            return Err(e);
+                        }
+                        std::thread::sleep(backoff.min(timeout - elapsed));
+                        backoff = (backoff * 2).min(std::time::Duration::from_millis(250));
+                    }
+                    Err(e) => return Err(e),
+                }
             }
         }
-        FileLockGuard {
+        Ok(FileLockGuard {
             _mutex: mutex_guard,
             lock_file: self.lock_file.as_ref(),
-        }
+        })
     }
 
     /// Access the underlying connection. For internal use within
@@ -315,5 +343,28 @@ mod tests {
             .unwrap();
         // In-memory DBs use "memory" journal, file DBs use "wal"
         assert!(mode == "wal" || mode == "memory", "got journal_mode={mode}");
+    }
+
+    #[test]
+    fn file_lock_times_out_instead_of_blocking() {
+        let dir = tempfile::tempdir().unwrap();
+        let db_path = dir.path().join("cogz.db");
+        let first = Storage::open(&db_path, 768).unwrap();
+        let second = Storage::open(&db_path, 768).unwrap();
+
+        let _guard = first.file_lock().unwrap();
+        // Two handles on the same .lock file contend across open file
+        // descriptions — the second must Err, not park forever.
+        let started = std::time::Instant::now();
+        let result = second.file_lock_deadline(std::time::Duration::from_millis(120));
+        assert!(result.is_err());
+        assert!(
+            started.elapsed() < std::time::Duration::from_secs(5),
+            "bounded wait exceeded its deadline: {:?}",
+            started.elapsed()
+        );
+
+        drop(_guard);
+        assert!(second.file_lock().is_ok());
     }
 }

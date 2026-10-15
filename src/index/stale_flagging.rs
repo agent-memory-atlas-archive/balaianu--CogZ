@@ -128,7 +128,11 @@ pub fn flag_stale_knowledge(
     // Hold the canonical-file write lock across all read-modify-write
     // sequences to prevent concurrent knowledge updates from
     // clobbering stale-flagging writes (or vice versa).
-    let _file_lock = storage.file_lock();
+    let Ok(_file_lock) = storage.file_lock() else {
+        // Maintenance path — a contended lock is retried next pass.
+        tracing::warn!("flag_stale_knowledge: write lock timed out, skipping");
+        return 0;
+    };
 
     for (entity, path) in &to_flag {
         // 1. Read the file, update frontmatter status, write it back.

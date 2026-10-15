@@ -181,7 +181,7 @@ fn run_prune_report(
     }
 
     let storage = cogz::storage::Storage::open(db_path, config.embedding.dimension)?;
-    let report = cogz::doctor::run_prune(&storage, config, cogz_dir, confirm);
+    let report = cogz::doctor::run_prune(&storage, config, cogz_dir, confirm)?;
 
     if !confirm {
         println!("CogZ doctor — prune observations (dry-run)\n");

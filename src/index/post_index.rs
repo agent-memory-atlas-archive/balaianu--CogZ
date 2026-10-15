@@ -149,7 +149,11 @@ pub(crate) fn backfill_verified_against(
     }
 
     let mut updated = 0;
-    let _file_lock = storage.file_lock();
+    let Ok(_file_lock) = storage.file_lock() else {
+        // Maintenance path — a contended lock is retried next pass.
+        tracing::warn!("backfill_verified_against: write lock timed out, skipping");
+        return 0;
+    };
 
     for (entity_id, properties, file_path) in &candidates {
         // Compute which active refs lack a verified entry.
@@ -230,7 +234,11 @@ pub(crate) fn heal_stale_entities(storage: &Storage, cogz_dir: &Path) -> usize {
     }
 
     let mut healed = 0;
-    let _file_lock = storage.file_lock();
+    let Ok(_file_lock) = storage.file_lock() else {
+        // Maintenance path — a contended lock is retried next pass.
+        tracing::warn!("heal_stale_entities: write lock timed out, skipping");
+        return 0;
+    };
 
     for (entity_id, file_path, is_record) in &candidates {
         let path = resolve_file_path(file_path, cogz_dir);

@@ -88,14 +88,14 @@ pub fn run_prune(
     config: &Config,
     cogz_dir: &Path,
     confirm: bool,
-) -> PruneReport {
+) -> std::io::Result<PruneReport> {
     let candidates = find_prune_candidates(storage, config);
 
     if !confirm {
-        return PruneReport {
+        return Ok(PruneReport {
             candidates,
             ..Default::default()
-        };
+        });
     }
 
     let mut report = PruneReport {
@@ -108,7 +108,7 @@ pub fn run_prune(
     // timestamps of successfully tombstoned files for the DB phase.
     // Hold the canonical-file write lock to prevent concurrent writers
     // from clobbering tombstone writes.
-    let _file_lock = storage.file_lock();
+    let _file_lock = storage.file_lock()?;
     let mut tombstoned: Vec<(String, String)> = Vec::new();
     for candidate in &candidates {
         let file_path = cogz_dir.join(&candidate.file_path);
@@ -163,7 +163,7 @@ pub fn run_prune(
         report.tombstones_removed = enforce_tombstone_limit(&conn, max, cogz_dir);
     }
 
-    report
+    Ok(report)
 }
 
 /// Remove oldest tombstones that exceed the configured limit. Uses

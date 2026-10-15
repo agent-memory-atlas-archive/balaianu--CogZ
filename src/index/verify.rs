@@ -60,7 +60,7 @@ pub fn verify_entity(
     let file_path = file_path.ok_or_else(|| DriftError::NoFile(entity_id.to_string()))?;
     let path = resolve_file_path(&file_path, cogz_dir);
 
-    let _file_lock = storage.file_lock();
+    let _file_lock = storage.file_lock()?;
     let mut entity_file =
         read_entity_file(&path).map_err(|_| DriftError::NoFile(file_path.clone()))?;
     let is_record = crate::volatility::classify_file(&entity_file) == crate::volatility::RECORD;

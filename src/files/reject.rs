@@ -44,6 +44,8 @@ pub enum RejectError {
     },
     #[error("sync failed for {path}: {message}")]
     Sync { path: String, message: String },
+    #[error("canonical write lock timed out: {0}")]
+    Lock(std::io::Error),
     #[error(transparent)]
     Storage(#[from] StorageError),
 }
@@ -98,7 +100,7 @@ pub fn reject_entity_file(
     // Canonical-file write lock scopes the read-modify-write-sync
     // sequence so a concurrent writer cannot interleave.
     let (entity_file, relative) = {
-        let _file_lock = storage.file_lock();
+        let _file_lock = storage.file_lock().map_err(RejectError::Lock)?;
 
         let mut entity_file = read_entity_file(&abs_path).map_err(|e| RejectError::Read {
             path: abs_path.display().to_string(),

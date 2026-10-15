@@ -269,7 +269,9 @@ fn supersede_source(
 
     // Canonical-file write lock scopes the read-modify-write-sync
     // sequence so a concurrent writer cannot interleave.
-    let _file_lock = storage.file_lock();
+    let _file_lock = storage
+        .file_lock()
+        .map_err(|e| StorageError::File(e.to_string()))?;
 
     let mut entity_file = read_entity_file(&path)
         .map_err(|e| StorageError::File(format!("read {}: {e}", path.display())))?;

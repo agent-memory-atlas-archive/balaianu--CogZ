@@ -72,7 +72,9 @@ pub fn update_knowledge_file(
     // sync sequence only. Releasing it before embedding avoids
     // blocking other canonical writers during slow ONNX inference.
     let (entity_file, updated_fields, relative_new) = {
-        let _file_lock = storage.file_lock();
+        let _file_lock = storage
+            .file_lock()
+            .map_err(|e| mcp_error("file_lock_timeout", &e.to_string()))?;
 
         let mut entity_file = read_entity_file(&abs_path)
             .map_err(|e| mcp_error("file_write_failed", &format!("Failed to read file: {}", e)))?;

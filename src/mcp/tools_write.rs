@@ -246,6 +246,7 @@ pub async fn reject_entity(
                 | RejectError::Read { .. }
                 | RejectError::Write { .. } => ("file_write_failed", e.to_string()),
                 RejectError::Sync { .. } => ("db_error", e.to_string()),
+                RejectError::Lock(_) => ("file_lock_timeout", e.to_string()),
             };
             mcp_error(code, &msg)
         })?;

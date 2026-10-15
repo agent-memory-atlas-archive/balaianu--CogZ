@@ -293,7 +293,7 @@ fn merge_one(
     // Hold the canonical-file write lock across the read-modify-write
     // sequence to prevent concurrent writers from clobbering the
     // superseded entity's frontmatter.
-    let _file_lock = storage.file_lock();
+    let _file_lock = storage.file_lock()?;
 
     let mut entity_file = read_entity_file(&path)?;
 
