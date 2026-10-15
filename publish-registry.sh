@@ -10,8 +10,9 @@ cd "$(dirname "$0")"
 VER=$(echo "${MCP_REGISTRY_VERSION:-$(git describe --tags --abbrev=0)}" | sed 's/^v//')
 echo "Publishing io.github.balaianu/cogz v$VER"
 
-sed -i -e "s/\"version\": \"[^\"]*\"/\"version\": \"$VER\"/g" \
-       -e "s|ghcr.io/balaianu/cogz:[^\"]*|ghcr.io/balaianu/cogz:$VER|g" server.json
+sed -i.bak -e "s/\"version\": \"[^\"]*\"/\"version\": \"$VER\"/g" \
+           -e "s|ghcr.io/balaianu/cogz:[^\"]*|ghcr.io/balaianu/cogz:$VER|g" server.json \
+    && rm server.json.bak
 
 mcp-publisher validate
 mcp-publisher publish
