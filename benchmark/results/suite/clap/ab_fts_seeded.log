@@ -1,18 +1,18 @@
 collecting corpus ids...
 corpus: 4655 entities
-  lk01: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk02: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk03: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk04: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk05: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk06: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk07: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk08: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk09: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk10: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk11: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk12: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk13: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk14: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  lk15: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
+  lk01: 33 results, 69ms
+  lk02: 40 results, 131ms
+  lk03: 40 results, 92ms
+  lk04: 40 results, 108ms
+  lk05: 40 results, 131ms
+  lk06: 40 results, 110ms
+  lk07: 40 results, 98ms
+  lk08: 40 results, 61ms
+  lk09: 40 results, 75ms
+  lk10: 40 results, 63ms
+  lk11: 39 results, 124ms
+  lk12: 40 results, 141ms
+  lk13: 40 results, 123ms
+  lk14: 40 results, 116ms
+  lk15: 0 results, 73ms
 wrote ab_fts_seeded.json

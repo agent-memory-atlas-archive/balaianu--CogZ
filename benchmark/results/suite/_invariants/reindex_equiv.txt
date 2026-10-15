@@ -1,4 +1,2 @@
   note: stale tombstone asymmetry (reindex-only: 1, rebuild-only: 0) — expected
-DIVERGENT: 2 difference(s)
-  meta: only in reindex: ('last_post_index_pass', '2026-10-15T03:00:05.691590597+00:00')
-  meta: only in rebuild:  ('last_post_index_pass', '2026-10-15T03:00:15.796286122+00:00')
+EQUIVALENT: 14 entities, 16 edges, 14 embeddings identical across reindex and rebuild

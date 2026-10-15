@@ -1,28 +1,28 @@
 collecting corpus ids...
-corpus: 2446 entities
-  cb2a66b33: 20 results, 1679ms
-  c2936aae2: 20 results, 398ms
-  c889edec4: 20 results, 407ms
-  c7621eace: 20 results, 449ms
-  ced78398f: 20 results, 395ms
-  c83db0140: 20 results, 427ms
-  c1967e086: 20 results, 384ms
-  c7a57828b: 20 results, 407ms
-  c7fcffe59: 20 results, 427ms
-  c60e252f0: 20 results, 412ms
-  ce41f06c9: 20 results, 384ms
-  c043021a8: 20 results, 417ms
-  c0b28e111: 20 results, 437ms
-  c86e70363: 20 results, 400ms
-  c72678b97: 20 results, 423ms
-  c2e0b8b3a: 20 results, 402ms
-  cdc8ffbed: 20 results, 413ms
-  c85130a9e: 20 results, 402ms
-  cc97a642e: 20 results, 388ms
-  c3333e354: 20 results, 371ms
-  c8ccb962d: 20 results, 412ms
-  c111d85ea: 20 results, 393ms
-  cace7c26f: 20 results, 486ms
-  c371880b9: 20 results, 388ms
-  c0207bab1: 20 results, 423ms
+corpus: 2561 entities
+  cb2a66b33: 20 results, 1689ms
+  c2936aae2: 20 results, 377ms
+  c889edec4: 20 results, 368ms
+  c7621eace: 20 results, 407ms
+  ced78398f: 20 results, 366ms
+  c83db0140: 20 results, 397ms
+  c1967e086: 20 results, 359ms
+  c7a57828b: 20 results, 352ms
+  c7fcffe59: 20 results, 388ms
+  c60e252f0: 20 results, 407ms
+  ce41f06c9: 20 results, 353ms
+  c043021a8: 20 results, 370ms
+  c0b28e111: 20 results, 406ms
+  c86e70363: 20 results, 379ms
+  c72678b97: 20 results, 400ms
+  c2e0b8b3a: 20 results, 372ms
+  cdc8ffbed: 20 results, 367ms
+  c85130a9e: 20 results, 377ms
+  cc97a642e: 20 results, 357ms
+  c3333e354: 20 results, 359ms
+  c8ccb962d: 20 results, 381ms
+  c111d85ea: 20 results, 351ms
+  cace7c26f: 20 results, 452ms
+  c371880b9: 20 results, 346ms
+  c0207bab1: 20 results, 408ms
 wrote ab_noexpand_commit.json

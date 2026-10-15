@@ -1,63 +1,63 @@
 collecting corpus ids...
 corpus: 4655 entities
-  ca1b6be72: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cface9e81: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c7f870209: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c24719832: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c8cf344b7: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c9a0248c8: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c07c6fd2d: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c2003b342: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cdee8b8e4: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c6dd2e5a0: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  ceb39a0eb: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c543c5322: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c801277e0: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  ce19aeb7a: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c14d47fb7: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c9a1ec1f2: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c1ca55413: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c2935d5a1: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c4e4ddc47: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c2550f328: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c9048857b: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c0607d660: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c943de735: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c81b86a9f: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cae09202e: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c5df71cdb: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c7cf4891e: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cf1814170: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c9011fa58: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c7dd8df1b: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  ce63b8ec1: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c8a93d4be: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c9f5451d5: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cb793fd60: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c2310870f: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c5967c173: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c594602bb: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cf90a9663: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cdd4997ba: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c49a05cdc: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  ce791004a: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c74c66666: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c1565a3cb: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c34ef8a02: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c7ffe7399: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cd47fc4f8: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  ca49fadbf: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cdd1fcd3d: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cc774a892: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cdfe05a9b: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c2fabbf02: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c42066994: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  ceb16ae4d: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c806d9816: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c144e5cb4: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cca5bdfc4: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c7801872e: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cf5ba9c51: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  c3ef96604: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
-  cb8c9ad5b: ERROR RPC error on tools/call: {'code': -32603, 'message': 'config: invalid value for embedding.code_model: expected a HuggingFace repo id in owner/name form (letters, digits, \'.\', \'_\', \'-\'), got "fts_only_probe"'}
+  ca1b6be72: 40 results, 77ms
+  cface9e81: 40 results, 149ms
+  c7f870209: 40 results, 94ms
+  c24719832: 40 results, 91ms
+  c8cf344b7: 40 results, 59ms
+  c9a0248c8: 40 results, 83ms
+  c07c6fd2d: 40 results, 136ms
+  c2003b342: 40 results, 102ms
+  cdee8b8e4: 40 results, 131ms
+  c6dd2e5a0: 40 results, 108ms
+  ceb39a0eb: 40 results, 68ms
+  c543c5322: 40 results, 101ms
+  c801277e0: 40 results, 100ms
+  ce19aeb7a: 40 results, 113ms
+  c14d47fb7: 40 results, 94ms
+  c9a1ec1f2: 29 results, 101ms
+  c1ca55413: 40 results, 93ms
+  c2935d5a1: 34 results, 89ms
+  c4e4ddc47: 40 results, 144ms
+  c2550f328: 40 results, 95ms
+  c9048857b: 40 results, 52ms
+  c0607d660: 40 results, 104ms
+  c943de735: 40 results, 142ms
+  c81b86a9f: 40 results, 74ms
+  cae09202e: 40 results, 75ms
+  c5df71cdb: 40 results, 73ms
+  c7cf4891e: 0 results, 43ms
+  cf1814170: 40 results, 86ms
+  c9011fa58: 40 results, 107ms
+  c7dd8df1b: 40 results, 105ms
+  ce63b8ec1: 40 results, 88ms
+  c8a93d4be: 40 results, 124ms
+  c9f5451d5: 40 results, 73ms
+  cb793fd60: 40 results, 116ms
+  c2310870f: 40 results, 125ms
+  c5967c173: 40 results, 70ms
+  c594602bb: 40 results, 50ms
+  cf90a9663: 40 results, 119ms
+  cdd4997ba: 40 results, 75ms
+  c49a05cdc: 40 results, 46ms
+  ce791004a: 40 results, 55ms
+  c74c66666: 40 results, 66ms
+  c1565a3cb: 40 results, 72ms
+  c34ef8a02: 40 results, 90ms
+  c7ffe7399: 35 results, 121ms
+  cd47fc4f8: 35 results, 112ms
+  ca49fadbf: 40 results, 81ms
+  cdd1fcd3d: 40 results, 105ms
+  cc774a892: 40 results, 78ms
+  cdfe05a9b: 40 results, 79ms
+  c2fabbf02: 40 results, 99ms
+  c42066994: 40 results, 101ms
+  ceb16ae4d: 40 results, 87ms
+  c806d9816: 0 results, 52ms
+  c144e5cb4: 40 results, 150ms
+  cca5bdfc4: 40 results, 139ms
+  c7801872e: 40 results, 93ms
+  cf5ba9c51: 0 results, 30ms
+  c3ef96604: 40 results, 117ms
+  cb8c9ad5b: 40 results, 139ms
 wrote ab_fts_commit.json

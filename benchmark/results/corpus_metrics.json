@@ -32,7 +32,7 @@
     "code_embeddings": 684,
     "knowledge_embeddings": 84,
     "drift_rows": 0,
-    "db_bytes": 11325440,
+    "db_bytes": 11300864,
     "code_entity_langs": {
       "go": 684
     }
@@ -118,48 +118,48 @@
   },
   "cogz": {
     "corpus": "cogz",
-    "source_files": 225,
-    "loc": 58545,
+    "source_files": 235,
+    "loc": 62332,
     "src_langs": {
-      "bash": 2,
-      "rust": 204,
+      "bash": 4,
+      "rust": 212,
       "python": 19
     },
-    "git_commits": 291,
+    "git_commits": 391,
     "entities_by_type": {
-      "class": 241,
-      "file": 225,
-      "function": 1608,
+      "class": 246,
+      "file": 235,
+      "function": 1697,
       "knowledge": 64,
-      "module": 213,
+      "module": 227,
       "observation": 85,
       "rule": 17
     },
     "entities_by_status": {
-      "active": 2443,
+      "active": 2561,
       "superseded": 10
     },
     "edges_by_type": {
-      "auto_references": 517,
-      "calls": 2318,
-      "contains": 1849,
+      "auto_references": 514,
+      "calls": 2639,
+      "contains": 1943,
       "contradicts": 7,
       "derived_from": 3,
       "extends": 4,
-      "imports": 289,
-      "references": 82,
+      "imports": 285,
+      "references": 81,
       "superseded_by": 10,
       "supports": 23
     },
-    "edges": 5102,
-    "code_embeddings": 2287,
+    "edges": 5509,
+    "code_embeddings": 2405,
     "knowledge_embeddings": 166,
-    "drift_rows": 0,
-    "db_bytes": 29642752,
+    "drift_rows": 11,
+    "db_bytes": 30961664,
     "code_entity_langs": {
       "python": 116,
-      "rust": 2169,
-      "bash": 2
+      "rust": 2283,
+      "bash": 6
     }
   }
 }

@@ -1,13 +1,7 @@
-Traceback (most recent call last):
-  File "/home/andy/dev/personal/CogZ/benchmark/score.py", line 258, in <module>
-    main()
-    ~~~~^^
-  File "/home/andy/dev/personal/CogZ/benchmark/score.py", line 228, in main
-    report = score_run(raw, qset, args.k, args.floor)
-  File "/home/andy/dev/personal/CogZ/benchmark/score.py", line 172, in score_run
-    "avg_expanded": round(sum(x["n_expanded"] for x in rows) / len(rows), 1),
-                          ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/andy/dev/personal/CogZ/benchmark/score.py", line 172, in <genexpr>
-    "avg_expanded": round(sum(x["n_expanded"] for x in rows) / len(rows), 1),
-                              ~^^^^^^^^^^^^^^
-KeyError: 'n_expanded'
+
+=== CogZ benchmark — 15 queries ===
+overall: P@5=0.185 [0.123, 0.231]  MRR=0.589 [0.378, 0.8]  R@20=0.789 [0.589, 0.956]  avg 101.0ms
+latency: p50=108ms  p95=141ms  p99=141ms
+errors: none  rotted-expected: 0
+intent       n    P@k    MRR   R@20  xpd/q      ms
+knowledge   15  0.185  0.589  0.789   18.1   101.0
