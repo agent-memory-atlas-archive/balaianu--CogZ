@@ -56,6 +56,9 @@ jobs:
       - name: Docs drift guard
         run: bash scripts/check-docs.sh
 
+      - name: File-size ratchet
+        run: bash scripts/check-file-size.sh
+
       - name: Clippy
         run: cargo clippy -- -D warnings
 

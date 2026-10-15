@@ -283,10 +283,17 @@ CLI code uses `println!` for user-facing output.
 
 ### File size
 
-- **400 lines max per file.** If a file approaches this, extract
-  self-contained functions to a new module in the same directory.
-  The `files/refs.rs` extraction from `files/sync.rs` is the
-  reference pattern.
+- **400 lines is the target for every file, enforced for new files.**
+  If a file approaches it, extract self-contained functions to a new
+  module in the same directory. The `files/refs.rs` extraction from
+  `files/sync.rs` is the reference pattern.
+- **Oversized legacy files are on a ratchet, not exempt.** 30 files
+  exceed 400 today; `scripts/file-size-baseline.txt` pins each at its
+  current size. They may only shrink — `scripts/check-file-size.sh`
+  fails the build on growth, on a new over-limit file, or on a stale
+  baseline entry (shrank below 400 → remove the line). When you touch
+  an oversized file, prefer extraction that moves it toward the
+  limit.
 
 ---
 
