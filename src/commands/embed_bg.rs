@@ -96,15 +96,16 @@ pub fn run_embed_bg(
     Ok(())
 }
 
-/// Remove stale `cogz-embed-bg-*.txt` files from the temp directory.
-/// These accumulate when background embed processes crash before
-/// cleaning up their ID files. Files older than 1 hour are removed —
-/// this preserves ID files from processes that are still running.
+/// Remove stale `cogz-embed-bg-*.txt` files from the per-user state
+/// directory. These accumulate when background embed processes crash
+/// before cleaning up their ID files. Files older than 1 hour are
+/// removed — this preserves ID files from processes that are still
+/// running.
 fn cleanup_stale_id_files() {
     let one_hour_ago = SystemTime::now() - Duration::from_secs(3600);
-    let temp_dir = std::env::temp_dir();
+    let state_dir = cogz::paths::state_dir();
 
-    let Ok(entries) = std::fs::read_dir(&temp_dir) else {
+    let Ok(entries) = std::fs::read_dir(&state_dir) else {
         return;
     };
 

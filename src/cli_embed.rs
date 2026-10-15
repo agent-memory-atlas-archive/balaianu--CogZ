@@ -144,14 +144,23 @@ pub(crate) fn spawn_code_embed_background(
     config: &Config,
     entity_ids: &[String],
 ) {
-    // Write the entity IDs to a temp file for the background process to read.
-    let id_file = std::env::temp_dir().join(format!(
+    // Write the entity IDs under the per-user state dir — project
+    // data has no business in a world-readable shared temp.
+    let state_dir = crate::paths::state_dir();
+    let id_file = state_dir.join(format!(
         "cogz-embed-bg-{}-{}.txt",
         std::process::id(),
         chrono::Utc::now().timestamp()
     ));
 
-    if std::fs::write(&id_file, entity_ids.join("\n")).is_err() {
+    let wrote = std::fs::create_dir_all(&state_dir).is_ok()
+        && std::fs::File::options()
+            .create_new(true)
+            .write(true)
+            .open(&id_file)
+            .and_then(|mut f| std::io::Write::write_all(&mut f, entity_ids.join("\n").as_bytes()))
+            .is_ok();
+    if !wrote {
         tracing::warn!("failed to write background embed ID file");
         return;
     }

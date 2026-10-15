@@ -15,6 +15,7 @@ pub mod index;
 pub mod init;
 pub mod mcp;
 pub mod net;
+pub mod paths;
 pub mod search;
 pub mod security;
 pub mod seeds;

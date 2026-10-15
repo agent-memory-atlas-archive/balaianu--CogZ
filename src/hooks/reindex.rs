@@ -89,14 +89,27 @@ fn is_debounced(repo: &Path) -> bool {
     elapsed.num_seconds() < DEBOUNCE_SECONDS
 }
 
-/// Write the debounce timestamp file.
+/// Write the debounce timestamp file — create_new on first touch,
+/// mtime update on subsequent ones, never a follow through a
+/// pre-planted link.
 fn touch_debounce_file(repo: &Path) -> std::io::Result<()> {
     let path = debounce_file(repo);
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)?;
         sweep_stale_debounce_files(parent);
     }
-    std::fs::write(&path, b"")
+    match std::fs::File::options()
+        .create_new(true)
+        .write(true)
+        .open(&path)
+    {
+        Ok(_) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {
+            let file = std::fs::File::options().write(true).open(&path)?;
+            file.set_modified(std::time::SystemTime::now())
+        }
+        Err(e) => Err(e),
+    }
 }
 
 /// Remove debounce markers older than `SWEEP_AGE_SECONDS` from the
@@ -124,17 +137,19 @@ fn sweep_stale_debounce_files(dir: &Path) {
     }
 }
 
-/// Path for the debounce marker file. Uses a hash of the canonical
-/// repo path to avoid collisions when multiple repos are open
-/// simultaneously. Canonicalizes first so that `.`, absolute paths,
-/// and symlinks to the same repo produce the same marker.
+/// Path for the debounce marker file under the per-user state dir —
+/// shared `/tmp` let any user's process pre-plant or read another's
+/// marker. Uses a hash of the canonical repo path to avoid collisions
+/// when multiple repos are open simultaneously. Canonicalizes first
+/// so that `.`, absolute paths, and symlinks to the same repo produce
+/// the same marker.
 fn debounce_file(repo: &Path) -> PathBuf {
     use std::hash::{Hash, Hasher};
     let canonical = std::fs::canonicalize(repo).unwrap_or_else(|_| repo.to_path_buf());
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     canonical.hash(&mut hasher);
     let hash = hasher.finish();
-    std::env::temp_dir().join(format!("cogz-reindex-debounce-{}.txt", hash))
+    crate::paths::state_dir().join(format!("cogz-reindex-debounce-{}.txt", hash))
 }
 
 /// Resolve the DB path for a repo by reading the config. Returns
@@ -190,5 +205,42 @@ mod tests {
     #[test]
     fn sweep_ignores_missing_dir() {
         sweep_stale_debounce_files(Path::new("/nonexistent/cogz-sweep-test"));
+    }
+
+    #[test]
+    fn debounce_marker_lives_in_per_user_state_dir() {
+        let repo = tempfile::tempdir().unwrap();
+        let path = debounce_file(repo.path());
+        assert!(
+            path.starts_with(crate::paths::state_dir()),
+            "marker must not land in shared temp: {}",
+            path.display()
+        );
+    }
+
+    #[test]
+    fn touch_creates_then_refreshes_mtime() {
+        let repo = tempfile::tempdir().unwrap();
+        let path = debounce_file(repo.path());
+        let _ = std::fs::remove_file(&path);
+
+        touch_debounce_file(repo.path()).unwrap();
+        assert!(path.exists());
+        let first = std::fs::metadata(&path).unwrap().modified().unwrap();
+        // Second touch must not fail on AlreadyExists and must update
+        // the timestamp — backdate first so the refresh is observable.
+        let older = first - std::time::Duration::from_secs(120);
+        std::fs::File::options()
+            .write(true)
+            .open(&path)
+            .unwrap()
+            .set_modified(older)
+            .unwrap();
+        touch_debounce_file(repo.path()).unwrap();
+        let refreshed = std::fs::metadata(&path).unwrap().modified().unwrap();
+        assert!(refreshed > older);
+        assert!(is_debounced(repo.path()));
+
+        let _ = std::fs::remove_file(&path);
     }
 }
