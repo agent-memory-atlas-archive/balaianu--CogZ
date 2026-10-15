@@ -31,7 +31,8 @@ pub fn run_suggest(repo: &std::path::Path, days: u32, limit: u32) -> anyhow::Res
 
     let storage = Storage::open(&db_path, config.embedding.dimension)?;
     let conn = storage.conn();
-    let days = days.min(90);
+    // Retention is 30 days — a wider window can't see more.
+    let days = days.min(cogz::storage::usage::TELEMETRY_RETENTION_DAYS);
     let suggestions = cogz::storage::mining::mine_suggestions(&conn, days, limit as usize)?;
 
     if let Err(e) = cogz::storage::events::record_event(

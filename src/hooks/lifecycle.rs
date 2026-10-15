@@ -492,18 +492,15 @@ pub fn handle_lifecycle_event(
     };
 
     // Telemetry retention: events/deliveries/entity_usage grow
-    // unbounded otherwise. 30 days exceeds every mining lookback (≤7d).
-    // Runs at session_end — the one boundary where maintenance already
-    // lives; never fatal.
-    if input.event == LifecycleEvent::SessionEnd {
+    // unbounded otherwise. Gated at ≤1 sweep/24h via meta so it runs
+    // on whatever event happens next — sessions without a clean
+    // session_end still get retention; never fatal.
+    {
         let conn = storage.conn();
-        match with_busy_retry("telemetry sweep", || {
-            crate::storage::usage::sweep_old_telemetry(&conn, 30)
-        }) {
-            Some(n) if n > 0 => {
-                tracing::debug!("session_end: swept {n} expired telemetry events")
-            }
-            _ => {}
+        if let Some(n) = crate::storage::usage::maybe_sweep_telemetry(&conn)
+            && n > 0
+        {
+            tracing::debug!("swept {n} expired telemetry events");
         }
     }
 

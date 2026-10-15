@@ -307,6 +307,30 @@ pub fn never_delivered_since(conn: &Connection, since: &str) -> Result<Vec<Strin
     Ok(out)
 }
 
+/// Telemetry retention window — rows older than this are swept.
+/// Exceeds every mining lookback (≤7d) with margin.
+pub const TELEMETRY_RETENTION_DAYS: u32 = 30;
+
+/// Sweep expired telemetry at most once per 24 h, gated on the
+/// `last_telemetry_sweep` meta timestamp. Runs opportunistically on
+/// any hook event — sessions that crash or never fire session_end
+/// still get retention. Returns Some(swept) when the sweep ran.
+pub fn maybe_sweep_telemetry(conn: &Connection) -> Option<usize> {
+    const GATE: chrono::Duration = chrono::Duration::hours(24);
+    let now = chrono::Utc::now();
+    if let Some(last) = crate::storage::get_meta(conn, "last_telemetry_sweep")
+        .and_then(|ts| chrono::DateTime::parse_from_rfc3339(&ts).ok())
+        && now.signed_duration_since(last) < GATE
+    {
+        return None;
+    }
+    let swept = sweep_old_telemetry(conn, TELEMETRY_RETENTION_DAYS).ok()?;
+    if let Err(e) = crate::storage::set_meta(conn, "last_telemetry_sweep", &now.to_rfc3339()) {
+        tracing::warn!("failed to record telemetry sweep timestamp: {e}");
+    }
+    Some(swept)
+}
+
 /// Delete telemetry rows older than `max_age_days` — events,
 /// deliveries, and entity_usage are derived telemetry that otherwise
 /// grows forever (every prompt, save, and session writes rows, some
@@ -575,6 +599,24 @@ mod tests {
             .query_row("SELECT COUNT(*) FROM deliveries", [], |r| r.get(0))
             .unwrap();
         assert_eq!(deliveries, 1);
+    }
+
+    #[test]
+    fn maybe_sweep_gates_on_meta_timestamp() {
+        let storage = Storage::open_memory().unwrap();
+        let conn = storage.conn();
+
+        // First call sweeps and stamps the gate.
+        assert!(maybe_sweep_telemetry(&conn).is_some());
+        assert!(crate::storage::get_meta(&conn, "last_telemetry_sweep").is_some());
+
+        // Inside the 24h window the gate holds.
+        assert_eq!(maybe_sweep_telemetry(&conn), None);
+
+        // Backdate the stamp past the window — the sweep fires again.
+        let old = (chrono::Utc::now() - chrono::Duration::hours(25)).to_rfc3339();
+        crate::storage::set_meta(&conn, "last_telemetry_sweep", &old).unwrap();
+        assert!(maybe_sweep_telemetry(&conn).is_some());
     }
 
     #[test]

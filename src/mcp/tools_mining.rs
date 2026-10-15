@@ -21,7 +21,11 @@ pub async fn suggest_observations(
 ) -> Result<CallToolResult, McpError> {
     let repo = server.resolve_repo(&params.repo)?;
     let storage = repo.storage.clone();
-    let days = params.days.unwrap_or(DEFAULT_DAYS).min(90);
+    // Retention is 30 days — a wider window can't see more.
+    let days = params
+        .days
+        .unwrap_or(DEFAULT_DAYS)
+        .min(crate::storage::usage::TELEMETRY_RETENTION_DAYS);
     let limit =
         validate_query_limit(params.limit.unwrap_or(DEFAULT_LIMIT))?.min(MAX_LIMIT) as usize;
 
