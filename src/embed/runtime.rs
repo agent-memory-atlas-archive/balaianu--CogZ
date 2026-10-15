@@ -134,6 +134,13 @@ fn ort_download_permitted() -> bool {
 /// constructors check it and produce permanently-unavailable models.
 static FTS_ONLY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
+/// Whether code-entity embedding is enabled for this process. Set
+/// once by entry points from config `embedding.code_embeddings`;
+/// `ModelType::Code` constructors check it and produce permanently
+/// unavailable models, so code retrieval runs FTS + graph only while
+/// knowledge entities keep semantic search.
+static CODE_EMBEDDINGS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
 /// Allow or forbid all model loading for this process (config
 /// `embedding.force_fts_only`). Default: loading allowed.
 pub fn set_fts_only(fts_only: bool) {
@@ -142,6 +149,16 @@ pub fn set_fts_only(fts_only: bool) {
 
 pub(crate) fn fts_only() -> bool {
     FTS_ONLY.load(std::sync::atomic::Ordering::Relaxed)
+}
+
+/// Enable or disable code-entity embedding for this process (config
+/// `embedding.code_embeddings`). Default: enabled.
+pub fn set_code_embeddings(enabled: bool) {
+    CODE_EMBEDDINGS.store(enabled, std::sync::atomic::Ordering::Relaxed);
+}
+
+pub(crate) fn code_embeddings_enabled() -> bool {
+    CODE_EMBEDDINGS.load(std::sync::atomic::Ordering::Relaxed)
 }
 
 /// Static init guard — ensures `ort::init_from` is called exactly once.

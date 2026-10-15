@@ -45,6 +45,7 @@ pub(crate) fn load_config(repo: &Path) -> anyhow::Result<(Config, std::path::Pat
     // loading — `auto_download` must not leak past it.
     cogz::embed::set_ort_download_allowed(config.embedding.auto_download);
     cogz::embed::set_fts_only(config.embedding.force_fts_only);
+    cogz::embed::set_code_embeddings(config.embedding.code_embeddings);
     cogz::storage::search_terms::set_split_identifiers(config.index.split_identifiers);
     let db_path = cogz::config::resolve_db_path(repo, &config.storage.db_path)?;
     Ok((config, db_path))

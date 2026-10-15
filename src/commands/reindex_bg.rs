@@ -33,6 +33,7 @@ pub fn run_reindex_bg(repo: &Path, db_path: &Path) -> anyhow::Result<()> {
 
     let config = config::load(&config_path)?;
     cogz::embed::set_fts_only(config.embedding.force_fts_only);
+    cogz::embed::set_code_embeddings(config.embedding.code_embeddings);
     cogz::storage::search_terms::set_split_identifiers(config.index.split_identifiers);
     let storage = Storage::open(db_path, config.embedding.dimension)?;
 

@@ -134,6 +134,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
     let config = crate::config::load(&config_path)?;
     crate::embed::set_ort_download_allowed(config.embedding.auto_download);
     crate::embed::set_fts_only(config.embedding.force_fts_only);
+    crate::embed::set_code_embeddings(config.embedding.code_embeddings);
     crate::storage::search_terms::set_split_identifiers(config.index.split_identifiers);
     let db_path = crate::config::resolve_db_path(input.repo, &config.storage.db_path)?;
 

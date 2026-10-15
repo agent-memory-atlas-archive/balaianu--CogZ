@@ -99,7 +99,11 @@ impl OnnxEmbeddingModel {
     ) -> Self {
         // `force_fts_only` produces a permanently-unavailable model:
         // try_load's empty-model_dir fast path skips ONNX init entirely.
-        if super::runtime::fts_only() {
+        // `code_embeddings = false` does the same scoped to the code
+        // model only — knowledge retrieval keeps its vector channel.
+        if super::runtime::fts_only()
+            || (model_type == ModelType::Code && !super::runtime::code_embeddings_enabled())
+        {
             let mut m = Self::unavailable();
             m.model_type = model_type;
             return m;

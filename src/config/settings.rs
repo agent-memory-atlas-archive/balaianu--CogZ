@@ -53,6 +53,13 @@ pub struct EmbeddingConfig {
     /// skips model resolution entirely. Default: false.
     #[serde(default)]
     pub force_fts_only: bool,
+    /// Embed code entities (functions, classes, etc.) with the code
+    /// model. When false, the code model never loads or downloads and
+    /// code retrieval relies on FTS + graph expansion — knowledge,
+    /// rule, and observation entities keep semantic search via the
+    /// knowledge model. Default: true.
+    #[serde(default = "default_true")]
+    pub code_embeddings: bool,
     /// Seconds of idle time before unloading ONNX models from memory.
     /// 0 = never unload (keep resident for process lifetime).
     /// On a 7GB RAM system, unloading idle models frees ~300-500MB.
@@ -505,6 +512,7 @@ impl Config {
                 nli_model: crate::embed::registry::DEFAULT_NLI_MODEL.to_string(),
                 auto_download: default_true(),
                 force_fts_only: false,
+                code_embeddings: true,
                 model_idle_ttl: default_model_idle_ttl(),
                 model_min_free_mb: default_model_min_free_mb(),
             },

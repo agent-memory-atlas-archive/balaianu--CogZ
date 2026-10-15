@@ -98,6 +98,7 @@ tier0_rules = 3
 | `nli_model` | string | `cross-encoder/nli-deberta-v3-xsmall` | NLI model for contradiction detection and merge confirmation. |
 | `auto_download` | bool | `true` | Download models from HuggingFace on first use. Set `false` to forbid downloads — already-installed models still load. |
 | `force_fts_only` | bool | `false` | Never load embedding or NLI models — retrieval runs FTS-only even when models are installed. For air-gapped or memory-constrained deployments; skips model resolution entirely. |
+| `code_embeddings` | bool | `true` | Embed code entities with `code_model`. Set `false` to skip the code model entirely (no download, no background embedding) — code retrieval then relies on FTS + graph expansion while knowledge/rule/observation entities keep semantic search. |
 | `model_idle_ttl` | u64 | `300` | Seconds before idle ONNX models unload from memory. `0` = never unload. |
 | `model_min_free_mb` | u64 | `512` | Minimum free RAM (MB) to load a model. Below this, degrades to FTS-only. `0` = no check. |
 
