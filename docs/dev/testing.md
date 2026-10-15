@@ -35,7 +35,7 @@ This means:
 
 Tests create temporary directories with `tempfile::tempdir()` and build minimal `.cogz/` structures in them. No shared state between tests — each test gets its own isolated directory and database.
 
-For tests that need a populated database, helper functions in `tests/common/` create entities, edges, and embeddings directly.
+For tests that need a populated database, each test file defines its own helpers that insert entities, edges, and embeddings directly — see `tests/test_consolidation.rs` for the reference pattern.
 
 ## What to test
 
@@ -57,14 +57,14 @@ There is no automated coverage tool configured. Coverage is assessed by:
 
 ## CI
 
-GitHub Actions runs on every push and PR to `master`:
+GitHub Actions runs on every push and PR to `master` (`ci.yml`):
 
 1. `cargo fmt --check`
 2. `cargo clippy -- -D warnings`
 3. `cargo build --release`
 4. `cargo test`
 
-This runs on three platforms: Ubuntu x86_64, macOS arm64, Windows x86_64. All must pass before merge.
+The check job runs on three platforms (Ubuntu x86_64, macOS arm64, Windows x86_64), and `ci.yml` also builds the Docker image and verifies an MCP handshake inside it, and runs `cargo audit`. All jobs must pass before merge.
 
 ## See also
 

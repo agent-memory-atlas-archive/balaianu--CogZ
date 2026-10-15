@@ -32,7 +32,7 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 | Crate | Version | Purpose |
 |---|---|---|
 | `ort` | `=2.0.0-rc.13` | ONNX Runtime bindings (exact pin — pre-release) |
-| `tokenizers` | `0.21` | HuggingFace tokenizers for model input |
+| `tokenizers` | `0.23` (onig, esaxx_fast) | HuggingFace tokenizers for model input |
 | `hf-hub` | `1.0` (blocking) | Model download from HuggingFace |
 | `reqwest` | `0.13` | HTTP client config passed to hf-hub (timeouts) |
 
@@ -40,8 +40,8 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 
 | Crate | Version | Purpose |
 |---|---|---|
-| `rmcp` | `=3.1.4` | MCP protocol implementation (exact pin — API stability) |
-| `tokio` | `1` (full) | Async runtime for MCP server |
+| `rmcp` | `=3.5.1` (transport-io) | MCP protocol implementation (exact pin — API stability) |
+| `tokio` | `1` (rt, macros, io-util, sync) | Async runtime for MCP server |
 | `schemars` | `1` | JSON Schema generation for MCP tool parameters |
 
 ### File system / Git
@@ -52,12 +52,13 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 | `walkdir` | `2` | Directory walking |
 | `slug` | `0.1` | Slug generation for file paths |
 | `ignore` | `0.4` | Gitignore-aware file walking (ripgrep engine) |
+| `tempfile` | `3` | Bounded stderr capture during ORT init; temp dirs in tests |
 
 ### Code parsing
 
 | Crate | Version | Purpose |
 |---|---|---|
-| `tree-sitter` | `0.25` | AST parsing framework |
+| `tree-sitter` | `0.26` | AST parsing framework |
 | `tree-sitter-language` | `0.1` | Language trait |
 | `tree-sitter-rust` | `0.24` | Rust grammar |
 | `tree-sitter-python` | `0.25` | Python grammar |
@@ -79,14 +80,14 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 | Crate | Version | Purpose |
 |---|---|---|
 | `uuid` | `1` (v4, v5) | UUID generation |
-| `sha2` | `0.10` | SHA-256 for content hashing and checksums |
+| `sha2` | `0.11` | SHA-256 for content hashing and checksums |
 | `chrono` | `0.4` (serde) | Timestamps |
 | `anyhow` | `1` | Top-level error handling (CLI only) |
 | `thiserror` | `2` | Typed error enums (library) |
 | `tracing` | `0.1` | Structured logging |
 | `tracing-subscriber` | `0.3` (env-filter) | Log subscriber setup |
 | `zerocopy` | `0.8` | Zero-copy byte conversion for embeddings |
-| `ndarray` | `0.16` | N-dimensional arrays for ONNX I/O |
+| `ndarray` | `0.17` | N-dimensional arrays for ONNX I/O |
 
 ### Self-update
 
@@ -96,28 +97,29 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 | `regex` | `1.13.1` | Version string parsing |
 | `aho-corasick` | `1.1.5` | Multi-pattern string search (auto-link) |
 | `fs2` | `0.4.3` | File locking for model cache |
+| `hex` | `0.4.3` | Hex encoding for checksums |
 
 ### Platform-specific
 
 | Crate | Version | Platform | Purpose |
 |---|---|---|---|
 | `libc` | `0.2` | Unix only | Stderr suppression during ONNX init |
+| `windows-sys` | `0.61` | Windows only | Stable file identity via GetFileInformationByHandle |
 
 ### Dev dependencies
 
 | Crate | Version | Purpose |
 |---|---|---|
-| `tempfile` | `3` | Temporary directories in tests |
 | `pretty_assertions` | `1` | Readable assertion failures |
 | `filetime` | `0.2` | File modification time in tests |
-| `rmcp` | `=3.1.4` (client) | MCP client for subprocess tests |
+| `rmcp` | `=3.5.1` (transport-io, client) | MCP client for subprocess tests |
 
 ## Build decisions
 
 - **`rusqlite` with `bundled` feature** — avoids system SQLite dependency. Adds ~500 KB to compile time but simplifies deployment.
 - **`git2` with no default features** — disables SSH and HTTPS support. CogZ only needs local repo discovery, working-tree diff, and commit-history diff for co-change mining, not remote operations. Using libgit2 for co-change also removes the `git` binary dependency and user-config hazards (`textconv`, external diff drivers) that would corrupt parsed `git log -p` output.
 - **`ort` with `load-dynamic` + `ndarray`** — loads ONNX Runtime as a shared library at runtime rather than linking it at build time. Keeps the binary small and allows runtime upgrades.
-- **`rmcp` exact pin** — the MCP protocol implementation is still pre-1.0; exact pins prevent surprise breaking changes.
+- **`rmcp` exact pin** — MCP SDK releases have introduced breaking API changes between minors; an exact pin prevents surprise upgrades.
 
 ## Adding a dependency
 
