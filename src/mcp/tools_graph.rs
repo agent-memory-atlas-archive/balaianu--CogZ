@@ -11,7 +11,7 @@ use crate::mcp::helpers::{
     mcp_internal_error, mcp_invalid_parameter, tool_success, validate_query_limit,
 };
 use crate::mcp::params::*;
-use crate::mcp::server::CogzServer;
+use crate::mcp::server::{CogzServer, resolve_repo_blocking};
 use crate::storage::usage::{self, DeliveryKind};
 
 const DEFAULT_IMPACT_DEPTH: usize = 2;
@@ -23,7 +23,7 @@ pub async fn get_callers(
     server: &CogzServer,
     Parameters(params): Parameters<GetCallersParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let entity_id = params.entity_id.clone();
     let limit = validate_query_limit(params.limit.unwrap_or(DEFAULT_LIMIT))? as usize;
@@ -62,7 +62,7 @@ pub async fn get_impact(
     server: &CogzServer,
     Parameters(params): Parameters<GetImpactParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let entity_id = params.entity_id.clone();
     let depth = params
@@ -114,7 +114,7 @@ pub async fn find_orphans(
     server: &CogzServer,
     Parameters(params): Parameters<FindOrphansParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let limit = validate_query_limit(params.limit.unwrap_or(DEFAULT_LIMIT))? as usize;
     let types: Vec<String> = match params.entity_type.as_deref() {

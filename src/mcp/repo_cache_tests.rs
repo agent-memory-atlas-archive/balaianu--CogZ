@@ -122,3 +122,25 @@ fn memory_backed_state_is_never_stale() {
     cache.insert_ready(repo.clone(), state);
     assert!(matches!(cache.get(&repo), Ok(Some(_))));
 }
+
+/// Resolution must happen via `spawn_blocking` — the only off-thread
+/// mechanism available on the `current_thread` runtime `mcp-stdio`
+/// uses. A `block_in_place` substitute would panic on this flavor.
+#[tokio::test(flavor = "current_thread")]
+async fn resolve_repo_blocking_resolves_cached_repo() {
+    let dir = tempfile::tempdir().unwrap();
+    let repo = dir.path().canonicalize().unwrap();
+    let cogz_dir = repo.join(".cogz");
+    std::fs::create_dir_all(&cogz_dir).unwrap();
+    let storage = Arc::new(Storage::open_memory().unwrap());
+    let server = crate::mcp::server::CogzServer::with_models_dir(
+        storage,
+        Config::default_for("test-project"),
+        cogz_dir,
+        &repo.join("models"),
+    );
+    let state = crate::mcp::server::resolve_repo_blocking(&server, repo.to_str().unwrap())
+        .await
+        .unwrap();
+    assert_eq!(state.cogz_dir, repo.join(".cogz"));
+}

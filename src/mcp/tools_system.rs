@@ -11,13 +11,13 @@ use crate::hooks::lifecycle::{LifecycleEvent, LifecycleInput, handle_lifecycle_e
 use crate::mcp::helpers::{build_status_response, mcp_internal_error};
 use crate::mcp::params::{CaptureEventParams, ConsolidateParams, GetStatusParams};
 use crate::mcp::responses::tool_success;
-use crate::mcp::server::CogzServer;
+use crate::mcp::server::{CogzServer, resolve_repo_blocking};
 
 pub async fn get_status(
     server: &CogzServer,
     Parameters(params): Parameters<GetStatusParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
 
@@ -33,7 +33,7 @@ pub async fn consolidate(
     server: &CogzServer,
     Parameters(params): Parameters<ConsolidateParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
     let cogz_dir = repo.cogz_dir.clone();
@@ -86,7 +86,7 @@ pub async fn capture_event(
         )
     })?;
 
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
     let cogz_dir = repo.cogz_dir.clone();

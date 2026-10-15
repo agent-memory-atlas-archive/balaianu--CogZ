@@ -14,7 +14,7 @@ use rmcp::{
 };
 
 use crate::embed::{ModelType, OnnxEmbeddingModel, OnnxNliModel};
-use crate::mcp::errors::mcp_invalid_parameter;
+use crate::mcp::errors::{mcp_internal_error, mcp_invalid_parameter};
 use crate::mcp::repo_cache::{RepoCache, RepoState, make_repo_state, open_repo};
 
 /// Cache key for embedding models: (model_id, dimension, model_type).
@@ -26,11 +26,31 @@ type NliModelKey = String;
 /// The MCP server. Holds a cache of repo states and a cache of model
 /// instances shared across repos. Every tool call must specify which
 /// repo it targets via the required `repo` parameter.
+///
+/// `Clone` is cheap (Arc internals) — handlers clone it into
+/// `spawn_blocking` so repo resolution (canonicalize + SQLite open +
+/// config stat) never runs on the async runtime thread.
+#[derive(Clone)]
 pub struct CogzServer {
-    repo_cache: RepoCache,
+    repo_cache: Arc<RepoCache>,
     models_dir: PathBuf,
-    embedding_models: Mutex<HashMap<EmbeddingModelKey, Arc<OnnxEmbeddingModel>>>,
-    nli_models: Mutex<HashMap<NliModelKey, Arc<OnnxNliModel>>>,
+    embedding_models: Arc<Mutex<HashMap<EmbeddingModelKey, Arc<OnnxEmbeddingModel>>>>,
+    nli_models: Arc<Mutex<HashMap<NliModelKey, Arc<OnnxNliModel>>>>,
+}
+
+/// Resolve `repo` off the async thread. Equivalent to
+/// `server.resolve_repo` but safe to call from a tool handler —
+/// resolution opens a SQLite connection and stats config on cache
+/// hit, which must not block the (single-threaded) runtime.
+pub(crate) async fn resolve_repo_blocking(
+    server: &CogzServer,
+    repo: &str,
+) -> Result<Arc<RepoState>, McpError> {
+    let server = server.clone();
+    let repo = repo.to_string();
+    tokio::task::spawn_blocking(move || server.resolve_repo(&repo))
+        .await
+        .map_err(|e| mcp_internal_error("spawn_blocking", &e.to_string()))?
 }
 
 impl CogzServer {
@@ -38,10 +58,10 @@ impl CogzServer {
     /// provide `repo` explicitly. Used by `mcp-stdio` in production.
     pub fn with_models_dir_only(models_dir: &Path) -> Self {
         Self {
-            repo_cache: RepoCache::new(),
+            repo_cache: Arc::new(RepoCache::new()),
             models_dir: models_dir.to_path_buf(),
-            embedding_models: Mutex::new(HashMap::new()),
-            nli_models: Mutex::new(HashMap::new()),
+            embedding_models: Arc::new(Mutex::new(HashMap::new())),
+            nli_models: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
@@ -113,10 +133,10 @@ impl CogzServer {
         nli_models.insert(nli_model_id, nli_model);
 
         Self {
-            repo_cache,
+            repo_cache: Arc::new(repo_cache),
             models_dir: models_dir.to_path_buf(),
-            embedding_models: Mutex::new(embedding_models),
-            nli_models: Mutex::new(nli_models),
+            embedding_models: Arc::new(Mutex::new(embedding_models)),
+            nli_models: Arc::new(Mutex::new(nli_models)),
         }
     }
 

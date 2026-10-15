@@ -154,9 +154,24 @@ impl RepoCache {
     /// - `Err(path)` if cached but stale — config changed or the DB
     ///   file was replaced (caller should evict)
     pub fn get(&self, path: &PathBuf) -> Result<Option<Arc<RepoState>>, PathBuf> {
-        let repos = self.lock_repos();
-        match repos.get(path) {
-            Some(RepoCacheEntry::Ready(state)) => {
+        // Clone the entry and drop the map lock before filesystem
+        // stats — holding `repos` across I/O serializes every other
+        // cache operation behind slow disks.
+        enum Entry {
+            Ready(Arc<RepoState>),
+            Opening(Arc<Mutex<()>>),
+            Missing,
+        }
+        let entry = {
+            let repos = self.lock_repos();
+            match repos.get(path) {
+                Some(RepoCacheEntry::Ready(s)) => Entry::Ready(s.clone()),
+                Some(RepoCacheEntry::Opening(l)) => Entry::Opening(l.clone()),
+                None => Entry::Missing,
+            }
+        };
+        match entry {
+            Entry::Ready(state) => {
                 // Config staleness check.
                 let config_path = state.cogz_dir.join("config.toml");
                 let current_mtime = std::fs::metadata(&config_path)
@@ -175,18 +190,14 @@ impl RepoCache {
                     tracing::info!("Database file changed for {}, reloading", path.display());
                     return Err(path.clone());
                 }
-                let state = state.clone();
-                drop(repos);
                 self.touch_lru(path);
                 Ok(Some(state))
             }
-            Some(RepoCacheEntry::Opening(lock)) => {
-                let lock = lock.clone();
-                drop(repos);
+            Entry::Opening(lock) => {
                 let _guard = lock.lock().unwrap_or_else(|e| e.into_inner());
                 Ok(None)
             }
-            None => Ok(None),
+            Entry::Missing => Ok(None),
         }
     }
 

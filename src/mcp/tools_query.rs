@@ -13,7 +13,7 @@ use crate::mcp::helpers::{
 };
 use crate::mcp::params::*;
 use crate::mcp::responses::{query_response, tool_success};
-use crate::mcp::server::CogzServer;
+use crate::mcp::server::{CogzServer, resolve_repo_blocking};
 use crate::storage::usage::{self, DeliveryKind};
 
 /// Record returned entities as a pull delivery so later hits — a
@@ -40,7 +40,7 @@ pub async fn query_observations(
     server: &CogzServer,
     Parameters(params): Parameters<QueryObservationsParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let limit = validate_query_limit(params.limit.unwrap_or(20))?;
 
@@ -75,7 +75,7 @@ pub async fn query_rules(
     server: &CogzServer,
     Parameters(params): Parameters<QueryRulesParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let limit = validate_query_limit(params.limit.unwrap_or(20))?;
 
@@ -106,7 +106,7 @@ pub async fn query_knowledge(
     server: &CogzServer,
     Parameters(params): Parameters<QueryKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let limit = validate_query_limit(params.limit.unwrap_or(20))?;
 
@@ -141,7 +141,7 @@ pub async fn list_entities(
     server: &CogzServer,
     Parameters(params): Parameters<ListEntitiesParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let entity_type = params.entity_type.clone();
     let status = params.status.clone();

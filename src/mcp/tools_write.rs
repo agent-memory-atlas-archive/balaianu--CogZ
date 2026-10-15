@@ -16,7 +16,7 @@ use crate::mcp::helpers::{
 };
 use crate::mcp::params::*;
 use crate::mcp::responses::tool_success;
-use crate::mcp::server::CogzServer;
+use crate::mcp::server::{CogzServer, resolve_repo_blocking};
 use crate::mcp::validate::{validate_confidence, validate_uuid_list};
 
 pub async fn record_observation(
@@ -26,7 +26,7 @@ pub async fn record_observation(
     let title = params.title.unwrap_or_else(|| auto_title(&params.content));
     validate_uuid_list("references", params.references.as_deref())?;
     validate_uuid_list("supporting_ids", params.supporting_ids.as_deref())?;
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
     let cogz_dir = repo.cogz_dir.clone();
@@ -74,7 +74,7 @@ pub async fn create_rule(
     let title = params.title.unwrap_or_else(|| auto_title(&params.content));
     validate_uuid_list("references", params.references.as_deref())?;
     validate_confidence(params.confidence)?;
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
     let cogz_dir = repo.cogz_dir.clone();
@@ -113,7 +113,7 @@ pub async fn create_knowledge(
     Parameters(params): Parameters<CreateKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
     validate_uuid_list("references", params.references.as_deref())?;
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let config = repo.config.clone();
     let cogz_dir = repo.cogz_dir.clone();
@@ -156,7 +156,7 @@ pub async fn update_knowledge(
     server: &CogzServer,
     Parameters(params): Parameters<UpdateKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let cogz_dir = repo.cogz_dir.clone();
     let query_model = repo.query_model.clone();
@@ -174,7 +174,7 @@ pub async fn verify_knowledge(
     server: &CogzServer,
     Parameters(params): Parameters<VerifyKnowledgeParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let cogz_dir = repo.cogz_dir.clone();
     let allow_dead_refs = params.allow_dead_refs;
@@ -222,7 +222,7 @@ pub async fn reject_entity(
     Parameters(params): Parameters<RejectEntityParams>,
 ) -> Result<CallToolResult, McpError> {
     use crate::files::reject::RejectError;
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     let cogz_dir = repo.cogz_dir.clone();
 

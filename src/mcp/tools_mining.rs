@@ -9,7 +9,7 @@ use serde_json::json;
 
 use crate::mcp::helpers::{mcp_internal_error, tool_success, validate_query_limit};
 use crate::mcp::params::*;
-use crate::mcp::server::CogzServer;
+use crate::mcp::server::{CogzServer, resolve_repo_blocking};
 
 const DEFAULT_DAYS: u32 = 7;
 const DEFAULT_LIMIT: i64 = 10;
@@ -19,7 +19,7 @@ pub async fn suggest_observations(
     server: &CogzServer,
     Parameters(params): Parameters<SuggestObservationsParams>,
 ) -> Result<CallToolResult, McpError> {
-    let repo = server.resolve_repo(&params.repo)?;
+    let repo = resolve_repo_blocking(server, &params.repo).await?;
     let storage = repo.storage.clone();
     // Retention is 30 days — a wider window can't see more.
     let days = params
