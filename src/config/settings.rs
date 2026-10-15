@@ -396,6 +396,12 @@ pub struct IndexConfig {
     /// Default 1 MiB.
     #[serde(default = "default_max_file_bytes")]
     pub max_file_bytes: u64,
+    /// Split camelCase/PascalCase identifiers in entity titles into
+    /// subtokens indexed in FTS (`search_terms` column), so "auth"
+    /// matches `verifyAuthToken`. Requires reindex to populate.
+    /// Default: false.
+    #[serde(default)]
+    pub split_identifiers: bool,
 }
 
 impl Default for IndexConfig {
@@ -404,6 +410,7 @@ impl Default for IndexConfig {
             allow: vec![],
             deny: vec![],
             max_file_bytes: default_max_file_bytes(),
+            split_identifiers: false,
         }
     }
 }

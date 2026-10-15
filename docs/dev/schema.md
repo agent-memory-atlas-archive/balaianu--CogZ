@@ -207,6 +207,10 @@ Normalizes legacy `YYYY-MM-DD HH:MM:SS` timestamps in `events`, `deliveries`, an
 
 Adds the `vec_rowid` table and backfills it from both vec0 tables — the only deliberate vec0 scan remaining. See the table entry for why it exists.
 
+### v10 — `search_terms` FTS column
+
+Adds `entities.search_terms` (default `''`) and recreates `entities_fts` as a three-column FTS table — `(title, content, search_terms)` — with matching triggers and a full `rebuild`. When `index.split_identifiers` is enabled, `insert_entity`/`update_entity` derive camelCase/PascalCase/digit subtokens from the title into `search_terms`, closing the identifier tokenization gap (`verifyAuthToken` was previously a single opaque unicode61 token). Rows written while the flag is off keep `''`; `bm25` weights the column below title and content (`0.5`).
+
 ## Version checking
 
 `check_version()` verifies the DB schema version matches `SCHEMA_VERSION`. A mismatch returns `SchemaVersionMismatch { db, expected }`. This happens when a newer binary opens an older DB (or vice versa). The fix is `cogz reset` + `cogz index` to rebuild from files.

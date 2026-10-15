@@ -307,6 +307,7 @@ pub fn open_repo(
         .map_err(|e| mcp_internal_error("config", &e.to_string()))?;
     crate::embed::set_ort_download_allowed(config.embedding.auto_download);
     crate::embed::set_fts_only(config.embedding.force_fts_only);
+    crate::storage::search_terms::set_split_identifiers(config.index.split_identifiers);
 
     let db_path = crate::config::resolve_db_path(canonical, &config.storage.db_path)
         .map_err(|e| mcp_internal_error("config", &e.to_string()))?;

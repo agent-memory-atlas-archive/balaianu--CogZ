@@ -222,11 +222,12 @@ pub fn fts_search(
         sql.push_str(" AND (e.file_path IS NULL OR is_test_path(e.file_path) = 0)");
     }
 
-    // `bm25(table, w_title, w_content)` — column weights make title
-    // hits rank above body-term matches. w = 1.0/1.0 is the library
-    // default `rank` ordering exactly.
+    // `bm25(table, w_title, w_content, w_terms)` — column weights make
+    // title hits rank above body-term matches; search_terms (split
+    // identifier subtokens, v10) is a weaker signal than a real title
+    // hit, so it sits between the two.
     sql.push_str(&format!(
-        " ORDER BY bm25(entities_fts, {title_weight}, 1.0) LIMIT ?"
+        " ORDER BY bm25(entities_fts, {title_weight}, 1.0, 0.5) LIMIT ?"
     ));
     param_values.push(Box::new(limit));
 

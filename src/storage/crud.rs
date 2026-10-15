@@ -131,10 +131,18 @@ impl Entity {
 
 /// Insert a new entity. FTS5 trigger fires automatically.
 pub fn insert_entity(conn: &Connection, entity: &Entity) -> Result<(), StorageError> {
+    // Populated only when `index.split_identifiers` is on — the column
+    // is derived state, not entity data, so it lives outside `Entity`.
+    let search_terms = entity
+        .title
+        .as_deref()
+        .filter(|_| crate::storage::search_terms::split_identifiers_enabled())
+        .map(crate::storage::search_terms::derive_search_terms)
+        .unwrap_or_default();
     conn.execute(
         r#"INSERT INTO entities
-           (id, type, title, content, properties, file_path, status, content_hash, created_at, updated_at)
-           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)"#,
+           (id, type, title, content, properties, file_path, status, content_hash, created_at, updated_at, search_terms)
+           VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)"#,
         params![
             entity.id,
             entity.r#type,
@@ -146,6 +154,7 @@ pub fn insert_entity(conn: &Connection, entity: &Entity) -> Result<(), StorageEr
             entity.content_hash,
             entity.created_at,
             entity.updated_at,
+            search_terms,
         ],
     )?;
     Ok(())
@@ -193,10 +202,18 @@ pub fn get_entities_batch(conn: &Connection, ids: &[String]) -> Result<Vec<Entit
 /// Update an entity's content, title, properties, status, content_hash,
 /// and updated_at. FTS5 trigger fires automatically on UPDATE.
 pub fn update_entity(conn: &Connection, entity: &Entity) -> Result<(), StorageError> {
+    // Same derivation rule as insert: flag on → recompute from the new
+    // title; flag off → '' (the column is not maintained when disabled).
+    let search_terms = entity
+        .title
+        .as_deref()
+        .filter(|_| crate::storage::search_terms::split_identifiers_enabled())
+        .map(crate::storage::search_terms::derive_search_terms)
+        .unwrap_or_default();
     let affected = conn.execute(
         r#"UPDATE entities SET
            title = ?2, content = ?3, properties = ?4, file_path = ?5,
-           status = ?6, content_hash = ?7, updated_at = ?8
+           status = ?6, content_hash = ?7, updated_at = ?8, search_terms = ?9
            WHERE id = ?1"#,
         params![
             entity.id,
@@ -207,6 +224,7 @@ pub fn update_entity(conn: &Connection, entity: &Entity) -> Result<(), StorageEr
             entity.status,
             entity.content_hash,
             entity.updated_at,
+            search_terms,
         ],
     )?;
     if affected == 0 {

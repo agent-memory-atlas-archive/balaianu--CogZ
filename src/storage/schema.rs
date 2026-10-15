@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 9;
+pub const SCHEMA_VERSION: u32 = 10;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -79,6 +79,10 @@ fn migrate_inner(conn: &Connection, embedding_dim: usize) -> Result<(), StorageE
 
     if current < 9 {
         migrate_v9(conn)?;
+    }
+
+    if current < 10 {
+        migrate_v10(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -481,6 +485,62 @@ fn migrate_v9(conn: &Connection) -> Result<(), StorageError> {
 #[cfg(test)]
 pub(crate) fn migrate_v9_for_test(conn: &Connection) {
     migrate_v9(conn).unwrap();
+}
+
+/// Migration v10: `entities.search_terms` — camelCase/PascalCase/digit
+/// subtokens derived from the entity title at write time, indexed as a
+/// third FTS column. unicode61 treats `verifyAuthToken` as one opaque
+/// token; the split subtokens let FTS match "auth" and "token"
+/// directly. Existing rows keep '' — identical behavior until reindex.
+/// The FTS table is external-content, so it is dropped, recreated with
+/// the new column list, and rebuilt from `entities`.
+fn migrate_v10(conn: &Connection) -> Result<(), StorageError> {
+    let has_col: bool = conn
+        .prepare("PRAGMA table_info(entities)")?
+        .query_map([], |r| r.get::<_, String>(1))?
+        .any(|name| name.ok().as_deref() == Some("search_terms"));
+    if !has_col {
+        conn.execute_batch(
+            "ALTER TABLE entities ADD COLUMN search_terms TEXT NOT NULL DEFAULT '';",
+        )?;
+    }
+    conn.execute_batch(
+        r#"
+        DROP TRIGGER IF EXISTS entities_fts_ai;
+        DROP TRIGGER IF EXISTS entities_fts_ad;
+        DROP TRIGGER IF EXISTS entities_fts_au;
+        DROP TABLE IF EXISTS entities_fts;
+
+        CREATE VIRTUAL TABLE entities_fts USING fts5(
+            title,
+            content,
+            search_terms,
+            content='entities',
+            content_rowid='rowid',
+            tokenize='porter unicode61'
+        );
+
+        CREATE TRIGGER entities_fts_ai AFTER INSERT ON entities BEGIN
+            INSERT INTO entities_fts(rowid, title, content, search_terms)
+            VALUES (new.rowid, new.title, new.content, new.search_terms);
+        END;
+
+        CREATE TRIGGER entities_fts_ad AFTER DELETE ON entities BEGIN
+            INSERT INTO entities_fts(entities_fts, rowid, title, content, search_terms)
+            VALUES('delete', old.rowid, old.title, old.content, old.search_terms);
+        END;
+
+        CREATE TRIGGER entities_fts_au AFTER UPDATE ON entities BEGIN
+            INSERT INTO entities_fts(entities_fts, rowid, title, content, search_terms)
+            VALUES('delete', old.rowid, old.title, old.content, old.search_terms);
+            INSERT INTO entities_fts(rowid, title, content, search_terms)
+            VALUES (new.rowid, new.title, new.content, new.search_terms);
+        END;
+
+        INSERT INTO entities_fts(entities_fts) VALUES('rebuild');
+        "#,
+    )?;
+    Ok(())
 }
 
 #[cfg(test)]

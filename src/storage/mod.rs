@@ -15,6 +15,7 @@ pub mod mining;
 pub mod mining_signals;
 pub mod query;
 pub mod schema;
+pub mod search_terms;
 pub mod status;
 pub mod usage;
 
