@@ -204,28 +204,7 @@ impl Storage {
     ) -> std::io::Result<FileLockGuard<'_>> {
         let mutex_guard = self.file_mutex.lock().unwrap_or_else(|e| e.into_inner());
         if let Some(ref lock_file) = self.lock_file {
-            use fs2::FileExt;
-            let start = std::time::Instant::now();
-            let mut backoff = std::time::Duration::from_millis(10);
-            loop {
-                match lock_file.try_lock_exclusive() {
-                    Ok(()) => break,
-                    Err(e)
-                        if e.kind() == std::io::ErrorKind::WouldBlock
-                            // Windows try-lock failure is
-                            // ERROR_LOCK_VIOLATION, not WouldBlock.
-                            || (cfg!(windows) && e.raw_os_error() == Some(33)) =>
-                    {
-                        let elapsed = start.elapsed();
-                        if elapsed >= timeout {
-                            return Err(e);
-                        }
-                        std::thread::sleep(backoff.min(timeout - elapsed));
-                        backoff = (backoff * 2).min(std::time::Duration::from_millis(250));
-                    }
-                    Err(e) => return Err(e),
-                }
-            }
+            lock_file_bounded(lock_file, timeout)?;
         }
         Ok(FileLockGuard {
             _mutex: mutex_guard,
@@ -255,6 +234,51 @@ impl Storage {
         match path {
             Some(ref p) if !p.is_empty() => std::fs::metadata(p).map(|m| m.len()).unwrap_or(0),
             _ => 0,
+        }
+    }
+}
+
+/// Open `<db_path_dir>/.lock` and take a bounded exclusive OS lock on
+/// it, without opening a `Storage`. `cogz reset` uses this — opening
+/// `Storage` would create + migrate the very DB it is about to
+/// delete. The returned `File` holds the flock until dropped. Errs
+/// after `timeout` of contention — same contract as `file_lock()`.
+pub fn lock_repo_file(db_path: &Path) -> std::io::Result<std::fs::File> {
+    let lock_path = db_path.parent().unwrap_or(Path::new(".")).join(".lock");
+    let file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&lock_path)?;
+    lock_file_bounded(&file, std::time::Duration::from_secs(10))?;
+    Ok(file)
+}
+
+/// Bounded exclusive try-lock on an open lock file — the retry loop
+/// behind `file_lock_deadline` and `lock_repo_file`.
+pub(crate) fn lock_file_bounded(
+    file: &std::fs::File,
+    timeout: std::time::Duration,
+) -> std::io::Result<()> {
+    use fs2::FileExt;
+    let start = std::time::Instant::now();
+    let mut backoff = std::time::Duration::from_millis(10);
+    loop {
+        match file.try_lock_exclusive() {
+            Ok(()) => return Ok(()),
+            Err(e)
+                if e.kind() == std::io::ErrorKind::WouldBlock
+                    // Windows try-lock failure is
+                    // ERROR_LOCK_VIOLATION, not WouldBlock.
+                    || (cfg!(windows) && e.raw_os_error() == Some(33)) =>
+            {
+                let elapsed = start.elapsed();
+                if elapsed >= timeout {
+                    return Err(e);
+                }
+                std::thread::sleep(backoff.min(timeout - elapsed));
+                backoff = (backoff * 2).min(std::time::Duration::from_millis(250));
+            }
+            Err(e) => return Err(e),
         }
     }
 }

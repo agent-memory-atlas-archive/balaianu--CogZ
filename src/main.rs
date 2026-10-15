@@ -95,10 +95,15 @@ enum Commands {
         #[arg(long, default_value = ".")]
         repo: PathBuf,
 
-        /// Also remove observations and the generated .gitignore.
-        /// Keeps knowledge, rules, and config.
+        /// Also remove observations. Keeps knowledge, rules, config,
+        /// and the generated .gitignore. Prints a dry run unless
+        /// --confirm is passed.
         #[arg(long)]
         purge: bool,
+
+        /// Apply a --purge reset (without it, --purge only previews).
+        #[arg(long)]
+        confirm: bool,
     },
 
     /// Search entities with hybrid FTS + vector search.
@@ -497,7 +502,11 @@ fn main() -> anyhow::Result<()> {
         Commands::Status { repo } => commands::run_status(&repo),
         Commands::Index { repo, no_download } => commands::run_index(&repo, no_download),
         Commands::Reindex { repo } => commands::run_reindex(&repo),
-        Commands::Reset { repo, purge } => commands::run_reset(&repo, purge),
+        Commands::Reset {
+            repo,
+            purge,
+            confirm,
+        } => commands::run_reset(&repo, purge, confirm),
         Commands::Search {
             query,
             repo,

@@ -11,6 +11,7 @@ pub mod reindex_bg;
 
 use std::path::Path;
 
+use anyhow::Context;
 use cogz::config::Config;
 
 use crate::cli;
@@ -359,9 +360,48 @@ pub fn run_reindex(repo: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub fn run_reset(repo: &Path, purge: bool) -> anyhow::Result<()> {
+pub fn run_reset(repo: &Path, purge: bool, confirm: bool) -> anyhow::Result<()> {
     let (_config, db_path) = load_config(repo)?;
     let cogz_dir = repo.join(".cogz");
+    let obs_dir = cogz_dir.join("observations");
+
+    if purge && !confirm {
+        let obs_count = walkdir::WalkDir::new(&obs_dir)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().is_file())
+            .count();
+        println!("Dry run — pass --confirm to apply.\n");
+        println!("  would drop database: {}", db_path.display());
+        println!(
+            "  would purge {obs_count} observation files in {}",
+            obs_dir.display()
+        );
+        println!("  knowledge, rules, config, and .gitignore are preserved.");
+        return Ok(());
+    }
+
+    // Refuse to run under an active background worker, then take the
+    // canonical write lock — deleting the DB under either is the
+    // corruption window this guards.
+    let _bg_guard = cogz::bg_lock::try_acquire(&cogz_dir).ok_or_else(|| {
+        anyhow::anyhow!(
+            "a background worker is active on this repo — wait for it to finish or check {}",
+            cogz_dir.join(".bg.lock").display()
+        )
+    })?;
+    let _file_guard = cogz::storage::lock_repo_file(&db_path)
+        .context("cannot acquire .cogz/.lock — another cogz process holds it")?;
+
+    // Flush the WAL into the main file before unlinking so a concurrent
+    // reader's committed rows aren't stranded in a deleted -wal.
+    if db_path.exists() {
+        let conn = rusqlite::Connection::open(&db_path)
+            .with_context(|| format!("cannot open {}", db_path.display()))?;
+        conn.pragma_update(None, "busy_timeout", "5000")?;
+        conn.execute_batch("PRAGMA wal_checkpoint(TRUNCATE);")?;
+        drop(conn);
+    }
 
     for suffix in &["", "-wal", "-shm"] {
         let path = format!("{}{}", db_path.display(), suffix);
@@ -373,20 +413,12 @@ pub fn run_reset(repo: &Path, purge: bool) -> anyhow::Result<()> {
     println!("Dropped database: {}", db_path.display());
 
     if purge {
-        let obs_dir = cogz_dir.join("observations");
         if obs_dir.exists() {
             std::fs::remove_dir_all(&obs_dir)?;
             std::fs::create_dir_all(&obs_dir)?;
             println!("Purged observations: {}", obs_dir.display());
         }
-
-        let gitignore = cogz_dir.join(".gitignore");
-        if gitignore.exists() {
-            std::fs::remove_file(&gitignore)?;
-            println!("Removed generated .gitignore");
-        }
-
-        println!("\n  Knowledge and rules preserved.");
+        println!("\n  Knowledge, rules, config, and .gitignore preserved.");
     }
 
     println!("\nRun `cogz index` to rebuild the database from files.");

@@ -226,7 +226,7 @@ fn prune_confirm_deletes_file_and_creates_tombstone() {
         .join("observations/2026-08")
         .join(format!("{}.md", obs.id));
 
-    let report = run_prune(&storage, &config, &cogz_dir, true);
+    let report = run_prune(&storage, &config, &cogz_dir, true).unwrap();
 
     assert_eq!(report.pruned, 1);
     // File is kept as a tombstone (status=pruned, empty body) for rebuildability.
@@ -351,7 +351,7 @@ fn tombstone_limit_enforced() {
     let mut config = config;
     config.retention.tombstone_max_count = 2;
 
-    let report = run_prune(&storage, &config, &cogz_dir, true);
+    let report = run_prune(&storage, &config, &cogz_dir, true).unwrap();
 
     assert_eq!(report.pruned, 5);
     assert_eq!(

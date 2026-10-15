@@ -340,13 +340,16 @@ Without `--check`, downloads the latest release binary, verifies the SHA256 chec
 
 Drop the database. Rebuildable from files via `cogz index`.
 
+Before deleting, reset checkpoints the WAL, refuses while a background worker (`reindex-bg`/`embed-bg`) holds `.bg.lock`, and takes the canonical `.cogz/.lock` (10 s bounded wait) — the DB file is never unlinked out from under an active cogz process.
+
 ```
-cogz reset [--repo <path>] [--purge]
+cogz reset [--repo <path>] [--purge] [--confirm]
 ```
 
 **Flags:**
 - `--repo <path>` — repository root (default: `.`)
-- `--purge` — also remove observations and the generated `.gitignore`. Keeps knowledge, rules, and config.
+- `--purge` — also remove observations. Keeps knowledge, rules, config, and the generated `.gitignore`. Without `--confirm` this is a dry run: it reports what would be removed and changes nothing.
+- `--confirm` — apply the `--purge` reset.
 
 ## `cogz mcp-stdio`
 
