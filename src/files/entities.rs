@@ -258,6 +258,14 @@ impl EntityFile {
                 message: "missing required field: created_at".to_string(),
             })?
             .to_string();
+        if chrono::DateTime::parse_from_rfc3339(&created_at).is_err() {
+            return Err(FrontmatterError::Parse {
+                line: 0,
+                message: format!(
+                    "invalid created_at '{created_at}': must be RFC 3339 (e.g. 2026-08-27T12:00:00Z)"
+                ),
+            });
+        }
 
         let updated_at = fm
             .get("updated_at")
@@ -267,6 +275,14 @@ impl EntityFile {
                 message: "missing required field: updated_at".to_string(),
             })?
             .to_string();
+        if chrono::DateTime::parse_from_rfc3339(&updated_at).is_err() {
+            return Err(FrontmatterError::Parse {
+                line: 0,
+                message: format!(
+                    "invalid updated_at '{updated_at}': must be RFC 3339 (e.g. 2026-08-27T12:00:00Z)"
+                ),
+            });
+        }
 
         let references = fm
             .get("references")
@@ -324,8 +340,12 @@ impl EntityFile {
                 cogz_dir.join("rules").join(format!("{}.md", slug))
             }
             FileEntityType::Observation => {
-                // Extract year-month from created_at (format: 2026-08-27T...)
-                let year_month = self.created_at.get(..7).unwrap_or("unknown");
+                // Year-month comes from the parsed timestamp — string
+                // slicing trusts whatever prefix the file carried;
+                // from_content guarantees RFC 3339 so parse succeeds.
+                let year_month = chrono::DateTime::parse_from_rfc3339(&self.created_at)
+                    .map(|d| d.format("%Y-%m").to_string())
+                    .unwrap_or_else(|_| "unknown".to_string());
                 cogz_dir
                     .join("observations")
                     .join(year_month)

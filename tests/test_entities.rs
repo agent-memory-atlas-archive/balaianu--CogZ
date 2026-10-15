@@ -82,6 +82,27 @@ fn entity_file_missing_required_field_errors() {
 }
 
 #[test]
+fn entity_file_rejects_malformed_timestamps() {
+    for bad_ts in ["not-a-date", "2026-13-99T99:99:99Z", "2026-08-27", ""] {
+        for field in ["created_at", "updated_at"] {
+            let other = if field == "created_at" {
+                "updated_at"
+            } else {
+                "created_at"
+            };
+            let content = format!(
+                "---\nid: {}\ntitle: T\ntype: observation\nstatus: active\n{field}: {bad_ts}\n{other}: 2026-01-01T00:00:00Z\n---\n\nBody",
+                uuid::Uuid::new_v4(),
+            );
+            assert!(
+                EntityFile::from_content(&content).is_err(),
+                "{field}={bad_ts:?} must be rejected"
+            );
+        }
+    }
+}
+
+#[test]
 fn entity_file_invalid_type_errors() {
     let bad_content = "---\nid: abc\ntitle: Test\ntype: invalid_type\nstatus: active\ncreated_at: 2026-01-01T00:00:00Z\nupdated_at: 2026-01-01T00:00:00Z\n---\n\nBody";
     assert!(EntityFile::from_content(bad_content).is_err());
