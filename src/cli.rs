@@ -20,27 +20,7 @@ pub fn run_search(
     before: Option<i64>,
     no_record: bool,
 ) -> anyhow::Result<()> {
-    let cogz_dir = repo.join(".cogz");
-    let config_path = cogz_dir.join("config.toml");
-
-    if !config_path.exists() {
-        anyhow::bail!(
-            "No .cogz/ directory found in {}. Run `cogz init` first.",
-            repo.display()
-        );
-    }
-
-    let config = cogz::config::load(&config_path)?;
-    let db_path = cogz::config::resolve_db_path(repo, &config.storage.db_path)?;
-
-    if !db_path.exists() {
-        anyhow::bail!(
-            "Database not found at {}. Run `cogz index` first.",
-            db_path.display()
-        );
-    }
-
-    let storage = Storage::open(&db_path, config.embedding.dimension)?;
+    let (config, storage) = crate::commands::open_repo_for_cli(repo)?;
 
     // Embed the query with both models for dual-channel search.
     // When --code is set, only the code model is used.
@@ -201,27 +181,7 @@ pub fn run_context(
         anyhow::bail!("query is required for {} mode", mode);
     }
 
-    let cogz_dir = repo.join(".cogz");
-    let config_path = cogz_dir.join("config.toml");
-
-    if !config_path.exists() {
-        anyhow::bail!(
-            "No .cogz/ directory found in {}. Run `cogz init` first.",
-            repo.display()
-        );
-    }
-
-    let config = cogz::config::load(&config_path)?;
-    let db_path = cogz::config::resolve_db_path(repo, &config.storage.db_path)?;
-
-    if !db_path.exists() {
-        anyhow::bail!(
-            "Database not found at {}. Run `cogz index` first.",
-            db_path.display()
-        );
-    }
-
-    let storage = Storage::open(&db_path, config.embedding.dimension)?;
+    let (config, storage) = crate::commands::open_repo_for_cli(repo)?;
 
     let knowledge_embedding = query.and_then(|q| embed_query(&config, q));
     let code_embedding = query.and_then(|q| embed_query_with_model(&config, q, true));

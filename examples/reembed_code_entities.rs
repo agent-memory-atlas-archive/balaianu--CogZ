@@ -60,6 +60,11 @@ fn main() -> anyhow::Result<()> {
     let mut conn = storage.conn();
     let stored = store_embeddings(&mut conn, &embedded);
     eprintln!("stored {}/{}", stored, entities.len());
-    anyhow::ensure!(stored == entities.len(), "stored {} != {}", stored, entities.len());
+    anyhow::ensure!(
+        stored == entities.len(),
+        "stored {} != {}",
+        stored,
+        entities.len()
+    );
     Ok(())
 }

@@ -3,33 +3,11 @@
 //!
 //! Binary-only — bridges CLI commands to `hooks`/`storage`/`mcp`.
 
-use cogz::storage::Storage;
-
 /// Run `cogz suggest` — list mined observation candidates. The CLI
 /// twin of the `suggest_observations` MCP tool: same mining pass,
 /// same audit event, text output instead of JSON.
 pub fn run_suggest(repo: &std::path::Path, days: u32, limit: u32) -> anyhow::Result<()> {
-    let cogz_dir = repo.join(".cogz");
-    let config_path = cogz_dir.join("config.toml");
-
-    if !config_path.exists() {
-        anyhow::bail!(
-            "No .cogz/ directory found in {}. Run `cogz init` first.",
-            repo.display()
-        );
-    }
-
-    let config = cogz::config::load(&config_path)?;
-    let db_path = cogz::config::resolve_db_path(repo, &config.storage.db_path)?;
-
-    if !db_path.exists() {
-        anyhow::bail!(
-            "Database not found at {}. Run `cogz index` first.",
-            db_path.display()
-        );
-    }
-
-    let storage = Storage::open(&db_path, config.embedding.dimension)?;
+    let (_config, storage) = crate::commands::open_repo_for_cli(repo)?;
     let conn = storage.conn();
     // Retention is 30 days — a wider window can't see more.
     let days = days.min(cogz::storage::usage::TELEMETRY_RETENTION_DAYS);

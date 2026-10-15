@@ -48,6 +48,21 @@ pub(crate) fn load_config(repo: &Path) -> anyhow::Result<(Config, std::path::Pat
     Ok((config, db_path))
 }
 
+/// Load config, resolve the DB path, and open storage in one call —
+/// the shared preamble for commands that need a live index. Fails
+/// fast when `.cogz/` or the DB is missing.
+pub(crate) fn open_repo_for_cli(repo: &Path) -> anyhow::Result<(Config, cogz::storage::Storage)> {
+    let (config, db_path) = load_config(repo)?;
+    if !db_path.exists() {
+        anyhow::bail!(
+            "Database not found at {}. Run `cogz index` first.",
+            db_path.display()
+        );
+    }
+    let storage = cogz::storage::Storage::open(&db_path, config.embedding.dimension)?;
+    Ok((config, storage))
+}
+
 pub fn run_status(repo: &Path) -> anyhow::Result<()> {
     let (config, db_path) = load_config(repo)?;
 

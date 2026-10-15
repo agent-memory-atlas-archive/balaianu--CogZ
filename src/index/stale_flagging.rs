@@ -135,6 +135,13 @@ pub fn flag_stale_knowledge(
     };
 
     for (entity, path) in &to_flag {
+        // Validate before touching the file — the check only needs the
+        // DB status, and a rejected write used to need a revert.
+        if let Err(e) = transition_status(&entity.status, "stale") {
+            tracing::warn!("illegal status transition for {}: {}", entity.id, e);
+            continue;
+        }
+
         // 1. Read the file, update frontmatter status, write it back.
         let mut entity_file = match read_entity_file(path) {
             Ok(f) => f,
@@ -158,16 +165,7 @@ pub fn flag_stale_knowledge(
             continue;
         }
 
-        // 2. Validate the transition.
-        if let Err(e) = transition_status(&entity.status, "stale") {
-            tracing::warn!("illegal status transition for {}: {}", entity.id, e);
-            // The file was already written — revert it.
-            entity_file.status = entity.status.clone();
-            let _ = write_entity_file(path, &entity_file);
-            continue;
-        }
-
-        // 3. Sync the file to the DB so that status, properties,
+        // 2. Sync the file to the DB so that status, properties,
         //    timestamps, content_hash, and edges are all derived
         //    from the canonical file. This avoids hash drift between
         //    the file and the DB row.
