@@ -20,7 +20,7 @@ cogz init [--repo <path>] [--local-only] [--configure <harnesses>] [--global]
 
 ## `cogz configure`
 
-Write host-agent configuration so an agent picks up CogZ's MCP server and lifecycle hooks without hand-editing JSON. Merges into existing config files — other servers' entries and other tools' hooks are preserved — and writes a `<file>.cogz.bak` backup before overwriting an existing file. Re-running is idempotent: a file that already matches is reported as already configured and left untouched.
+Write host-agent configuration so an agent picks up CogZ's MCP server and lifecycle hooks without hand-editing JSON. Merges into existing config files — other servers' entries and other tools' hooks are preserved, and for TOML (Codex) comments and formatting are kept — and writes a `<file>.cogz.bak` backup before overwriting an existing file. If `.cogz.bak` already exists, the backup goes to `<file>.cogz.bak.<timestamp>` instead of overwriting it. All writes are atomic (temp file + rename). Re-running is idempotent: a file that already matches is reported as already configured and left untouched.
 
 ```
 cogz configure <harnesses> [--repo <path>] [--global]

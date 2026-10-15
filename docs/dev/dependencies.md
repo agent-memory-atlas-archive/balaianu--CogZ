@@ -24,7 +24,8 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 |---|---|---|
 | `serde` | `1` (derive) | Serialization framework |
 | `serde_json` | `1` | JSON for MCP responses and event payloads |
-| `toml` | `0.8` | Config file parsing |
+| `toml` | `1.1` | Config file parsing |
+| `toml_edit` | `=0.25.15` | Format-preserving TOML merge for `cogz configure` (exact pin — newest releases inside 7-day window) |
 
 ### Embedding / ML
 

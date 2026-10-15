@@ -228,6 +228,81 @@ fn codex_mcp_merges_toml() {
     );
 }
 
+/// Comments and key order in a hand-maintained Codex config survive
+/// the merge — `toml_edit` rewrites the document in place rather than
+/// reserializing it.
+#[test]
+fn codex_toml_merge_preserves_comments() {
+    let (repo, home) = dirs();
+    let codex = repo.path().join(".codex");
+    fs::create_dir_all(&codex).unwrap();
+    let cfg = codex.join("config.toml");
+    fs::write(
+        &cfg,
+        "# my codex config\nmodel = \"gpt-5\" # pinned\n\n[mcp_servers.other]\ncommand = \"x\"\n",
+    )
+    .unwrap();
+
+    run(repo.path(), "codex", Scope::Project, home.path()).unwrap();
+
+    let text = fs::read_to_string(&cfg).unwrap();
+    assert!(text.contains("# my codex config"));
+    assert!(text.contains("model = \"gpt-5\" # pinned"));
+    assert!(text.contains("[mcp_servers.cogz]"));
+}
+
+/// A hand-wired `[mcp_servers.cogz]` — absolute path, extra env —
+/// is kept verbatim.
+#[test]
+fn codex_toml_merge_preserves_user_cogz_entry() {
+    let (repo, home) = dirs();
+    let codex = repo.path().join(".codex");
+    fs::create_dir_all(&codex).unwrap();
+    let cfg = codex.join("config.toml");
+    let original = "[mcp_servers.cogz]\ncommand = \"/opt/cogz\"\nargs = [\"mcp-stdio\"]\nenv = { X = \"1\" }\n";
+    fs::write(&cfg, original).unwrap();
+
+    run(repo.path(), "codex", Scope::Project, home.path()).unwrap();
+
+    assert_eq!(fs::read_to_string(&cfg).unwrap(), original);
+}
+
+/// The first backup is `.cogz.bak`; a second overwrite must not
+/// clobber it — it gets a `.cogz.bak.<timestamp>` name instead.
+#[test]
+fn second_backup_uses_timestamped_suffix() {
+    let (repo, home) = dirs();
+    let mcp = repo.path().join(".mcp.json");
+    fs::write(&mcp, r#"{"v":1}"#).unwrap();
+
+    run(repo.path(), "claude-code", Scope::Project, home.path()).unwrap();
+    let bak = repo.path().join(".mcp.json.cogz.bak");
+    assert_eq!(fs::read_to_string(&bak).unwrap(), r#"{"v":1}"#);
+
+    fs::write(
+        &mcp,
+        r#"{"v":2,"mcpServers":{"cogz":{"command":"cogz","args":["mcp-stdio"]}}}"#,
+    )
+    .unwrap();
+    run(repo.path(), "claude-code", Scope::Project, home.path()).unwrap();
+
+    assert_eq!(fs::read_to_string(&bak).unwrap(), r#"{"v":1}"#);
+    let stamped: Vec<_> = fs::read_dir(repo.path())
+        .unwrap()
+        .filter_map(|e| e.ok())
+        .filter(|e| {
+            e.file_name()
+                .to_string_lossy()
+                .starts_with(".mcp.json.cogz.bak.")
+        })
+        .collect();
+    assert_eq!(stamped.len(), 1, "expected one timestamped backup");
+    assert_eq!(
+        fs::read_to_string(stamped[0].path()).unwrap(),
+        r#"{"v":2,"mcpServers":{"cogz":{"command":"cogz","args":["mcp-stdio"]}}}"#
+    );
+}
+
 #[test]
 fn gemini_writes_mcp_and_hooks_to_one_file() {
     let (repo, home) = dirs();

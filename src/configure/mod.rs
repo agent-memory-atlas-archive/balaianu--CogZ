@@ -5,8 +5,10 @@
 //!
 //! Never clobbers: existing files are deep-merged (other servers and
 //! other tools' hooks are preserved) and a `<file>.cogz.bak` backup is
-//! written before any overwrite. Re-running is a no-op — an identical
-//! merged result skips the write and the backup.
+//! written before any overwrite — later backups get a timestamped
+//! suffix instead of overwriting the first. Writes are atomic
+//! (temp-file + rename). Re-running is a no-op — an identical merged
+//! result skips the write and the backup.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -203,33 +205,48 @@ fn is_cogz_server(obj: &Map<String, Value>) -> bool {
             .is_some_and(|args| args.iter().any(|a| a.as_str() == Some("mcp-stdio")))
 }
 
-/// Same merge for TOML tables — arrays are absent from the payloads
-/// we write, so table-merge + leaf-override suffices. The cogz-server
-/// guard mirrors `merge_json`: an entry already wired to
+/// Same merge for TOML tables via `toml_edit`, which preserves the
+/// user's comments and formatting. Existing leaves are never
+/// overwritten — same contract as `merge_json` scalars inside a
+/// cogz-server entry, extended to every key: a hand-maintained
+/// `command`/`args` variant is user wiring, not a gap to fill. The
+/// cogz-server guard mirrors `merge_json`: an entry already wired to
 /// `cogz mcp-stdio` is kept as written.
-fn merge_toml(base: &mut toml::Value, patch: toml::Value) {
-    if let (toml::Value::Table(b), toml::Value::Table(p)) = (base, patch) {
-        if is_cogz_server_toml(b) && is_cogz_server_toml(&p) {
-            return;
-        }
-        for (k, v) in p {
-            match b.get_mut(&k) {
-                Some(existing) => merge_toml(existing, v),
-                None => {
-                    b.insert(k, v);
+fn merge_toml_doc(base: &mut toml_edit::Table, patch: &toml_edit::Table) {
+    if is_cogz_server_table(base) && is_cogz_server_table(patch) {
+        return;
+    }
+    for (k, v) in patch.iter() {
+        match base.get_mut(k) {
+            Some(toml_edit::Item::Table(bt)) => {
+                if let Some(pt) = v.as_table() {
+                    merge_toml_doc(bt, pt);
                 }
+            }
+            Some(existing) if matches!(existing, toml_edit::Item::None) => {
+                *existing = v.clone();
+            }
+            Some(_) => {}
+            None => {
+                base.insert(k, v.clone());
             }
         }
     }
 }
 
-/// TOML counterpart of `is_cogz_server` — same shape, TOML values.
-fn is_cogz_server_toml(t: &toml::map::Map<String, toml::Value>) -> bool {
-    serde_json::to_value(t)
-        .ok()
-        .as_ref()
-        .and_then(|v| v.as_object())
-        .is_some_and(is_cogz_server)
+/// TOML counterpart of `is_cogz_server` — same shape, `toml_edit`
+/// accessors.
+fn is_cogz_server_table(t: &toml_edit::Table) -> bool {
+    let Some(cmd) = t.get("command").and_then(|c| c.as_str()) else {
+        return false;
+    };
+    if argv0_base(cmd) != "cogz" {
+        return false;
+    }
+    cmd.contains("mcp-stdio")
+        || t.get("args")
+            .and_then(|a| a.as_array())
+            .is_some_and(|args| args.iter().any(|a| a.as_str() == Some("mcp-stdio")))
 }
 
 /// Read, merge, and write one file. Returns the outcome; parse errors
@@ -254,18 +271,22 @@ fn apply(patch: &Patch) -> Result<Outcome> {
         }
         Patch::Toml(path, patch_value) => {
             let existing = read_if_exists(path)?;
-            let mut base: toml::Value = match &existing {
-                Some(text) => toml::from_str(text).with_context(|| {
+            let mut base: toml_edit::DocumentMut = match &existing {
+                Some(text) => text.parse().with_context(|| {
                     format!(
                         "existing {} is not valid TOML — fix or remove it",
                         path.display()
                     )
                 })?,
-                None => toml::Value::Table(toml::map::Map::new()),
+                None => toml_edit::DocumentMut::new(),
             };
-            merge_toml(&mut base, patch_value.clone());
-            let new_text =
-                toml::to_string_pretty(&base).context("failed to serialize merged TOML")?;
+            let patch_text =
+                toml::to_string(patch_value).context("failed to serialize TOML patch")?;
+            let patch_doc: toml_edit::DocumentMut = patch_text
+                .parse()
+                .context("generated TOML patch is invalid")?;
+            merge_toml_doc(base.as_table_mut(), patch_doc.as_table());
+            let new_text = base.to_string();
             let changed = existing.as_deref() != Some(new_text.as_str());
             (path, new_text, changed)
         }
@@ -277,10 +298,7 @@ fn apply(patch: &Patch) -> Result<Outcome> {
 
     let existed = path.exists();
     if existed {
-        let backup = path.with_file_name(format!(
-            "{}.cogz.bak",
-            path.file_name().unwrap().to_string_lossy()
-        ));
+        let backup = backup_path(path);
         fs::copy(path, &backup).with_context(|| {
             format!(
                 "failed to back up {} to {}",
@@ -293,11 +311,40 @@ fn apply(patch: &Patch) -> Result<Outcome> {
         fs::create_dir_all(parent)
             .with_context(|| format!("failed to create {}", parent.display()))?;
     }
-    fs::write(path, merged_text).with_context(|| format!("failed to write {}", path.display()))?;
+    crate::files::atomic::atomic_write(path, merged_text.as_bytes())
+        .with_context(|| format!("failed to write {}", path.display()))?;
     Ok(Outcome::Written {
         path: path.clone(),
         backed_up: existed,
     })
+}
+
+/// First backup is `<file>.cogz.bak`; if that already exists (a
+/// previous run's snapshot of the user's hand edits), write
+/// `<file>.cogz.bak.<unix-seconds>` so earlier backups survive.
+fn backup_path(path: &Path) -> PathBuf {
+    let name = path.file_name().unwrap().to_string_lossy();
+    let plain = path.with_file_name(format!("{name}.cogz.bak"));
+    if !plain.exists() {
+        return plain;
+    }
+    let ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    // Same-second reruns collide; suffix them rather than overwrite.
+    for i in 0.. {
+        let suffix = if i == 0 {
+            format!("{ts}")
+        } else {
+            format!("{ts}.{i}")
+        };
+        let candidate = path.with_file_name(format!("{name}.cogz.bak.{suffix}"));
+        if !candidate.exists() {
+            return candidate;
+        }
+    }
+    unreachable!()
 }
 
 fn read_if_exists(path: &Path) -> Result<Option<String>> {

@@ -69,6 +69,7 @@ regex = "1.13.1"
 aho-corasick = "1.1.5"
 fs2 = "0.4.3"
 hex = "0.4.3"
+toml_edit = "=0.25.15"
 
 # Unix-only: stderr suppression during ONNX Runtime init
 [target.'cfg(unix)'.dependencies]
