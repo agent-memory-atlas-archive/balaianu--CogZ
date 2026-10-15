@@ -182,3 +182,52 @@ fn get_knowledge_embeddings_batch_empty_input() {
     let map = get_knowledge_embeddings_batch(&conn, &[]).unwrap();
     assert!(map.is_empty());
 }
+
+/// Every vec0 row must have a `vec_rowid` map entry — the map is the
+/// only indexed path to an entity's embedding.
+#[test]
+fn insert_and_delete_keep_vec_rowid_in_sync() {
+    let conn = setup();
+    insert_entity(&conn, &Entity::new("u1", "observation", "T", "c")).unwrap();
+    insert_embedding(&conn, "u1", "observation", &vec![0.1_f32; 768]).unwrap();
+
+    let mapped: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM vec_rowid WHERE entity_id = 'u1' AND space = 'knowledge'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(mapped, 1);
+
+    delete_embedding(&conn, "u1").unwrap();
+    let mapped: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM vec_rowid WHERE entity_id = 'u1'",
+            [],
+            |r| r.get(0),
+        )
+        .unwrap();
+    assert_eq!(mapped, 0);
+}
+
+/// Rows inserted into vec0 without the map (pre-v9 databases) are
+/// backfilled by the migration — a raw vec0 insert + migrate_v9 must
+/// produce a working rowid mapping.
+#[test]
+fn v9_backfills_vec_rowid_from_existing_embeddings() {
+    let conn = setup();
+    // Simulate a pre-v9 row: straight vec0 insert, no map entry.
+    conn.execute(
+        "INSERT INTO knowledge_embeddings (entity_id, embedding) VALUES ('legacy', ?1)",
+        rusqlite::params![vec![0.3_f32; 768].as_bytes()],
+    )
+    .unwrap();
+    conn.execute("DELETE FROM vec_rowid", []).unwrap();
+
+    super::super::schema::migrate_v9_for_test(&conn);
+
+    let emb = get_embedding(&conn, "legacy").unwrap();
+    assert!(emb.is_some(), "backfilled row must resolve via vec_rowid");
+    assert_eq!(emb.unwrap().len(), 768);
+}

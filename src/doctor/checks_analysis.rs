@@ -83,7 +83,9 @@ pub(crate) fn fetch_embeddings_batch(
     for chunk in ids.chunks(chunk_size) {
         let placeholders: Vec<&str> = (0..chunk.len()).map(|_| "?").collect();
         let sql = format!(
-            "SELECT entity_id, embedding FROM knowledge_embeddings WHERE entity_id IN ({})",
+            "SELECT m.entity_id, v.embedding FROM vec_rowid m \
+             JOIN knowledge_embeddings v ON v.rowid = m.vec_rowid \
+             WHERE m.space = 'knowledge' AND m.entity_id IN ({})",
             placeholders.join(",")
         );
         let params: Vec<&dyn rusqlite::ToSql> =

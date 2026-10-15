@@ -55,12 +55,22 @@ pub fn mark_code_entities_stale_by_file_paths(
         // The entities we just marked are stale now — drop their
         // vectors. Stale-scoped (not active-scoped) so it also cleans
         // embeddings retained by indexes that predate this rule.
+        // vec0 rowids resolve through vec_rowid — entity_id on vec0
+        // carries no index and would full-scan the vector table.
+        let stale_ids = format!(
+            "SELECT id FROM entities WHERE type IN ({type_placeholders}) \
+             AND status = 'stale' AND file_path IN ({path_placeholders})"
+        );
         conn.execute(
             &format!(
-                "DELETE FROM code_embeddings WHERE entity_id IN (\
-                 SELECT id FROM entities WHERE type IN ({type_placeholders}) \
-                 AND status = 'stale' AND file_path IN ({path_placeholders}))"
+                "DELETE FROM code_embeddings WHERE rowid IN (\
+                 SELECT vec_rowid FROM vec_rowid WHERE space = 'code' \
+                 AND entity_id IN ({stale_ids}))"
             ),
+            &params[1..],
+        )?;
+        conn.execute(
+            &format!("DELETE FROM vec_rowid WHERE space = 'code' AND entity_id IN ({stale_ids})"),
             &params[1..],
         )?;
     }
@@ -108,12 +118,20 @@ pub fn mark_entities_stale_by_ids(
 
         // Type-scoped: the caller contract is code entities, but the
         // filter makes the embedding drop a no-op if that ever widens.
+        let code_ids = format!(
+            "SELECT id FROM entities WHERE id IN ({placeholders}) \
+             AND type IN ('function','class','file','module')"
+        );
         conn.execute(
             &format!(
-                "DELETE FROM code_embeddings WHERE entity_id IN (\
-                 SELECT id FROM entities WHERE id IN ({placeholders}) \
-                 AND type IN ('function','class','file','module'))"
+                "DELETE FROM code_embeddings WHERE rowid IN (\
+                 SELECT vec_rowid FROM vec_rowid WHERE space = 'code' \
+                 AND entity_id IN ({code_ids}))"
             ),
+            &params[1..],
+        )?;
+        conn.execute(
+            &format!("DELETE FROM vec_rowid WHERE space = 'code' AND entity_id IN ({code_ids})"),
             &params[1..],
         )?;
     }

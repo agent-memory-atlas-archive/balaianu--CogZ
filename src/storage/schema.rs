@@ -6,7 +6,7 @@ use super::StorageError;
 
 /// Current schema version. Increment when migrations are added.
 /// Stored in `PRAGMA user_version`.
-pub const SCHEMA_VERSION: u32 = 8;
+pub const SCHEMA_VERSION: u32 = 9;
 
 /// Run all migrations to bring the database up to `SCHEMA_VERSION`.
 ///
@@ -75,6 +75,10 @@ fn migrate_inner(conn: &Connection, embedding_dim: usize) -> Result<(), StorageE
 
     if current < 8 {
         migrate_v8(conn)?;
+    }
+
+    if current < 9 {
+        migrate_v9(conn)?;
     }
 
     conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
@@ -445,13 +449,46 @@ fn migrate_v8(conn: &Connection) -> Result<(), StorageError> {
     Ok(())
 }
 
+/// Migration v9: `vec_rowid` map — entity_id → vec0 rowid per
+/// embedding space. vec0 auxiliary columns carry no index, so every
+/// `WHERE entity_id = ?` on `code_embeddings`/`knowledge_embeddings`
+/// was a full scan of the vector table. All entity-scoped embedding
+/// reads/deletes now resolve the rowid through this regular indexed
+/// table and hit vec0 by rowid only; the vec0 scan happens exactly
+/// once, here, at backfill.
+fn migrate_v9(conn: &Connection) -> Result<(), StorageError> {
+    conn.execute_batch(
+        r#"
+        CREATE TABLE IF NOT EXISTS vec_rowid (
+            entity_id TEXT NOT NULL,
+            space     TEXT NOT NULL,
+            vec_rowid INTEGER NOT NULL,
+            PRIMARY KEY (entity_id, space)
+        );
+        CREATE INDEX IF NOT EXISTS idx_vec_rowid_rowid ON vec_rowid(space, vec_rowid);
+
+        INSERT OR IGNORE INTO vec_rowid (entity_id, space, vec_rowid)
+            SELECT entity_id, 'code', rowid FROM code_embeddings;
+        INSERT OR IGNORE INTO vec_rowid (entity_id, space, vec_rowid)
+            SELECT entity_id, 'knowledge', rowid FROM knowledge_embeddings;
+        "#,
+    )?;
+    Ok(())
+}
+
+/// Test hook: re-run the v9 backfill on a connection whose vec0 rows
+/// were written without map entries (pre-v9 databases).
+#[cfg(test)]
+pub(crate) fn migrate_v9_for_test(conn: &Connection) {
+    migrate_v9(conn).unwrap();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn fresh_db_has_all_tables() {
-        crate::storage::ensure_vec_extension();
         crate::storage::ensure_vec_extension();
         let conn = Connection::open_in_memory().unwrap();
         run_migrations(&conn, 768).unwrap();

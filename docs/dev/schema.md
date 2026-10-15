@@ -153,9 +153,21 @@ One row per knowledge reference whose recorded `verified_against` provenance div
 
 Primary key `(entity_id, code_id)`. **Index:** `idx_drift_entity` on `entity_id` — powers `drift_counts()` batch lookups during search.
 
+### `vec_rowid`
+
+Map from `entity_id` to the vec0 `rowid` of its embedding row, per embedding space. vec0 auxiliary columns carry no index, so filtering `code_embeddings`/`knowledge_embeddings` by `entity_id` is a full vector-table scan — all entity-scoped embedding reads and deletes instead resolve the rowid here and hit vec0 by `rowid` only. KNN queries (`embedding MATCH`) are the vec0 index path and don't use the map.
+
+| Column | Type | Notes |
+|---|---|---|
+| `entity_id` | TEXT NOT NULL | Entity the embedding belongs to |
+| `space` | TEXT NOT NULL | `code` / `knowledge` — matches `EmbeddingSpace::name()` |
+| `vec_rowid` | INTEGER NOT NULL | `rowid` of the row in the corresponding vec0 table |
+
+Primary key `(entity_id, space)`. **Index:** `idx_vec_rowid_rowid` on `(space, vec_rowid)` — supports the rowid-subquery deletes.
+
 ## Migrations
 
-Migrations are forward-only and idempotent. On a fresh database, all migrations run in order. On an existing database, only new migrations run.
+Migrations are forward-only and idempotent. On a fresh database, all migrations run in order. On an existing database, only new migrations run. All migrations in one `run_migrations` call execute inside a single `BEGIN IMMEDIATE … COMMIT` transaction: the write lock is held before `user_version` is read, so concurrent openers can't race the version check, and a failed migration rolls back cleanly instead of leaving half-applied DDL.
 
 ### v1 — Initial schema
 
@@ -186,6 +198,14 @@ Adds `entity_drift` — per-reference divergence between a knowledge entity's `v
 ### v7 — Git co-change memory
 
 Adds `cochange` — one row per `(term, entity_id, commit_id)` pairing a normalized commit-message term with an entity that commit touched, plus `commit_ts` for temporal filtering. Mined by `cogz index`/`cogz reindex` from `git log -p -U0` (last 20k commits, merges excluded): each commit's new-side hunk ranges are intersected with current entity `line_start`/`line_end` ranges, so a term maps to the functions and classes its diffs actually touched. Queried by the search co-change channel with inverse-frequency scoring over a bounded quota. Fully derived from repository history — `cogz reset` + `cogz index` rebuilds it. On non-git repos the table simply stays empty.
+
+### v8 — Telemetry timestamp normalization
+
+Normalizes legacy `YYYY-MM-DD HH:MM:SS` timestamps in `events`, `deliveries`, and `entity_usage` to RFC 3339 and adds `idx_events_created_at`, `idx_events_type_created`, `idx_deliveries_created_at` so retention sweeps and cutoff filters use plain indexable comparisons instead of `datetime()` wrapping.
+
+### v9 — `vec_rowid` map
+
+Adds the `vec_rowid` table and backfills it from both vec0 tables — the only deliberate vec0 scan remaining. See the table entry for why it exists.
 
 ## Version checking
 

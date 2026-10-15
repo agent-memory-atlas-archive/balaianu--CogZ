@@ -25,6 +25,14 @@ impl EmbeddingSpace {
         }
     }
 
+    /// `vec_rowid.space` discriminator for this embedding space.
+    fn name(&self) -> &'static str {
+        match self {
+            Self::Code => "code",
+            Self::Knowledge => "knowledge",
+        }
+    }
+
     /// Determine the embedding space from an entity type string.
     /// Returns `None` for invalid types (caller should skip).
     pub fn from_entity_type(entity_type: &str) -> Option<Self> {
@@ -54,33 +62,48 @@ pub fn insert_embedding(
         space.table()
     );
     conn.execute(&sql, params![entity_id, embedding.as_bytes()])?;
+    conn.execute(
+        "INSERT OR REPLACE INTO vec_rowid (entity_id, space, vec_rowid) VALUES (?1, ?2, ?3)",
+        params![entity_id, space.name(), conn.last_insert_rowid()],
+    )?;
     Ok(())
 }
 
 /// Delete an embedding from both tables (the entity's type may have
 /// changed, so we check both). This is safe — only one table will
-/// have the row.
+/// have the row. Rowids resolve through `vec_rowid` — a `WHERE
+/// entity_id` on vec0 itself would be a full scan.
 pub fn delete_embedding(conn: &Connection, entity_id: &str) -> Result<(), StorageError> {
+    for space in [EmbeddingSpace::Code, EmbeddingSpace::Knowledge] {
+        let sql = format!(
+            "DELETE FROM {} WHERE rowid IN (\
+             SELECT vec_rowid FROM vec_rowid WHERE entity_id = ?1 AND space = ?2)",
+            space.table()
+        );
+        conn.execute(&sql, params![entity_id, space.name()])?;
+    }
     conn.execute(
-        "DELETE FROM code_embeddings WHERE entity_id = ?1",
-        params![entity_id],
-    )?;
-    conn.execute(
-        "DELETE FROM knowledge_embeddings WHERE entity_id = ?1",
+        "DELETE FROM vec_rowid WHERE entity_id = ?1",
         params![entity_id],
     )?;
     Ok(())
 }
 
-/// Get the embedding for a single entity. Checks both tables.
+/// Get the embedding for a single entity. Checks both tables via
+/// `vec_rowid` — vec0 is read by rowid, never scanned by entity_id.
 /// Returns `None` if no embedding is stored for the entity.
 /// Returns an error if the stored blob is corrupted (not a multiple of 4 bytes).
 pub fn get_embedding(conn: &Connection, entity_id: &str) -> Result<Option<Vec<f32>>, StorageError> {
     // Try knowledge first (more common in query paths), then code.
-    for table in ["knowledge_embeddings", "code_embeddings"] {
-        let sql = format!("SELECT embedding FROM {} WHERE entity_id = ?1", table);
+    for space in [EmbeddingSpace::Knowledge, EmbeddingSpace::Code] {
+        let sql = format!(
+            "SELECT v.embedding FROM {} v \
+             JOIN vec_rowid m ON m.vec_rowid = v.rowid \
+             WHERE m.entity_id = ?1 AND m.space = ?2",
+            space.table()
+        );
         let mut stmt = conn.prepare(&sql)?;
-        let result = stmt.query_row(params![entity_id], |r| {
+        let result = stmt.query_row(params![entity_id, space.name()], |r| {
             let blob: Vec<u8> = r.get(0)?;
             if !blob.len().is_multiple_of(4) {
                 return Err(rusqlite::Error::FromSqlConversionFailure(
@@ -123,7 +146,7 @@ pub fn get_knowledge_embeddings_batch(
     conn: &Connection,
     entity_ids: &[String],
 ) -> Result<std::collections::HashMap<String, Vec<f32>>, StorageError> {
-    get_embeddings_batch_from(conn, "knowledge_embeddings", entity_ids)
+    get_embeddings_batch_from(conn, EmbeddingSpace::Knowledge, entity_ids)
 }
 
 /// Batch-fetch embeddings for multiple entity IDs from the code
@@ -132,7 +155,7 @@ pub fn get_code_embeddings_batch(
     conn: &Connection,
     entity_ids: &[String],
 ) -> Result<std::collections::HashMap<String, Vec<f32>>, StorageError> {
-    get_embeddings_batch_from(conn, "code_embeddings", entity_ids)
+    get_embeddings_batch_from(conn, EmbeddingSpace::Code, entity_ids)
 }
 
 /// Entity ids that should carry a vector but have none — the heal
@@ -153,9 +176,9 @@ pub fn ids_missing_embeddings(
     let sql = format!(
         "SELECT id FROM entities \
          WHERE type IN ({types}) AND status = 'active' \
-         AND id NOT IN (SELECT entity_id FROM {}) \
+         AND id NOT IN (SELECT entity_id FROM vec_rowid WHERE space = '{}') \
          ORDER BY id",
-        space.table()
+        space.name()
     );
     let mut stmt = conn.prepare(&sql)?;
     let ids = stmt
@@ -166,7 +189,7 @@ pub fn ids_missing_embeddings(
 
 fn get_embeddings_batch_from(
     conn: &Connection,
-    table: &str,
+    space: EmbeddingSpace,
     entity_ids: &[String],
 ) -> Result<std::collections::HashMap<String, Vec<f32>>, StorageError> {
     if entity_ids.is_empty() {
@@ -181,12 +204,22 @@ fn get_embeddings_batch_from(
             continue;
         }
         let placeholders = (0..chunk.len()).map(|_| "?").collect::<Vec<_>>().join(",");
-        let params: Vec<&dyn rusqlite::ToSql> =
-            chunk.iter().map(|s| s as &dyn rusqlite::ToSql).collect();
-        let sql =
-            format!("SELECT entity_id, embedding FROM {table} WHERE entity_id IN ({placeholders})");
+        let mut params: Vec<Box<dyn rusqlite::ToSql>> = vec![Box::new(space.name().to_string())];
+        params.extend(
+            chunk
+                .iter()
+                .map(|s| Box::new(s.clone()) as Box<dyn rusqlite::ToSql>),
+        );
+        let sql = format!(
+            "SELECT m.entity_id, v.embedding \
+             FROM vec_rowid m \
+             JOIN {} v ON v.rowid = m.vec_rowid \
+             WHERE m.space = ?1 AND m.entity_id IN ({placeholders})",
+            space.table()
+        );
         let mut stmt = conn.prepare(&sql)?;
-        let rows = stmt.query_map(params.as_slice(), |r| {
+        let param_refs: Vec<&dyn rusqlite::ToSql> = params.iter().map(|p| p.as_ref()).collect();
+        let rows = stmt.query_map(param_refs.as_slice(), |r| {
             let id: String = r.get(0)?;
             let blob: Vec<u8> = r.get(1)?;
             if !blob.len().is_multiple_of(4) {
@@ -219,12 +252,19 @@ fn get_embeddings_batch_from(
     Ok(result)
 }
 
-/// Count total embeddings across both tables.
+/// Count total embeddings across both tables — `vec_rowid` mirrors
+/// the vec0 rows one-to-one and is the cheaper count.
 pub fn count_embeddings(conn: &Connection) -> Result<i64, StorageError> {
-    let code: i64 = conn.query_row("SELECT COUNT(*) FROM code_embeddings", [], |r| r.get(0))?;
-    let knowledge: i64 = conn.query_row("SELECT COUNT(*) FROM knowledge_embeddings", [], |r| {
-        r.get(0)
-    })?;
+    let code: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM vec_rowid WHERE space = 'code'",
+        [],
+        |r| r.get(0),
+    )?;
+    let knowledge: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM vec_rowid WHERE space = 'knowledge'",
+        [],
+        |r| r.get(0),
+    )?;
     Ok(code + knowledge)
 }
 
