@@ -53,6 +53,9 @@ jobs:
       - name: Check formatting
         run: cargo fmt --check
 
+      - name: Docs drift guard
+        run: bash scripts/check-docs.sh
+
       - name: Clippy
         run: cargo clippy -- -D warnings
 
