@@ -38,6 +38,28 @@ pub struct CaptureResult {
     pub notices: Option<String>,
     pub consolidation_summary: Option<crate::hooks::lifecycle::ConsolidationSummary>,
     pub suggestion_count: Option<usize>,
+    /// Text the caller should print to stdout — the hook JSON
+    /// envelope (or `{}`), or the rendered pack + notice. Empty when
+    /// there is nothing to emit. Libraries return strings; binaries
+    /// print them.
+    pub emission: String,
+}
+
+impl CaptureResult {
+    /// All-None result for the silent-skip early exits — carries just
+    /// the `{}` a hook consumer expects on stdout.
+    fn empty(emission: &str) -> Self {
+        Self {
+            event_id: None,
+            observation_id: None,
+            context_pack: None,
+            reindex_summary: None,
+            notices: None,
+            consolidation_summary: None,
+            suggestion_count: None,
+            emission: emission.to_string(),
+        }
+    }
 }
 
 /// Input parameters for `capture-event`, grouping the optional fields
@@ -56,11 +78,13 @@ pub struct CaptureInput<'a> {
 }
 
 /// Run `cogz capture-event` — the CLI entry point for hook integration.
+/// Returns the result plus `emission`, the text the binary prints to
+/// stdout.
 ///
 /// When `hook_json` is true:
-/// - If no `.cogz/` is found, prints `{}` and returns (silent skip).
+/// - If no `.cogz/` is found, emission is `{}` (silent skip).
 /// - Context packs are wrapped in `hookSpecificOutput.additionalContext`.
-/// - Events without context packs print `{}`.
+/// - Events without context packs emit `{}`.
 /// - Stdin is parsed for hook payload fields (prompt, tool_name,
 ///   tool_response, etc.) when the corresponding CLI args are not set.
 ///
@@ -95,16 +119,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
     // Silent skip for hook integrations when no .cogz/ exists.
     if !config_path.exists() {
         if input.hook_json {
-            println!("{{}}");
-            return Ok(CaptureResult {
-                event_id: None,
-                observation_id: None,
-                context_pack: None,
-                reindex_summary: None,
-                notices: None,
-                consolidation_summary: None,
-                suggestion_count: None,
-            });
+            return Ok(CaptureResult::empty("{}"));
         }
         return Err(CaptureError::Config(
             crate::config::ConfigError::Validation(format!(
@@ -120,16 +135,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
 
     if !db_path.exists() {
         if input.hook_json {
-            println!("{{}}");
-            return Ok(CaptureResult {
-                event_id: None,
-                observation_id: None,
-                context_pack: None,
-                reindex_summary: None,
-                notices: None,
-                consolidation_summary: None,
-                suggestion_count: None,
-            });
+            return Ok(CaptureResult::empty("{}"));
         }
         return Err(CaptureError::Config(
             crate::config::ConfigError::Validation(format!(
@@ -211,24 +217,31 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         &lifecycle_input,
     )?;
 
-    // Print output in the requested format.
-    if input.hook_json {
-        crate::hooks::format::print_hook_json(
+    // Compose stdout text in the requested format — the caller
+    // prints it, so the library stays pure for MCP and tests.
+    let emission = if input.hook_json {
+        crate::hooks::format::hook_json(
             &event,
             output.context_pack.as_ref(),
             file_path,
             output.notices.as_deref(),
             input.hook_format,
             Some(input.repo),
-        );
+        )
     } else {
+        let mut text = String::new();
         if let Some(ref pack) = output.context_pack {
-            crate::hooks::format::print_context_pack(pack, Some(input.repo));
+            text.push_str(&crate::hooks::format::context_pack_markdown(
+                pack,
+                Some(input.repo),
+            ));
         }
         if let Some(ref notice) = output.notices {
-            println!("{notice}");
+            text.push_str(notice);
+            text.push('\n');
         }
-    }
+        text
+    };
 
     Ok(CaptureResult {
         event_id: output.event_id,
@@ -238,6 +251,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
         notices: output.notices,
         consolidation_summary: output.consolidation_summary,
         suggestion_count: output.suggestion_count,
+        emission,
     })
 }
 

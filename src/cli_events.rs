@@ -93,9 +93,21 @@ pub fn run_mcp_stdio() -> anyhow::Result<()> {
 pub fn run_capture_event(input: &cogz::hooks::CaptureInput) -> anyhow::Result<()> {
     let result = cogz::hooks::run_capture_event(input)?;
 
+    if !result.emission.is_empty() {
+        println!("{}", result.emission);
+    }
+
     // In hook-json mode, stdout is reserved for the JSON response.
     // Status info goes to stderr so it doesn't corrupt the JSON.
     if !input.hook_json {
+        if let Some(ref pack) = result.context_pack
+            && !pack.metadata.dropped_sources.is_empty()
+        {
+            eprintln!(
+                "Dropped: {} sections over token budget",
+                pack.metadata.dropped_sources.len()
+            );
+        }
         match result.event_id {
             Some(id) => eprintln!("Event {} recorded (id: {})", input.event_str, id),
             None => eprintln!(

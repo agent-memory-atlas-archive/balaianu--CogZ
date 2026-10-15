@@ -79,20 +79,20 @@ fn hook_additional_context(
 /// Print a hook-compatible JSON response in the agent's envelope
 /// format. A context pack and/or a drift notice become the injected
 /// `additionalContext` (or Cursor's snake_case `additional_context`).
-/// When neither is present, prints `{}` (no action).
-pub fn print_hook_json(
+/// Returns the JSON line to emit, or `"{}"` when there is nothing to
+/// inject — the caller prints it (libraries never write stdout).
+pub fn hook_json(
     event: &LifecycleEvent,
     pack: Option<&ContextPack>,
     file_path: Option<&str>,
     notice: Option<&str>,
     format: HookFormat,
     repo_root: Option<&Path>,
-) {
+) -> String {
     let provenance = pack_provenance(pack, repo_root);
     let Some(markdown) = hook_additional_context(event, pack, file_path, notice, &provenance)
     else {
-        println!("{{}}");
-        return;
+        return "{}".to_string();
     };
     let json = match format {
         HookFormat::Claude => {
@@ -115,10 +115,7 @@ pub fn print_hook_json(
         HookFormat::Cursor => serde_json::json!({"additional_context": markdown}),
         HookFormat::Copilot => serde_json::json!({"additionalContext": markdown}),
     };
-    println!(
-        "{}",
-        serde_json::to_string(&json).unwrap_or_else(|_| "{}".into())
-    );
+    serde_json::to_string(&json).unwrap_or_else(|_| "{}".into())
 }
 
 /// Git provenance for the pack's rule sections — one bounded
@@ -215,18 +212,11 @@ fn drift_footer(drifted: usize) -> String {
     )
 }
 
-/// Print a context pack in a format suitable for CLI/human consumption.
-pub fn print_context_pack(pack: &ContextPack, repo_root: Option<&Path>) {
-    if !pack.metadata.dropped_sources.is_empty() {
-        eprintln!(
-            "Dropped: {} sections over token budget",
-            pack.metadata.dropped_sources.len()
-        );
-    }
-
+/// Render a context pack as markdown text — the caller prints it
+/// (libraries never write stdout).
+pub fn context_pack_markdown(pack: &ContextPack, repo_root: Option<&Path>) -> String {
     let provenance = pack_provenance(Some(pack), repo_root);
-    let markdown = format_context_pack(pack, &provenance);
-    print!("{}", markdown);
+    format_context_pack(pack, &provenance)
 }
 
 #[cfg(test)]
