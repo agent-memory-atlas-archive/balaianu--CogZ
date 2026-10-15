@@ -33,7 +33,42 @@ pub fn load(path: &Path) -> Result<Config, ConfigError> {
     let contents = std::fs::read_to_string(path)?;
     let config: Config = toml::from_str(&contents)?;
     config.validate()?;
+
+    // Unknown keys are silently ignored by serde — warn so typos and
+    // stale keys surface instead of looking applied.
+    if let (Ok(raw), Ok(canon)) = (
+        toml::from_str::<toml::Table>(&contents),
+        toml::Value::try_from(&config),
+    ) {
+        let mut unknown = Vec::new();
+        unknown_keys(&raw, &canon, "", &mut unknown);
+        for key in unknown {
+            tracing::warn!("unknown config key `{key}` in {} — ignored", path.display());
+        }
+    }
     Ok(config)
+}
+
+/// Keys present in `raw` but absent from `canon` (the deserialized
+/// config serialized back — every known field materializes). Tables
+/// recurse so `[search] silence_threshold` reports as
+/// `search.silence_threshold`.
+fn unknown_keys(raw: &toml::Table, canon: &toml::Value, prefix: &str, out: &mut Vec<String>) {
+    for (k, v) in raw {
+        let dotted = if prefix.is_empty() {
+            k.clone()
+        } else {
+            format!("{prefix}.{k}")
+        };
+        match canon.get(k) {
+            None => out.push(dotted),
+            Some(cv) => {
+                if let (Some(rt), true) = (v.as_table(), cv.is_table()) {
+                    unknown_keys(rt, cv, &dotted, out);
+                }
+            }
+        }
+    }
 }
 
 /// Generate the default config TOML string for a given project name.
@@ -147,5 +182,30 @@ mod tests {
     fn load_missing_file_errors() {
         let path = std::path::Path::new("/nonexistent/config.toml");
         assert!(load(path).is_err());
+    }
+
+    #[test]
+    fn unknown_keys_reports_stale_and_nested() {
+        let mut contents = default_toml("stale-test");
+        contents = contents.replace("[search]", "[search]\nsilence_threshold = 0.05");
+        contents.push_str("\n[bogus]\nx = 1\n");
+
+        let config: Config = toml::from_str(&contents).unwrap();
+        let raw: toml::Table = toml::from_str(&contents).unwrap();
+        let canon = toml::Value::try_from(&config).unwrap();
+        let mut out = Vec::new();
+        unknown_keys(&raw, &canon, "", &mut out);
+
+        // toml::Table orders keys alphabetically.
+        assert_eq!(
+            out,
+            vec!["bogus".to_string(), "search.silence_threshold".to_string()]
+        );
+
+        // Stale keys still load — they're warnings, not errors.
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("config.toml");
+        std::fs::write(&path, contents).unwrap();
+        assert!(load(&path).is_ok());
     }
 }
