@@ -24,7 +24,7 @@ use std::sync::OnceLock;
 #[path = "checksum.rs"]
 mod checksum;
 
-use super::suppress::suppress_stderr_during;
+use super::suppress::{capture_stderr_during, with_diagnostics};
 pub use checksum::ort_lib_path;
 use checksum::{cogz_lib_dir, lib_exists, sha256_file};
 use tracing::{info, warn};
@@ -398,19 +398,30 @@ pub fn ensure_ort() -> bool {
         // The ONNX Runtime C++ library emits ~1258 duplicate schema
         // registration warnings directly to stderr (fd 2) during init.
         // These are harmless (idempotent re-registration) but flood
-        // terminal output. Suppress stderr during init, then restore.
-        match suppress_stderr_during(|| ort::init_from(lib_path.to_string_lossy().to_string())) {
+        // terminal output. Capture stderr during init, then restore —
+        // on failure the captured tail is the only place the C++ side
+        // says why.
+        let (init_result, init_stderr) =
+            capture_stderr_during(|| ort::init_from(lib_path.to_string_lossy().to_string()));
+        match init_result {
             Ok(builder) => {
-                // commit() may also emit warnings — suppress here too.
-                let _ = suppress_stderr_during(|| builder.commit());
-                info!("ONNX Runtime initialized from {}", lib_path.display());
-                true
+                let (committed, commit_stderr) = capture_stderr_during(|| builder.commit());
+                if committed {
+                    info!("ONNX Runtime initialized from {}", lib_path.display());
+                    true
+                } else {
+                    warn!(
+                        "ONNX Runtime commit failed from {}",
+                        with_diagnostics(lib_path.display().to_string(), &commit_stderr)
+                    );
+                    false
+                }
             }
             Err(e) => {
                 warn!(
                     "ONNX Runtime init failed from {}: {}",
                     lib_path.display(),
-                    e
+                    with_diagnostics(e.to_string(), &init_stderr)
                 );
                 false
             }

@@ -189,29 +189,36 @@ impl OnnxEmbeddingModel {
         }
 
         let session = {
-            // Suppress ONNX schema registration warnings during session creation.
-            crate::embed::suppress::suppress_stderr_during(|| {
-                let mut builder = Session::builder().map_err(|e| {
-                    warn!("ONNX session builder failed: {}", e);
-                    EmbeddingError::ModelUnavailable(format!("session builder: {}", e))
+            let mut builder = Session::builder().map_err(|e| {
+                warn!("ONNX session builder failed: {}", e);
+                EmbeddingError::ModelUnavailable(format!("session builder: {}", e))
+            })?;
+            builder = builder
+                .with_optimization_level(ort::session::builder::GraphOptimizationLevel::Level3)
+                .map_err(|e| {
+                    warn!("ONNX optimization level failed: {}", e);
+                    EmbeddingError::ModelUnavailable(format!("optimization level: {}", e))
                 })?;
-                builder = builder
-                    .with_optimization_level(ort::session::builder::GraphOptimizationLevel::Level3)
-                    .map_err(|e| {
-                        warn!("ONNX optimization level failed: {}", e);
-                        EmbeddingError::ModelUnavailable(format!("optimization level: {}", e))
-                    })?;
-                // Disable memory pattern to prevent ORT's arena from
-                // growing unbounded across batched inference calls. Without
-                // this, RSS climbs to 5GB+ during large embedding workloads.
-                builder = builder.with_memory_pattern(false).map_err(|e| {
-                    warn!("ONNX memory pattern failed: {}", e);
-                    EmbeddingError::ModelUnavailable(format!("memory pattern: {}", e))
-                })?;
-                builder.commit_from_file(&model_path).map_err(|e| {
-                    warn!("ONNX session load failed: {}", e);
-                    EmbeddingError::ModelUnavailable(format!("failed to load ONNX model: {}", e))
-                })
+            // Disable memory pattern to prevent ORT's arena from
+            // growing unbounded across batched inference calls. Without
+            // this, RSS climbs to 5GB+ during large embedding workloads.
+            builder = builder.with_memory_pattern(false).map_err(|e| {
+                warn!("ONNX memory pattern failed: {}", e);
+                EmbeddingError::ModelUnavailable(format!("memory pattern: {}", e))
+            })?;
+            // Only commit_from_file emits the C++ schema-registration
+            // flood — capture stderr there alone so session-config
+            // diagnostics stay visible, and replay the tail on failure.
+            let (loaded, captured) = crate::embed::suppress::capture_stderr_during(|| {
+                builder.commit_from_file(&model_path)
+            });
+            loaded.map_err(|e| {
+                let msg = crate::embed::suppress::with_diagnostics(
+                    format!("failed to load ONNX model: {e}"),
+                    &captured,
+                );
+                warn!("ONNX session load failed: {msg}");
+                EmbeddingError::ModelUnavailable(msg)
             })?
         };
 

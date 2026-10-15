@@ -190,22 +190,28 @@ impl OnnxNliModel {
         }
 
         let session = {
-            // Suppress ONNX schema registration warnings during session creation.
-            crate::embed::suppress::suppress_stderr_during(|| {
-                let mut builder = Session::builder().map_err(|e| {
-                    warn!("NLI session builder failed: {}", e);
-                    EmbeddingError::ModelUnavailable(format!("session builder: {}", e))
+            let mut builder = Session::builder().map_err(|e| {
+                warn!("NLI session builder failed: {}", e);
+                EmbeddingError::ModelUnavailable(format!("session builder: {}", e))
+            })?;
+            builder = builder
+                .with_optimization_level(ort::session::builder::GraphOptimizationLevel::Level3)
+                .map_err(|e| {
+                    warn!("NLI optimization level failed: {}", e);
+                    EmbeddingError::ModelUnavailable(format!("optimization level: {}", e))
                 })?;
-                builder = builder
-                    .with_optimization_level(ort::session::builder::GraphOptimizationLevel::Level3)
-                    .map_err(|e| {
-                        warn!("NLI optimization level failed: {}", e);
-                        EmbeddingError::ModelUnavailable(format!("optimization level: {}", e))
-                    })?;
-                builder.commit_from_file(&model_path).map_err(|e| {
-                    warn!("NLI session load failed: {}", e);
-                    EmbeddingError::ModelUnavailable(format!("failed to load NLI model: {}", e))
-                })
+            // Same scoping as the embedding session: capture stderr
+            // only around commit_from_file and replay it on failure.
+            let (loaded, captured) = crate::embed::suppress::capture_stderr_during(|| {
+                builder.commit_from_file(&model_path)
+            });
+            loaded.map_err(|e| {
+                let msg = crate::embed::suppress::with_diagnostics(
+                    format!("failed to load NLI model: {e}"),
+                    &captured,
+                );
+                warn!("NLI session load failed: {msg}");
+                EmbeddingError::ModelUnavailable(msg)
             })?
         };
 
