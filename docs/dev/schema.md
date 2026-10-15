@@ -197,7 +197,7 @@ Adds `entity_drift` — per-reference divergence between a knowledge entity's `v
 
 ### v7 — Git co-change memory
 
-Adds `cochange` — one row per `(term, entity_id, commit_id)` pairing a normalized commit-message term with an entity that commit touched, plus `commit_ts` for temporal filtering. Mined by `cogz index`/`cogz reindex` from `git log -p -U0` (last 20k commits, merges excluded): each commit's new-side hunk ranges are intersected with current entity `line_start`/`line_end` ranges, so a term maps to the functions and classes its diffs actually touched. Queried by the search co-change channel with inverse-frequency scoring over a bounded quota. Fully derived from repository history — `cogz reset` + `cogz index` rebuilds it. On non-git repos the table simply stays empty.
+Adds `cochange` — one row per `(term, entity_id, commit_id)` pairing a normalized commit-message term with an entity that commit touched, plus `commit_ts` for temporal filtering. Mined by `cogz index`/`cogz reindex` via libgit2 tree diffs (last 20k commits, merges excluded, zero context lines): each commit's new-side hunk ranges are intersected with current entity `line_start`/`line_end` ranges, so a term maps to the functions and classes its diffs actually touched. Queried by the search co-change channel with inverse-frequency scoring over a bounded quota. Fully derived from repository history — `cogz reset` + `cogz index` rebuilds it. On non-git repos the table simply stays empty.
 
 ### v8 — Telemetry timestamp normalization
 

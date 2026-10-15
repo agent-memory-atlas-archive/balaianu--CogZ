@@ -48,7 +48,7 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 
 | Crate | Version | Purpose |
 |---|---|---|
-| `git2` | `0.19` (no default features) | Git operations (remote detection, diff) |
+| `git2` | `0.21` (no default features) | Git operations (repo discovery, diff, co-change mining) |
 | `walkdir` | `2` | Directory walking |
 | `slug` | `0.1` | Slug generation for file paths |
 | `ignore` | `0.4` | Gitignore-aware file walking (ripgrep engine) |
@@ -115,7 +115,7 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 ## Build decisions
 
 - **`rusqlite` with `bundled` feature** — avoids system SQLite dependency. Adds ~500 KB to compile time but simplifies deployment.
-- **`git2` with no default features** — disables SSH and HTTPS support. CogZ only needs local repo discovery and diff, not remote operations.
+- **`git2` with no default features** — disables SSH and HTTPS support. CogZ only needs local repo discovery, working-tree diff, and commit-history diff for co-change mining, not remote operations. Using libgit2 for co-change also removes the `git` binary dependency and user-config hazards (`textconv`, external diff drivers) that would corrupt parsed `git log -p` output.
 - **`ort` with `load-dynamic` + `ndarray`** — loads ONNX Runtime as a shared library at runtime rather than linking it at build time. Keeps the binary small and allows runtime upgrades.
 - **`rmcp` exact pin** — the MCP protocol implementation is still pre-1.0; exact pins prevent surprise breaking changes.
 

@@ -138,7 +138,7 @@ If you change `dimension`, you must also change both `code_model` and `knowledge
 | `prf_max_terms` | usize | `8` | Expansion terms appended to the second-pass query. |
 | `sibling_expand_enabled` | bool | `true` | File-sibling expansion: class entities sharing a `contains` parent file with a top direct hit join the expansion set. Targets enclosing-scope misses — entities whose identifiers share no vocabulary with the query but sit structurally adjacent to a real hit. |
 | `sibling_max_anchors` | usize | `8` | Number of top direct results used as sibling-expansion anchors. |
-| `cochange_enabled` | bool | `true` | Git co-change channel: query terms map to entities historically touched under those terms (mined from `git log` at index time), joining the expansion set under a bounded quota. No identifier overlap with the target is required. |
+| `cochange_enabled` | bool | `true` | Git co-change channel: query terms map to entities historically touched under those terms (mined from commit diffs at index time (libgit2 — no `git` binary required)), joining the expansion set under a bounded quota. No identifier overlap with the target is required. |
 | `graph_first_enabled` | bool | `true` | Traverse curated edges from top direct-channel hits (FTS + KNN) before the merge, fusing graph candidates at full score. `false` = legacy graph-as-expansion-only pipeline. |
 | `graph_max_seeds` | usize | `20` | Top hits per direct channel (FTS + each KNN space) used as graph traversal seeds. |
 | `graph_seed_min_sim` | f64 | `0.7` | Minimum cosine similarity for a KNN hit to count as a direct-eligible graph seed. Sub-floor seeds still traverse, but candidates reachable only through them are demoted to expansion. FTS seeds always qualify. `0.0` disables. |

@@ -1,7 +1,9 @@
 //! Git-history co-change mining — which commit-message terms travel
-//! with which *entities*. Derived index state, rebuilt from
-//! `git log -p -U0` on every `cogz index`; never written to
-//! canonical files.
+//! with which *entities*. Derived index state, rebuilt from commit
+//! diffs (git2, `-U0` semantics) on every `cogz index`; never written
+//! to canonical files. In-process libgit2 diffs keep this working
+//! where no `git` binary exists and immune to user config
+//! (`textconv`, external diff drivers) that would corrupt `-p` output.
 //!
 //! A commit message describes intent in prose ("deprecate the app=
 //! shortcut"); the entities its hunks intersect are where that intent
@@ -17,9 +19,7 @@
 //! — the same approximation the benchmark's own ground truth uses.
 
 use std::collections::{HashMap, HashSet};
-use std::io::{BufRead, BufReader};
 use std::path::Path;
-use std::process::{Command, Stdio};
 
 use crate::search::prf;
 use crate::storage::{Storage, StorageError};
@@ -31,10 +31,6 @@ const MAX_COMMITS: usize = 20_000;
 /// Commits flushed to the staging table at a time — bounds the
 /// parse buffer so 20k-commit histories don't live in memory.
 const STAGE_BATCH: usize = 64;
-
-/// \x1f separates commit-header fields; it cannot appear inside a
-/// diff line, so it never collides with hunk or file markers.
-const HDR: char = '\u{1f}';
 
 struct Commit {
     sha: String,
@@ -48,23 +44,7 @@ struct Commit {
 /// non-git repos or empty history — the search channel simply
 /// contributes nothing.
 pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageError> {
-    let child = Command::new("git")
-        .arg("-C")
-        .arg(repo)
-        .args([
-            "log",
-            "-p",
-            "-U0",
-            "--no-merges",
-            "--format=%x1f%H%x1f%ct%x1f%s",
-            "-n",
-            &MAX_COMMITS.to_string(),
-        ])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn();
-    let Ok(mut child) = child else { return Ok(0) };
-    let Some(stdout) = child.stdout.take() else {
+    let Ok(git) = git2::Repository::discover(repo) else {
         return Ok(0);
     };
 
@@ -85,67 +65,50 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
         )?;
     }
 
+    let Ok(mut revwalk) = git.revwalk() else {
+        return Ok(0);
+    };
+    let _ = revwalk.set_sorting(git2::Sort::TIME);
+    if revwalk.push_head().is_err() {
+        return Ok(0);
+    }
+
     let mut pending: Vec<Commit> = Vec::new();
     let mut entities_by_file: HashMap<String, Vec<(String, i64, i64)>> = HashMap::new();
     let mut n = 0usize;
-    let mut cur: Option<Commit> = None;
-    let mut cur_file: Option<String> = None;
     let mut saw_commit = false;
 
-    // Byte-split + lossy decode: binary patches would abort a strict
-    // UTF-8 `lines()` iterator mid-history.
-    for raw in BufReader::new(stdout).split(b'\n') {
-        let Ok(raw) = raw else { break };
-        let line = String::from_utf8_lossy(&raw);
-        if let Some(rest) = line.strip_prefix(HDR) {
-            if let Some(c) = cur.take() {
-                pending.push(c);
-            }
-            let mut it = rest.splitn(3, HDR);
-            let sha = it.next().unwrap_or_default().to_string();
-            let ts: i64 = it.next().and_then(|s| s.parse().ok()).unwrap_or(0);
-            let terms = prf::content_terms(it.next().unwrap_or_default())
+    for oid in revwalk.take(MAX_COMMITS).flatten() {
+        let Ok(commit) = git.find_commit(oid) else {
+            continue;
+        };
+        // --no-merges
+        if commit.parent_count() > 1 {
+            continue;
+        }
+        saw_commit = true;
+        let mut c = Commit {
+            sha: oid.to_string(),
+            ts: commit.time().seconds(),
+            terms: prf::content_terms(commit.summary().ok().flatten().unwrap_or_default())
                 .into_iter()
-                .collect();
-            cur = Some(Commit {
-                sha,
-                ts,
-                terms,
-                files: HashMap::new(),
-            });
-            cur_file = None;
-            saw_commit = true;
-            if pending.len() >= STAGE_BATCH {
-                let conn = storage.conn();
-                n += stage_batch(&conn, &pending, &mut entities_by_file)?;
-                pending.clear();
-            }
-        } else if let Some(path) = line.strip_prefix("+++ b/") {
-            cur_file = Some(path.trim().to_string());
-        } else if line.starts_with("+++ ") {
-            // `+++ /dev/null` (deleted file) or quoted path — no entity
-            // can match it at HEAD positions.
-            cur_file = None;
-        } else if line.starts_with("@@ ")
-            && let Some((s, e)) = parse_hunk_range(&line)
-            && let Some(c) = &mut cur
-            && let Some(fp) = &cur_file
-        {
-            c.files.entry(fp.clone()).or_default().push((s, e));
+                .collect(),
+            files: HashMap::new(),
+        };
+        // Terms gate the diff: a message-free commit contributes no
+        // rows, so its hunk walk is wasted work.
+        if !c.terms.is_empty() {
+            collect_diff_files(&git, &commit, &mut c.files);
+        }
+        pending.push(c);
+        if pending.len() >= STAGE_BATCH {
+            let conn = storage.conn();
+            n += stage_batch(&conn, &pending, &mut entities_by_file)?;
+            pending.clear();
         }
     }
-    if let Some(c) = cur.take() {
-        pending.push(c);
-        saw_commit = true;
-    }
-    let git_status = child.wait();
     if !saw_commit {
         return Ok(0);
-    }
-    // A mid-stream failure yields silently truncated history — the
-    // rows that follow are still valid but incomplete, so warn.
-    if !matches!(git_status, Ok(s) if s.success()) {
-        tracing::warn!("git log exited early; co-change history is truncated");
     }
 
     if !pending.is_empty() {
@@ -166,6 +129,44 @@ pub fn sync_cochange(storage: &Storage, repo: &Path) -> Result<usize, StorageErr
     tx.commit()?;
     conn.execute_batch("DROP TABLE IF EXISTS cochange_stage")?;
     Ok(n)
+}
+
+/// Diff a commit against its first parent (the empty tree for a root
+/// commit) with `-U0` semantics and collect each touched file's
+/// new-side hunk ranges. Deleted files contribute nothing — no entity
+/// can match them at HEAD positions. Diff failures leave the commit
+/// with no file ranges rather than aborting the whole walk.
+fn collect_diff_files(
+    git: &git2::Repository,
+    commit: &git2::Commit,
+    files: &mut HashMap<String, Vec<(i64, i64)>>,
+) {
+    let new_tree = commit.tree().ok();
+    let old_tree = commit.parent(0).ok().and_then(|p| p.tree().ok());
+    let mut opts = git2::DiffOptions::new();
+    opts.context_lines(0);
+    let Ok(diff) = git.diff_tree_to_tree(old_tree.as_ref(), new_tree.as_ref(), Some(&mut opts))
+    else {
+        return;
+    };
+    let _ = diff.foreach(
+        // Skip deleted files outright — no entity can match them.
+        &mut |delta, _| delta.status() != git2::Delta::Deleted,
+        None,
+        Some(&mut |delta, hunk| {
+            let Some(path) = delta.new_file().path() else {
+                return true;
+            };
+            let start = i64::from(hunk.new_start());
+            let end = start + (hunk.new_lines() as i64 - 1).max(0);
+            files
+                .entry(path.to_string_lossy().into_owned())
+                .or_default()
+                .push((start, end));
+            true
+        }),
+        None,
+    );
 }
 
 /// Intersect one batch of commits' hunks with their files' entities
@@ -235,26 +236,11 @@ fn stage_batch(
     Ok(n)
 }
 
-/// Parse `@@ -a(,b)? +c(,d)? @@` into the new-side range (start, end)
-/// inclusive. A zero-length span (+c,0) collapses to the point (c, c)
-/// — matching the benchmark ground truth's range convention.
-fn parse_hunk_range(line: &str) -> Option<(i64, i64)> {
-    let plus = line.find('+')?;
-    let after = &line[plus + 1..];
-    let end = after.find(' ').or_else(|| after.find('@'))?;
-    let spec = &after[..end];
-    let (start, span) = if let Some((s, d)) = spec.split_once(',') {
-        (s.parse().ok()?, d.parse().ok()?)
-    } else {
-        (spec.parse().ok()?, 1i64)
-    };
-    Some((start, start + (span - 1).max(0)))
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::fs;
+    use std::process::Command;
 
     fn insert_fn_entity(storage: &Storage, id: &str, fp: &str, ls: i64, le: i64) {
         let conn = storage.conn();
@@ -262,14 +248,6 @@ mod tests {
         e.properties = serde_json::json!({"file_path": fp, "line_start": ls, "line_end": le});
         e.file_path = Some(fp.to_string());
         crate::storage::crud::insert_entity(&conn, &e).unwrap();
-    }
-
-    #[test]
-    fn parse_hunk_range_variants() {
-        assert_eq!(parse_hunk_range("@@ -0,0 +1,3 @@ fn"), Some((1, 3)));
-        assert_eq!(parse_hunk_range("@@ -5 +9 @@"), Some((9, 9)));
-        assert_eq!(parse_hunk_range("@@ -2,4 +10,0 @@"), Some((10, 10)));
-        assert_eq!(parse_hunk_range("not a hunk"), None);
     }
 
     #[test]
