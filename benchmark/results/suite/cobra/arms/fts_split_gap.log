@@ -1,0 +1,31 @@
+collecting corpus ids...
+corpus: 759 entities
+  bg01: 0 results, 21ms
+  bg02: 45 results, 49ms
+  bg03: 45 results, 70ms
+  bg04: 45 results, 52ms
+  bg05: 0 results, 12ms
+  bg06: 45 results, 61ms
+  bg07: 45 results, 55ms
+  bg08: 45 results, 35ms
+  bg09: 45 results, 69ms
+  bg10: 45 results, 37ms
+  bg11: 0 results, 37ms
+  bg12: 45 results, 61ms
+  bg13: 0 results, 18ms
+  bg14: 0 results, 31ms
+  bg15: 45 results, 63ms
+  bg16: 45 results, 51ms
+  bg17: 43 results, 28ms
+  bg18: 45 results, 63ms
+  bg19: 42 results, 28ms
+  bg20: 0 results, 25ms
+  bg21: 45 results, 51ms
+  bg22: 45 results, 42ms
+  bg23: 0 results, 13ms
+  bg24: 45 results, 71ms
+  bg25: 45 results, 34ms
+  bg26: 0 results, 27ms
+  bg27: 45 results, 66ms
+  bg28: 0 results, 20ms
+wrote fts_split_gap.json

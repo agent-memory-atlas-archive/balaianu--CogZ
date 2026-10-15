@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 4655 entities
+  ln01: 40 results, 2268ms
+  ln02: 0 results, 634ms
+  ln03: 0 results, 482ms
+  ln04: 0 results, 434ms
+  ln05: 0 results, 405ms
+  ln06: 40 results, 573ms
+  ln07: 0 results, 481ms
+  ln08: 40 results, 552ms
+  ln09: 40 results, 534ms
+  ln10: 40 results, 574ms
+  ln11: 40 results, 789ms
+  ln12: 0 results, 711ms
+  ln13: 40 results, 683ms
+  ln14: 40 results, 624ms
+  ln15: 0 results, 494ms
+wrote hybrid_negatives.json

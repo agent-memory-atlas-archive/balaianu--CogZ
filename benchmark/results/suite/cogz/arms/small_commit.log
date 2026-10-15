@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2585 entities
+  cb2a66b33: 45 results, 741ms
+  c2936aae2: 45 results, 300ms
+  c889edec4: 45 results, 323ms
+  c7621eace: 45 results, 335ms
+  ced78398f: 45 results, 312ms
+  c83db0140: 45 results, 348ms
+  c1967e086: 45 results, 293ms
+  c7a57828b: 45 results, 309ms
+  c7fcffe59: 45 results, 328ms
+  c60e252f0: 45 results, 347ms
+  ce41f06c9: 45 results, 329ms
+  c043021a8: 45 results, 333ms
+  c0b28e111: 45 results, 331ms
+  c86e70363: 45 results, 326ms
+  c72678b97: 45 results, 327ms
+  c2e0b8b3a: 40 results, 315ms
+  cdc8ffbed: 45 results, 314ms
+  c85130a9e: 45 results, 325ms
+  cc97a642e: 45 results, 298ms
+  c3333e354: 45 results, 297ms
+  c8ccb962d: 45 results, 332ms
+  c111d85ea: 45 results, 316ms
+  cace7c26f: 45 results, 350ms
+  c371880b9: 45 results, 309ms
+  c0207bab1: 45 results, 338ms
+wrote small_commit.json

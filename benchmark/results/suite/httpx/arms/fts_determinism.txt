@@ -1,0 +1,1 @@
+DETERMINISTIC: 15 queries identical across runs

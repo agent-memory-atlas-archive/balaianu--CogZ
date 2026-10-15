@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hn01: 45 results, 67ms
+  hn02: 0 results, 3ms
+  hn03: 0 results, 11ms
+  hn04: 0 results, 22ms
+  hn05: 0 results, 2ms
+  hn06: 45 results, 63ms
+  hn07: 0 results, 12ms
+  hn08: 45 results, 43ms
+  hn09: 0 results, 26ms
+  hn10: 0 results, 13ms
+  hn11: 0 results, 22ms
+  hn12: 0 results, 13ms
+  hn13: 28 results, 45ms
+  hn14: 0 results, 35ms
+  hn15: 0 results, 9ms
+wrote fts_split_negatives.json

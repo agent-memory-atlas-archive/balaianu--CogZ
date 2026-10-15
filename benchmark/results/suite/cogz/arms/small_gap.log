@@ -1,0 +1,19 @@
+collecting corpus ids...
+corpus: 2585 entities
+  zg01: 40 results, 810ms
+  zg02: 45 results, 318ms
+  zg03: 45 results, 306ms
+  zg04: 0 results, 243ms
+  zg05: 0 results, 222ms
+  zg06: 45 results, 302ms
+  zg07: 45 results, 303ms
+  zg08: 45 results, 312ms
+  zg09: 45 results, 293ms
+  zg10: 0 results, 228ms
+  zg11: 45 results, 313ms
+  zg12: 0 results, 231ms
+  zg13: 45 results, 305ms
+  zg14: 45 results, 310ms
+  zg15: 45 results, 326ms
+  zg16: 45 results, 315ms
+wrote small_gap.json

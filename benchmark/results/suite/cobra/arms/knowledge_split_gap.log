@@ -1,0 +1,31 @@
+collecting corpus ids...
+corpus: 759 entities
+  bg01: 0 results, 729ms
+  bg02: 45 results, 178ms
+  bg03: 45 results, 175ms
+  bg04: 45 results, 182ms
+  bg05: 0 results, 147ms
+  bg06: 45 results, 159ms
+  bg07: 45 results, 198ms
+  bg08: 45 results, 174ms
+  bg09: 45 results, 210ms
+  bg10: 45 results, 173ms
+  bg11: 45 results, 189ms
+  bg12: 45 results, 191ms
+  bg13: 45 results, 166ms
+  bg14: 0 results, 149ms
+  bg15: 45 results, 186ms
+  bg16: 0 results, 145ms
+  bg17: 43 results, 167ms
+  bg18: 45 results, 187ms
+  bg19: 42 results, 176ms
+  bg20: 0 results, 153ms
+  bg21: 0 results, 149ms
+  bg22: 45 results, 181ms
+  bg23: 45 results, 185ms
+  bg24: 45 results, 190ms
+  bg25: 45 results, 180ms
+  bg26: 0 results, 141ms
+  bg27: 45 results, 187ms
+  bg28: 0 results, 153ms
+wrote knowledge_split_gap.json

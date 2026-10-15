@@ -1,0 +1,19 @@
+collecting corpus ids...
+corpus: 2585 entities
+  zg01: 40 results, 1985ms
+  zg02: 45 results, 443ms
+  zg03: 45 results, 451ms
+  zg04: 0 results, 367ms
+  zg05: 0 results, 346ms
+  zg06: 0 results, 352ms
+  zg07: 45 results, 447ms
+  zg08: 45 results, 447ms
+  zg09: 45 results, 411ms
+  zg10: 45 results, 448ms
+  zg11: 45 results, 462ms
+  zg12: 0 results, 380ms
+  zg13: 45 results, 446ms
+  zg14: 45 results, 442ms
+  zg15: 45 results, 476ms
+  zg16: 0 results, 388ms
+wrote hybrid_gap.json

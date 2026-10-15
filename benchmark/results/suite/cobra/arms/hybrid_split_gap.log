@@ -1,0 +1,31 @@
+collecting corpus ids...
+corpus: 759 entities
+  bg01: 0 results, 1787ms
+  bg02: 40 results, 582ms
+  bg03: 45 results, 475ms
+  bg04: 45 results, 315ms
+  bg05: 0 results, 248ms
+  bg06: 45 results, 279ms
+  bg07: 45 results, 306ms
+  bg08: 45 results, 295ms
+  bg09: 45 results, 358ms
+  bg10: 45 results, 289ms
+  bg11: 0 results, 262ms
+  bg12: 36 results, 298ms
+  bg13: 45 results, 273ms
+  bg14: 0 results, 266ms
+  bg15: 0 results, 267ms
+  bg16: 45 results, 285ms
+  bg17: 43 results, 279ms
+  bg18: 45 results, 290ms
+  bg19: 42 results, 257ms
+  bg20: 0 results, 249ms
+  bg21: 0 results, 251ms
+  bg22: 0 results, 245ms
+  bg23: 37 results, 292ms
+  bg24: 45 results, 288ms
+  bg25: 45 results, 279ms
+  bg26: 0 results, 232ms
+  bg27: 45 results, 283ms
+  bg28: 0 results, 259ms
+wrote hybrid_split_gap.json

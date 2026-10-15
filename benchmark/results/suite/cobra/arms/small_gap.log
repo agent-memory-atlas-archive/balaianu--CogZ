@@ -1,0 +1,31 @@
+collecting corpus ids...
+corpus: 759 entities
+  bg01: 0 results, 851ms
+  bg02: 45 results, 198ms
+  bg03: 39 results, 172ms
+  bg04: 0 results, 133ms
+  bg05: 0 results, 138ms
+  bg06: 45 results, 164ms
+  bg07: 0 results, 151ms
+  bg08: 45 results, 183ms
+  bg09: 45 results, 173ms
+  bg10: 45 results, 167ms
+  bg11: 0 results, 142ms
+  bg12: 0 results, 139ms
+  bg13: 0 results, 118ms
+  bg14: 0 results, 135ms
+  bg15: 40 results, 182ms
+  bg16: 40 results, 166ms
+  bg17: 42 results, 160ms
+  bg18: 45 results, 159ms
+  bg19: 42 results, 168ms
+  bg20: 0 results, 137ms
+  bg21: 0 results, 137ms
+  bg22: 45 results, 180ms
+  bg23: 0 results, 146ms
+  bg24: 45 results, 169ms
+  bg25: 45 results, 162ms
+  bg26: 0 results, 124ms
+  bg27: 45 results, 164ms
+  bg28: 0 results, 139ms
+wrote small_gap.json

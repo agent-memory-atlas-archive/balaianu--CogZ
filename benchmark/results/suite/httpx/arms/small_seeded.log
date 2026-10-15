@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hk01: 37 results, 710ms
+  hk02: 45 results, 178ms
+  hk03: 37 results, 201ms
+  hk04: 45 results, 203ms
+  hk05: 45 results, 192ms
+  hk06: 45 results, 198ms
+  hk07: 45 results, 149ms
+  hk08: 0 results, 142ms
+  hk09: 34 results, 187ms
+  hk10: 45 results, 174ms
+  hk11: 45 results, 179ms
+  hk12: 45 results, 192ms
+  hk13: 45 results, 244ms
+  hk14: 44 results, 163ms
+  hk15: 45 results, 193ms
+wrote small_seeded.json

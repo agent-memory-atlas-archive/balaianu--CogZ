@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2585 entities
+  cb2a66b33: 45 results, 756ms
+  c2936aae2: 45 results, 283ms
+  c889edec4: 45 results, 272ms
+  c7621eace: 45 results, 275ms
+  ced78398f: 45 results, 262ms
+  c83db0140: 45 results, 314ms
+  c1967e086: 45 results, 270ms
+  c7a57828b: 45 results, 269ms
+  c7fcffe59: 45 results, 281ms
+  c60e252f0: 45 results, 289ms
+  ce41f06c9: 45 results, 271ms
+  c043021a8: 45 results, 270ms
+  c0b28e111: 45 results, 284ms
+  c86e70363: 45 results, 283ms
+  c72678b97: 45 results, 288ms
+  c2e0b8b3a: 40 results, 270ms
+  cdc8ffbed: 45 results, 266ms
+  c85130a9e: 45 results, 286ms
+  cc97a642e: 45 results, 259ms
+  c3333e354: 45 results, 249ms
+  c8ccb962d: 45 results, 278ms
+  c111d85ea: 45 results, 255ms
+  cace7c26f: 45 results, 312ms
+  c371880b9: 45 results, 248ms
+  c0207bab1: 45 results, 321ms
+wrote knowledge_split_commit.json

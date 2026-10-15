@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hk01: 38 results, 1722ms
+  hk02: 45 results, 305ms
+  hk03: 42 results, 329ms
+  hk04: 45 results, 317ms
+  hk05: 45 results, 334ms
+  hk06: 45 results, 323ms
+  hk07: 45 results, 265ms
+  hk08: 0 results, 282ms
+  hk09: 38 results, 317ms
+  hk10: 44 results, 291ms
+  hk11: 45 results, 297ms
+  hk12: 42 results, 306ms
+  hk13: 45 results, 317ms
+  hk14: 45 results, 294ms
+  hk15: 45 results, 326ms
+wrote hybrid_split_seeded.json

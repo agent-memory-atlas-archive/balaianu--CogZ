@@ -1,0 +1,27 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hg01: 45 results, 1888ms
+  hg02: 0 results, 256ms
+  hg03: 45 results, 326ms
+  hg04: 45 results, 314ms
+  hg05: 0 results, 290ms
+  hg06: 45 results, 325ms
+  hg07: 45 results, 323ms
+  hg08: 45 results, 330ms
+  hg09: 0 results, 292ms
+  hg10: 45 results, 293ms
+  hg11: 0 results, 261ms
+  hg12: 0 results, 265ms
+  hg13: 45 results, 307ms
+  hg14: 45 results, 307ms
+  hg15: 0 results, 259ms
+  hg16: 45 results, 328ms
+  hg17: 45 results, 330ms
+  hg18: 0 results, 274ms
+  hg19: 0 results, 265ms
+  hg20: 45 results, 318ms
+  hg21: 0 results, 506ms
+  hg22: 45 results, 598ms
+  hg23: 0 results, 449ms
+  hg24: 44 results, 414ms
+wrote hybrid_gap.json

@@ -1,0 +1,9 @@
+
+=== CogZ benchmark — 15 queries ===
+overall: P@5=0.16 [0.107, 0.213]  MRR=0.393 [0.263, 0.526]  R@20=0.833 [0.633, 1.0]  avg 220.333ms
+latency: p50=192ms  p95=710ms  p99=710ms
+errors: none  rotted-expected: 0
+intent       n    P@k    MRR   R@20  xpd/q      ms
+knowledge   15   0.16  0.393  0.833   21.5 220.333
+
+packs (15): recall=0.9  sections=86.267  tokens=8046.867  dropped=7.4  trunc=38.2  exp_trunc=0  dup_max=0.392  packs_w_dup=0

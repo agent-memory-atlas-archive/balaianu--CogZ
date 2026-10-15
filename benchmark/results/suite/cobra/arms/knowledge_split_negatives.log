@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 759 entities
+  cn01: 0 results, 699ms
+  cn02: 45 results, 172ms
+  cn03: 0 results, 132ms
+  cn04: 0 results, 133ms
+  cn05: 0 results, 128ms
+  cn06: 45 results, 178ms
+  cn07: 0 results, 140ms
+  cn08: 45 results, 178ms
+  cn09: 45 results, 197ms
+  cn10: 0 results, 151ms
+  cn11: 0 results, 148ms
+  cn12: 45 results, 203ms
+  cn13: 45 results, 197ms
+  cn14: 0 results, 158ms
+  cn15: 0 results, 158ms
+wrote knowledge_split_negatives.json

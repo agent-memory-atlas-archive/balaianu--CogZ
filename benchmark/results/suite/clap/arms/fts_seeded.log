@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 4655 entities
+  lk01: 33 results, 62ms
+  lk02: 40 results, 94ms
+  lk03: 40 results, 86ms
+  lk04: 40 results, 104ms
+  lk05: 40 results, 118ms
+  lk06: 40 results, 110ms
+  lk07: 40 results, 98ms
+  lk08: 40 results, 59ms
+  lk09: 40 results, 69ms
+  lk10: 40 results, 58ms
+  lk11: 39 results, 117ms
+  lk12: 40 results, 102ms
+  lk13: 40 results, 87ms
+  lk14: 40 results, 80ms
+  lk15: 0 results, 51ms
+wrote fts_seeded.json

@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 2585 entities
+  cn01: 0 results, 726ms
+  cn02: 45 results, 312ms
+  cn03: 0 results, 234ms
+  cn04: 45 results, 345ms
+  cn05: 0 results, 222ms
+  cn06: 0 results, 224ms
+  cn07: 45 results, 311ms
+  cn08: 0 results, 241ms
+  cn09: 45 results, 330ms
+  cn10: 0 results, 234ms
+  cn11: 0 results, 237ms
+  cn12: 45 results, 322ms
+  cn13: 45 results, 328ms
+  cn14: 45 results, 313ms
+  cn15: 0 results, 223ms
+wrote small_negatives.json

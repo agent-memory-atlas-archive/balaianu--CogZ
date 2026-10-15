@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hn01: 45 results, 865ms
+  hn02: 0 results, 120ms
+  hn03: 0 results, 131ms
+  hn04: 0 results, 133ms
+  hn05: 0 results, 142ms
+  hn06: 45 results, 187ms
+  hn07: 0 results, 142ms
+  hn08: 0 results, 142ms
+  hn09: 0 results, 142ms
+  hn10: 0 results, 146ms
+  hn11: 0 results, 150ms
+  hn12: 0 results, 156ms
+  hn13: 45 results, 206ms
+  hn14: 0 results, 163ms
+  hn15: 0 results, 147ms
+wrote knowledge_only_negatives.json

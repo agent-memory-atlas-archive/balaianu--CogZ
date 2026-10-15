@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 1042 entities
+  hk01: 43 results, 62ms
+  hk02: 45 results, 42ms
+  hk03: 45 results, 73ms
+  hk04: 44 results, 47ms
+  hk05: 45 results, 68ms
+  hk06: 45 results, 46ms
+  hk07: 45 results, 33ms
+  hk08: 45 results, 69ms
+  hk09: 45 results, 55ms
+  hk10: 45 results, 34ms
+  hk11: 45 results, 62ms
+  hk12: 45 results, 44ms
+  hk13: 45 results, 47ms
+  hk14: 45 results, 65ms
+  hk15: 45 results, 62ms
+wrote fts_seeded.json

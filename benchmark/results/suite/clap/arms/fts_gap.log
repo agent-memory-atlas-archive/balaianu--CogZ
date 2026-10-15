@@ -1,0 +1,24 @@
+collecting corpus ids...
+corpus: 4655 entities
+  cg01: 40 results, 113ms
+  cg02: 40 results, 124ms
+  cg03: 0 results, 35ms
+  cg04: 0 results, 65ms
+  cg05: 0 results, 64ms
+  cg06: 40 results, 123ms
+  cg07: 0 results, 29ms
+  cg08: 40 results, 130ms
+  cg09: 40 results, 115ms
+  cg10: 40 results, 167ms
+  cg11: 40 results, 131ms
+  cg12: 40 results, 130ms
+  cg13: 40 results, 107ms
+  cg14: 40 results, 121ms
+  cg15: 40 results, 105ms
+  cg16: 40 results, 96ms
+  cg17: 40 results, 152ms
+  cg18: 0 results, 42ms
+  cg19: 40 results, 103ms
+  cg20: 40 results, 97ms
+  cg21: 40 results, 102ms
+wrote fts_gap.json

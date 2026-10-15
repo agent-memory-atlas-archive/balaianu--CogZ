@@ -1,0 +1,28 @@
+collecting corpus ids...
+corpus: 2585 entities
+  cb2a66b33: 45 results, 2002ms
+  c2936aae2: 45 results, 505ms
+  c889edec4: 45 results, 492ms
+  c7621eace: 45 results, 532ms
+  ced78398f: 45 results, 496ms
+  c83db0140: 45 results, 527ms
+  c1967e086: 45 results, 493ms
+  c7a57828b: 45 results, 487ms
+  c7fcffe59: 45 results, 514ms
+  c60e252f0: 45 results, 531ms
+  ce41f06c9: 45 results, 478ms
+  c043021a8: 45 results, 490ms
+  c0b28e111: 45 results, 548ms
+  c86e70363: 45 results, 505ms
+  c72678b97: 45 results, 508ms
+  c2e0b8b3a: 40 results, 493ms
+  cdc8ffbed: 45 results, 480ms
+  c85130a9e: 45 results, 500ms
+  cc97a642e: 45 results, 485ms
+  c3333e354: 45 results, 441ms
+  c8ccb962d: 45 results, 501ms
+  c111d85ea: 45 results, 459ms
+  cace7c26f: 45 results, 574ms
+  c371880b9: 45 results, 442ms
+  c0207bab1: 45 results, 527ms
+wrote hybrid_commit.json

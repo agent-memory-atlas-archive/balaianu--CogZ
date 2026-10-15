@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 4655 entities
+  lk01: 32 results, 708ms
+  lk02: 40 results, 258ms
+  lk03: 40 results, 243ms
+  lk04: 40 results, 267ms
+  lk05: 40 results, 249ms
+  lk06: 40 results, 268ms
+  lk07: 40 results, 255ms
+  lk08: 36 results, 230ms
+  lk09: 40 results, 216ms
+  lk10: 40 results, 218ms
+  lk11: 37 results, 246ms
+  lk12: 40 results, 264ms
+  lk13: 40 results, 249ms
+  lk14: 40 results, 238ms
+  lk15: 0 results, 187ms
+wrote knowledge_split_seeded.json

@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 759 entities
+  ck01: 45 results, 712ms
+  ck02: 40 results, 164ms
+  ck03: 45 results, 159ms
+  ck04: 45 results, 191ms
+  ck05: 45 results, 160ms
+  ck06: 45 results, 169ms
+  ck07: 45 results, 165ms
+  ck08: 45 results, 162ms
+  ck09: 40 results, 158ms
+  ck10: 45 results, 178ms
+  ck11: 45 results, 171ms
+  ck12: 45 results, 158ms
+  ck13: 0 results, 129ms
+  ck14: 45 results, 149ms
+  ck15: 45 results, 188ms
+wrote knowledge_only_seeded.json

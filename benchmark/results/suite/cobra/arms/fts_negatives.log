@@ -1,0 +1,18 @@
+collecting corpus ids...
+corpus: 759 entities
+  cn01: 0 results, 28ms
+  cn02: 45 results, 40ms
+  cn03: 26 results, 69ms
+  cn04: 0 results, 24ms
+  cn05: 0 results, 8ms
+  cn06: 0 results, 30ms
+  cn07: 0 results, 21ms
+  cn08: 45 results, 51ms
+  cn09: 45 results, 66ms
+  cn10: 0 results, 10ms
+  cn11: 0 results, 9ms
+  cn12: 45 results, 68ms
+  cn13: 0 results, 19ms
+  cn14: 0 results, 11ms
+  cn15: 0 results, 5ms
+wrote fts_negatives.json

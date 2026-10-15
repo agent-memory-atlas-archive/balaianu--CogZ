@@ -1,0 +1,24 @@
+collecting corpus ids...
+corpus: 4655 entities
+  cg01: 40 results, 807ms
+  cg02: 40 results, 247ms
+  cg03: 0 results, 178ms
+  cg04: 0 results, 193ms
+  cg05: 0 results, 189ms
+  cg06: 40 results, 291ms
+  cg07: 0 results, 176ms
+  cg08: 40 results, 271ms
+  cg09: 40 results, 258ms
+  cg10: 40 results, 334ms
+  cg11: 40 results, 273ms
+  cg12: 40 results, 246ms
+  cg13: 40 results, 270ms
+  cg14: 40 results, 302ms
+  cg15: 40 results, 282ms
+  cg16: 40 results, 256ms
+  cg17: 40 results, 282ms
+  cg18: 0 results, 189ms
+  cg19: 40 results, 236ms
+  cg20: 40 results, 265ms
+  cg21: 40 results, 250ms
+wrote knowledge_only_gap.json

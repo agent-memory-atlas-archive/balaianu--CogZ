@@ -1,0 +1,19 @@
+collecting corpus ids...
+corpus: 2585 entities
+  zg01: 40 results, 817ms
+  zg02: 45 results, 271ms
+  zg03: 45 results, 276ms
+  zg04: 45 results, 245ms
+  zg05: 0 results, 179ms
+  zg06: 0 results, 189ms
+  zg07: 45 results, 276ms
+  zg08: 45 results, 270ms
+  zg09: 45 results, 248ms
+  zg10: 0 results, 194ms
+  zg11: 45 results, 294ms
+  zg12: 0 results, 200ms
+  zg13: 45 results, 266ms
+  zg14: 45 results, 269ms
+  zg15: 45 results, 283ms
+  zg16: 0 results, 194ms
+wrote knowledge_only_gap.json

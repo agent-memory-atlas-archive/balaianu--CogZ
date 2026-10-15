@@ -1,0 +1,19 @@
+collecting corpus ids...
+corpus: 2585 entities
+  zg01: 40 results, 114ms
+  zg02: 45 results, 99ms
+  zg03: 45 results, 98ms
+  zg04: 45 results, 84ms
+  zg05: 0 results, 23ms
+  zg06: 45 results, 129ms
+  zg07: 45 results, 106ms
+  zg08: 45 results, 101ms
+  zg09: 0 results, 29ms
+  zg10: 0 results, 57ms
+  zg11: 45 results, 100ms
+  zg12: 0 results, 35ms
+  zg13: 45 results, 107ms
+  zg14: 45 results, 92ms
+  zg15: 45 results, 122ms
+  zg16: 45 results, 95ms
+wrote fts_split_gap.json
