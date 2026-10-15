@@ -45,6 +45,12 @@ pub enum SyncError {
     Io(#[from] std::io::Error),
     #[error("suspected {0} in entity content — remove the secret before this file can sync")]
     SecretDetected(crate::security::scan::SecretKind),
+    #[error("duplicate entity id {id}: {first} and {second}")]
+    DuplicateId {
+        id: String,
+        first: PathBuf,
+        second: PathBuf,
+    },
 }
 
 /// A file-level sync failure — associates a file path with the error.
@@ -139,6 +145,9 @@ pub fn scan_entity_files(cogz_dir: &Path) -> Vec<PathBuf> {
         }
     }
 
+    // Sorted order makes the winner of a duplicate-id collision
+    // deterministic — the same file keeps the id across syncs.
+    files.sort();
     files
 }
 
@@ -318,6 +327,20 @@ fn sync_inner(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
     let mut all_parsed_files: Vec<EntityFile> = Vec::new();
 
     for (file_path, ef, hash, rel_path) in &parsed {
+        // Two files claiming one id is undefined ownership — the
+        // first synced wins, the second is a reported error rather
+        // than a silent overwrite that flip-flops between syncs.
+        if let Some(first) = seen_ids.get(&ef.id) {
+            result.errors.push(SyncFailure {
+                file_path: file_path.clone(),
+                error: SyncError::DuplicateId {
+                    id: ef.id.clone(),
+                    first: first.clone(),
+                    second: file_path.clone(),
+                },
+            });
+            continue;
+        }
         match sync_parsed_file(&tx, ef, hash, rel_path) {
             Ok(action) => {
                 record_action(&mut result, action, &ef.id);
