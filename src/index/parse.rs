@@ -48,7 +48,15 @@ pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf]) -> ParsedFile
             Err(e) => {
                 tracing::warn!("failed to read {}: {}", abs_path.display(), e);
                 failed_paths.insert(path_to_string(rel_path));
-                had_read_failures = true;
+                // Permanent failures — non-UTF-8 content, denied
+                // permissions — retry identically every run; pinning
+                // the baseline on them freezes incremental reindex
+                // forever. Transient errors (lock contention, races
+                // with a writer) still pin.
+                had_read_failures |= !matches!(
+                    e.kind(),
+                    std::io::ErrorKind::InvalidData | std::io::ErrorKind::PermissionDenied
+                );
                 continue;
             }
         };
@@ -79,5 +87,32 @@ pub fn parse_source_files(repo_root: &Path, rel_paths: &[PathBuf]) -> ParsedFile
         source_files_for_edges,
         failed_paths,
         had_read_failures,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn permanent_read_errors_do_not_pin_baseline() {
+        // A non-UTF-8 .py retries identically forever — it must land
+        // in failed_paths (stale-marking protection) without setting
+        // had_read_failures, or incremental reindex never advances.
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("bad.py"), b"\xff\xfe\x00bad").unwrap();
+        std::fs::write(dir.path().join("ok.py"), "def f():\n    pass\n").unwrap();
+
+        let parsed = parse_source_files(
+            dir.path(),
+            &[PathBuf::from("bad.py"), PathBuf::from("ok.py")],
+        );
+
+        assert!(parsed.failed_paths.contains("bad.py"));
+        assert!(
+            !parsed.had_read_failures,
+            "permanent read error must not pin the baseline"
+        );
+        assert_eq!(parsed.entities_by_file.len(), 1);
     }
 }
