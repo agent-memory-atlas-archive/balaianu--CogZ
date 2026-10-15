@@ -317,28 +317,12 @@ pub fn knn_search_with_filters(
         params.push(Box::new(st.to_string()));
     }
     if exclude_tests {
-        // Exclude entities whose file_path looks like a test file.
-        // Must match all patterns recognized by
-        // `index::gitignore::is_test_file` so that vector search
-        // doesn't return test entities in any supported language.
+        // is_test_path is the registered scalar wrapping
+        // `index::gitignore::is_test_file` — the same predicate the
+        // indexer and FTS path use. NULL file_path rows are never
+        // test files, so is_test_path(NULL) = 0 keeps them.
         where_clause.push_str(
-            " AND entity_id NOT IN (SELECT id FROM entities WHERE \
-             file_path LIKE 'tests/%' OR file_path LIKE '%/tests/%' \
-             OR file_path LIKE '%/tests.rs' OR file_path LIKE '%/_tests.rs' \
-             OR file_path LIKE '%_test.go' \
-             OR file_path LIKE 'test_%.py' OR file_path LIKE '%/test_%.py' \
-             OR file_path LIKE '%_test.py' OR file_path LIKE '%/_test.py' \
-             OR file_path LIKE '%/__tests__/%' \
-             OR file_path LIKE '%.test.js' OR file_path LIKE '%.test.jsx' \
-             OR file_path LIKE '%.test.ts' OR file_path LIKE '%.test.tsx' \
-             OR file_path LIKE '%.test.mjs' OR file_path LIKE '%.test.cjs' \
-             OR file_path LIKE '%.spec.js' OR file_path LIKE '%.spec.jsx' \
-             OR file_path LIKE '%.spec.ts' OR file_path LIKE '%.spec.tsx' \
-             OR file_path LIKE '%.spec.mjs' OR file_path LIKE '%.spec.cjs' \
-             OR file_path LIKE 'test_%.sh' OR file_path LIKE '%/test_%.sh' \
-             OR file_path LIKE '%_test.sh' OR file_path LIKE '%/_test.sh' \
-             OR file_path LIKE 'test_%.bash' OR file_path LIKE '%/test_%.bash' \
-             OR file_path LIKE '%_test.bash' OR file_path LIKE '%/_test.bash')",
+            " AND entity_id NOT IN (SELECT id FROM entities WHERE is_test_path(file_path) = 1)",
         );
     }
 

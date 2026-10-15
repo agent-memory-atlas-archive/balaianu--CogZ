@@ -846,3 +846,117 @@ fn coverage_gate_disabled_at_zero_floor() {
         "floor 0.0 must disable the coverage gate"
     );
 }
+
+#[test]
+fn test_file_predicates_agree() {
+    // One predicate, three call sites: the SQL scalar, the FTS
+    // exclude_tests filter, and the KNN exclude_tests filter must
+    // all agree with is_test_file. LIKE wildcards previously let
+    // `latest.go`/`testing.py`/`contest.py` slip through as tests.
+    let storage = setup_storage();
+    let conn = storage.conn();
+    let model = MockEmbeddingModel::default();
+
+    let paths = [
+        // Production paths the LIKE wildcards over-matched
+        ("src/latest.go", false),
+        ("src/testing.py", false),
+        ("src/contest.py", false),
+        ("src/test_utils.rs", false),
+        ("src/protest.go", false),
+        ("src/contestant_test.go", true),
+        // Real test paths per convention
+        ("tests/test_foo.rs", true),
+        ("tests.rs", true),
+        ("src/foo_tests.rs", true),
+        ("foo_test.go", true),
+        ("pkg/sub/foo_test.go", true),
+        ("test_x.py", true),
+        ("x_test.py", true),
+        ("pkg/sub/test_bar.py", true),
+        ("pkg/sub/baz_test.py", true),
+        ("a/__tests__/b.ts", true),
+        ("src/app.test.js", true),
+        ("src/app.spec.tsx", true),
+        ("src/app.test.mjs", true),
+        ("scripts/test_deploy.sh", true),
+        ("scripts/check_test.bash", true),
+        // Non-test lookalikes
+        ("src/main.rs", false),
+        ("src/lib.go", false),
+        ("app.py", false),
+        ("src/utils.ts", false),
+        ("scripts/deploy.sh", false),
+        ("tests_readme.md", false),
+    ];
+
+    // 1. The SQL scalar agrees with the Rust predicate on every path.
+    for (path, expected) in &paths {
+        let got: i64 = conn
+            .query_row("SELECT is_test_path(?)", [path], |r| r.get(0))
+            .unwrap();
+        assert_eq!(got != 0, *expected, "is_test_path disagrees on {path}");
+        assert_eq!(
+            cogz::index::is_test_file(path),
+            *expected,
+            "is_test_file disagrees on {path}"
+        );
+    }
+
+    // 2. FTS + KNN exclusion: insert a production and a test entity
+    // per language, then exclude_tests must return production only.
+    let corpus = [
+        ("p1", "src/latest.go", false),
+        ("p2", "src/testing.py", false),
+        ("p3", "src/main.rs", false),
+        ("t1", "foo_test.go", true),
+        ("t2", "test_x.py", true),
+        ("t3", "tests/test_bar.rs", true),
+    ];
+    for (id, file_path, _) in &corpus {
+        let mut e = Entity::new(id, "function", "handler", "alpha beta gamma");
+        e.file_path = Some(file_path.to_string());
+        storage::crud::insert_entity(&conn, &e).unwrap();
+        let emb = model.embed(&["alpha beta gamma"]).unwrap();
+        storage::embeddings::insert_embedding(&conn, id, "function", &emb[0]).unwrap();
+    }
+
+    let fts = storage::query::fts_search(
+        &conn,
+        "alpha",
+        Some("function"),
+        Some("active"),
+        true,
+        50,
+        1.0,
+    )
+    .unwrap();
+    let fts_paths: Vec<_> = fts.iter().filter_map(|e| e.file_path.clone()).collect();
+    for (_, path, is_test) in &corpus {
+        assert_eq!(
+            fts_paths.iter().any(|p| p == path),
+            !is_test,
+            "FTS exclusion wrong for {path}"
+        );
+    }
+
+    let q = model.embed(&["alpha beta gamma"]).unwrap();
+    let knn = storage::embeddings::knn_search_with_filters(
+        &conn,
+        storage::embeddings::EmbeddingSpace::Code,
+        &q[0],
+        50,
+        Some("function"),
+        Some("active"),
+        true,
+    )
+    .unwrap();
+    let knn_ids: Vec<_> = knn.iter().map(|(id, _)| id.as_str()).collect();
+    for (id, _, is_test) in &corpus {
+        assert_eq!(
+            knn_ids.contains(id),
+            !is_test,
+            "KNN exclusion wrong for {id}"
+        );
+    }
+}

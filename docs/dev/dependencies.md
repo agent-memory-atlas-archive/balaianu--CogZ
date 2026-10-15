@@ -70,7 +70,7 @@ CogZ's dependency policy and pinned versions. New dependencies must follow the r
 
 | Crate | Version | Purpose |
 |---|---|---|
-| `rusqlite` | `0.40` (bundled) | SQLite bindings (bundled = no system SQLite needed) |
+| `rusqlite` | `0.40` (bundled, functions) | SQLite bindings (bundled = no system SQLite needed; functions = `is_test_path` scalar) |
 | `sqlite-vec` | `0.1` | Vector search extension for SQLite |
 
 ### Utilities

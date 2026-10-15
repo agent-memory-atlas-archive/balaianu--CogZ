@@ -117,6 +117,20 @@ impl Storage {
         // "database is locked" errors instead of retrying.
         conn.pragma_update(None, "busy_timeout", "5000")?;
 
+        // Single source of truth for test-file exclusion: SQL filters
+        // call is_test_path(file_path) instead of re-encoding the
+        // convention as LIKE wildcards (where `_` and `%` silently
+        // over-match production paths like `latest.go`/`testing.py`).
+        conn.create_scalar_function(
+            "is_test_path",
+            1,
+            rusqlite::functions::FunctionFlags::SQLITE_DETERMINISTIC,
+            |ctx| {
+                let path: Option<String> = ctx.get(0)?;
+                Ok(path.is_some_and(|p| crate::index::gitignore::is_test_file(&p)) as i64)
+            },
+        )?;
+
         schema::run_migrations(&conn, embedding_dim)?;
         schema::check_version(&conn)?;
 
