@@ -209,10 +209,13 @@ def dump_state(repo):
             " WHERE e.status = 'active'"
         ).fetchall())
     # Timestamps differ by construction; compare only stable keys.
+    # last_post_index_pass is the L9 debounce marker — wall-clock, not
+    # corpus-derived, so it diverges between runs by design.
     state["meta"] = sorted(
         conn.execute(
             "SELECT key, value FROM meta"
-            " WHERE key NOT IN ('last_index', 'last_code_index')"
+            " WHERE key NOT IN ('last_index', 'last_code_index',"
+            " 'last_post_index_pass')"
         ).fetchall())
     conn.close()
     return state
