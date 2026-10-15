@@ -12,7 +12,13 @@
 $ErrorActionPreference = "Stop"
 
 $Repo = "balaianu/CogZ"
-$ApiUrl = "https://api.github.com/repos/$Repo/releases/latest"
+
+# $env:COGZ_VERSION="vX.Y.Z" pins a specific release; unset installs latest.
+if ($env:COGZ_VERSION) {
+    $ApiUrl = "https://api.github.com/repos/$Repo/releases/tags/$env:COGZ_VERSION"
+} else {
+    $ApiUrl = "https://api.github.com/repos/$Repo/releases/latest"
+}
 
 # Detect architecture.
 $Arch = $env:PROCESSOR_ARCHITECTURE
@@ -71,7 +77,9 @@ if ($ChecksumAsset) {
     Write-Host "Checksum verified."
     Remove-Item $TempSums -Force
 } else {
-    Write-Host "WARNING: SHA256SUMS not found in release. Installing without checksum verification."
+    Write-Error "SHA256SUMS not found in the release. Refusing to install an unverified binary."
+    Remove-Item $TempFile -Force
+    exit 1
 }
 
 # Install.
