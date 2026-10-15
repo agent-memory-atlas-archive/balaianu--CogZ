@@ -264,25 +264,56 @@ mod tests {
         let cogz_dir = dir.path().join(".cogz");
         std::fs::create_dir_all(&cogz_dir).unwrap();
 
-        // Create a file outside .cogz/ that we'll try to traverse to.
+        // A fully valid entity file OUTSIDE .cogz/. If the containment
+        // guard were removed, the traversal path would parse and sync —
+        // created would be 1 and this test would fail.
         let outside = dir.path().join("secret.md");
         std::fs::write(
             &outside,
-            "---\nid: test\ntitle: Test\ntype: observation\n---\nbody\n",
+            "---\nid: 3f4a5b6c-7d8e-4f9a-ab1c-2d3e4f5a6b7c\n\
+                 title: Outside Entity\n\
+                 type: observation\n\
+                 status: active\n\
+                 created_at: '2026-01-01T00:00:00Z'\n\
+                 updated_at: '2026-01-01T00:00:00Z'\n\
+                 references: []\n\
+                 ---\nbody\n",
+        )
+        .unwrap();
+
+        // Control: the same valid entity inside .cogz syncs, proving
+        // the harness parses and the traversal path is the only
+        // difference.
+        let inside_dir = cogz_dir.join("observations");
+        std::fs::create_dir_all(&inside_dir).unwrap();
+        std::fs::write(
+            inside_dir.join("inside.md"),
+            "---\nid: 1a2b3c4d-5e6f-4789-abcd-111111111111\n\
+                 title: Inside Entity\n\
+                 type: observation\n\
+                 status: active\n\
+                 created_at: '2026-01-01T00:00:00Z'\n\
+                 updated_at: '2026-01-01T00:00:00Z'\n\
+                 references: []\n\
+                 ---\nbody\n",
         )
         .unwrap();
 
         let storage = setup_storage(dir.path());
 
-        // Try to traverse: ../../../secret.md
-        let result = sync_single_file(&storage, &cogz_dir, "../../../secret.md");
-        assert!(
-            result.errors.is_empty(),
-            "path traversal should be silently rejected, not errored"
-        );
+        let control = sync_single_file(&storage, &cogz_dir, "observations/inside.md");
+        assert_eq!(control.created, 1, "control file inside .cogz must sync");
+
+        // ../secret.md resolves to <repo>/secret.md — one level out of
+        // .cogz — so the traversal guard is what must stop it.
+        let result = sync_single_file(&storage, &cogz_dir, "../secret.md");
         assert_eq!(
             result.created, 0,
-            "no entity should be created from path traversal"
+            "traversal to a valid entity outside .cogz/ must not sync"
+        );
+        assert!(
+            result.errors.is_empty(),
+            "traversal is refused silently, not errored"
         );
     }
 
