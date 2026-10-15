@@ -27,8 +27,36 @@ jobs:
           fi
           echo "Tag ${GITHUB_REF_NAME} matches Cargo.toml version ${CARGO_VERSION}"
 
-  build-and-release:
+  test:
     needs: version-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # v1
+        with:
+          toolchain: stable
+          components: clippy, rustfmt
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Docs drift guard
+        run: bash scripts/check-docs.sh
+
+      - name: File-size ratchet
+        run: bash scripts/check-file-size.sh
+
+      - name: Clippy
+        run: cargo clippy -- -D warnings
+
+      - name: Test
+        run: cargo test --locked
+
+  build-and-release:
+    needs: [version-check, test]
     strategy:
       matrix:
         include:
@@ -78,7 +106,7 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build release binary
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --locked --target ${{ matrix.target }}
 
       - name: Strip binary
         if: ${{ matrix.strip }}
@@ -116,7 +144,7 @@ jobs:
           subject-path: ${{ matrix.asset_name }}
 
   docker-publish:
-    needs: version-check
+    needs: [version-check, test]
     runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
@@ -154,7 +182,7 @@ jobs:
           docker push $IMAGE:latest
 
   registry-publish:
-    needs: docker-publish
+    needs: [build-and-release, docker-publish]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -164,7 +192,10 @@ jobs:
 
       - name: Install mcp-publisher
         run: |
-          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          curl -fsSL -o mcp-publisher.tar.gz \
+            "https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz"
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum -c -
+          tar xz -f mcp-publisher.tar.gz mcp-publisher
           sudo install -m 755 mcp-publisher /usr/local/bin/
 
       - name: Authenticate via GitHub OIDC
