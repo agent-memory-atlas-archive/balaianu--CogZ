@@ -372,6 +372,14 @@ pub fn post_index_pass(storage: &Storage, cogz_dir: &Path) -> PostIndexStats {
     let drift = recompute(storage, &declared);
     stats.drifted_entities = drift.entities_with_drift;
     stats.healed = heal_stale_entities(storage, cogz_dir);
+    // A completed sweep — from any caller — counts as a fresh pass for
+    // the file-save hook's debounce window.
+    let conn = storage.conn();
+    let _ = crate::storage::set_meta(
+        &conn,
+        "last_post_index_pass",
+        &chrono::Utc::now().to_rfc3339(),
+    );
     stats
 }
 

@@ -16,7 +16,7 @@
 //! files' frontmatter are the historical record. Graph expansion
 //! skips dangling references gracefully.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
@@ -318,13 +318,13 @@ fn sync_inner(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
     };
 
     let mut seen_ids: HashMap<String, PathBuf> = HashMap::new();
-    // All successfully parsed entity files — used for the reference
-    // sync pass. We include ALL entities (not just changed ones) so
-    // that forward references from unchanged entities to newly created
-    // entities are resolved. sync_references is idempotent (delete +
-    // re-insert), so re-syncing unchanged entities is a no-op for
-    // entities with no references.
+    // Successfully parsed files — the reference pass needs skipped
+    // files too, since an unchanged entity can reference one created
+    // in this sync.
     let mut all_parsed_files: Vec<EntityFile> = Vec::new();
+    // Ids whose entity row first appears in this sync — the only
+    // targets whose incoming edges could still be FK-dropped.
+    let mut created_ids: HashSet<String> = HashSet::new();
 
     for (file_path, ef, hash, rel_path) in &parsed {
         // Two files claiming one id is undefined ownership — the
@@ -343,6 +343,9 @@ fn sync_inner(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
         }
         match sync_parsed_file(&tx, ef, hash, rel_path) {
             Ok(action) => {
+                if action == SyncAction::Created {
+                    created_ids.insert(ef.id.clone());
+                }
                 record_action(&mut result, action, &ef.id);
                 seen_ids.insert(ef.id.clone(), file_path.clone());
                 all_parsed_files.push(ef.clone());
@@ -354,12 +357,28 @@ fn sync_inner(storage: &storage::Storage, cogz_dir: &Path) -> SyncResult {
         }
     }
 
-    // Second pass: sync reference edges now that all entities exist.
-    // This handles forward references — edges to entities that were
-    // synced later in the same pass. Re-syncing ALL entities (not just
-    // changed ones) ensures that an unchanged entity referencing a
-    // newly created entity gets its edge created.
+    // Second pass: sync reference edges for changed files plus
+    // referrers of entities created this sync. A skipped entity's own
+    // edges are already correct — the only edges that can newly
+    // materialize are forward references whose target row first
+    // appeared now (updated entities had a row all along, so their
+    // incoming edges never FK-dropped). Older dropped edges — a
+    // skipped referrer whose target was created in an *earlier* sync —
+    // are repaired by post_index_pass::repair_reference_edges, which
+    // runs at the end of every index path.
+    let synced_ids: HashSet<&str> = result
+        .synced_entity_ids
+        .iter()
+        .map(String::as_str)
+        .collect();
     for ef in &all_parsed_files {
+        let refers_to_new = !created_ids.is_empty()
+            && super::refs::declared_targets(ef)
+                .iter()
+                .any(|t| created_ids.contains(*t));
+        if !synced_ids.contains(ef.id.as_str()) && !refers_to_new {
+            continue;
+        }
         if let Err(e) = super::refs::sync_references(&tx, ef) {
             result.errors.push(SyncFailure {
                 file_path: ef.file_path(cogz_dir),

@@ -15,6 +15,25 @@ use crate::storage::edges::{Edge, delete_edges_by_source_and_type, insert_edge_s
 
 use super::entities::EntityFile;
 
+/// Every edge-target id the file declares — `references` plus the
+/// frontmatter fields `sync_references` materializes. Used to find
+/// referrers of a newly created entity without re-running reference
+/// sync on every file.
+pub(crate) fn declared_targets(entity_file: &EntityFile) -> Vec<&str> {
+    let mut targets: Vec<&str> = entity_file.references.iter().map(String::as_str).collect();
+    for key in ["supporting_ids", "contradicts"] {
+        if let Some(arr) = entity_file.frontmatter.get(key).and_then(|v| v.as_array()) {
+            targets.extend(arr.iter().map(String::as_str));
+        }
+    }
+    for key in ["derived_from", "superseded_by"] {
+        if let Some(s) = entity_file.frontmatter.get(key).and_then(|v| v.as_str()) {
+            targets.push(s);
+        }
+    }
+    targets
+}
+
 /// Sync file-backed edges from the entity file to the DB.
 /// Replaces all existing edges of these types for this entity.
 ///

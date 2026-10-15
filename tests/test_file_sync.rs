@@ -957,3 +957,58 @@ fn sync_single_file_syncs_reference_edges() {
         assert_eq!(edges[0].target_id, "a1b2c3d4-e5f6-4789-abcd-000000000002");
     }
 }
+
+#[test]
+fn sync_incremental_skips_reference_resync_for_unrelated_files() {
+    // The reference pass is scoped to changed files plus referrers of
+    // entities created in the same sync. A skipped file that does not
+    // reference a newly created entity is not re-synced — its edges
+    // are post_index_pass's repair job, not the sync pass's.
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+
+    write_file(
+        dir.path(),
+        "knowledge/architecture/overview.md",
+        "---\nid: a1b2c3d4-e5f6-4789-abcd-000000000001\ntitle: \"Overview\"\ntype: knowledge\nstatus: active\ncreated_at: 2026-08-27T14:30:00Z\nupdated_at: 2026-08-27T14:30:00Z\nreferences: [\"a1b2c3d4-e5f6-4789-abcd-000000000002\"]\ncategory: architecture\n---\n\nContent",
+    );
+    write_file(
+        dir.path(),
+        "knowledge/architecture/target.md",
+        "---\nid: a1b2c3d4-e5f6-4789-abcd-000000000002\ntitle: \"Target\"\ntype: knowledge\nstatus: active\ncreated_at: 2026-08-27T14:30:00Z\nupdated_at: 2026-08-27T14:30:00Z\nreferences: []\ncategory: architecture\n---\n\nTarget",
+    );
+
+    let result = sync_incremental(&storage, dir.path());
+    assert_eq!(result.created, 2);
+
+    // Drop overview's edge directly — simulating an FK-dropped edge
+    // awaiting post_index repair.
+    {
+        let conn = storage.conn();
+        storage::edges::delete_edges_by_source_and_type(
+            &conn,
+            "a1b2c3d4-e5f6-4789-abcd-000000000001",
+            "references",
+        )
+        .unwrap();
+    }
+
+    // Create an unrelated file. Overview is skipped and doesn't
+    // reference it, so the scoped pass must not touch overview's edges.
+    write_file(
+        dir.path(),
+        "knowledge/architecture/unrelated.md",
+        "---\nid: a1b2c3d4-e5f6-4789-abcd-000000000003\ntitle: \"Unrelated\"\ntype: knowledge\nstatus: active\ncreated_at: 2026-08-27T14:30:00Z\nupdated_at: 2026-08-27T14:30:00Z\nreferences: []\ncategory: architecture\n---\n\nUnrelated",
+    );
+    let result = sync_incremental(&storage, dir.path());
+    assert_eq!(result.created, 1);
+    assert_eq!(result.skipped, 2);
+
+    let conn = storage.conn();
+    let edges =
+        storage::edges::get_edges_from(&conn, "a1b2c3d4-e5f6-4789-abcd-000000000001").unwrap();
+    assert!(
+        edges.is_empty(),
+        "skipped non-referrer must not get a reference re-sync"
+    );
+}
