@@ -25,7 +25,7 @@ const GITIGNORE_CONTENT: &str = "\
 cogz.db
 cogz.db-*
 cogz.db.*
-.lock
+*.lock
 ";
 
 /// Content of the generated `.cogz/.gitignore` (local-only mode).

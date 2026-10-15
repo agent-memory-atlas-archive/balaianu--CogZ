@@ -4,4 +4,4 @@
 cogz.db
 cogz.db-*
 cogz.db.*
-.lock
+*.lock
