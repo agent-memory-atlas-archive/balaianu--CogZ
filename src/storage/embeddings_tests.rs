@@ -231,3 +231,45 @@ fn v9_backfills_vec_rowid_from_existing_embeddings() {
     assert!(emb.is_some(), "backfilled row must resolve via vec_rowid");
     assert_eq!(emb.unwrap().len(), 768);
 }
+
+#[test]
+fn knn_filters_push_down_past_k() {
+    // L12: 90 of 100 embeddings are filtered out by entity type. If
+    // sqlite-vec applies the entity filter inside the KNN scan the
+    // query still yields k=10; if SQLite filters post-hoc it yields ~1.
+    let conn = setup();
+    for i in 0..100 {
+        let (id, ty) = if i < 10 {
+            (format!("keep-{i}"), "knowledge")
+        } else {
+            (format!("drop-{i}"), "observation")
+        };
+        insert_entity(&conn, &Entity::new(&id, ty, "t", "c")).unwrap();
+        let mut emb = vec![0.0_f32; 768];
+        emb[0] = 1.0;
+        emb[1] = i as f32 / 1000.0;
+        insert_embedding(&conn, &id, ty, &emb).unwrap();
+    }
+
+    let query = {
+        let mut q = vec![0.0_f32; 768];
+        q[0] = 1.0;
+        q
+    };
+    let results = knn_search_with_filters(
+        &conn,
+        EmbeddingSpace::Knowledge,
+        &query,
+        10,
+        Some("knowledge"),
+        None,
+        false,
+    )
+    .unwrap();
+    assert_eq!(
+        results.len(),
+        10,
+        "filter must be pushed into the KNN scan, not applied to the k-row result"
+    );
+    assert!(results.iter().all(|(id, _)| id.starts_with("keep-")));
+}
