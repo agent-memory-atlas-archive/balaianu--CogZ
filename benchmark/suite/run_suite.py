@@ -37,12 +37,11 @@ def fts_only_config(text: str) -> str:
     # the FTS arm measures the degraded path rather than a failed-load
     # fallback. Replaces the old bogus-model-name probe, which config
     # validation now rejects.
-    text = re.sub(r'^force_fts_only\s*=.*$', 'force_fts_only = true',
-                  text, flags=re.M)
-    if 'force_fts_only' not in text:
-        text = re.sub(r'^(\[embedding\]\s*)$', r'\1force_fts_only = true\n',
+    if re.search(r'^force_fts_only\s*=', text, flags=re.M):
+        return re.sub(r'^force_fts_only\s*=.*$', 'force_fts_only = true',
                       text, flags=re.M)
-    return text
+    return text.replace('[embedding]',
+                        '[embedding]\nforce_fts_only = true', 1)
 
 
 def run(cmd: list[str], out: Path | None = None) -> int:

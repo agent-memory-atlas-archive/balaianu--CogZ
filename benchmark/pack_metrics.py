@@ -120,9 +120,10 @@ def set_fts_only(repo, on):
     txt = open(cfg).read()
     # Supported no-model switch (replaces the bogus-model-name probe,
     # which config validation now rejects).
-    txt = re.sub(r'^force_fts_only\s*=.*$', 'force_fts_only = true', txt, flags=re.M)
-    if 'force_fts_only' not in txt:
-        txt = re.sub(r'^(\[embedding\]\s*)$', r'\1force_fts_only = true\n', txt, flags=re.M)
+    if re.search(r'^force_fts_only\s*=', txt, flags=re.M):
+        txt = re.sub(r'^force_fts_only\s*=.*$', 'force_fts_only = true', txt, flags=re.M)
+    else:
+        txt = txt.replace('[embedding]', '[embedding]\nforce_fts_only = true', 1)
     open(cfg, "w").write(txt)
 
 def main():
