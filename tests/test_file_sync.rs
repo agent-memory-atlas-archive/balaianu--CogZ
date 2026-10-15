@@ -156,6 +156,53 @@ fn sync_rejects_file_with_secret_in_frontmatter() {
 }
 
 #[test]
+fn sync_duplicate_id_first_wins_no_flip_flop() {
+    let storage = setup_storage();
+    let dir = tempfile::tempdir().unwrap();
+    let id = "a1b2c3d4-e5f6-4789-abcd-000000000055";
+
+    // `a-dup.md` sorts before `b-dup.md` — sorted scan order makes
+    // the winner deterministic across syncs.
+    write_file(
+        dir.path(),
+        "knowledge/gotchas/a-dup.md",
+        &knowledge_file(id, "Winner", "gotchas", "first body"),
+    );
+    write_file(
+        dir.path(),
+        "knowledge/gotchas/b-dup.md",
+        &knowledge_file(id, "Loser", "gotchas", "second body"),
+    );
+
+    for round in 1..=2 {
+        let result = sync_all(&storage, dir.path());
+        let conn = storage.conn();
+
+        assert_eq!(storage::crud::count_all(&conn).unwrap(), 1);
+        assert!(
+            result
+                .errors
+                .iter()
+                .any(|f| matches!(f.error, SyncError::DuplicateId { .. })),
+            "round {round}: expected a DuplicateId error"
+        );
+        let dup = result
+            .errors
+            .iter()
+            .find(|f| matches!(f.error, SyncError::DuplicateId { .. }))
+            .unwrap();
+        match &dup.error {
+            SyncError::DuplicateId { second, .. } => {
+                assert!(second.ends_with("b-dup.md"));
+            }
+            _ => unreachable!(),
+        }
+        let entity = storage::crud::get_entity(&conn, id).unwrap();
+        assert_eq!(entity.title.as_deref(), Some("Winner"), "round {round}");
+    }
+}
+
+#[test]
 fn sync_stores_forward_slash_file_paths() {
     let storage = setup_storage();
     let dir = tempfile::tempdir().unwrap();

@@ -5,7 +5,7 @@ mod checks_analysis;
 
 pub(crate) use checks_analysis::{check_corrupt_json, check_near_duplicates, check_vec_dimensions};
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use rusqlite::Connection;
 
@@ -55,6 +55,9 @@ pub enum IssueKind {
     /// are injected as behavioral constraints, so command-shaped
     /// content needs human review.
     SuspiciousRuleContent,
+    /// Two canonical files claim the same entity id — sync keeps the
+    /// first (sorted path order) and rejects the rest.
+    DuplicateId,
 }
 
 impl std::fmt::Display for IssueKind {
@@ -74,6 +77,7 @@ impl std::fmt::Display for IssueKind {
             Self::VolatilityFootgun => write!(f, "volatility_footgun"),
             Self::CategoryTypo => write!(f, "category_typo"),
             Self::SuspiciousRuleContent => write!(f, "suspicious_rule_content"),
+            Self::DuplicateId => write!(f, "duplicate_id"),
         }
     }
 }
@@ -279,6 +283,27 @@ fn check_file_sync(
                 kind: IssueKind::MissingEntity,
                 entity_id: None,
                 message: format!("file not synced: {}", rel),
+            });
+        }
+    }
+
+    // Duplicate ids across canonical files — sync keeps the first
+    // (sorted order) and rejects the rest, so these files never
+    // reach the DB. Parse just the id out of each file's frontmatter.
+    let mut id_to_path: std::collections::HashMap<String, &PathBuf> =
+        std::collections::HashMap::new();
+    for path in &entity_files {
+        let Ok(raw) = std::fs::read_to_string(path) else {
+            continue;
+        };
+        let Ok(ef) = crate::files::entities::EntityFile::from_content(&raw) else {
+            continue;
+        };
+        if let Some(first) = id_to_path.insert(ef.id.clone(), path) {
+            report.issues.push(Issue {
+                kind: IssueKind::DuplicateId,
+                entity_id: Some(ef.id),
+                message: format!("id claimed by {} and {}", first.display(), path.display()),
             });
         }
     }
