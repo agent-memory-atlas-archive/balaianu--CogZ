@@ -275,6 +275,47 @@ fn post_tool_use_records_event_but_not_observation() {
 }
 
 #[test]
+fn stored_tool_result_is_redacted_and_capped() {
+    let (storage, config, cogz_dir, _dir) = setup();
+    let model = query_model(&config);
+    let code_mod = code_model(&config);
+
+    // 6 KiB of body between an error head and the exit-code tail —
+    // mining needs both ends, so truncation keeps head+tail.
+    let secret = "sk-abcdefghijklmnopqrstuvwx";
+    let body = format!(
+        "error: auth failed for {secret}\n{}\nExit code: 1",
+        "x".repeat(6 * 1024)
+    );
+    let output = handle_lifecycle_event(
+        &storage,
+        &config,
+        &cogz_dir,
+        &model,
+        &code_mod,
+        None,
+        &LifecycleInput {
+            event: LifecycleEvent::PostToolUse,
+            prompt: None,
+            tool_name: Some("exec"),
+            tool_result: Some(&body),
+            file_path: None,
+        },
+    )
+    .unwrap();
+    assert!(output.event_id.is_some());
+
+    let conn = storage.conn();
+    let events = get_recent_events(&conn, "post_tool_use", 10).unwrap();
+    let stored = events[0].payload["tool_result"].as_str().unwrap();
+    assert!(stored.len() <= 4 * 1024 + 32, "stored result capped");
+    assert!(!stored.contains(secret), "secret redacted");
+    assert!(stored.contains("[redacted"));
+    assert!(stored.contains("Exit code: 1"), "tail preserved");
+    assert!(stored.contains("error: auth failed"), "head preserved");
+}
+
+#[test]
 fn post_tool_use_without_tool_result_records_event_only() {
     let (storage, config, cogz_dir, _dir) = setup();
     let model = query_model(&config);

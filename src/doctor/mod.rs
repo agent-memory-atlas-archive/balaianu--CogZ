@@ -6,6 +6,8 @@
 
 pub mod checks;
 pub mod prune;
+pub mod telemetry;
 
 pub use checks::{DoctorReport, Issue, IssueKind, run_doctor};
 pub use prune::{PruneCandidate, PruneReport, find_prune_candidates, run_prune};
+pub use telemetry::{TelemetryPurgeReport, purge_telemetry};

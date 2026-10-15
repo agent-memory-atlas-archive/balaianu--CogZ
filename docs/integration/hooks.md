@@ -47,6 +47,24 @@ For hooks, speed matters more than ranking quality. The MCP server (persistent p
 | `session_end` | Agent session ends | Records event, closes open usage deliveries, runs consolidation (promotion + merge), counts mined observation candidates | Consolidation summary + `suggestion_count` + notices (when present) |
 | `stop` | Agent stops | Records event only | None |
 
+## What hooks store
+
+Every event writes one row to the `events` table. Free-text fields are minimized before they persist:
+
+- `prompt` — secret patterns are redacted (`[redacted: kind]`) and the text is capped at 4 KiB.
+- `tool_result` — same redaction, capped at 4 KiB keeping head+tail so error keywords and `Exit code:` lines survive. Hit detection runs on the live (untruncated) tool output during capture — truncation only affects what gets stored.
+- `tool_name`, `file_path`/`file_path_rel` — stored as-is (short, non-free-text).
+- Deliveries and `entity_usage` track which entities were shown and whether they were used — the hit/miss signal that proves retrieval works.
+
+Telemetry lives in `events`, `deliveries`, and `entity_usage`. Review counts, then delete:
+
+```bash
+cogz doctor --purge-telemetry            # dry-run: row counts
+cogz doctor --purge-telemetry --confirm  # deletes all three tables
+```
+
+`entity_access` (aggregate counters powering cold-start ranking) is kept — it holds no free text. Purging telemetry does not touch entities, files, or the graph.
+
 ## CLI usage
 
 ```bash

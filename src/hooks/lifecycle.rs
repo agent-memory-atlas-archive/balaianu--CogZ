@@ -149,11 +149,14 @@ pub fn handle_lifecycle_event(
 ) -> Result<LifecycleOutput, LifecycleError> {
     let event_type = input.event.event_type();
 
-    // Build the event payload.
+    // Build the event payload. Free-text fields are sanitized before
+    // they persist: secrets are redacted (telemetry can't reject the
+    // event the way entity writes can) and results are capped — the
+    // DB stores enough for mining signals, never a transcript.
     let payload = match input.event {
         LifecycleEvent::SessionStart => json!({}),
         LifecycleEvent::PromptSubmit => {
-            json!({ "prompt": input.prompt.unwrap_or("") })
+            json!({ "prompt": telemetry_text(input.prompt.unwrap_or("")) })
         }
         LifecycleEvent::PreToolUse => {
             json!({ "tool_name": input.tool_name.unwrap_or("") })
@@ -161,7 +164,7 @@ pub fn handle_lifecycle_event(
         LifecycleEvent::PostToolUse => {
             json!({
                 "tool_name": input.tool_name.unwrap_or(""),
-                "tool_result": input.tool_result.unwrap_or(""),
+                "tool_result": telemetry_result(input.tool_result.unwrap_or("")),
             })
         }
         LifecycleEvent::FileSave => {
@@ -540,6 +543,44 @@ const DRIFT_NOTICE_LIMIT: usize = 5;
 /// first-contact ingestion protocol. A fresh init seeds 3, so the
 /// nudge fires until ~7 real entries exist — then stays silent.
 const YOUNG_CORPUS_THRESHOLD: i64 = 10;
+
+/// Cap on stored free-text telemetry — enough for mining signals
+/// (error keywords, exit codes, query text), never a transcript.
+const TELEMETRY_TEXT_CAP: usize = 4 * 1024;
+
+/// Stored `prompt`/short text: secret-redacted, head-capped.
+fn telemetry_text(raw: &str) -> String {
+    let redacted = crate::security::redact_secrets(raw);
+    truncate_char_boundary(&redacted, TELEMETRY_TEXT_CAP).to_string()
+}
+
+/// Stored `tool_result`: redacted, then head+tail — mining's
+/// `looks_like_error` reads keywords in the head and `Exit code: N`
+/// in the tail, so both ends survive truncation.
+fn telemetry_result(raw: &str) -> String {
+    let redacted = crate::security::redact_secrets(raw);
+    if redacted.len() <= TELEMETRY_TEXT_CAP {
+        return redacted;
+    }
+    let half = TELEMETRY_TEXT_CAP / 2;
+    let head = truncate_char_boundary(&redacted, half);
+    let tail_start = redacted.len() - half;
+    let tail_start = (tail_start..redacted.len())
+        .find(|&i| redacted.is_char_boundary(i))
+        .unwrap_or(redacted.len());
+    format!("{head}\n[…truncated…]\n{}", &redacted[tail_start..])
+}
+
+fn truncate_char_boundary(s: &str, max: usize) -> &str {
+    if s.len() <= max {
+        return s;
+    }
+    let mut end = max;
+    while !s.is_char_boundary(end) {
+        end -= 1;
+    }
+    &s[..end]
+}
 
 /// Knowledge entities drifted on references to the saved file's code —
 /// the write-time verify cue. `entities_for_file` maps the path to its

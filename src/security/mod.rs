@@ -6,4 +6,4 @@
 
 pub mod scan;
 
-pub use scan::{ScanResult, scan_content};
+pub use scan::{ScanResult, redact_secrets, scan_content};

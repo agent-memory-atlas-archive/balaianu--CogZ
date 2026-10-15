@@ -324,6 +324,11 @@ enum Commands {
         #[arg(long)]
         prune_observations: bool,
 
+        /// Purge stored telemetry (events, deliveries, entity_usage).
+        /// Dry-run lists row counts; --confirm deletes them.
+        #[arg(long)]
+        purge_telemetry: bool,
+
         /// Confirm pruning (deletes files, creates tombstones).
         #[arg(long)]
         confirm: bool,
@@ -586,9 +591,10 @@ fn main() -> anyhow::Result<()> {
         Commands::Doctor {
             repo,
             prune_observations,
+            purge_telemetry,
             confirm,
             verify,
-        } => commands::run_doctor(&repo, prune_observations, confirm, verify),
+        } => commands::run_doctor(&repo, prune_observations, purge_telemetry, confirm, verify),
         Commands::Update { check } => {
             if check {
                 match cogz::update::check_latest_version() {

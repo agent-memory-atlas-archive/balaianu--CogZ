@@ -11,6 +11,7 @@ use super::load_config;
 pub fn run_doctor(
     repo: &Path,
     prune_observations: bool,
+    purge_telemetry: bool,
     confirm: bool,
     verify: Option<String>,
 ) -> anyhow::Result<()> {
@@ -19,6 +20,10 @@ pub fn run_doctor(
 
     if prune_observations {
         return run_prune_report(&db_path, &config, &cogz_dir, confirm);
+    }
+
+    if purge_telemetry {
+        return run_purge_telemetry_report(&db_path, &config, confirm);
     }
 
     if !db_path.exists() {
@@ -199,6 +204,38 @@ fn run_prune_report(
         if report.tombstones_removed > 0 {
             println!("  Old tombstones removed: {}", report.tombstones_removed);
         }
+    }
+
+    Ok(())
+}
+
+fn run_purge_telemetry_report(
+    db_path: &Path,
+    config: &Config,
+    confirm: bool,
+) -> anyhow::Result<()> {
+    if !db_path.exists() {
+        anyhow::bail!(
+            "Database not found at {}. Run `cogz index` first.",
+            db_path.display()
+        );
+    }
+
+    let storage = cogz::storage::Storage::open(db_path, config.embedding.dimension)?;
+    let report = cogz::doctor::purge_telemetry(&storage, confirm)?;
+
+    if !confirm {
+        println!("CogZ doctor — purge telemetry (dry-run)\n");
+        println!("  events: {} rows", report.events);
+        println!("  deliveries: {} rows", report.deliveries);
+        println!("  entity_usage: {} rows", report.entity_usage);
+        println!("\n  Run with --confirm to delete.");
+    } else {
+        println!("CogZ doctor — purge telemetry (confirmed)\n");
+        println!(
+            "  Deleted: {} event, {} delivery, {} usage rows",
+            report.events, report.deliveries, report.entity_usage
+        );
     }
 
     Ok(())

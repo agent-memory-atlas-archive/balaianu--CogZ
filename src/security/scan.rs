@@ -125,9 +125,40 @@ pub fn scan_content(title: &str, body: &str) -> Option<ScanResult> {
     None
 }
 
+/// Replace every secret-pattern match with `[redacted: kind]`.
+///
+/// Entity writes reject on `scan_content` — the agent rewrites without
+/// the secret. Telemetry can't reject (the hook must still record the
+/// event), so stored payload text is redacted instead.
+pub fn redact_secrets(text: &str) -> String {
+    let mut out = text.to_string();
+    for pattern in PATTERNS.iter() {
+        out = pattern
+            .regex
+            .replace_all(&out, format!("[redacted: {}]", pattern.kind))
+            .into_owned();
+    }
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn redact_secrets_replaces_match_keeps_context() {
+        // Telemetry redaction replaces the match, keeps the
+        // surrounding text, and tags the secret kind — the event
+        // stays useful without carrying the credential.
+        let out = redact_secrets("error: auth failed for sk-abcdefghijklmnopqrstuvwx retrying");
+        assert!(out.contains("[redacted: OpenAI API key]"));
+        assert!(!out.contains("sk-"));
+        assert!(out.contains("error: auth failed for"));
+        assert!(out.contains("retrying"));
+
+        let clean = "a perfectly ordinary error message";
+        assert_eq!(redact_secrets(clean), clean);
+    }
 
     #[test]
     fn detects_private_key() {
