@@ -584,19 +584,11 @@ mod tests {
     }
 
     #[test]
-    fn migrations_are_idempotent() {
-        crate::storage::ensure_vec_extension();
-        let conn = Connection::open_in_memory().unwrap();
-        run_migrations(&conn, 768).unwrap();
-        // Running again should not error
-        run_migrations(&conn, 768).unwrap();
-    }
-
-    #[test]
     fn migrations_are_idempotent_and_forward_only() {
         crate::storage::ensure_vec_extension();
-        crate::storage::ensure_vec_extension();
         let conn = Connection::open_in_memory().unwrap();
+        run_migrations(&conn, 768).unwrap();
+        // Re-running the complete set is a no-op.
         run_migrations(&conn, 768).unwrap();
 
         let version: u32 = conn

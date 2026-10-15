@@ -54,69 +54,40 @@ pub fn is_valid_status(status: &str) -> bool {
 mod tests {
     use super::*;
 
+    // The full 5x5 lattice — every status pair, plus an unknown source.
     #[test]
-    fn active_to_stale() {
-        assert!(transition_status("active", "stale").is_ok());
-    }
-
-    #[test]
-    fn active_to_rejected() {
-        assert!(transition_status("active", "rejected").is_ok());
-    }
-
-    #[test]
-    fn active_to_superseded() {
-        assert!(transition_status("active", "superseded").is_ok());
-    }
-
-    #[test]
-    fn stale_to_active() {
-        assert!(transition_status("stale", "active").is_ok());
-    }
-
-    /// A stale entity can still be superseded by a merge or rejected on
-    /// review — both were blocked before, trapping file↔DB divergence.
-    #[test]
-    fn stale_terminal_paths_legal() {
-        assert!(transition_status("stale", "superseded").is_ok());
-        assert!(transition_status("stale", "rejected").is_ok());
-    }
-
-    #[test]
-    fn rejected_to_pruned() {
-        assert!(transition_status("rejected", "pruned").is_ok());
-    }
-
-    #[test]
-    fn superseded_to_pruned() {
-        assert!(transition_status("superseded", "pruned").is_ok());
-    }
-
-    #[test]
-    fn rejected_to_active_illegal() {
-        assert!(transition_status("rejected", "active").is_err());
-    }
-
-    #[test]
-    fn superseded_to_active_illegal() {
-        assert!(transition_status("superseded", "active").is_err());
-    }
-
-    #[test]
-    fn pruned_to_anything_illegal() {
-        for target in &["active", "stale", "rejected", "superseded", "pruned"] {
-            assert!(transition_status("pruned", target).is_err());
+    fn transition_lattice() {
+        let cases: &[(&str, &str, bool)] = &[
+            ("active", "stale", true),
+            ("active", "rejected", true),
+            ("active", "superseded", true),
+            ("active", "active", false),
+            ("active", "pruned", false),
+            ("stale", "active", true),
+            ("stale", "rejected", true),
+            ("stale", "superseded", true),
+            ("stale", "stale", false),
+            ("stale", "pruned", false),
+            ("rejected", "pruned", true),
+            ("rejected", "active", false),
+            ("rejected", "stale", false),
+            ("rejected", "superseded", false),
+            ("rejected", "rejected", false),
+            ("superseded", "pruned", true),
+            ("superseded", "active", false),
+            ("superseded", "stale", false),
+            ("superseded", "rejected", false),
+            ("superseded", "superseded", false),
+            ("pruned", "active", false),
+            ("pruned", "stale", false),
+            ("pruned", "rejected", false),
+            ("pruned", "superseded", false),
+            ("pruned", "pruned", false),
+            ("unknown", "active", false),
+        ];
+        for &(from, to, ok) in cases {
+            assert_eq!(transition_status(from, to).is_ok(), ok, "{from} -> {to}");
         }
-    }
-
-    #[test]
-    fn active_to_active_illegal() {
-        assert!(transition_status("active", "active").is_err());
-    }
-
-    #[test]
-    fn unknown_status_errors() {
-        assert!(transition_status("unknown", "active").is_err());
     }
 
     #[test]
