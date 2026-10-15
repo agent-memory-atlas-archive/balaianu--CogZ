@@ -1,6 +1,12 @@
 target/
 __pycache__/
 benchmark/results/raw_*.json
+# Per-run result dumps stay local — summaries (_manifest.json,
+# *_score.txt, .log, _invariants/, corpus_metrics.json) are tracked.
+benchmark/results/**/*.json
+!benchmark/results/**/_manifest.json
+!benchmark/results/suite/_invariants/
+!benchmark/results/corpus_metrics.json
 benchmark/corpora/
 benchmark/nli_compare/export-env/
 benchmark/nli_compare/**/*.onnx
