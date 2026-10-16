@@ -4,7 +4,7 @@ This guide covers building CogZ from source, release builds, and cross-compilati
 
 ## Prerequisites
 
-- **Rust 1.88+** (edition 2024)
+- **Rust 1.89+** (edition 2024)
 - **C compiler** — `rusqlite` bundles SQLite and needs a C toolchain (`gcc`/`clang` on Linux, Xcode CLT on macOS, MSVC on Windows)
 - **~2 GB free RAM** for a release build (LTO + fat codegen-units)
 

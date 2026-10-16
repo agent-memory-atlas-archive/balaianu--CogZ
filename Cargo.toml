@@ -2,7 +2,7 @@
 name = "cogz"
 version = "0.6.0"
 edition = "2024"
-rust-version = "1.88"
+rust-version = "1.89"
 description = "Local-first, code-aware engineering cognition runtime"
 license = "MIT"
 repository = "https://github.com/balaianu/CogZ"
