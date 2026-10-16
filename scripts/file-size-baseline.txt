@@ -5,9 +5,6 @@
 490 src/consolidate/merge_tests.rs
 538 src/context/compress.rs
 640 src/doctor/checks.rs
-402 src/embed/nli.rs
-413 src/embed/onnx.rs
-434 src/embed/runtime.rs
 443 src/files/entities.rs
 418 src/files/frontmatter.rs
 430 src/files/sync.rs
@@ -20,11 +17,9 @@
 771 src/search/hybrid.rs
 632 src/search/hybrid_tests.rs
 466 src/search/rank.rs
-413 src/security/scan.rs
 440 src/storage/graph_queries.rs
 440 src/storage/mining_signals.rs
 402 src/storage/mining_tests.rs
-414 src/storage/mod.rs
 702 src/storage/schema.rs
 666 src/storage/usage.rs
 411 src/update.rs

@@ -443,55 +443,5 @@ fn scan_json_string_field(raw: &str, key: &str) -> Option<String> {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn oversized_payload_still_yields_fields() {
-        // A PostToolUse over the 1 MiB cap: the output tail is cut
-        // mid-string so serde can't parse, but the leading fields
-        // survive whole and must still be recorded.
-        let big_output = "x".repeat(2 * 1024 * 1024);
-        let payload = format!(
-            r#"{{"tool_name":"Write","tool_input":{{"file_path":"/repo/src/lib.rs"}},"tool_response":{{"success":true,"output":"{big_output}"}}}}"#
-        );
-        let mut cursor = std::io::Cursor::new(payload.into_bytes());
-        let (bytes, capped) = read_stdin_capped(&mut cursor);
-        assert!(capped);
-        assert_eq!(bytes.len(), 1024 * 1024);
-
-        let raw = String::from_utf8_lossy(&bytes);
-        let (prompt, tool_name, tool_result, file_path) = parse_hook_payload(&raw, capped);
-        assert_eq!(tool_name.as_deref(), Some("Write"));
-        assert_eq!(file_path.as_deref(), Some("/repo/src/lib.rs"));
-        // The output string was cut mid-value — it must not leak
-        // a half-decode into the event.
-        assert_eq!(tool_result, None);
-        assert_eq!(prompt, None);
-    }
-
-    #[test]
-    fn multibyte_char_survives_chunk_boundary() {
-        // Place a 4-byte char so its bytes straddle the 8192-byte
-        // read boundary — per-chunk lossy decode used to emit U+FFFD
-        // here. U+1D11E is 4 bytes (F0 9D 84 9E).
-        let prefix_len = 8192 - 2 - "{\"prompt\":\"".len();
-        let pad = "a".repeat(prefix_len);
-        let payload = format!("{{\"prompt\":\"{pad}𝄞end\"}}");
-        assert!(
-            payload.as_bytes()[8190..8196]
-                .windows(4)
-                .any(|w| w == "𝄞".as_bytes()),
-            "char must straddle the boundary"
-        );
-
-        let mut cursor = std::io::Cursor::new(payload.into_bytes());
-        let (bytes, capped) = read_stdin_capped(&mut cursor);
-        assert!(!capped);
-        let raw = String::from_utf8_lossy(&bytes);
-        let (prompt, ..) = parse_hook_payload(&raw, capped);
-        let prompt = prompt.unwrap();
-        assert!(prompt.contains('𝄞'));
-        assert!(!prompt.contains('\u{FFFD}'));
-    }
-}
+#[path = "capture_tests.rs"]
+mod tests;
