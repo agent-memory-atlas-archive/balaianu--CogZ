@@ -290,7 +290,10 @@ mod tests {
                 "tok: github_pat_11ABCDEFG0aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 SecretKind::GithubToken,
             ),
-            ("tok: glpat-\x5ax9Qw8Er7Ty6Ui5Op4As", SecretKind::GitlabToken),
+            (
+                "tok: glpat-\x5ax9Qw8Er7Ty6Ui5Op4As",
+                SecretKind::GitlabToken,
+            ),
             (
                 "key = hf_abcdefghijklmnopqrstuvwxyz01234",
                 SecretKind::HuggingFaceToken,
@@ -347,7 +350,8 @@ mod tests {
     /// is as committed as one in the body.
     #[test]
     fn frontmatter_is_scanned() {
-        let file = "---\nid: x\ntitle: T\n\ndeploy_token: glpat-\x5ax9Qw8Er7Ty6Ui5Op4As\n---\n\nBody";
+        let file =
+            "---\nid: x\ntitle: T\n\ndeploy_token: glpat-\x5ax9Qw8Er7Ty6Ui5Op4As\n---\n\nBody";
         assert_eq!(
             scan_content("", file).unwrap().kind,
             SecretKind::GitlabToken
