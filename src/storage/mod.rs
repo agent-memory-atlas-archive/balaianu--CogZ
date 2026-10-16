@@ -172,7 +172,9 @@ impl Storage {
             let lock_path = path.parent().unwrap_or(Path::new(".")).join(".lock");
             match std::fs::OpenOptions::new()
                 .create(true)
-                .append(true)
+                .read(true)
+                .write(true)
+                .truncate(false)
                 .open(&lock_path)
             {
                 Ok(f) => Some(f),
@@ -268,7 +270,9 @@ pub fn lock_repo_file(db_path: &Path) -> std::io::Result<std::fs::File> {
     let lock_path = db_path.parent().unwrap_or(Path::new(".")).join(".lock");
     let file = std::fs::OpenOptions::new()
         .create(true)
-        .append(true)
+        .read(true)
+        .write(true)
+        .truncate(false)
         .open(&lock_path)?;
     lock_file_bounded(&file, std::time::Duration::from_secs(10))?;
     Ok(file)
