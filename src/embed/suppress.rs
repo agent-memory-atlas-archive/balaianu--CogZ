@@ -17,6 +17,7 @@ use std::io::{Read, Seek, SeekFrom};
 
 /// Bytes of captured stderr kept for diagnostics — the tail, where
 /// failure causes land after the warning flood.
+#[cfg(unix)]
 const CAPTURE_TAIL_BYTES: u64 = 4096;
 
 /// Run a closure with stderr (fd 2) redirected to a temp file, then
