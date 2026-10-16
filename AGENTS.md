@@ -315,6 +315,11 @@ merge — the global rule applies, with CogZ's gate made concrete:
 
 ## Before Committing Any Phase
 
+Enable the pre-commit hook once per clone — it runs the CI-only
+hygiene checks (file-size ratchet, docs drift) locally:
+
+    git config core.hooksPath .githooks
+
 - [ ] `cargo build --release` succeeds
 - [ ] `cargo test` passes (default, no models)
 - [ ] `cargo clippy -- -D warnings` passes

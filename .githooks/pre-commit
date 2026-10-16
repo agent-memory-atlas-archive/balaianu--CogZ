@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Runs the CI-only hygiene checks locally so drift surfaces at commit
+# time, not at release. Enable once per clone:
+#   git config core.hooksPath .githooks
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+bash scripts/check-file-size.sh
+bash scripts/check-docs.sh
