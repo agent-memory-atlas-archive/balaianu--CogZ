@@ -151,14 +151,19 @@ impl Storage {
             Connection::open(path)?
         };
 
-        // WAL mode for crash recovery and checkpoint behavior.
-        conn.pragma_update(None, "journal_mode", "WAL")?;
-        conn.pragma_update(None, "foreign_keys", "ON")?;
-        // Wait up to 5 seconds when the database is locked by another
-        // process before returning SQLITE_BUSY. Without this, concurrent
-        // background processes (reindex-bg, embed-bg) get immediate
-        // "database is locked" errors instead of retrying.
+        // busy_timeout first: the journal_mode transition below takes an
+        // exclusive lock, and on Windows contention there surfaces as
+        // "disk I/O error". With the timeout unset it fails instantly
+        // instead of waiting — a second process opening the same repo
+        // (two MCP servers) hits exactly that window.
         conn.pragma_update(None, "busy_timeout", "5000")?;
+        // Skip the write pragma when the DB is already WAL: setting
+        // journal_mode requires lock access even as a no-op.
+        let jm: String = conn.pragma_query_value(None, "journal_mode", |r| r.get(0))?;
+        if !jm.eq_ignore_ascii_case("wal") {
+            conn.pragma_update(None, "journal_mode", "WAL")?;
+        }
+        conn.pragma_update(None, "foreign_keys", "ON")?;
 
         schema::run_migrations(&conn, embedding_dim)?;
         schema::check_version(&conn)?;
