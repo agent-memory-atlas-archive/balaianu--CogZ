@@ -62,7 +62,17 @@ Cross-compilation may require additional system libraries (linker, C cross-compi
 
 ## Release process
 
-Releases are triggered by pushing a tag:
+Releases are triggered by pushing a tag. Before tagging:
+
+```bash
+# 1. Bump `version` in Cargo.toml
+# 2. Sync the lockfile — release builds run `cargo build --release --locked`,
+#    so a stale `cogz` entry in Cargo.lock fails the whole release
+cargo check
+# 3. Write release notes at release-notes/vX.Y.Z.md — the workflow attaches
+#    them to the GitHub release via body_path
+# 4. Commit bump + lockfile + notes together (e.g. `release: bump to 0.6.5`)
+```
 
 ```bash
 git tag v0.1.0

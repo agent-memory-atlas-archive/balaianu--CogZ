@@ -1,10 +1,10 @@
 ---
 id: 7c1a9d4e-2f5b-43e8-9a67-1b2c3d4e5f6a
-title: Agent config divergences — event names, file shapes, and merge semantics
+title: "Agent config divergences — event names, file shapes, and merge semantics"
 type: knowledge
 status: active
 created_at: "2026-10-01T00:00:00Z"
-updated_at: "2026-10-01T16:00:00Z"
+updated_at: "2026-10-26T11:20:21.649844862+00:00"
 references: []
 category: gotchas
 tags: ["configure", "hooks", "mcp", "onboarding", "harnesses"]
@@ -12,13 +12,16 @@ tags: ["configure", "hooks", "mcp", "onboarding", "harnesses"]
 
 # Where the six agent configs diverge (src/configure/)
 
-The MCP entry is `{"command":"cogz","args":["mcp-stdio"]}` for most harnesses,
-but two require extra fields: **Cursor needs `"type": "stdio"`** (a missing or
-Copilot-style `local` type can fail registration silently) and **Copilot needs
-`"type": "local"` + `"tools": ["*"]`** (without `tools` nothing is exposed).
-Codex writes the entry as TOML instead. Everything else differs per harness.
-Verified against official docs during the 0.5.0 audit — the first draft assumed
-Claude's shape everywhere and was wrong on three
+The MCP entry is `{"command":"<abs path to cogz>","args":["mcp-stdio"]}`
+for most harnesses — `configure` resolves the running binary via
+`current_exe` and writes that path verbatim (never a bare `cogz`, which
+dies under PATH-less hook runtimes with exit 127). Two harnesses need
+extra fields: **Cursor needs `"type": "stdio"`** (a missing or
+Copilot-style `local` type can fail registration silently) and **Copilot
+needs `"type": "local"` + `"tools": ["*"]`** (without `tools` nothing is
+exposed). Codex writes the entry as TOML instead. Everything else differs
+per harness. Verified against official docs during the 0.5.0 audit — the
+first draft assumed Claude's shape everywhere and was wrong on three
 harnesses:
 
 - **Codex MCP is TOML** (`config.toml` `[mcp_servers.cogz]`); hooks are
@@ -48,6 +51,18 @@ recognized under any flag order, `matcher:""`-vs-absent, binary path, or
 grouping (see `covers`/`hook_key`/`command_key`/`is_cogz_server` in
 src/configure/mod.rs); `.cogz.bak` is written before any overwrite; a
 corrupt existing file aborts with an error — never clobbered.
+
+Argv[0] invariants (added 0.6.5): `split_argv0`/`command_key` are
+quote-aware — a double-quoted path is the same argv[0] as its bare form,
+so dedup holds across quoted/unquoted variants. Generated hook commands
+double-quote the resolved bin when it contains whitespace (Windows user
+dirs); MCP `command` fields keep the raw path (argv[0] direct, not
+shell-parsed). After every merge, an upgrade pass rewrites a literal
+`cogz` argv[0] to the resolved bin IN PLACE — flags preserved — because
+dedup alone counts a stale bare-cogz entry as wired and would never
+repair it. This covers hook commands and MCP command fields in JSON and
+TOML (see `upgrade_json`/`upgrade_toml`/`rewrite_argv0` in
+src/configure/apply.rs).
 
 ## Context-injection coverage (official docs, 0.5.x audit)
 
