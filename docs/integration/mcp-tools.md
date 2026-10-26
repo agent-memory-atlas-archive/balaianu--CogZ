@@ -15,6 +15,8 @@ CogZ exposes 15 tools via the Model Context Protocol (MCP) over stdio. The serve
 }
 ```
 
+`command` should be the absolute path to the installed binary (e.g. `/home/you/.local/bin/cogz`) — `cogz configure` resolves and writes it automatically. A bare `cogz` only resolves when the client's spawn environment has the install directory on `PATH`; agents launched by daemons or desktop apps frequently do not.
+
 The server starts with no pre-loaded repos. Repos are opened and cached on first use. Models are shared across repos — if two repos use the same model, they share one ONNX session instance.
 
 ## Usage tracking

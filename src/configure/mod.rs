@@ -17,6 +17,7 @@ use serde_json::{Map, Value};
 
 mod apply;
 mod harnesses;
+mod hook_payloads;
 
 use apply::apply;
 use harnesses::{HARNESSES, Harness, Patch};
@@ -160,31 +161,45 @@ fn hook_key(v: &Value) -> Option<(String, Vec<String>)> {
 /// invocation reduces to its verb — flag variants (`--fts-only`,
 /// `--hook-format …`) are user customization, not a distinct hook —
 /// while argv[0] is basename-normalized (`cogz` ≡ `/usr/bin/cogz` ≡
-/// `cogz.exe`). Anything else compares as a sorted token multiset so
-/// flag order doesn't matter.
+/// `cogz.exe`, and a quoted path is the same argv[0]). Anything else
+/// compares as a sorted token multiset so flag order doesn't matter.
 fn command_key(cmd: &str) -> String {
-    let toks: Vec<&str> = cmd.split_whitespace().collect();
-    if toks.first().map(|t| argv0_base(t)) == Some("cogz")
-        && let Some(verb) = toks
+    let (argv0, rest) = split_argv0(cmd);
+    let rtoks: Vec<&str> = rest.split_whitespace().collect();
+    if argv0_base(argv0) == "cogz"
+        && let Some(verb) = rtoks
             .iter()
             .position(|t| *t == "capture-event")
-            .and_then(|i| toks.get(i + 1))
+            .and_then(|i| rtoks.get(i + 1))
     {
         return format!("cogz-event:{verb}");
     }
-    let mut owned: Vec<String> = toks.iter().map(|t| t.to_string()).collect();
-    if let Some(first) = owned.first_mut() {
-        *first = argv0_base(first).to_string();
-    }
+    let mut owned: Vec<String> = rtoks.iter().map(|t| t.to_string()).collect();
+    owned.push(argv0_base(argv0).to_string());
     owned.sort();
     owned.join(" ")
 }
 
-/// Basename of argv[0] in a command string, `.exe` stripped —
+/// Split a command string into argv[0] and the remainder. A
+/// double-quoted argv[0] may span whitespace; an unquoted argv[0] is
+/// the first token.
+fn split_argv0(cmd: &str) -> (&str, &str) {
+    let t = cmd.trim_start();
+    if let Some(r) = t.strip_prefix('"')
+        && let Some(i) = r.find('"')
+    {
+        return (&r[..i], r[i + 1..].trim_start());
+    }
+    match t.find(char::is_whitespace) {
+        Some(i) => (&t[..i], t[i..].trim_start()),
+        None => (t, ""),
+    }
+}
+
+/// Basename of an argv[0], `.exe` stripped —
 /// `cogz` ≡ `/usr/bin/cogz` ≡ `C:\Tools\cogz.exe`.
-fn argv0_base(cmd: &str) -> &str {
-    let first = cmd.split_whitespace().next().unwrap_or("");
-    let base = first.rsplit(['/', '\\']).next().unwrap_or(first);
+fn argv0_base(argv0: &str) -> &str {
+    let base = argv0.rsplit(['/', '\\']).next().unwrap_or(argv0);
     base.strip_suffix(".exe").unwrap_or(base)
 }
 
@@ -196,7 +211,7 @@ fn is_cogz_server(obj: &Map<String, Value>) -> bool {
     let Some(cmd) = obj.get("command").and_then(|c| c.as_str()) else {
         return false;
     };
-    if argv0_base(cmd) != "cogz" {
+    if argv0_base(split_argv0(cmd).0) != "cogz" {
         return false;
     }
     cmd.contains("mcp-stdio")
@@ -241,7 +256,7 @@ fn is_cogz_server_table(t: &toml_edit::Table) -> bool {
     let Some(cmd) = t.get("command").and_then(|c| c.as_str()) else {
         return false;
     };
-    if argv0_base(cmd) != "cogz" {
+    if argv0_base(split_argv0(cmd).0) != "cogz" {
         return false;
     }
     cmd.contains("mcp-stdio")
@@ -263,6 +278,18 @@ pub fn self_bin() -> String {
         .unwrap_or_else(|_| "cogz".to_string())
 }
 
+/// argv[0] safe to embed in a generated hook command string —
+/// double-quoted when the path contains whitespace so shell-splitting
+/// keeps it one token. MCP `command` fields carry the raw path
+/// instead (argv[0] passed directly, not shell-parsed).
+pub(super) fn shell_argv0(bin: &str) -> String {
+    if bin.chars().any(char::is_whitespace) {
+        format!("\"{bin}\"")
+    } else {
+        bin.to_string()
+    }
+}
+
 /// Configure the named harnesses (or `auto`) for `repo` at `scope`.
 /// `home` is the user's home directory — a parameter so tests can
 /// supply a fake HOME. `bin` is argv[0] written into generated hook and
@@ -279,7 +306,7 @@ pub fn run(repo: &Path, arg: &str, scope: Scope, home: &Path, bin: &str) -> Resu
             Scope::User => (h.user_patches)(home, bin),
         };
         for patch in &patches {
-            match apply(patch)? {
+            match apply(patch, bin)? {
                 Outcome::Written { path, backed_up } => {
                     let note = if backed_up {
                         " (backup: .cogz.bak)"

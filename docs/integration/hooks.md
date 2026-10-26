@@ -96,6 +96,8 @@ cogz capture-event session_start --repo ~/my-project
 
 This is the canonical hook config. Copy it into your agent's hook configuration file — see [Agent Setup](agent-setup.md) for the file path and any agent-specific differences (event names, matchers, supported events).
 
+In every `command` below, `cogz` stands for the absolute path to the installed binary (e.g. `/home/you/.local/bin/cogz`) — `cogz configure` fills this in automatically, and re-running it repairs older configs that still say `cogz`. If you copy this file by hand, do the same: hook runtimes often spawn commands with a minimal environment where the install directory is not on `PATH`, and a bare `cogz` then fails with exit 127 (command not found).
+
 ```json
 {
   "hooks": {

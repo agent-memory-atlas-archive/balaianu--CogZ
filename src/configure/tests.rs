@@ -1,5 +1,6 @@
 //! Tests for `cogz configure` — file plans, harness payload shapes,
-//! and detection. Merge/backup semantics live in `tests_merge`.
+//! detection, and argv[0] repair. Merge/backup semantics live in
+//! `tests_merge`.
 
 use super::*;
 use serde_json::json;
@@ -226,4 +227,143 @@ fn corrupt_existing_file_errors_without_touching_it() {
     );
     assert!(result.is_err());
     assert_eq!(fs::read_to_string(&mcp).unwrap(), "{not json");
+}
+
+/// Configs generated (or hand-wired) before `bin` was resolved carry
+/// bare `cogz` commands that die under PATH-less hook runtimes. Dedup
+/// counts them as wired, so reconfigure must repair argv[0] in place —
+/// flags preserved, foreign commands untouched.
+#[test]
+fn rerun_repairs_bare_cogz_hook_commands() {
+    let (repo, home) = dirs();
+    let cfg_dir = home.path().join(".config/devin");
+    fs::create_dir_all(&cfg_dir).unwrap();
+    let cfg = cfg_dir.join("config.json");
+    fs::write(
+        &cfg,
+        r#"{"hooks":{"SessionStart":[{"matcher":"","hooks":[
+            {"type":"command","command":"cogz capture-event session_start --hook-json","timeout":5},
+            {"type":"command","command":"bash ~/hooks/other.sh","timeout":10}
+        ]}]}}"#,
+    )
+    .unwrap();
+
+    let bin = "/home/u/.local/bin/cogz";
+    run(repo.path(), "devin", Scope::User, home.path(), bin).unwrap();
+
+    let merged = read_json(&cfg);
+    let entries = merged["hooks"]["SessionStart"][0]["hooks"]
+        .as_array()
+        .unwrap();
+    let cmds: Vec<&str> = entries
+        .iter()
+        .map(|h| h["command"].as_str().unwrap())
+        .collect();
+    let want = format!("{bin} capture-event session_start --hook-json");
+    assert!(cmds.contains(&want.as_str()), "repaired: {cmds:?}");
+    assert_eq!(
+        cmds.iter().filter(|c| c.contains("capture-event")).count(),
+        1,
+        "repair must not duplicate"
+    );
+    assert!(cmds.contains(&"bash ~/hooks/other.sh"));
+}
+
+#[test]
+fn bare_cogz_mcp_command_is_upgraded() {
+    let (repo, home) = dirs();
+    let mcp = repo.path().join(".mcp.json");
+    fs::write(
+        &mcp,
+        r#"{"mcpServers":{"cogz":{"command":"cogz","args":["mcp-stdio"]}}}"#,
+    )
+    .unwrap();
+
+    run(
+        repo.path(),
+        "claude-code",
+        Scope::Project,
+        home.path(),
+        "/opt/bin/cogz",
+    )
+    .unwrap();
+
+    let merged = read_json(&mcp);
+    assert_eq!(merged["mcpServers"]["cogz"]["command"], "/opt/bin/cogz");
+    assert_eq!(merged["mcpServers"]["cogz"]["args"], json!(["mcp-stdio"]));
+}
+
+#[test]
+fn bare_cogz_toml_mcp_command_is_upgraded() {
+    let (repo, home) = dirs();
+    let codex = repo.path().join(".codex");
+    fs::create_dir_all(&codex).unwrap();
+    let cfg = codex.join("config.toml");
+    fs::write(
+        &cfg,
+        "[mcp_servers.cogz]\ncommand = \"cogz\"\nargs = [\"mcp-stdio\"]\n",
+    )
+    .unwrap();
+
+    run(
+        repo.path(),
+        "codex",
+        Scope::Project,
+        home.path(),
+        "/opt/bin/cogz",
+    )
+    .unwrap();
+
+    let merged: toml::Value = toml::from_str(&fs::read_to_string(&cfg).unwrap()).unwrap();
+    let entry = &merged["mcp_servers"]["cogz"];
+    assert_eq!(entry["command"].as_str().unwrap(), "/opt/bin/cogz");
+    assert_eq!(entry["args"][0].as_str().unwrap(), "mcp-stdio");
+}
+
+/// A `bin` containing whitespace (`C:\Users\<name>\…`) must be
+/// double-quoted in hook command strings so shell-splitting keeps it
+/// one token; MCP `command` fields take the raw path (direct argv[0]).
+#[test]
+fn bin_with_spaces_is_quoted_in_hooks_raw_in_mcp() {
+    let (repo, home) = dirs();
+    let bin = "C:\\Users\\Jane Doe\\tools\\cogz.exe";
+    run(repo.path(), "devin", Scope::Project, home.path(), bin).unwrap();
+
+    let hooks = read_json(&repo.path().join(".devin/hooks.v1.json"));
+    let cmd = hooks["hooks"]["SessionStart"][0]["hooks"][0]["command"]
+        .as_str()
+        .unwrap();
+    let quoted = format!("\"{bin}\"");
+    assert!(cmd.starts_with(&quoted), "spaced bin unquoted: {cmd}");
+
+    let mcp = read_json(&repo.path().join(".devin/mcp_config.json"));
+    assert_eq!(mcp["mcpServers"]["cogz"]["command"], bin);
+
+    // Repair path: a pre-existing bare-`cogz` entry upgrades to the
+    // same quoted command rather than duplicating alongside it.
+    let cfg_dir = home.path().join(".config/devin");
+    fs::create_dir_all(&cfg_dir).unwrap();
+    let cfg = cfg_dir.join("config.json");
+    fs::write(
+        &cfg,
+        r#"{"hooks":{"SessionStart":[{"matcher":"","hooks":[
+            {"type":"command","command":"cogz capture-event session_start --hook-json","timeout":5}
+        ]}]}}"#,
+    )
+    .unwrap();
+    run(repo.path(), "devin", Scope::User, home.path(), bin).unwrap();
+    let merged = read_json(&cfg);
+    let entries = merged["hooks"]["SessionStart"][0]["hooks"]
+        .as_array()
+        .unwrap();
+    let cmds: Vec<&str> = entries
+        .iter()
+        .filter_map(|h| h["command"].as_str())
+        .filter(|c| c.contains("capture-event"))
+        .collect();
+    assert_eq!(cmds.len(), 1, "upgrade must not duplicate: {cmds:?}");
+    assert_eq!(
+        cmds[0],
+        format!("\"{bin}\" capture-event session_start --hook-json")
+    );
 }

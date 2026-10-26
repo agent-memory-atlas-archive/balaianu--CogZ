@@ -22,6 +22,8 @@ cogz init [--repo <path>] [--local-only] [--configure <harnesses>] [--global]
 
 Write host-agent configuration so an agent picks up CogZ's MCP server and lifecycle hooks without hand-editing JSON. Merges into existing config files — other servers' entries and other tools' hooks are preserved, and for TOML (Codex) comments and formatting are kept — and writes a `<file>.cogz.bak` backup before overwriting an existing file. If `.cogz.bak` already exists, the backup goes to `<file>.cogz.bak.<timestamp>` instead of overwriting it. All writes are atomic (temp file + rename). Re-running is idempotent: a file that already matches is reported as already configured and left untouched.
 
+Generated hook commands and MCP `command` fields invoke the absolute path of the running binary (resolved via `current_exe`), not a bare `cogz` — hook runtimes and MCP spawners frequently run with a minimal `PATH`. When re-running against a config written by CogZ ≤0.6.3 (or hand-wired with a bare `cogz`), configure repairs the argv[0] in place: the command's flags and the file's other entries are preserved. Paths containing whitespace are double-quoted in hook command strings; MCP `command` fields carry the raw path.
+
 ```
 cogz configure <harnesses> [--repo <path>] [--global]
 ```

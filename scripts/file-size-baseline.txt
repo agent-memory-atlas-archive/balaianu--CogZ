@@ -1,6 +1,5 @@
 651 src/commands/mod.rs
 549 src/config/settings.rs
-435 src/configure/harnesses.rs
 490 src/consolidate/merge_tests.rs
 538 src/context/compress.rs
 640 src/doctor/checks.rs
