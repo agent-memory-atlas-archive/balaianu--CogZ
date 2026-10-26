@@ -23,14 +23,14 @@ pub(super) struct Harness {
     repo_markers: &'static [&'static str],
     /// Marker paths relative to the user's home.
     home_markers: &'static [&'static str],
-    pub project_patches: fn(&Path) -> Vec<Patch>,
-    pub user_patches: fn(&Path) -> Vec<Patch>,
+    pub project_patches: fn(&Path, &str) -> Vec<Patch>,
+    pub user_patches: fn(&Path, &str) -> Vec<Patch>,
 }
 
 // ─── Payloads ─────────────────────────────────────────────────────
 
-fn mcp_entry() -> Value {
-    json!({"command": "cogz", "args": ["mcp-stdio"]})
+fn mcp_entry(bin: &str) -> Value {
+    json!({"command": bin, "args": ["mcp-stdio"]})
 }
 
 /// Claude-shaped matcher-group entry. `timeout` is in seconds for
@@ -209,7 +209,7 @@ fn gemini_settings_patch(path: PathBuf, bin: &str) -> Patch {
     Patch::Json(
         path,
         json!({
-            "mcpServers": {"cogz": mcp_entry()},
+            "mcpServers": {"cogz": mcp_entry(bin)},
             "hooks": {
                 "SessionStart": [{"hooks": g("session_start", 15000)}],
                 "BeforeAgent": [{"matcher": "*", "hooks": g("prompt_submit", 15000)}],
@@ -228,25 +228,25 @@ fn gemini_settings_patch(path: PathBuf, bin: &str) -> Patch {
     )
 }
 
-fn mcp_json_patch(path: PathBuf) -> Patch {
-    mcp_json_patch_with(path, mcp_entry())
+fn mcp_json_patch(path: PathBuf, bin: &str) -> Patch {
+    mcp_json_patch_with(path, mcp_entry(bin))
 }
 
 /// Cursor requires an explicit `type` on stdio servers — a missing or
 /// Copilot-style `local` type fails registration silently.
-fn cursor_mcp_patch(path: PathBuf) -> Patch {
+fn cursor_mcp_patch(path: PathBuf, bin: &str) -> Patch {
     mcp_json_patch_with(
         path,
-        json!({"type": "stdio", "command": "cogz", "args": ["mcp-stdio"]}),
+        json!({"type": "stdio", "command": bin, "args": ["mcp-stdio"]}),
     )
 }
 
 /// Copilot's MCP shape is `type: "local"` plus a `tools` allowlist —
 /// without `tools` the server's tools are not exposed.
-fn copilot_mcp_patch(path: PathBuf) -> Patch {
+fn copilot_mcp_patch(path: PathBuf, bin: &str) -> Patch {
     mcp_json_patch_with(
         path,
-        json!({"type": "local", "command": "cogz", "args": ["mcp-stdio"], "tools": ["*"]}),
+        json!({"type": "local", "command": bin, "args": ["mcp-stdio"], "tools": ["*"]}),
     )
 }
 
@@ -254,53 +254,52 @@ fn mcp_json_patch_with(path: PathBuf, entry: Value) -> Patch {
     Patch::Json(path, json!({"mcpServers": {"cogz": entry}}))
 }
 
-fn codex_mcp_patch(path: PathBuf) -> Patch {
-    Patch::Toml(
-        path,
-        toml::toml! {
-            [mcp_servers.cogz]
-            command = "cogz"
-            args = ["mcp-stdio"]
-        }
-        .into(),
-    )
+fn codex_mcp_patch(path: PathBuf, bin: &str) -> Patch {
+    let mut cogz_server = toml::Table::new();
+    cogz_server.insert("command".into(), bin.into());
+    cogz_server.insert("args".into(), vec!["mcp-stdio"].into());
+    let mut mcp_servers = toml::Table::new();
+    mcp_servers.insert("cogz".into(), cogz_server.into());
+    let mut root = toml::Table::new();
+    root.insert("mcp_servers".into(), mcp_servers.into());
+    Patch::Toml(path, root.into())
 }
 
 // ─── Harness table ────────────────────────────────────────────────
 
-fn claude_project(repo: &Path) -> Vec<Patch> {
+fn claude_project(repo: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        mcp_json_patch(repo.join(".mcp.json")),
+        mcp_json_patch(repo.join(".mcp.json"), bin),
         claude_shaped_patch(
             repo.join(".claude/settings.json"),
-            "cogz",
+            bin,
             "Edit|Write|MultiEdit|NotebookEdit",
         ),
     ]
 }
 
-fn claude_user(home: &Path) -> Vec<Patch> {
+fn claude_user(home: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        mcp_json_patch(home.join(".claude.json")),
+        mcp_json_patch(home.join(".claude.json"), bin),
         claude_shaped_patch(
             home.join(".claude/settings.json"),
-            "cogz",
+            bin,
             "Edit|Write|MultiEdit|NotebookEdit",
         ),
     ]
 }
 
-fn cursor_project(repo: &Path) -> Vec<Patch> {
+fn cursor_project(repo: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        cursor_mcp_patch(repo.join(".cursor/mcp.json")),
-        cursor_hooks_patch(repo.join(".cursor/hooks.json"), "cogz"),
+        cursor_mcp_patch(repo.join(".cursor/mcp.json"), bin),
+        cursor_hooks_patch(repo.join(".cursor/hooks.json"), bin),
     ]
 }
 
-fn cursor_user(home: &Path) -> Vec<Patch> {
+fn cursor_user(home: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        cursor_mcp_patch(home.join(".cursor/mcp.json")),
-        cursor_hooks_patch(home.join(".cursor/hooks.json"), "cogz"),
+        cursor_mcp_patch(home.join(".cursor/mcp.json"), bin),
+        cursor_hooks_patch(home.join(".cursor/hooks.json"), bin),
     ]
 }
 
@@ -311,59 +310,59 @@ fn codex_hooks_patch(path: PathBuf, bin: &str) -> Patch {
     )
 }
 
-fn codex_project(repo: &Path) -> Vec<Patch> {
+fn codex_project(repo: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        codex_mcp_patch(repo.join(".codex/config.toml")),
-        codex_hooks_patch(repo.join(".codex/hooks.json"), "cogz"),
+        codex_mcp_patch(repo.join(".codex/config.toml"), bin),
+        codex_hooks_patch(repo.join(".codex/hooks.json"), bin),
     ]
 }
 
-fn codex_user(home: &Path) -> Vec<Patch> {
+fn codex_user(home: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        codex_mcp_patch(home.join(".codex/config.toml")),
-        codex_hooks_patch(home.join(".codex/hooks.json"), "cogz"),
+        codex_mcp_patch(home.join(".codex/config.toml"), bin),
+        codex_hooks_patch(home.join(".codex/hooks.json"), bin),
     ]
 }
 
-fn gemini_project(repo: &Path) -> Vec<Patch> {
+fn gemini_project(repo: &Path, bin: &str) -> Vec<Patch> {
     vec![gemini_settings_patch(
         repo.join(".gemini/settings.json"),
-        "cogz",
+        bin,
     )]
 }
 
-fn gemini_user(home: &Path) -> Vec<Patch> {
+fn gemini_user(home: &Path, bin: &str) -> Vec<Patch> {
     vec![gemini_settings_patch(
         home.join(".gemini/settings.json"),
-        "cogz",
+        bin,
     )]
 }
 
-fn copilot_project(repo: &Path) -> Vec<Patch> {
+fn copilot_project(repo: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        copilot_mcp_patch(repo.join(".mcp.json")),
-        copilot_hooks_patch(repo.join(".github/hooks/cogz.json"), "cogz"),
+        copilot_mcp_patch(repo.join(".mcp.json"), bin),
+        copilot_hooks_patch(repo.join(".github/hooks/cogz.json"), bin),
     ]
 }
 
-fn copilot_user(home: &Path) -> Vec<Patch> {
+fn copilot_user(home: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        copilot_mcp_patch(home.join(".copilot/mcp-config.json")),
-        copilot_hooks_patch(home.join(".copilot/hooks/cogz.json"), "cogz"),
+        copilot_mcp_patch(home.join(".copilot/mcp-config.json"), bin),
+        copilot_hooks_patch(home.join(".copilot/hooks/cogz.json"), bin),
     ]
 }
 
-fn devin_project(repo: &Path) -> Vec<Patch> {
+fn devin_project(repo: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        mcp_json_patch(repo.join(".devin/mcp_config.json")),
-        claude_devin_patch(repo.join(".devin/hooks.v1.json"), "cogz"),
+        mcp_json_patch(repo.join(".devin/mcp_config.json"), bin),
+        claude_devin_patch(repo.join(".devin/hooks.v1.json"), bin),
     ]
 }
 
-fn devin_user(home: &Path) -> Vec<Patch> {
+fn devin_user(home: &Path, bin: &str) -> Vec<Patch> {
     vec![
-        mcp_json_patch(home.join(".config/devin/mcp_config.json")),
-        claude_devin_patch(home.join(".config/devin/config.json"), "cogz"),
+        mcp_json_patch(home.join(".config/devin/mcp_config.json"), bin),
+        claude_devin_patch(home.join(".config/devin/config.json"), bin),
     ]
 }
 

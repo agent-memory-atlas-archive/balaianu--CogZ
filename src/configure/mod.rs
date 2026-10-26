@@ -10,14 +10,15 @@
 //! (temp-file + rename). Re-running is a no-op — an identical merged
 //! result skips the write and the backup.
 
-use std::fs;
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Result, bail};
 use serde_json::{Map, Value};
 
+mod apply;
 mod harnesses;
 
+use apply::apply;
 use harnesses::{HARNESSES, Harness, Patch};
 pub use harnesses::{detect, harness_ids};
 
@@ -249,127 +250,33 @@ fn is_cogz_server_table(t: &toml_edit::Table) -> bool {
             .is_some_and(|args| args.iter().any(|a| a.as_str() == Some("mcp-stdio")))
 }
 
-/// Read, merge, and write one file. Returns the outcome; parse errors
-/// on an existing file abort rather than clobber.
-fn apply(patch: &Patch) -> Result<Outcome> {
-    let (path, merged_text, changed) = match patch {
-        Patch::Json(path, patch_value) => {
-            let existing = read_if_exists(path)?;
-            let mut base: Value = match &existing {
-                Some(text) => serde_json::from_str(text).with_context(|| {
-                    format!(
-                        "existing {} is not valid JSON — fix or remove it",
-                        path.display()
-                    )
-                })?,
-                None => Value::Object(Map::new()),
-            };
-            merge_json(&mut base, patch_value.clone());
-            let new_text = format!("{}\n", serde_json::to_string_pretty(&base).unwrap());
-            let changed = existing.as_deref() != Some(new_text.as_str());
-            (path, new_text, changed)
-        }
-        Patch::Toml(path, patch_value) => {
-            let existing = read_if_exists(path)?;
-            let mut base: toml_edit::DocumentMut = match &existing {
-                Some(text) => text.parse().with_context(|| {
-                    format!(
-                        "existing {} is not valid TOML — fix or remove it",
-                        path.display()
-                    )
-                })?,
-                None => toml_edit::DocumentMut::new(),
-            };
-            let patch_text =
-                toml::to_string(patch_value).context("failed to serialize TOML patch")?;
-            let patch_doc: toml_edit::DocumentMut = patch_text
-                .parse()
-                .context("generated TOML patch is invalid")?;
-            merge_toml_doc(base.as_table_mut(), patch_doc.as_table());
-            let new_text = base.to_string();
-            let changed = existing.as_deref() != Some(new_text.as_str());
-            (path, new_text, changed)
-        }
-    };
-
-    if !changed {
-        return Ok(Outcome::Unchanged { path: path.clone() });
-    }
-
-    let existed = path.exists();
-    if existed {
-        let backup = backup_path(path);
-        fs::copy(path, &backup).with_context(|| {
-            format!(
-                "failed to back up {} to {}",
-                path.display(),
-                backup.display()
-            )
-        })?;
-    }
-    if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
-        fs::create_dir_all(parent)
-            .with_context(|| format!("failed to create {}", parent.display()))?;
-    }
-    crate::files::atomic::atomic_write(path, merged_text.as_bytes())
-        .with_context(|| format!("failed to write {}", path.display()))?;
-    Ok(Outcome::Written {
-        path: path.clone(),
-        backed_up: existed,
-    })
-}
-
-/// First backup is `<file>.cogz.bak`; if that already exists (a
-/// previous run's snapshot of the user's hand edits), write
-/// `<file>.cogz.bak.<unix-seconds>` so earlier backups survive.
-fn backup_path(path: &Path) -> PathBuf {
-    let name = path.file_name().unwrap().to_string_lossy();
-    let plain = path.with_file_name(format!("{name}.cogz.bak"));
-    if !plain.exists() {
-        return plain;
-    }
-    let ts = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-    // Same-second reruns collide; suffix them rather than overwrite.
-    for i in 0.. {
-        let suffix = if i == 0 {
-            format!("{ts}")
-        } else {
-            format!("{ts}.{i}")
-        };
-        let candidate = path.with_file_name(format!("{name}.cogz.bak.{suffix}"));
-        if !candidate.exists() {
-            return candidate;
-        }
-    }
-    unreachable!()
-}
-
-fn read_if_exists(path: &Path) -> Result<Option<String>> {
-    match fs::read_to_string(path) {
-        Ok(text) => Ok(Some(text)),
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
-        Err(e) => Err(e).with_context(|| format!("failed to read {}", path.display())),
-    }
-}
-
 // ─── Entry point ──────────────────────────────────────────────────
+
+/// Absolute path of the running cogz binary — what generated commands
+/// should invoke. Hook runtimes and MCP spawners often run with a
+/// minimal PATH (`~/.local/bin` absent), so a bare `cogz` resolves to
+/// nothing (exit 127). Falls back to `cogz` when the exe path can't be
+/// determined.
+pub fn self_bin() -> String {
+    std::env::current_exe()
+        .map(|p| p.to_string_lossy().into_owned())
+        .unwrap_or_else(|_| "cogz".to_string())
+}
 
 /// Configure the named harnesses (or `auto`) for `repo` at `scope`.
 /// `home` is the user's home directory — a parameter so tests can
-/// supply a fake HOME.
+/// supply a fake HOME. `bin` is argv[0] written into generated hook and
+/// MCP commands — callers pass `self_bin()`.
 ///
 /// Returns the report text for the caller to print.
-pub fn run(repo: &Path, arg: &str, scope: Scope, home: &Path) -> Result<String> {
+pub fn run(repo: &Path, arg: &str, scope: Scope, home: &Path, bin: &str) -> Result<String> {
     let targets = resolve_targets(arg, repo, home)?;
     let mut report = String::new();
     for h in targets {
         report.push_str(&format!("{}:\n", h.id));
         let patches = match scope {
-            Scope::Project => (h.project_patches)(repo),
-            Scope::User => (h.user_patches)(home),
+            Scope::Project => (h.project_patches)(repo, bin),
+            Scope::User => (h.user_patches)(home, bin),
         };
         for patch in &patches {
             match apply(patch)? {
@@ -392,3 +299,5 @@ pub fn run(repo: &Path, arg: &str, scope: Scope, home: &Path) -> Result<String> 
 
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod tests_merge;

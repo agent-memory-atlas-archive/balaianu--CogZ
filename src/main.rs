@@ -436,6 +436,23 @@ enum ModelsSub {
     Clean {},
 }
 
+/// Shared `configure` invocation: resolve home, scope, and the cogz
+/// binary path, then write the harness config.
+fn run_configure(repo: &std::path::Path, arg: &str, global: bool) -> anyhow::Result<()> {
+    let home =
+        std::env::home_dir().ok_or_else(|| anyhow::anyhow!("cannot determine home directory"))?;
+    let scope = if global {
+        cogz::configure::Scope::User
+    } else {
+        cogz::configure::Scope::Project
+    };
+    print!(
+        "{}",
+        cogz::configure::run(repo, arg, scope, &home, &cogz::configure::self_bin())?
+    );
+    Ok(())
+}
+
 fn main() -> anyhow::Result<()> {
     use std::io::IsTerminal;
 
@@ -461,18 +478,11 @@ fn main() -> anyhow::Result<()> {
         } => {
             let msg = cogz::init::run(&repo, local_only)?;
             println!("{}", msg);
-            let home = std::env::home_dir()
-                .ok_or_else(|| anyhow::anyhow!("cannot determine home directory"))?;
             match configure {
-                Some(arg) => {
-                    let scope = if global {
-                        cogz::configure::Scope::User
-                    } else {
-                        cogz::configure::Scope::Project
-                    };
-                    print!("{}", cogz::configure::run(&repo, &arg, scope, &home)?);
-                }
+                Some(arg) => run_configure(&repo, &arg, global)?,
                 None => {
+                    let home = std::env::home_dir()
+                        .ok_or_else(|| anyhow::anyhow!("cannot determine home directory"))?;
                     let detected = cogz::configure::detect(&repo, &home);
                     if !detected.is_empty() {
                         println!(
@@ -488,17 +498,7 @@ fn main() -> anyhow::Result<()> {
             harnesses,
             repo,
             global,
-        } => {
-            let home = std::env::home_dir()
-                .ok_or_else(|| anyhow::anyhow!("cannot determine home directory"))?;
-            let scope = if global {
-                cogz::configure::Scope::User
-            } else {
-                cogz::configure::Scope::Project
-            };
-            print!("{}", cogz::configure::run(&repo, &harnesses, scope, &home)?);
-            Ok(())
-        }
+        } => run_configure(&repo, &harnesses, global),
         Commands::Status { repo } => commands::run_status(&repo),
         Commands::Index { repo, no_download } => commands::run_index(&repo, no_download),
         Commands::Reindex { repo } => commands::run_reindex(&repo),
