@@ -79,8 +79,10 @@ fn hook_additional_context(
 /// Print a hook-compatible JSON response in the agent's envelope
 /// format. A context pack and/or a drift notice become the injected
 /// `additionalContext` (or Cursor's snake_case `additional_context`).
-/// Returns the JSON line to emit, or `"{}"` when there is nothing to
-/// inject — the caller prints it (libraries never write stdout).
+/// Returns the JSON line to emit, or an empty string when there is
+/// nothing to inject — absent stdout is the portable no-op across
+/// hook consumers; a bare `{}` fails strict output schemas (Devin).
+/// The caller prints it (libraries never write stdout).
 pub fn hook_json(
     event: &LifecycleEvent,
     pack: Option<&ContextPack>,
@@ -92,7 +94,7 @@ pub fn hook_json(
     let provenance = pack_provenance(pack, repo_root);
     let Some(markdown) = hook_additional_context(event, pack, file_path, notice, &provenance)
     else {
-        return "{}".to_string();
+        return String::new();
     };
     let json = match format {
         HookFormat::Claude => {
@@ -115,7 +117,10 @@ pub fn hook_json(
         HookFormat::Cursor => serde_json::json!({"additional_context": markdown}),
         HookFormat::Copilot => serde_json::json!({"additionalContext": markdown}),
     };
-    serde_json::to_string(&json).unwrap_or_else(|_| "{}".into())
+    // A serialization failure degrades to silence rather than
+    // emitting a bare `{}` — same strict-schema reasoning as the
+    // nothing-to-inject path above.
+    serde_json::to_string(&json).unwrap_or_default()
 }
 
 /// Git provenance for the pack's rule sections — one bounded

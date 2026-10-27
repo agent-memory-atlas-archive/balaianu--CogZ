@@ -174,7 +174,7 @@ cd ~/your-project
 cogz capture-event session_start --hook-json --fts-only
 ```
 
-This should print a JSON object with `hookSpecificOutput` containing the context pack, or `{}` if no `.cogz/` directory exists.
+This should print a JSON object with `hookSpecificOutput` containing the context pack, or print nothing if no `.cogz/` directory exists.
 
 ## Multiple repos
 

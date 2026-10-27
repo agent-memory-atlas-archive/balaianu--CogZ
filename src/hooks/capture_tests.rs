@@ -50,3 +50,37 @@ fn multibyte_char_survives_chunk_boundary() {
     assert!(prompt.contains('𝄞'));
     assert!(!prompt.contains('\u{FFFD}'));
 }
+
+#[test]
+fn hook_json_silent_skip_emits_nothing() {
+    // Strict consumers (Devin post_compact) parse stdout against a
+    // typed output schema — a bare `{}` matches no variant and fails.
+    // Absent stdout is the portable no-op.
+    fn capture_in(repo: &Path) -> CaptureResult {
+        let input = CaptureInput {
+            repo,
+            event_str: "session_start",
+            prompt: None,
+            prompt_file: None,
+            tool_name: None,
+            tool_result: None,
+            file_path: None,
+            hook_json: true,
+            fts_only: true,
+            hook_format: crate::hooks::format::HookFormat::Claude,
+        };
+        run_capture_event(&input).expect("silent skip must succeed")
+    }
+
+    let bare = tempfile::tempdir().unwrap();
+    assert_eq!(capture_in(bare.path()).emission, "");
+
+    let configured = tempfile::tempdir().unwrap();
+    std::fs::create_dir_all(configured.path().join(".cogz")).unwrap();
+    std::fs::write(
+        configured.path().join(".cogz/config.toml"),
+        crate::config::default_toml("test"),
+    )
+    .unwrap();
+    assert_eq!(capture_in(configured.path()).emission, "");
+}

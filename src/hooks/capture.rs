@@ -7,7 +7,7 @@
 //! When `hook_json` is true, output is wrapped in the JSON format
 //! expected by agent hook systems (Claude Code / Devin compatible):
 //! `{"hookSpecificOutput": {"hookEventName": "...", "additionalContext": "..."}}`.
-//! If no `.cogz/` directory is found, prints `{}` and exits silently.
+//! If no `.cogz/` directory is found, prints nothing and exits silently.
 
 use std::path::Path;
 use std::sync::Arc;
@@ -48,15 +48,18 @@ pub struct CaptureResult {
     pub consolidation_summary: Option<crate::hooks::lifecycle::ConsolidationSummary>,
     pub suggestion_count: Option<usize>,
     /// Text the caller should print to stdout — the hook JSON
-    /// envelope (or `{}`), or the rendered pack + notice. Empty when
-    /// there is nothing to emit. Libraries return strings; binaries
+    /// envelope, or the rendered pack + notice. Empty when there is
+    /// nothing to emit; the caller skips printing, which is how hook
+    /// consumers see a no-op. Libraries return strings; binaries
     /// print them.
     pub emission: String,
 }
 
 impl CaptureResult {
-    /// All-None result for the silent-skip early exits — carries just
-    /// the `{}` a hook consumer expects on stdout.
+    /// All-None result for the silent-skip early exits. Emission is
+    /// empty: hook consumers treat absent stdout as a no-op, while a
+    /// bare `{}` matches no strict output schema (Devin post_compact
+    /// rejects it as invalid JSON output).
     fn empty(emission: &str) -> Self {
         Self {
             event_id: None,
@@ -91,9 +94,9 @@ pub struct CaptureInput<'a> {
 /// stdout.
 ///
 /// When `hook_json` is true:
-/// - If no `.cogz/` is found, emission is `{}` (silent skip).
+/// - If no `.cogz/` is found, emission is empty (silent skip).
 /// - Context packs are wrapped in `hookSpecificOutput.additionalContext`.
-/// - Events without context packs emit `{}`.
+/// - Events without context packs emit nothing.
 /// - Stdin is parsed for hook payload fields (prompt, tool_name,
 ///   tool_response, etc.) when the corresponding CLI args are not set.
 ///
@@ -124,7 +127,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
     // Silent skip for hook integrations when no .cogz/ exists.
     if !config_path.exists() {
         if input.hook_json {
-            return Ok(CaptureResult::empty("{}"));
+            return Ok(CaptureResult::empty(""));
         }
         return Err(CaptureError::Config(
             crate::config::ConfigError::CogzDirMissing(cogz_dir.clone()),
@@ -140,7 +143,7 @@ pub fn run_capture_event(input: &CaptureInput) -> Result<CaptureResult, CaptureE
 
     if !db_path.exists() {
         if input.hook_json {
-            return Ok(CaptureResult::empty("{}"));
+            return Ok(CaptureResult::empty(""));
         }
         return Err(CaptureError::Config(crate::config::ConfigError::DbMissing(
             db_path.clone(),

@@ -24,7 +24,7 @@ When `--hook-json` is passed, output is wrapped in the JSON format expected by a
 }
 ```
 
-If no `.cogz/` directory is found in the current repo, CogZ prints `{}` and exits silently — the hook is a no-op for repos that don't use CogZ.
+If no `.cogz/` directory is found in the current repo, CogZ prints nothing and exits silently — the hook is a no-op for repos that don't use CogZ. Empty stdout is the portable no-op across hook consumers, including agents with strict output schemas (e.g. Devin's post_compact).
 
 ## The `--fts-only` flag
 
