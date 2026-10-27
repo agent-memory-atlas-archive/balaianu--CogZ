@@ -1020,8 +1020,14 @@ fn cogz_hook_json_stdout_stays_pure_under_warn() {
         let out = child.wait_with_output().unwrap();
         assert!(out.status.success(), "capture-event {event} failed");
         let text = String::from_utf8(out.stdout).unwrap();
-        serde_json::from_str::<serde_json::Value>(&text)
-            .unwrap_or_else(|e| panic!("{event} stdout must be one JSON value: {text:?} ({e})"));
+        // Nothing-to-inject emits empty stdout — the portable hook
+        // no-op. Anything emitted must be exactly one JSON value:
+        // warnings must never corrupt the stream.
+        if !text.trim().is_empty() {
+            serde_json::from_str::<serde_json::Value>(&text).unwrap_or_else(|e| {
+                panic!("{event} stdout must be empty or one JSON value: {text:?} ({e})")
+            });
+        }
     }
 }
 
