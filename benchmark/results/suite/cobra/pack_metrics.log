@@ -5,14 +5,14 @@
   {
    "label": "hybrid",
    "search": {
-    "ram_idle_mb": 8,
-    "cold_first_ms": 1544.1,
-    "ram_loaded_mb": 763,
+    "ram_idle_mb": 9,
+    "cold_first_ms": 1555.2,
+    "ram_loaded_mb": 764,
     "n": 15,
-    "p50_ms": 228.8,
-    "p95_ms": 246.2,
-    "p99_ms": 247.3,
-    "mean_ms": 224.9,
+    "p50_ms": 228.3,
+    "p95_ms": 279.4,
+    "p99_ms": 279.8,
+    "mean_ms": 233.1,
     "silence_gate": {
      "queries": 3,
      "with_hits": 0
@@ -109,13 +109,13 @@
    "label": "fts_only",
    "search": {
     "ram_idle_mb": 8,
-    "cold_first_ms": 48.1,
+    "cold_first_ms": 58.1,
     "ram_loaded_mb": 21,
     "n": 15,
-    "p50_ms": 39.4,
-    "p95_ms": 43.4,
-    "p99_ms": 44.3,
-    "mean_ms": 33.5,
+    "p50_ms": 38.8,
+    "p95_ms": 46.2,
+    "p99_ms": 48.6,
+    "mean_ms": 33.7,
     "silence_gate": {
      "queries": 3,
      "with_hits": 0

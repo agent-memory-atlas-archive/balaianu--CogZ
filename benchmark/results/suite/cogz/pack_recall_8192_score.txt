@@ -1,9 +1,9 @@
 
 === CogZ benchmark — 25 queries ===
-overall: P@5=0.088 [0.048, 0.128]  MRR=0.303 [0.183, 0.445]  R@20=0.502 [0.36, 0.642]  avg 494.84ms
-latency: p50=428ms  p95=736ms  p99=1677ms
-errors: none  rotted-expected: 2
+overall: P@5=0.088 [0.048, 0.128]  MRR=0.292 [0.172, 0.431]  R@20=0.545 [0.406, 0.685]  avg 500.4ms
+latency: p50=437ms  p95=621ms  p99=1690ms
+errors: none  rotted-expected: 4
 intent       n    P@k    MRR   R@20  xpd/q      ms
-commit      25  0.088  0.303  0.502   24.8  494.84
+commit      25  0.088  0.292  0.545   24.8   500.4
 
-packs (25): recall=0.667  sections=72.52  tokens=8190.4  dropped=22.32  trunc=55.24  exp_trunc=73  dup_max=0.359  packs_w_dup=0
+packs (25): recall=0.714  sections=72.68  tokens=8188.08  dropped=21.96  trunc=55.44  exp_trunc=75  dup_max=0.362  packs_w_dup=0

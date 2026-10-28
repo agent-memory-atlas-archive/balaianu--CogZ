@@ -1,6 +1,6 @@
 {
- "repo": "cogz-p5-i854ph8e",
- "elapsed_s": 105.2,
+ "repo": "cogz-p5-tglr15nf",
+ "elapsed_s": 28.6,
  "dedup": {
   "score": {
    "tp": 6,
@@ -180,7 +180,7 @@
  "promotion": {
   "below_threshold": [],
   "at_threshold": [
-   "65fff876-a4fc-4084-89ee-e1990238b89e"
+   "893a5541-bc3e-418b-b468-cf607b15b5f3"
   ],
   "real_run": {
    "dry_run": false,
@@ -188,8 +188,8 @@
    "merged_count": 0,
    "promoted": [
     {
-     "new_rule_id": "10cdcdde-ea6d-4389-bba5-087be2a535fe",
-     "observation_id": "65fff876-a4fc-4084-89ee-e1990238b89e",
+     "new_rule_id": "1f90db46-a094-443a-b75b-e13f5d8dfd33",
+     "observation_id": "893a5541-bc3e-418b-b468-cf607b15b5f3",
      "reason": "3 supporting observations"
     }
    ],
@@ -197,7 +197,7 @@
   },
   "idempotence": [],
   "refs_not_supports": [],
-  "target_id": "65fff876-a4fc-4084-89ee-e1990238b89e",
-  "refs_target_id": "d16f20d2-e388-46cb-b3f0-b44322265f77"
+  "target_id": "893a5541-bc3e-418b-b468-cf607b15b5f3",
+  "refs_target_id": "c3e62bc6-413c-4ab9-9bfc-08bb7beb5d3e"
  }
 }

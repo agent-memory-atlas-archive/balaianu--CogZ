@@ -1,28 +1,28 @@
 collecting corpus ids...
-corpus: 2561 entities
-  cb2a66b33: 45 results, 1677ms
-  c2936aae2: 45 results, 443ms
-  c889edec4: 45 results, 434ms
-  c7621eace: 45 results, 467ms
-  ced78398f: 45 results, 413ms
-  c83db0140: 45 results, 447ms
-  c1967e086: 45 results, 403ms
+corpus: 2641 entities
+  cb2a66b33: 45 results, 1690ms
+  c2936aae2: 45 results, 621ms
+  c889edec4: 45 results, 506ms
+  c7621eace: 45 results, 481ms
+  ced78398f: 45 results, 427ms
+  c83db0140: 45 results, 468ms
+  c1967e086: 45 results, 423ms
   c7a57828b: 45 results, 408ms
-  c7fcffe59: 45 results, 447ms
-  c60e252f0: 45 results, 443ms
-  ce41f06c9: 45 results, 410ms
-  c043021a8: 45 results, 428ms
-  c0b28e111: 45 results, 431ms
-  c86e70363: 45 results, 422ms
-  c72678b97: 45 results, 447ms
-  c2e0b8b3a: 40 results, 414ms
-  cdc8ffbed: 45 results, 422ms
-  c85130a9e: 45 results, 423ms
-  cc97a642e: 45 results, 407ms
-  c3333e354: 45 results, 415ms
-  c8ccb962d: 45 results, 422ms
-  c111d85ea: 45 results, 404ms
-  cace7c26f: 45 results, 508ms
-  c371880b9: 45 results, 500ms
-  c0207bab1: 45 results, 736ms
+  c7fcffe59: 45 results, 438ms
+  c60e252f0: 45 results, 453ms
+  ce41f06c9: 45 results, 427ms
+  c043021a8: 45 results, 432ms
+  c0b28e111: 45 results, 451ms
+  c86e70363: 45 results, 437ms
+  c72678b97: 45 results, 450ms
+  c2e0b8b3a: 40 results, 434ms
+  cdc8ffbed: 45 results, 428ms
+  c85130a9e: 45 results, 436ms
+  cc97a642e: 45 results, 442ms
+  c3333e354: 45 results, 395ms
+  c8ccb962d: 45 results, 436ms
+  c111d85ea: 45 results, 418ms
+  cace7c26f: 45 results, 514ms
+  c371880b9: 45 results, 418ms
+  c0207bab1: 45 results, 477ms
 wrote pack_recall_8192.json

@@ -1,28 +1,28 @@
 collecting corpus ids...
-corpus: 2561 entities
-  cb2a66b33: 45 results, 1781ms
-  c2936aae2: 45 results, 437ms
-  c889edec4: 45 results, 422ms
-  c7621eace: 45 results, 445ms
-  ced78398f: 45 results, 409ms
-  c83db0140: 45 results, 438ms
-  c1967e086: 45 results, 406ms
-  c7a57828b: 45 results, 396ms
-  c7fcffe59: 45 results, 429ms
-  c60e252f0: 45 results, 466ms
-  ce41f06c9: 45 results, 411ms
-  c043021a8: 45 results, 405ms
-  c0b28e111: 45 results, 443ms
-  c86e70363: 45 results, 414ms
-  c72678b97: 45 results, 430ms
-  c2e0b8b3a: 40 results, 405ms
-  cdc8ffbed: 45 results, 418ms
-  c85130a9e: 45 results, 413ms
-  cc97a642e: 45 results, 405ms
-  c3333e354: 45 results, 383ms
-  c8ccb962d: 45 results, 417ms
-  c111d85ea: 45 results, 402ms
-  cace7c26f: 45 results, 488ms
-  c371880b9: 45 results, 380ms
-  c0207bab1: 45 results, 435ms
+corpus: 2641 entities
+  cb2a66b33: 45 results, 1846ms
+  c2936aae2: 45 results, 456ms
+  c889edec4: 45 results, 425ms
+  c7621eace: 45 results, 457ms
+  ced78398f: 45 results, 458ms
+  c83db0140: 45 results, 458ms
+  c1967e086: 45 results, 433ms
+  c7a57828b: 45 results, 397ms
+  c7fcffe59: 45 results, 443ms
+  c60e252f0: 45 results, 458ms
+  ce41f06c9: 45 results, 440ms
+  c043021a8: 45 results, 426ms
+  c0b28e111: 45 results, 448ms
+  c86e70363: 45 results, 433ms
+  c72678b97: 45 results, 447ms
+  c2e0b8b3a: 40 results, 415ms
+  cdc8ffbed: 45 results, 419ms
+  c85130a9e: 45 results, 451ms
+  cc97a642e: 45 results, 403ms
+  c3333e354: 45 results, 416ms
+  c8ccb962d: 45 results, 427ms
+  c111d85ea: 45 results, 406ms
+  cace7c26f: 45 results, 491ms
+  c371880b9: 45 results, 388ms
+  c0207bab1: 45 results, 451ms
 wrote commit_run.json

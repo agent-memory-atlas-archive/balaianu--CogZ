@@ -1,18 +1,18 @@
 collecting corpus ids...
 corpus: 4655 entities
-  lk01: 29 results, 2103ms
-  lk02: 40 results, 524ms
-  lk03: 40 results, 512ms
-  lk04: 40 results, 549ms
-  lk05: 40 results, 574ms
-  lk06: 28 results, 521ms
-  lk07: 40 results, 522ms
-  lk08: 40 results, 493ms
-  lk09: 40 results, 476ms
-  lk10: 40 results, 497ms
-  lk11: 26 results, 512ms
-  lk12: 40 results, 523ms
+  lk01: 29 results, 2244ms
+  lk02: 40 results, 527ms
+  lk03: 40 results, 510ms
+  lk04: 40 results, 541ms
+  lk05: 40 results, 562ms
+  lk06: 28 results, 560ms
+  lk07: 40 results, 556ms
+  lk08: 40 results, 490ms
+  lk09: 40 results, 475ms
+  lk10: 40 results, 496ms
+  lk11: 26 results, 519ms
+  lk12: 40 results, 530ms
   lk13: 40 results, 514ms
-  lk14: 40 results, 473ms
-  lk15: 0 results, 454ms
+  lk14: 40 results, 489ms
+  lk15: 0 results, 456ms
 wrote seeded_run.json

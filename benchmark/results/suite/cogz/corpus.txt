@@ -1,2 +1,2 @@
-CogZ: 235 files, 62332 LOC, 2571 entities, 5509 edges, 2571 embeddings, db=30236KB
+CogZ: 248 files, 63123 LOC, 2661 entities, 5608 edges, 2651 embeddings, db=31836KB
 wrote corpus_metrics.json

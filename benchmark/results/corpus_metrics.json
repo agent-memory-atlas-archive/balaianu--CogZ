@@ -32,7 +32,7 @@
     "code_embeddings": 684,
     "knowledge_embeddings": 84,
     "drift_rows": 0,
-    "db_bytes": 11300864,
+    "db_bytes": 11501568,
     "code_entity_langs": {
       "go": 684
     }
@@ -70,7 +70,7 @@
     "code_embeddings": 965,
     "knowledge_embeddings": 86,
     "drift_rows": 0,
-    "db_bytes": 14454784,
+    "db_bytes": 14651392,
     "code_entity_langs": {
       "python": 965
     }
@@ -110,7 +110,7 @@
     "code_embeddings": 4581,
     "knowledge_embeddings": 83,
     "drift_rows": 0,
-    "db_bytes": 31891456,
+    "db_bytes": 32485376,
     "code_entity_langs": {
       "rust": 4549,
       "bash": 32
@@ -118,47 +118,48 @@
   },
   "cogz": {
     "corpus": "cogz",
-    "source_files": 235,
-    "loc": 62332,
+    "source_files": 248,
+    "loc": 63123,
     "src_langs": {
       "bash": 4,
-      "rust": 212,
-      "python": 19
+      "rust": 222,
+      "python": 22
     },
-    "git_commits": 391,
+    "git_commits": 406,
     "entities_by_type": {
-      "class": 246,
-      "file": 235,
-      "function": 1697,
+      "class": 248,
+      "file": 249,
+      "function": 1765,
       "knowledge": 64,
-      "module": 227,
+      "module": 233,
       "observation": 85,
       "rule": 17
     },
     "entities_by_status": {
-      "active": 2561,
+      "active": 2641,
+      "stale": 10,
       "superseded": 10
     },
     "edges_by_type": {
-      "auto_references": 514,
-      "calls": 2639,
-      "contains": 1943,
+      "auto_references": 510,
+      "calls": 2679,
+      "contains": 2003,
       "contradicts": 7,
       "derived_from": 3,
       "extends": 4,
-      "imports": 285,
+      "imports": 288,
       "references": 81,
       "superseded_by": 10,
       "supports": 23
     },
-    "edges": 5509,
-    "code_embeddings": 2405,
+    "edges": 5608,
+    "code_embeddings": 2485,
     "knowledge_embeddings": 166,
-    "drift_rows": 11,
-    "db_bytes": 30961664,
+    "drift_rows": 13,
+    "db_bytes": 32600064,
     "code_entity_langs": {
-      "python": 116,
-      "rust": 2283,
+      "python": 131,
+      "rust": 2358,
       "bash": 6
     }
   }
